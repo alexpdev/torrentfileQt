@@ -1,0 +1,17 @@
+{
+  "name": "torrentfile-gui",
+  "displayName": "Torrentfile GUI",
+  "version": "1.0.0",
+  "description": "GUI torrentfile creator.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexpdev/Torrentfile-GUI.git"
+  },
+  "keywords": ["GUI", "Bittorrent", "metafile"],
+  "author": "alexpdev",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/alexpdev/Torrentfile-GUI/issues"
+  },
+  "homepage": "https://github.com/alexpdev/Torrentfile-GUI#readme"
+}
