@@ -8,8 +8,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QMainWindow, QPlainTextEdit,
                              QPushButton, QToolButton, QWidget, QFormLayout,
                              QStatusBar)
-from torrentfile import TorrentFile
-from torrentfile.utils import path_stat
+from torrentfile import TorrentFile, path_stat
 from torrentfileGUI.menu import MenuBar
 
 """
@@ -290,13 +289,16 @@ class SubmitButton(QPushButton):
         submit Action performed when user presses Submit Button.
         """
         window = self.window
+
         # Gather Information from other Widgets.
         path = window.path_input.text()
         private = 1 if window.private.isChecked() else 0
         source = window.source_input.text()
+
         # at least 1 tracker input is required
         announce = window.announce_input.toPlainText()
         announce = announce.split("\n")
+
         # Calculates piece length if not specified by user.
         created_by = window.created_by_input.text()
         piece_length = window.piece_length.currentText()
@@ -338,8 +340,7 @@ class Label(QLabel):
     """
     Label Identifier for Window Widgets.
 
-    Subclass:
-        QLabel
+    Subclass: QLabel
     """
 
     stylesheet = """QLabel {
@@ -354,7 +355,6 @@ class Label(QLabel):
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
-
 
 class LineEdit(QLineEdit):
 
@@ -431,7 +431,6 @@ def start():
     window = Window(parent=None, app=app)
     window.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     start()

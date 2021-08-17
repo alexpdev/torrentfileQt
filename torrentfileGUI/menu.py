@@ -12,7 +12,7 @@ class Menu(QMenu):
         QMenu::item {
             color: #dfdbd2;
             border-color: #2a2a2c;
-            padding:4px 10px 4px 20px;
+            padding: 4px 10px 4px 20px;
             border-style: solid;
             border-width: 3px;
         }
@@ -47,19 +47,19 @@ class MenuBar(QMenuBar):
 	        background-color: #41403b;
         }
         QMenuBar::item {
-            padding:5px;
+            padding: 5px;
             color: #dfdbd2;
             background-color: #41403b;
         }
         QMenuBar::item:selected {
             color: #FFF;
-            padding:2px;
-            padding-bottom:0px;
-            border-width:3px;
-            border-bottom-width:0px;
-            border-top-right-radius:4px;
-            border-top-left-radius:4px;
-            border-style:solid;
+            padding: 2px;
+            padding-bottom: 0px;
+            border-width: 3px;
+            border-bottom-width: 0px;
+            border-top-right-radius: 4px;
+            border-top-left-radius: 4px;
+            border-style: solid;
             background-color: #41403b;
             border-top-color: #2a2a2c;
             border-right-color: #2f2f2c;
