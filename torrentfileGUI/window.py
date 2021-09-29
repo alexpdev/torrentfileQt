@@ -5,10 +5,10 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QHBoxLayout, QLabel, QLineEdit, QSpacerItem,
-                             QMainWindow, QPlainTextEdit,
+                             QMainWindow, QPlainTextEdit, QTextBrowser,
                              QPushButton, QToolButton, QWidget, QFormLayout,
-                             QStatusBar)
-from torrentfile import TorrentFile, path_stat
+                             QStatusBar, QTabWidget, QVBoxLayout, QRadioButton)
+import torrentfile
 from torrentfileGUI.menu import MenuBar
 
 """
@@ -27,113 +27,614 @@ class Window(QMainWindow):
     fieldRole = QFormLayout.ItemRole.FieldRole
     spanRole = QFormLayout.ItemRole.SpanningRole
 
-    stylesheet = """QMainWindow {
-        background-color: #525252;
-        }"""
+
+    stylesheet = """
+    QMainWindow {
+        background-color:#000000;
+    }
+    QDialog {
+        background-color:#000000;
+    }
+    QColorDialog {
+        background-color:#000000;
+    }
+    QTextEdit {
+        background-color:#000000;
+        color: #a9b7c6;
+    }
+    QPlainTextEdit {
+        selection-background-color:#f39c12;
+        background-color:#000000;
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-width: 1px;
+        color: #a9b7c6;
+    }
+    QPushButton{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-width: 1px;
+        border-style: solid;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #000000;
+    }
+    QPushButton::default{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-width: 1px;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #000000;
+    }
+    QPushButton:hover{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #FFFFFF;
+        padding-bottom: 2px;
+        background-color: #000000;
+    }
+    QPushButton:pressed{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 2px;
+        border-style: solid;
+        color: #e67e22;
+        padding-bottom: 1px;
+        background-color: #000000;
+    }
+    QPushButton:disabled{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-bottom-width: 2px;
+        border-style: solid;
+        color: #808086;
+        padding-bottom: 1px;
+        background-color: #000000;
+    }
+    QToolButton {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #000000;
+    }
+    QToolButton:hover{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 2px;
+        border-style: solid;
+        color: #FFFFFF;
+        padding-bottom: 1px;
+        background-color: #000000;
+    }
+    QLineEdit {
+        border-width: 1px; border-radius: 4px;
+        border-color: rgb(58, 58, 58);
+        border-style: inset;
+        padding: 0 8px;
+        color: #a9b7c6;
+        background:#000000;
+        selection-background-color:#007b50;
+        selection-color: #FFFFFF;
+    }
+    QLabel {
+        color: #a9b7c6;
+    }
+    QLCDNumber {
+        color: #e67e22;
+    }
+    QProgressBar {
+        text-align: center;
+        color: rgb(240, 240, 240);
+        border-width: 1px;
+        border-radius: 10px;
+        border-color: rgb(58, 58, 58);
+        border-style: inset;
+        background-color:#000000;
+    }
+    QProgressBar::chunk {
+        background-color: #e67e22;
+        border-radius: 5px;
+    }
+    QMenu{
+        background-color:#000000;
+    }
+    QMenuBar {
+        background:rgb(0, 0, 0);
+        color: #a9b7c6;
+    }
+    QMenuBar::item {
+        spacing: 3px;
+        padding: 1px 4px;
+        background: transparent;
+    }
+    QMenuBar::item:selected {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #FFFFFF;
+        padding-bottom: 0px;
+        background-color: #000000;
+    }
+    QMenu::item:selected {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: #e67e22;
+        border-bottom-color: transparent;
+        border-left-width: 2px;
+        color: #FFFFFF;
+        padding-left:15px;
+        padding-top:4px;
+        padding-bottom:4px;
+        padding-right:7px;
+        background-color:#000000;
+    }
+    QMenu::item {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #a9b7c6;
+        padding-left:17px;
+        padding-top:4px;
+        padding-bottom:4px;
+        padding-right:7px;
+        background-color:#000000;
+    }
+    QTabWidget {
+        color:rgb(0,0,0);
+        background-color:#000000;
+    }
+    QTabWidget::pane {
+            border-color: rgb(77,77,77);
+            background-color:#000000;
+            border-style: solid;
+            border-width: 1px;
+            border-radius: 6px;
+    }
+    QTabBar::tab {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #808086;
+        padding: 3px;
+        margin-left:3px;
+        background-color:#000000;
+    }
+    QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 2px;
+        border-style: solid;
+        color: #FFFFFF;
+        padding-left: 3px;
+        padding-bottom: 2px;
+        margin-left:3px;
+        background-color:#000000;
+    }
+
+    QCheckBox {
+        color: #a9b7c6;
+        padding: 2px;
+    }
+    QCheckBox:disabled {
+        color: #808086;
+        padding: 2px;
+    }
+
+    QCheckBox:hover {
+        border-radius:4px;
+        border-style:solid;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-bottom: 1px;
+        padding-top: 1px;
+        border-width:1px;
+        border-color: rgb(87, 97, 106);
+        background-color:#000000;
+    }
+    QCheckBox::indicator:checked {
+
+        height: 10px;
+        width: 10px;
+        border-style:solid;
+        border-width: 1px;
+        border-color: #e67e22;
+        color: #a9b7c6;
+        background-color: #e67e22;
+    }
+    QCheckBox::indicator:unchecked {
+
+        height: 10px;
+        width: 10px;
+        border-style:solid;
+        border-width: 1px;
+        border-color: #e67e22;
+        color: #a9b7c6;
+        background-color: transparent;
+    }
+    QRadioButton {
+        color: #a9b7c6;
+        background-color:#000000;
+        padding: 1px;
+    }
+    QRadioButton::indicator:checked {
+        height: 10px;
+        width: 10px;
+        border-style:solid;
+        border-radius:5px;
+        border-width: 1px;
+        border-color: #e67e22;
+        color: #a9b7c6;
+        background-color: #e67e22;
+    }
+    QRadioButton::indicator:!checked {
+        height: 10px;
+        width: 10px;
+        border-style:solid;
+        border-radius:5px;
+        border-width: 1px;
+        border-color: #e67e22;
+        color: #a9b7c6;
+        background-color: transparent;
+    }
+    QStatusBar {
+        color:#027f7f;
+    }
+    QSpinBox {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QDoubleSpinBox {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QTimeEdit {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QDateTimeEdit {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QDateEdit {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QComboBox {
+        color: #a9b7c6;
+        background: #1e1d23;
+    }
+    QComboBox:editable {
+        background: #1e1d23;
+        color: #a9b7c6;
+        selection-background-color:#000000;
+    }
+    QComboBox QAbstractItemView {
+        color: #a9b7c6;
+        background: #1e1d23;
+        selection-color: #FFFFFF;
+        selection-background-color:#000000;
+    }
+    QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+        color: #a9b7c6;
+        background: #1e1d23;
+    }
+    QFontComboBox {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QToolBox {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QToolBox::tab {
+        color: #a9b7c6;
+        background-color:#000000;
+    }
+    QToolBox::tab:selected {
+        color: #FFFFFF;
+        background-color:#000000;
+    }
+    QScrollArea {
+        color: #FFFFFF;
+        background-color:#000000;
+    }
+    QSlider::groove:horizontal {
+        height: 5px;
+        background: #e67e22;
+    }
+    QSlider::groove:vertical {
+        width: 5px;
+        background: #e67e22;
+    }
+    QSlider::handle:horizontal {
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+        border: 1px solid #5c5c5c;
+        width: 14px;
+        margin: -5px 0;
+        border-radius: 7px;
+    }
+    QSlider::handle:vertical {
+        background: qlineargradient(x1:1, y1:1, x2:0, y2:0, stop:0 #b4b4b4, stop:1 #8f8f8f);
+        border: 1px solid #5c5c5c;
+        height: 14px;
+        margin: 0 -5px;
+        border-radius: 7px;
+    }
+    QSlider::add-page:horizontal {
+        background: white;
+    }
+    QSlider::add-page:vertical {
+        background: white;
+    }
+    QSlider::sub-page:horizontal {
+        background: #e67e22;
+    }
+    QSlider::sub-page:vertical {
+        background: #e67e22;
+    }
+    QScrollBar:horizontal {
+        max-height: 20px;
+        background: rgb(0,0,0);
+        border: 1px transparent grey;
+        margin: 0px 20px 0px 20px;
+    }
+    QScrollBar::handle:horizontal {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(0,0,0);
+        min-width: 25px;
+    }
+    QScrollBar::handle:horizontal:hover {
+        background: rgb(230, 126, 34);
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(0,0,0);
+        min-width: 25px;
+    }
+    QScrollBar::add-line:horizontal {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        width: 20px;
+        subcontrol-position: right;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:horizontal:hover {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: right;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:horizontal:pressed {
+        border: 1px solid;
+        border-color: grey;
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: right;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:horizontal {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        width: 20px;
+        subcontrol-position: left;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:horizontal:hover {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: left;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:horizontal:pressed {
+        border: 1px solid;
+        border-color: grey;
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: left;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::left-arrow:horizontal {
+        border: 1px transparent grey;
+        border-radius: 3px;
+        width: 6px;
+        height: 6px;
+        background: rgb(0,0,0);
+    }
+    QScrollBar::right-arrow:horizontal {
+        border: 1px transparent grey;
+        border-radius: 3px;
+        width: 6px;
+        height: 6px;
+        background: rgb(0,0,0);
+    }
+    QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+        background: none;
+    }
+    QScrollBar:vertical {
+        max-width: 20px;
+        background: rgb(0,0,0);
+        border: 1px transparent grey;
+        margin: 20px 0px 20px 0px;
+    }
+    QScrollBar::add-line:vertical {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        height: 20px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:vertical:hover {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:vertical:pressed {
+        border: 1px solid;
+        border-color: grey;
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:vertical {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        height: 20px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:vertical:hover {
+        border: 1px solid;
+        border-color: rgb(0,0,0);
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::sub-line:vertical:pressed {
+        border: 1px solid;
+        border-color: grey;
+        border-radius: 8px;
+        background: rgb(230, 126, 34);
+        height: 16px;
+        width: 16px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }
+        QScrollBar::handle:vertical {
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 0), stop:0.7 rgba(255, 0, 0, 0), stop:0.71 rgb(230, 126, 34), stop:1 rgb(230, 126, 34));
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(0,0,0);
+        min-height: 25px;
+    }
+    QScrollBar::handle:vertical:hover {
+        background: rgb(230, 126, 34);
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(0,0,0);
+        min-heigth: 25px;
+    }
+    QScrollBar::up-arrow:vertical {
+        border: 1px transparent grey;
+        border-radius: 3px;
+        width: 6px;
+        height: 6px;
+        background: rgb(0,0,0);
+    }
+    QScrollBar::down-arrow:vertical {
+        border: 1px transparent grey;
+        border-radius: 3px;
+        width: 6px;
+        height: 6px;
+        background: rgb(0,0,0);
+    }
+    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+        background: none;
+    }"""
+
 
     def __init__(self, parent=None, app=None):
-        """
-        __init__ Constructor for Window class.
+        """Constructor for Window class.
 
         Args:
-            parent (QWidget, optional): The current Widget's parent. Defaults to None.
-            app (QApplication, optional): Controls the GUI application. Defaults to None.
+            parent (QWidget, optional):
+                The current Widget's parent. Defaults to None.
+            app (QApplication, optional):
+                Controls the GUI application. Defaults to None.
         """
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
         self.statusbar = QStatusBar(parent=self)
-        self.central = QWidget(parent=self)
         self.icon = QIcon("./assets/torrent-icon.png")
         self.setObjectName("Mainwindow")
         self.setWindowTitle("Torrentfile Tools")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
-        self.setCentralWidget(self.central)
         self.setStyleSheet(self.stylesheet)
+        self.resize(450, 450)
         self._setupUI()
 
     def _setupUI(self):
-        """
-        _setupUI Internal function for setting up UI elements.
-        """
-        self.resize(450, 450)
-        self.formLayout = QFormLayout(self.central)
-        self.central.setLayout(self.formLayout)
-
-        self.hlayout1 = QHBoxLayout()
-        self.hlayout2 = QHBoxLayout()
-        self.path_label = Label("Path", parent=self)
-        self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.path_input = LineEdit(parent=self)
-        self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.browse_button = BrowseButton(parent=self)
-        self.hlayout1.addWidget(self.path_input)
-        self.hlayout1.addWidget(self.browse_button)
-        self.formLayout.setWidget(0, self.labelRole, self.path_label)
-        self.formLayout.setLayout(0, self.fieldRole, self.hlayout1)
-
-        self.created_by_label = Label("Created By:", parent=self)
-        self.created_by_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.created_by_input = LineEdit(parent=self)
-        self.created_by_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.formLayout.setWidget(1, self.labelRole, self.created_by_label)
-        self.formLayout.setWidget(1, self.fieldRole, self.created_by_input)
-
-        self.source_label = Label("Source:", parent=self)
-        self.source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.source_input = LineEdit(parent=self)
-        self.source_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.formLayout.setWidget(2, self.labelRole, self.source_label)
-        self.formLayout.setWidget(2, self.fieldRole, self.source_input)
-
-        self.comment_label = Label("Comment:", parent=self)
-        self.comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.comment_input = LineEdit(parent=self)
-        self.comment_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.formLayout.setWidget(3, self.labelRole, self.comment_label)
-        self.formLayout.setWidget(3, self.fieldRole, self.comment_input)
-
-        self.announce_label = Label("Trackers:", parent=self)
-        self.announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.announce_input = TextEdit(parent=self)
-        self.formLayout.setWidget(4, self.labelRole, self.announce_label)
-        self.formLayout.setWidget(4, self.fieldRole, self.announce_input)
-
-        self.piece_length_label = Label("Piece Length:", parent=self)
-        self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.piece_length = ComboBox(parent=self)
-        self.private = QCheckBox("Private Tracker",parent=self)
-        self.private.setStyleSheet("QCheckBox {color: #e1e7f6; font-size: 11pt;}")
-        self.spacer = QSpacerItem(50,0)
-        self.hlayout2.addWidget(self.piece_length)
-        self.hlayout2.addItem(self.spacer)
-        self.hlayout2.addWidget(self.private)
-        self.formLayout.setWidget(5, self.labelRole, self.piece_length_label)
-        self.formLayout.setLayout(5, self.fieldRole, self.hlayout2)
-
-        self.submit_button = SubmitButton("Create Torrent", parent=self)
-        self.formLayout.setWidget(6, self.spanRole, self.submit_button)
-
-        self.hlayout1.setObjectName(u"hlayout1")
-        self.formLayout.setObjectName(u"formLayout")
-        self.hlayout2.setObjectName("hlayout2")
-        self.submit_button.setObjectName("submit_button")
-        self.private.setObjectName("private")
-        self.path_label.setObjectName("path_label")
-        self.path_input.setObjectName("path_input")
-        self.piece_length.setObjectName("piece_length")
-        self.piece_length_label.setObjectName("piece_length_label")
-        self.source_label.setObjectName("source_label")
-        self.source_input.setObjectName("source_input")
-        self.announce_input.setObjectName("announce_input")
-        self.announce_label.setObjectName("announce_label")
-        self.comment_input.setObjectName("comment_input")
-        self.comment_label.setObjectName("comment_label")
-        self.created_by_label.setObjectName("created_by_label")
-        self.created_by_input.setObjectName("created_by_input")
-        self.browse_button.setObjectName("browse_button")
+        """Internal function for setting up UI elements."""
+        self.central = TabWidget()
+        self.centralLayout = QVBoxLayout()
+        self.central.setLayout(self.centralLayout)
+        self.setCentralWidget(self.central)
         self.statusbar.setObjectName(u"statusbar")
 
     def apply_settings(self, result):
@@ -176,6 +677,163 @@ class Window(QMainWindow):
                 self.piece_length.setCurrentIndex(i)
                 break
         return
+
+
+class TabWidget(QTabWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.createWidget = CreateWidget()
+        self.checkWidget = CheckWidget()
+        self.addTab(self.createWidget,"Create")
+        self.addTab(self.checkWidget,"Check")
+
+
+
+class CheckWidget(QWidget):
+
+    labelRole = QFormLayout.ItemRole.LabelRole
+    fieldRole = QFormLayout.ItemRole.FieldRole
+    spanRole = QFormLayout.ItemRole.SpanningRole
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.layout = QFormLayout()
+        self.setLayout(self.layout)
+
+        self.hlayout0 = QHBoxLayout()
+        self.hlayout1 = QHBoxLayout()
+        self.hlayout2 = QHBoxLayout()
+        self.version_label = Label("Bittorrent Version",parent=self)
+        self.version_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.v1button = QRadioButton("v1", parent=self)
+        self.v2button = QRadioButton("v2", parent=self)
+        self.fileLabel = Label("Torrent File", parent=self)
+        self.fileLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.fileInput = LineEdit(parent=self)
+        self.browseButton1 = BrowseButton(parent=self)
+        self.searchLabel = Label("Search Path", parent=self)
+        self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.searchInput = LineEdit(parent=self)
+        self.browseButton2 = BrowseButton(parent=self)
+        self.hlayout0.addWidget(self.v1button)
+        self.hlayout0.addWidget(self.v2button)
+        self.hlayout1.addWidget(self.fileInput)
+        self.hlayout1.addWidget(self.browseButton1)
+        self.hlayout2.addWidget(self.searchInput)
+        self.hlayout2.addWidget(self.browseButton2)
+        self.layout.setWidget(0, self.labelRole, self.version_label)
+        self.layout.setLayout(0, self.fieldRole, self.hlayout0)
+        self.layout.setWidget(1, self.labelRole, self.fileLabel)
+        self.layout.setLayout(1, self.fieldRole, self.hlayout1)
+        self.layout.setWidget(2, self.labelRole, self.searchLabel)
+        self.layout.setLayout(2, self.fieldRole, self.hlayout2)
+        self.textbroser = QTextBrowser(parent=self)
+        self.layout.setWidget(3, self.spanRole, self.textbroser)
+
+        self.layout.setObjectName(u"CheckWidget_layout")
+        self.hlayout1.setObjectName("CheckWidget_hlayout1")
+        self.hlayout2.setObjectName("CheckWidget_hlayout2")
+        self.browseButton2.setObjectName("CheckWidget_browseButton2")
+        self.browseButton1.setObjectName("CheckWidget_browseButton1")
+        self.fileLabel.setObjectName("CheckWidget_fileLabel")
+        self.searchLabel.setObjectName("CheckWidget_searchLabel")
+        self.fileInput.setObjectName("CheckWidget_fileInput")
+        self.searchInput.setObjectName("CheckWidget_searchInput")
+
+
+class CreateWidget(QWidget):
+
+    labelRole = QFormLayout.ItemRole.LabelRole
+    fieldRole = QFormLayout.ItemRole.FieldRole
+    spanRole = QFormLayout.ItemRole.SpanningRole
+
+    def __init__(self,parent=None):
+        super().__init__(parent=parent)
+        self.layout = QFormLayout()
+        self.setLayout(self.layout)
+
+        self.hlayout1 = QHBoxLayout()
+        self.hlayout2 = QHBoxLayout()
+        self.hlayout0 = QHBoxLayout()
+
+        self.version_label = Label("Bittorrent Version",parent=self)
+        self.version_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.v1button = QRadioButton("v1", parent=self)
+        self.v2button = QRadioButton("v2", parent=self)
+        self.layout.setWidget(0, self.labelRole, self.version_label)
+        self.layout.setLayout(0, self.fieldRole, self.hlayout0)
+        self.hlayout0.addWidget(self.v1button)
+        self.hlayout0.addWidget(self.v2button)
+
+        self.path_label = Label("Path", parent=self)
+        self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.path_input = LineEdit(parent=self)
+        self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.browse_button = BrowseButton(parent=self)
+        self.hlayout1.addWidget(self.path_input)
+        self.hlayout1.addWidget(self.browse_button)
+        self.layout.setWidget(1, self.labelRole, self.path_label)
+        self.layout.setLayout(1, self.fieldRole, self.hlayout1)
+
+        self.output_label = Label("Output", parent=self)
+        self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.output_input = LineEdit(parent=self)
+        self.output_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout.setWidget(2, self.labelRole, self.output_label)
+        self.layout.setWidget(2, self.fieldRole, self.output_input)
+
+        self.source_label = Label("Source:", parent=self)
+        self.source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.source_input = LineEdit(parent=self)
+        self.source_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout.setWidget(3, self.labelRole, self.source_label)
+        self.layout.setWidget(3, self.fieldRole, self.source_input)
+
+        self.comment_label = Label("Comment:", parent=self)
+        self.comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.comment_input = LineEdit(parent=self)
+        self.comment_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout.setWidget(4, self.labelRole, self.comment_label)
+        self.layout.setWidget(4, self.fieldRole, self.comment_input)
+
+        self.announce_label = Label("Trackers:", parent=self)
+        self.announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.announce_input = TextEdit(parent=self)
+        self.layout.setWidget(5, self.labelRole, self.announce_label)
+        self.layout.setWidget(5, self.fieldRole, self.announce_input)
+
+        self.piece_length_label = Label("Piece Length:", parent=self)
+        self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.piece_length = ComboBox(parent=self)
+        self.private = QCheckBox("Private Tracker",parent=self)
+        self.private.setStyleSheet("QCheckBox {color: #e1e7f6; font-size: 11pt;}")
+        self.spacer = QSpacerItem(50,0)
+        self.hlayout2.addWidget(self.piece_length)
+        self.hlayout2.addItem(self.spacer)
+        self.hlayout2.addWidget(self.private)
+        self.layout.setWidget(6, self.labelRole, self.piece_length_label)
+        self.layout.setLayout(6, self.fieldRole, self.hlayout2)
+
+        self.submit_button = SubmitButton("Submit",parent=self)
+        self.layout.setWidget(7, self.spanRole,self.submit_button)
+
+        self.layout.setObjectName(u"createWidget_formLayout")
+        self.hlayout2.setObjectName("createWidget_hlayout2")
+        self.submit_button.setObjectName("createWidget_submit_button")
+        self.private.setObjectName("createWidget_private")
+        self.path_label.setObjectName("createWidget_path_label")
+        self.path_input.setObjectName("createWidget_path_input")
+        self.piece_length.setObjectName("createWidget_piece_length")
+        self.piece_length_label.setObjectName("createWidget_piece_length_label")
+        self.source_label.setObjectName("createWidget_source_label")
+        self.source_input.setObjectName("createWidget_source_input")
+        self.announce_input.setObjectName("createWidget_announce_input")
+        self.announce_label.setObjectName("createWidget_announce_label")
+        self.comment_input.setObjectName("createWidget_comment_input")
+        self.comment_label.setObjectName("createWidget_comment_label")
+        self.browse_button.setObjectName("createWidget_browse_button")
+
+
 
 
 class BrowseButton(QToolButton):
@@ -221,7 +879,7 @@ class BrowseButton(QToolButton):
         caption = "Choose File or Root Folder"
         path = QFileDialog.getExistingDirectory(parent=self.window, caption=caption)
         self.window.path_input.insert(str(path))
-        _, size, piece_length = path_stat(path)
+        _, size, piece_length = torrentfile.utils.path_stat(path)
 
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)}KB"
@@ -269,8 +927,7 @@ class SubmitButton(QPushButton):
         }"""
 
     def __init__(self, text, parent=None):
-        """
-        __init__ Public Constructor for Submit Button.
+        """Public Constructor for Submit Button.
 
         Args:
             text (str): Text displayed on the button itself.
@@ -285,9 +942,7 @@ class SubmitButton(QPushButton):
         self.pressed.connect(self.submit)
 
     def submit(self):
-        """
-        submit Action performed when user presses Submit Button.
-        """
+        """Submit Action performed when user presses Submit Button."""
         window = self.window
 
         # Gather Information from other Widgets.
@@ -314,7 +969,7 @@ class SubmitButton(QPushButton):
 
         comment = window.comment_input.text()
 
-        torrentfile = TorrentFile(
+        tfile = torrentfile.TorrentFile(
             path=path,
             private=private,
             source=source,
@@ -323,7 +978,7 @@ class SubmitButton(QPushButton):
             piece_length=val,
             comment=comment,
         )
-        torrentfile.assemble()
+        tfile.assemble()
         try:
             save_dir = os.getenv("HOME")
         except:
@@ -332,13 +987,12 @@ class SubmitButton(QPushButton):
         save_location = QFileDialog.getSaveFileName(
             parent=window, caption="Save Location", directory=save_file
         )
-        torrentfile.write(save_location)
+        tfile.write(save_location)
         print("success")
 
 
 class Label(QLabel):
-    """
-    Label Identifier for Window Widgets.
+    """Label Identifier for Window Widgets.
 
     Subclass: QLabel
     """
