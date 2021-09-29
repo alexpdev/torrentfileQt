@@ -9,7 +9,10 @@
   },
   "keywords": ["GUI", "Bittorrent", "metafile"],
   "author": "alexpdev",
+  "url": "https://github.com/alexpdev/torrentfileGUI",
+  "email": "alexpdev@protonmail.com",
   "license": "BSD",
+
   "bugs": {
     "url": "https://github.com/alexpdev/Torrentfile-GUI/issues"
   },

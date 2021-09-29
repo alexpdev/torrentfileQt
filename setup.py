@@ -52,6 +52,7 @@ setup(
     packages=find_packages(exclude=["env"]),
     include_package_data=True,
     tests_require=["pytest"],
+    install_require=["torrentfile", "pyben"],
     setup_requires=["setuptools"],
     zip_safe=False,
     test_suite="complete",
