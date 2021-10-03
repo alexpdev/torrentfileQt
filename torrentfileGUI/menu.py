@@ -4,29 +4,6 @@ from PyQt6.QtWidgets import (QFileDialog, QMenu, QMenuBar)
 
 class Menu(QMenu):
 
-    stylesheet = """
-        QMenu {
-            color: #dfdbd2;
-            background-color: #41403b;
-        }
-        QMenu::item {
-            color: #dfdbd2;
-            border-color: #2a2a2c;
-            padding: 4px 10px 4px 20px;
-            border-style: solid;
-            border-width: 3px;
-        }
-        QMenu::item:selected {
-            color:#FFF;
-            background-color: #e16c36;
-            border-style:solid;
-            border-width:3px;
-            padding:4px 7px 4px 17px;
-            border-bottom-color:#af5530;
-            border-top-color:#d95721;
-            border-right-color:#cd5a2e;
-            border-left-color:#fd9c71;
-        }"""
 
     def __init__(self,text,parent=None):
         super().__init__(text,parent=parent)
@@ -34,36 +11,68 @@ class Menu(QMenu):
         self.txt = text
         font = self.font()
         self.setObjectName(text)
-        font.setPointSize(10)
+        font.setPointSize(12)
         self.setFont(font)
-        self.setStyleSheet(self.stylesheet)
+        # self.setStyleSheet(self.stylesheet)
 
 
 class MenuBar(QMenuBar):
 
     stylesheet = """
+        QMenu{
+            background-color:#000000;
+        }
         QMenuBar {
-	        color: #dfdbd2;
-	        background-color: #41403b;
+            background:rgb(30, 30, 30);
+            color: #FFFFFF;
+            margin: 2px;
+            font: 9pt;
         }
         QMenuBar::item {
-            padding: 5px;
-            color: #dfdbd2;
-            background-color: #41403b;
+            spacing: 3px;
+            padding: 1px 4px;
+            background: transparent;
         }
         QMenuBar::item:selected {
-            color: #FFF;
-            padding: 2px;
-            padding-bottom: 0px;
-            border-width: 3px;
-            border-bottom-width: 0px;
-            border-top-right-radius: 4px;
-            border-top-left-radius: 4px;
             border-style: solid;
-            background-color: #41403b;
-            border-top-color: #2a2a2c;
-            border-right-color: #2f2f2c;
-            border-left-color: #27272c;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-left-color: transparent;
+            border-bottom-color: #e67e22;
+            border-bottom-width: 1px;
+            border-style: solid;
+            color: #FFFFFF;
+            padding-bottom: 0px;
+            background-color: #000000;
+        }
+        QMenu::item:selected {
+            border-style: solid;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-left-color: #e67e22;
+            border-bottom-color: transparent;
+            border-left-width: 2px;
+            color: #FFFFFF;
+            padding-left:15px;
+            padding-top:4px;
+            padding-bottom:4px;
+            padding-right:7px;
+            background-color:#000000;
+        }
+        QMenu::item {
+            border-style: solid;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            border-bottom-width: 1px;
+            border-style: solid;
+            color: #a9b7c6;
+            padding-left:17px;
+            padding-top:4px;
+            padding-bottom:4px;
+            padding-right:7px;
+            background-color:#000000;
         }"""
 
     def __init__(self, parent=None, *args, **kwargs):
