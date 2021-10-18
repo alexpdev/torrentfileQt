@@ -1,13 +1,14 @@
-import os
 import sys
 
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QFormLayout,
-                             QStatusBar, QVBoxLayout, QFileDialog)
-import torrentfile
+                             QStatusBar, QVBoxLayout, QTabWidget)
+
+from torrentfileGUI.create_tab import CreateWidget
+from torrentfileGUI.info_tab import InfoWidget
+from torrentfileGUI.check_tab import CheckWidget
 from torrentfileGUI.menu import MenuBar
-from torrentfileGUI.widgets import TabWidget
+from torrentfileGUI.qss import tabBarStyleSheet
 
 
 """
@@ -148,6 +149,31 @@ class Window(QMainWindow):
                 self.piece_length.setCurrentIndex(i)
                 break
         return
+
+
+class TabWidget(QTabWidget):
+    """
+    Tab Widget.
+
+    Args:
+        stylesheet (`str`): QSS styling for Tab Widget.
+    """
+    stylesheet = tabBarStyleSheet
+
+    def __init__(self, parent=None):
+        """Construct Tab Widget for MainWindow.
+
+        Args:
+            parent (`QWidget`, deault=None): QMainWindow
+        """
+        super().__init__(parent=parent)
+        self.createWidget = CreateWidget()
+        self.checkWidget = CheckWidget()
+        self.infoWidget = InfoWidget()
+        self.addTab(self.createWidget,"Create Torrent")
+        self.addTab(self.checkWidget,"Check Torrent")
+        self.addTab(self.infoWidget, "Torrent Info")
+
 
 class Application(QApplication):
     def __init__(self, args=None):
