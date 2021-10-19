@@ -45,12 +45,14 @@ clean-build: ## remove build artifacts
 
 test: environment ## run tests quickly with the default Python
 	pip install -U pytest pytest-cov
-	pytest --cov=torrentfileGUI tests
+	pytest --cov tests
 
 coverage: environment  ## gather coverage data
 	pip install -U coverage
 	coverage run -m pytest tests
+	coverage report
 	coverage xml -o coverage.xml
+	bash codacy.sh report -r coverage.xml
 
 push: clean test coverage ## push changes to remote
 	git add .
