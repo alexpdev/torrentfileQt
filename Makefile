@@ -64,11 +64,6 @@ checkout: ## push to remote
 	git commit -m "auto commit and publish"
 	git push
 
-start: clean ## start new branch
-	git branch development
-	git checkout development
-	git push --set-upstream origin development
-
 lint: ## lint errors
 	pylama torrentfile tests
 

@@ -62,6 +62,33 @@ pushButtonStyleSheet = """
     }
     """
 
+push2ButtonStyleSheet = """
+    QPushButton {
+        border-style: solid;
+        border-top-color: #e67e22;
+        border-right-color: #e67e22;
+        border-left-color: #e67e22;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #444;
+    }
+    QPushButton:hover{
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: #e67e22;
+        border-bottom-width: 2px;
+        border-style: solid;
+        color: #FFFFFF;
+        padding-bottom: 1px;
+        background-color: #000000;
+    }"""
+
+
 toolButtonStyleSheet = """
     QToolButton {
         border-style: solid;
@@ -131,47 +158,45 @@ checkBoxStyleSheet ="""
 
 tabBarStyleSheet = """
     QTabWidget {
-        color:rgb(0,0,0);
-        background-color:#000000;
-        font: bold 100pt;
+        background-color:#EEE;
     }
     QTabWidget::pane {
-            border-color: rgb(77,77,77);
-            background-color:#000000;
-            border-style: solid;
-            border-width: 1px;
-            border-radius: 6px;
-            font: bold 100pt;
+            background-color:#EEE;
     }
     QTabBar::tab {
         border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: transparent;
-        font: bold 100pt;
+        border-top-color: #e67e22;
+        border-right-color: #e67e22;
+        border-left-color: #e67e22;
+        border-bottom-color: #e67e22;
         border-bottom-width: 1px;
         border-style: solid;
-        color: #808086;
-        padding: 3px;
-        margin-left:3px;
-        background-color:#000000;
+        font-size: 11pt;
+        color: #e9e7e6;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin-left: 4px;
+        background-color: #444;
     }
     QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
         border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        font: 100pt bold;
+        border-top-color: #e67e22;
+        border-right-color: #e67e22;
+        border-left-color: #e67e22;
         border-bottom-color: #e67e22;
         border-bottom-width: 2px;
+        font-size: 11pt;
+        font-style: bold;
         border-style: solid;
-        color: #FFFFFF;
-        padding-left: 3px;
-        padding-bottom: 2px;
-        margin-left:3px;
-        background-color:#000000;
-    }
+        color: #FFF;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin-left: 4px;
+        background-color: #444;
+    }"""
+
+
+radioButtonStyleSheet = """
     QRadioButton {
         color: #a9b7c6;
         background-color:#000000;
@@ -202,11 +227,12 @@ tabBarStyleSheet = """
 lineEditStyleSheet = """
     QLineEdit {
         border-color: #1a1a1a;
+        font-size: 11pt;
         border-width: 1px;
         border-radius: 4px;
         border-style: inset;
         padding: 0 8px;
-        color: #fff;
+        color: #FFFFFF;
         background: #646464;
         selection-background-color: #411;
         selection-color: #0ff;
@@ -224,7 +250,7 @@ altLineEditStyleSheet = """
         border-radius: 0px;
         border-style: inset;
         padding: 0 8px;
-        font: 10pt italic;
+        font: 11pt bold;
         color: #000;
         background: #fff;
         selection-background-color: #bbbbbb;
@@ -251,19 +277,19 @@ editStyleSheet = """
 
 comboBoxStyleSheet = """
     QComboBox {
-        color: #a9b7c6;
-        background: #1e1d23;
+        color: #FFF;
+        background: #3a3a3a;
     }
     QComboBox:editable {
         background: #1e1d23;
         color: #a9b7c6;
-        selection-background-color:#000000;
+        selection-background-color:#3a3a3a;
     }
     QComboBox QAbstractItemView {
-        color: #a9b7c6;
-        background: #1e1d23;
+        color: #FFF;
+        background: #3a3a3a;
         selection-color: #FFFFFF;
-        selection-background-color:#000000;
+        selection-background-color:#3a3a3a;
     }
     QComboBox:!editable:on, QComboBox::drop-down:editable:on {
         color: #a9b7c6;
@@ -277,8 +303,11 @@ comboBoxStyleSheet = """
 
 textEditStyleSheet = """
     QPlainTextEdit {
-        color: #0F0;
-        background-color: #2a2a2a;
+        border: #1a1a1a 2px solid;
+        border-radius: 4px;
+        color: #FFFFFF;
+        font: 11pt;
+        background-color: #646464;
     }"""
 
 
