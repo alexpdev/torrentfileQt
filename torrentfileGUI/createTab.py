@@ -182,9 +182,10 @@ class OutButton(QToolButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.output)
 
-    def output(self):
+    def output(self, outpath=None):
         caption = "Select Output Directory"
-        outpath = QFileDialog.getExistingDirectory(parent=self,caption=caption)
+        if not outpath:
+            outpath = QFileDialog.getExistingDirectory(parent=self,caption=caption)
         if not outpath: return
         self.window.output_input.clear()
         if self.parent().content_dir:
@@ -207,7 +208,7 @@ class BrowseDirButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
-    def browse(self):
+    def browse(self, path=None):
         """
         browse Action performed when user presses button.
 
@@ -217,7 +218,8 @@ class BrowseDirButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        if not path:
+            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
         if not path: return
         path = os.path.realpath(path)
         self.window.path_input.clear()
@@ -253,7 +255,7 @@ class BrowseFileButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
-    def browse(self):
+    def browse(self, path=None):
         """
         browse Action performed when user presses button.
 
@@ -263,7 +265,8 @@ class BrowseFileButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose File"
-        path = QFileDialog.getOpenFileName(parent=self, caption=caption)
+        if not path:
+            path = QFileDialog.getOpenFileName(parent=self, caption=caption)
         if not path: return
         path = os.path.realpath(path)
         self.window.path_input.clear()

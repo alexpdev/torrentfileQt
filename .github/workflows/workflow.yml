@@ -1,6 +1,6 @@
 name: Workflow for python project
 
-on: [push, pull_request]
+on: ["push", "pull_request"]
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -13,8 +13,11 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Code Inspector GitHub action
-        uses: codeinspectorio/github-action@v1
+      - name: Codacy Coverage Report
+        uses: codacy/codacy-coverage-reporter-action@v1.1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
 
       - name: Codacy Analysis CLI
         uses: codacy/codacy-analysis-cli-action@4.0.0
