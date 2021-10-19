@@ -1,6 +1,6 @@
-# Torrentfile-GUI
+# TorrentfileQt
 
-TorrentFileGUI is a Graphical User Interface for [TorrentFile CLI](https://github.com/alexpdev/torrentfile).
+TorrentFileQt is a Graphical User Interface for [TorrentFile CLI](https://github.com/alexpdev/torrentfile).
 
 ## Features
 

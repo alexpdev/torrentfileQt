@@ -8,9 +8,9 @@ from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QSpacerItem, QToolButton,
 
 from torrentfile.utils import path_stat
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
-from torrentfileGUI.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
+from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
                                 push2ButtonStyleSheet)
-from torrentfileGUI.widgets import (CheckBox, LineEdit, Label,
+from torrentfileQt.widgets import (CheckBox, LineEdit, Label,
                                     PlainTextEdit, ComboBox)
 
 class CreateWidget(QWidget):
