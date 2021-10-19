@@ -109,47 +109,6 @@ class Window(QMainWindow):
         self.setCentralWidget(self.central)
         self.statusbar.setObjectName(u"statusbar")
 
-    def apply_settings(self, result):
-        """
-        apply_settings Activated by MenuBar action to import from external file.
-
-        Args:
-            result (dict): Data retreived from external file.
-        """
-        d = result[0]
-        info = d["info"]
-        trackers = d["announce"]
-        piece_length = info["piece length"]
-        self.announce_input.appendPlainText(trackers)
-
-        if "source" in info:
-            source = info["source"]
-            self.source_input.insert(source)
-
-        if "comment" in info:
-            comment = info["comment"]
-            self.comment_input.insert(comment)
-
-        if "created by" in info:
-            created_by = info["created by"]
-            self.created_by_input.insert(created_by)
-
-        if "private" in info:
-            if info["private"]:
-                self.private.setChecked()
-
-        val_kb = str(int(piece_length) // 1024)
-        val_mb = str(int(piece_length) // (1024 ** 2))
-
-        for i in range(self.piece_length.count()):
-            if val_kb in self.piece_length.itemText(i):
-                self.piece_length.setCurrentIndex(i)
-                break
-            elif val_mb in self.piece_length.itemText(i):
-                self.piece_length.setCurrentIndex(i)
-                break
-        return
-
 
 class TabWidget(QTabWidget):
     """

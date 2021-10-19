@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QTextBrowser, QPushButton,
                              QWidget, QFormLayout, QRadioButton, QToolButton,
                              QFileDialog, )
 
-from torrentfile.utils import path_stat
+from torrentfile.metafile import Checker
 
 from torrentfileGUI.qss import (pushButtonStyleSheet, toolButtonStyleSheet)
 
@@ -22,41 +22,33 @@ class CheckWidget(QWidget):
         self.layout = QFormLayout()
         self.setLayout(self.layout)
 
-        self.hlayout0 = QHBoxLayout()
         self.hlayout1 = QHBoxLayout()
         self.hlayout2 = QHBoxLayout()
-
-        self.version_label = Label("Bittorrent Version",parent=self)
-        self.version_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.v1button = QRadioButton("v1", parent=self)
-        self.v2button = QRadioButton("v2", parent=self)
 
         self.fileLabel = Label("Torrent File", parent=self)
         self.fileLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.fileInput = LineEdit(parent=self)
         self.browseButton1 = BrowseButton(parent=self)
+        self.browseButton1.setInputWidget(self.fileInput)
 
         self.searchLabel = Label("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.searchInput = LineEdit(parent=self)
         self.browseButton2 = BrowseButton(parent=self)
+        self.browseButton2.setInputWidget(self.searchInput)
         self.checkButton = CheckButton("Check", parent=self)
 
-        self.hlayout0.addWidget(self.v1button)
-        self.hlayout0.addWidget(self.v2button)
         self.hlayout1.addWidget(self.fileInput)
         self.hlayout1.addWidget(self.browseButton1)
         self.hlayout2.addWidget(self.searchInput)
         self.hlayout2.addWidget(self.browseButton2)
 
-        self.layout.setWidget(0, self.labelRole, self.version_label)
-        self.layout.setLayout(0, self.fieldRole, self.hlayout0)
         self.layout.setWidget(1, self.labelRole, self.fileLabel)
         self.layout.setLayout(1, self.fieldRole, self.hlayout1)
         self.layout.setWidget(2, self.labelRole, self.searchLabel)
         self.layout.setLayout(2, self.fieldRole, self.hlayout2)
-        self.textbroser = QTextBrowser(parent=self)
-        self.layout.setWidget(3, self.spanRole, self.textbroser)
+        self.textbrowser = QTextBrowser(parent=self)
+        self.layout.setWidget(3, self.spanRole, self.textbrowser)
         self.layout.setWidget(4, self.spanRole, self.checkButton)
 
         self.layout.setObjectName(u"CheckWidget_layout")
@@ -70,8 +62,6 @@ class CheckWidget(QWidget):
         self.searchInput.setObjectName("CheckWidget_searchInput")
 
 
-
-
 class CheckButton(QPushButton):
 
     stylesheet = pushButtonStyleSheet
@@ -82,7 +72,7 @@ class CheckButton(QPushButton):
         self.setStyleSheet(self.stylesheet)
 
     def submit(self):
-        pass
+        Checker
 
 class BrowseButton(QToolButton):
     """
@@ -103,9 +93,13 @@ class BrowseButton(QToolButton):
         self.window = parent
         self.setStyleSheet(self.stylesheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.inputWidget = None
         self.pressed.connect(self.browse)
 
-    def browse(self):
+    def setInputWidget(self, widget):
+        self.inputWidget = widget
+
+    def browse(self, path=None):
         """
         browse Action performed when user presses button.
 
@@ -115,22 +109,9 @@ class BrowseButton(QToolButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        if not path:
+            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        if not path: return
         path = os.path.realpath(path)
-        self.window.path_input.clear()
-        self.window.path_input.insert(path)
-        self.window.output_input.clear()
-        outdir = os.path.dirname(str(path))
-        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
-        outpath = os.path.realpath(os.path.join(outdir, outfile))
-        self.window.output_input.insert(outpath)
-        _, size, piece_length = path_stat(path)
-        if piece_length < (2**20):
-            val = f"{piece_length//(2**10)}KB"
-        else:
-            val = f"{piece_length//(2**20)}MB"
-        for i in range(self.window.piece_length.count()):
-            if self.window.piece_length.itemText(i) == val:
-                self.window.piece_length.setCurrentIndex(i)
-                break
-        return size
+        self.inputWidget.clear()
+        self.inputWidget.setText(path)

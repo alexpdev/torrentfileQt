@@ -1,9 +1,8 @@
 import sys
 
 
-from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox,
-                             QLabel, QLineEdit, QPlainTextEdit,
-                             QTextEdit)
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QLabel, QLineEdit,
+                             QPlainTextEdit, QTextEdit)
 
 from torrentfileGUI.qss import (comboBoxStyleSheet, lineEditStyleSheet,
                                 checkBoxStyleSheet,
@@ -83,11 +82,3 @@ class ComboBox(QComboBox):
                 item = str((2 ** exp) // (2**20)) + "MB"
             self.addItem(item, 2**exp)
         self.setEditable(False)
-
-
-class Application(QApplication):
-
-    def __init__(self, args=None):
-        if not args:
-            args = sys.argv
-        super().__init__(args)

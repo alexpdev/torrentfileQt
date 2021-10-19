@@ -66,4 +66,8 @@ branch: ## create dev git branch
 	git push -u origin dev
 	git stash pop
 
+release: clean test coverage ## release to pypi
+	python setup.py sdist bdist_wheel bdist_egg
+	twine upload dist/*
+
 full: clean test checkout coverage
