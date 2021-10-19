@@ -1,4 +1,4 @@
-from torrentfile import Bendecoder
+import pyben
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (QFileDialog, QMenu, QMenuBar)
 
@@ -111,7 +111,5 @@ class MenuBar(QMenuBar):
 
     def load(self):
         fname = QFileDialog.getOpenFileName(self, "Select File", "/", "*.torrent")
-        decoder = Bendecoder()
-        data = open(fname[0], "rb").read()
-        results = decoder.decode(data)
+        results = pyben.load(fname[0])
         self.parent().apply_settings(results)

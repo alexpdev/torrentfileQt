@@ -1,13 +1,14 @@
-import os
 import sys
 
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QFormLayout,
-                             QStatusBar, QVBoxLayout, QFileDialog)
-import torrentfile
+                             QStatusBar, QVBoxLayout, QTabWidget)
+
+from torrentfileGUI.create_tab import CreateWidget
+from torrentfileGUI.info_tab import InfoWidget
+from torrentfileGUI.check_tab import CheckWidget
 from torrentfileGUI.menu import MenuBar
-from torrentfileGUI.widgets import TabWidget
+from torrentfileGUI.qss import tabBarStyleSheet
 
 
 """
@@ -29,7 +30,7 @@ class Window(QMainWindow):
 
     stylesheet = """
         QMainWindow {
-            background-color:#000000;
+            background-color:#ddd;
         }
         QDialog {
             background-color:#000000;
@@ -97,7 +98,7 @@ class Window(QMainWindow):
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
         self.setStyleSheet(self.stylesheet)
-        self.resize(450, 450)
+        self.resize(500, 450)
         self._setupUI()
 
     def _setupUI(self):
@@ -149,11 +150,38 @@ class Window(QMainWindow):
                 break
         return
 
+
+class TabWidget(QTabWidget):
+    """
+    Tab Widget.
+
+    Args:
+        stylesheet (`str`): QSS styling for Tab Widget.
+    """
+    stylesheet = tabBarStyleSheet
+
+    def __init__(self, parent=None):
+        """Construct Tab Widget for MainWindow.
+
+        Args:
+            parent (`QWidget`, deault=None): QMainWindow
+        """
+        super().__init__(parent=parent)
+        self.createWidget = CreateWidget()
+        self.checkWidget = CheckWidget()
+        self.infoWidget = InfoWidget()
+        self.setStyleSheet(self.stylesheet)
+        self.addTab(self.createWidget,"Create Torrent")
+        self.addTab(self.checkWidget,"Check Torrent")
+        self.addTab(self.infoWidget, "Torrent Info")
+
+
 class Application(QApplication):
     def __init__(self, args=None):
+        self.args = args
         if not args:
-            args = sys.argv
-        super().__init__(args)
+            self.args = sys.argv
+        super().__init__(self.args)
 
 
 def start():
@@ -161,6 +189,13 @@ def start():
     window = Window(parent=None, app=app)
     window.show()
     sys.exit(app.exec())
+
+
+def alt_start():
+    app = Application()
+    window = Window(parent=None, app=app)
+    window.show()
+    return window, app
 
 
 if __name__ == "__main__":
