@@ -1,9 +1,7 @@
-import pyben
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import (QFileDialog, QMenu, QMenuBar)
+from PyQt6.QtWidgets import (QMenu, QMenuBar)
 
 class Menu(QMenu):
-
 
     def __init__(self,text,parent=None):
         super().__init__(text,parent=parent)
@@ -13,7 +11,6 @@ class Menu(QMenu):
         self.setObjectName(text)
         font.setPointSize(12)
         self.setFont(font)
-        # self.setStyleSheet(self.stylesheet)
 
 
 class MenuBar(QMenuBar):
@@ -78,38 +75,26 @@ class MenuBar(QMenuBar):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent=parent)
         self.args = args
-        self.window=parent
+        self.window = parent
         self.kwargs = kwargs
         self.setStyleSheet(self.stylesheet)
         self.file_menu = Menu("File")
-        self.options_menu = Menu("Options")
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)
-        self.addMenu(self.options_menu)
         self.addMenu(self.help_menu)
         self.actionExit = QAction(self.window)
-        self.actionLoad = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionExit.setText("Exit")
-        self.actionLoad.setText("Load Torrent")
         self.actionAbout.setText("About")
         self.file_menu.addAction(self.actionExit)
-        self.options_menu.addAction(self.actionLoad)
         self.help_menu.addAction(self.actionAbout)
         self.actionExit.triggered.connect(self.exit_app)
-        self.actionLoad.triggered.connect(self.load)
         self.actionAbout.triggered.connect(self.about_qt)
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
-        self.actionLoad.setObjectName("actionLoad")
 
     def about_qt(self):
         self.window.app.aboutQt()
 
     def exit_app(self):
-        self.parent().app.exit()
-
-    def load(self):
-        fname = QFileDialog.getOpenFileName(self, "Select File", "/", "*.torrent")
-        results = pyben.load(fname[0])
-        self.parent().apply_settings(results)
+        self.parent().app.quit()
