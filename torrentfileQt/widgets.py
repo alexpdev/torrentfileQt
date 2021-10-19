@@ -4,7 +4,7 @@ import sys
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QLabel, QLineEdit,
                              QPlainTextEdit, QTextEdit)
 
-from torrentfileGUI.qss import (comboBoxStyleSheet, lineEditStyleSheet,
+from torrentfileQt.qss import (comboBoxStyleSheet, lineEditStyleSheet,
                                 checkBoxStyleSheet,
                                 labelStyleSheet, textEditStyleSheet)
 

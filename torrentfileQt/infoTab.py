@@ -7,11 +7,11 @@ import pyben
 
 from PyQt6.QtWidgets import (QFileDialog, QLineEdit, QPushButton,
                              QWidget, QGridLayout)
-
-
-from torrentfileGUI.qss import pushButtonStyleSheet, altLineEditStyleSheet
 from PyQt6.QtWidgets import QWidget, QGridLayout
-from torrentfileGUI.widgets import Label, TextEdit
+
+
+from torrentfileQt.qss import pushButtonStyleSheet, altLineEditStyleSheet
+from torrentfileQt.widgets import Label, TextEdit
 
 class InfoWidget(QWidget):
     def __init__(self, parent=None):

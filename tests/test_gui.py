@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
 
 from tests.context import testdir, testfile, rmpath
-from torrentfileGUI.window import alt_start, TabWidget
+from torrentfileQt.window import alt_start, TabWidget
 
 
 @pytest.fixture(scope="module")

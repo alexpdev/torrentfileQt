@@ -7,9 +7,9 @@ from PyQt6.QtWidgets import (QHBoxLayout, QTextBrowser, QPushButton,
 
 from torrentfile.metafile import Checker
 
-from torrentfileGUI.qss import (pushButtonStyleSheet, toolButtonStyleSheet)
+from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet)
 
-from torrentfileGUI.widgets import Label, LineEdit
+from torrentfileQt.widgets import Label, LineEdit
 
 class CheckWidget(QWidget):
 
