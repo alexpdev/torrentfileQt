@@ -30,7 +30,7 @@ class Window(QMainWindow):
 
     stylesheet = """
         QMainWindow {
-            background-color:#000000;
+            background-color:#ddd;
         }
         QDialog {
             background-color:#000000;
@@ -98,7 +98,7 @@ class Window(QMainWindow):
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
         self.setStyleSheet(self.stylesheet)
-        self.resize(450, 450)
+        self.resize(500, 450)
         self._setupUI()
 
     def _setupUI(self):
@@ -170,6 +170,7 @@ class TabWidget(QTabWidget):
         self.createWidget = CreateWidget()
         self.checkWidget = CheckWidget()
         self.infoWidget = InfoWidget()
+        self.setStyleSheet(self.stylesheet)
         self.addTab(self.createWidget,"Create Torrent")
         self.addTab(self.checkWidget,"Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
@@ -177,9 +178,10 @@ class TabWidget(QTabWidget):
 
 class Application(QApplication):
     def __init__(self, args=None):
+        self.args = args
         if not args:
-            args = sys.argv
-        super().__init__(args)
+            self.args = sys.argv
+        super().__init__(self.args)
 
 
 def start():
@@ -187,6 +189,13 @@ def start():
     window = Window(parent=None, app=app)
     window.show()
     sys.exit(app.exec())
+
+
+def alt_start():
+    app = Application()
+    window = Window(parent=None, app=app)
+    window.show()
+    return window, app
 
 
 if __name__ == "__main__":

@@ -1,11 +1,15 @@
+import os
 from PyQt6.QtCore import Qt
 
 from PyQt6.QtWidgets import (QHBoxLayout, QTextBrowser, QPushButton,
-                             QWidget, QFormLayout, QRadioButton)
+                             QWidget, QFormLayout, QRadioButton, QToolButton,
+                             QFileDialog, )
 
-from torrentfileGUI.qss import (pushButtonStyleSheet)
+from torrentfile.utils import path_stat
 
-from torrentfileGUI.widgets import BrowseButton, Label, LineEdit
+from torrentfileGUI.qss import (pushButtonStyleSheet, toolButtonStyleSheet)
+
+from torrentfileGUI.widgets import Label, LineEdit
 
 class CheckWidget(QWidget):
 
@@ -79,3 +83,54 @@ class CheckButton(QPushButton):
 
     def submit(self):
         pass
+
+class BrowseButton(QToolButton):
+    """
+    BrowseButton ToolButton for activating filebrowser.
+
+    Subclass:
+        QToolButton : PyQt6 Button Widget
+    """
+
+    stylesheet = toolButtonStyleSheet
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        """
+        __init__ public constructor for BrowseButton Class.
+        """
+        self.setText("...")
+        self.window = parent
+        self.setStyleSheet(self.stylesheet)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.pressed.connect(self.browse)
+
+    def browse(self):
+        """
+        browse Action performed when user presses button.
+
+        Opens File/Folder Dialog.
+
+        Returns:
+            str: Path to file or folder to include in torrent.
+        """
+        caption = "Choose Root Directory"
+        path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        path = os.path.realpath(path)
+        self.window.path_input.clear()
+        self.window.path_input.insert(path)
+        self.window.output_input.clear()
+        outdir = os.path.dirname(str(path))
+        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
+        outpath = os.path.realpath(os.path.join(outdir, outfile))
+        self.window.output_input.insert(outpath)
+        _, size, piece_length = path_stat(path)
+        if piece_length < (2**20):
+            val = f"{piece_length//(2**10)}KB"
+        else:
+            val = f"{piece_length//(2**20)}MB"
+        for i in range(self.window.piece_length.count()):
+            if self.window.piece_length.itemText(i) == val:
+                self.window.piece_length.setCurrentIndex(i)
+                break
+        return size
