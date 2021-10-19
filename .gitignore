@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+main.py
+codacy.sh
 
 # C extensions
 *.so
@@ -47,7 +49,6 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
-coverage.xml
 *.cover
 *.py,cover
 .hypothesis/

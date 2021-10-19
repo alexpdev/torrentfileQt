@@ -1,20 +1,20 @@
 {
-  "name": "torrentfile-gui",
-  "displayName": "Torrentfile GUI",
-  "version": "1.0.0",
+  "name": "torrentfileqt",
+  "displayName": "TorrentfileQt",
+  "version": "1.1.0",
   "description": "GUI torrentfile creator.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexpdev/Torrentfile-GUI.git"
+    "url": "git+https://github.com/alexpdev/TorrentfileQt.git"
   },
   "keywords": ["GUI", "Bittorrent", "metafile"],
   "author": "alexpdev",
-  "url": "https://github.com/alexpdev/torrentfileGUI",
+  "url": "https://github.com/alexpdev/torrentfileQt",
   "email": "alexpdev@protonmail.com",
-  "license": "BSD",
+  "license": "Apache",
 
   "bugs": {
-    "url": "https://github.com/alexpdev/Torrentfile-GUI/issues"
+    "url": "https://github.com/alexpdev/TorrentfileQt/issues"
   },
-  "homepage": "https://github.com/alexpdev/Torrentfile-GUI#readme"
+  "homepage": "https://github.com/alexpdev/TorrentfileQt#readme"
 }

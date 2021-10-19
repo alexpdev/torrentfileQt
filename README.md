@@ -1,13 +1,14 @@
-# Torrentfile-GUI
+# TorrentfileQt
 
-TorrentFile-GUI is a Graphical User Interface for [TorrentFile CLI](https://github.com/alexpdev/torrentfile).
+TorrentFileQt is a Graphical User Interface for [TorrentFile CLI](https://github.com/alexpdev/torrentfile).
 
 ## Features
 
 - Create .torrent files
-- Bittorrent v1 & v2 supported
-- Check if a .torrent file contents are in filesystem.
-- Display detailed information about any .torrent File
+- Display detailed information for a .torrent file
+- Bittorrent v1, v2 and hybrid .torrent files supported
+- Check if a .torrent file contents are in filesystem
+- Check progress or percentage complete for .torrent file
 
 ### Screenshots
 

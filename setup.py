@@ -23,14 +23,18 @@ import json
 
 from setuptools import find_packages, setup
 
+
+
 INFO = json.load(open("package.json"))
-long_description = open("README.md").read()
+INFO["long_description"] = open("README.md").read()
+with open("requirements.txt") as req:
+    INFO["install_requires"] = req.read().split("\n")
 
 setup(
     name=INFO["name"],
     version=INFO["version"],
     description=INFO["description"],
-    long_description=long_description,
+    long_description=INFO["long_description"],
     long_description_content_type = "text/markdown",
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -47,13 +51,14 @@ setup(
     author=INFO["author"],
     author_email=INFO["email"],
     url=INFO["url"],
-    project_urls={"Source Code": "https://github.com/alexpdev/torrentfile"},
+    project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     license=INFO["license"],
     packages=find_packages(exclude=["env"]),
+    entry_points={"console_scripts":"torrentfileQt = torrentfileQt.window:start"},
     include_package_data=True,
     tests_require=["pytest"],
-    install_require=["torrentfile", "pyben"],
-    setup_requires=["setuptools"],
+    install_require=INFO["install_requires"],
+    setup_requires=["setuptools","wheel"],
     zip_safe=False,
     test_suite="complete",
 )
