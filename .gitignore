@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 main.py
 codacy.sh
+.codacy-coverage/
 
 # C extensions
 *.so
