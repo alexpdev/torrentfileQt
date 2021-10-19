@@ -4,9 +4,9 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QFormLayout,
                              QStatusBar, QVBoxLayout, QTabWidget)
 
-from torrentfileGUI.create_tab import CreateWidget
-from torrentfileGUI.info_tab import InfoWidget
-from torrentfileGUI.check_tab import CheckWidget
+from torrentfileGUI.createTab import CreateWidget
+from torrentfileGUI.infoTab import InfoWidget
+from torrentfileGUI.checkTab import CheckWidget
 from torrentfileGUI.menu import MenuBar
 from torrentfileGUI.qss import tabBarStyleSheet
 

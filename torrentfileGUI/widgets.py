@@ -1,14 +1,12 @@
-import os
 import sys
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
-                             QLabel, QLineEdit, QPlainTextEdit, QToolButton,
+
+from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox,
+                             QLabel, QLineEdit, QPlainTextEdit,
                              QTextEdit)
 
-import torrentfile
 from torrentfileGUI.qss import (comboBoxStyleSheet, lineEditStyleSheet,
-                                toolButtonStyleSheet, checkBoxStyleSheet,
+                                checkBoxStyleSheet,
                                 labelStyleSheet, textEditStyleSheet)
 
 
@@ -28,9 +26,6 @@ class CheckBox(QCheckBox):
     def __init__(self,label, parent=None):
         super().__init__(label, parent=parent)
         self.setStyleSheet(self.stylesheet)
-
-
-
 
 
 class Label(QLabel):

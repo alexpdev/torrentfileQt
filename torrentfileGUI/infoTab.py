@@ -120,11 +120,12 @@ class SelectButton(QPushButton):
         self.pressed.connect(self.selectTorrent)
 
 
-    def selectTorrent(self):
+    def selectTorrent(self, files=None):
         caption = "Select '.torrent' file"
-        files = QFileDialog.getOpenFileName(parent=self,
-                                            caption=caption,
-                                            filter="*.torrent")
+        if not files:
+            files = QFileDialog.getOpenFileName(parent=self,
+                                                caption=caption,
+                                                filter="*.torrent")
         if not files: return
         meta = pyben.load(files[0])
         info = meta["info"]

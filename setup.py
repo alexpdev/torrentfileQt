@@ -19,6 +19,7 @@
 ############################################################################
 """Setup package."""
 
+from importlib.metadata import entry_points
 import json
 
 from setuptools import find_packages, setup
@@ -50,6 +51,7 @@ setup(
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfile"},
     license=INFO["license"],
     packages=find_packages(exclude=["env"]),
+    entry_points={"torrentfileGUI":"torrentfileGUI.window.start"},
     include_package_data=True,
     tests_require=["pytest"],
     install_require=["torrentfile", "pyben"],
