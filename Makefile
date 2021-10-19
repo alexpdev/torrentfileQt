@@ -44,27 +44,32 @@ clean-build: ## remove build artifacts
 	rm -rf *.egg-info
 
 test: environment ## run tests quickly with the default Python
+	pip install -U pytest pytest-cov
 	pytest --cov tests
 
-coverage: clean environment test ## check code coverage with the default Python
+coverage: environment  ## gather coverage data
+	pip install -U coverage
 	coverage run -m pytest tests
-	coverage xml -o corbertura.xml
-	git add .
-	git commit -m "auto push coverage"
-	git push
-	bash codacy.sh report -r corbertura.xml
+	coverage report
+	coverage xml -o coverage.xml
+	bash codacy.sh report -r coverage.xml
 
-release: ## package and upload a release
-	python setup.py sdist bdist_egg bdist_wheel
+push: clean test coverage ## push changes to remote
+	git add .
+	git commit -m "$m"
+	git push -u origin dev
+
+branch: ## create dev git branch
+	git stash
+	git checkout main
+	git pull
+	git branch -d dev
+	git branch dev
+	git push -u origin dev
+	git stash pop
+
+release: clean test coverage ## release to pypi
+	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
-	ls -l dist
-
-checkout: ## push to remote
-	git add .
-	git commit -m "auto commit and publish"
-	git push
-
-lint: ## lint errors
-	pylama torrentfile tests
 
 full: clean test checkout coverage
