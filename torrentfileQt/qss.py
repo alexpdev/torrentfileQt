@@ -1,4 +1,3 @@
-
 pushButtonStyleSheet = """
     QPushButton{
         border-style: solid;
@@ -116,7 +115,7 @@ toolButtonStyleSheet = """
     }"""
 
 
-checkBoxStyleSheet ="""
+checkBoxStyleSheet = """
     QCheckBox {
         color: #000;
         padding: 6px;
