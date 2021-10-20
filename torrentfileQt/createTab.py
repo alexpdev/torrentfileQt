@@ -1,17 +1,35 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
+##############################################################################
+# Copyright 2020 AlexPDev
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##############################################################################
+
 import os
 import threading
 from PyQt6.QtCore import Qt
 
 from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QSpacerItem, QToolButton,
                              QPushButton, QWidget, QFormLayout, QRadioButton,
-                             QGridLayout)
+                             QGridLayout, QPlainTextEdit)
 
 from torrentfile.utils import path_stat
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
 from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
-                                push2ButtonStyleSheet)
-from torrentfileQt.widgets import (CheckBox, LineEdit, Label,
-                                    PlainTextEdit, ComboBox)
+                                push2ButtonStyleSheet, textEditStyleSheet)
+from torrentfileQt.widgets import (CheckBox, LineEdit, Label, ComboBox)
 
 class CreateWidget(QWidget):
 
@@ -286,3 +304,14 @@ class BrowseFileButton(QPushButton):
                 self.window.piece_length.setCurrentIndex(i)
                 break
         return size
+
+
+class PlainTextEdit(QPlainTextEdit):
+
+    stylesheet = textEditStyleSheet
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setBackgroundVisible(True)
+        self.setStyleSheet(self.stylesheet)
