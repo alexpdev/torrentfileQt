@@ -2,16 +2,27 @@ import os
 import threading
 from PyQt6.QtCore import Qt
 
-from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QSpacerItem, QToolButton,
-                             QPushButton, QWidget, QFormLayout, QRadioButton,
-                             QGridLayout)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QSpacerItem,
+    QToolButton,
+    QPushButton,
+    QWidget,
+    QFormLayout,
+    QRadioButton,
+    QGridLayout,
+)
 
 from torrentfile.utils import path_stat
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
-from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
-                                push2ButtonStyleSheet)
-from torrentfileQt.widgets import (CheckBox, LineEdit, Label,
-                                    PlainTextEdit, ComboBox)
+from torrentfileQt.qss import (
+    pushButtonStyleSheet,
+    toolButtonStyleSheet,
+    push2ButtonStyleSheet,
+)
+from torrentfileQt.widgets import CheckBox, LineEdit, Label, PlainTextEdit, ComboBox
+
 
 class CreateWidget(QWidget):
 
@@ -19,12 +30,11 @@ class CreateWidget(QWidget):
     fieldRole = QFormLayout.ItemRole.FieldRole
     spanRole = QFormLayout.ItemRole.SpanningRole
 
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setup_Ui()
         self.content_dir = None
         self.outpath = None
-
 
     def setup_Ui(self):
         self.layout = QGridLayout()
@@ -37,7 +47,7 @@ class CreateWidget(QWidget):
 
         self.path_label = Label("Path:", parent=self)
         self.output_label = Label("Save Path:", parent=self)
-        self.version_label = Label("Meta-version",parent=self)
+        self.version_label = Label("Meta-version", parent=self)
         self.comment_label = Label("Comment:", parent=self)
         self.announce_label = Label("Trackers:", parent=self)
         self.source_label = Label("Source:", parent=self)
@@ -48,8 +58,8 @@ class CreateWidget(QWidget):
         self.comment_input = LineEdit(parent=self)
         self.announce_input = PlainTextEdit(parent=self)
         self.piece_length = ComboBox(parent=self)
-        self.private = CheckBox("Private",parent=self)
-        self.submit_button = SubmitButton("Submit",parent=self)
+        self.private = CheckBox("Private", parent=self)
+        self.submit_button = SubmitButton("Submit", parent=self)
         self.browse_dir_button = BrowseDirButton(parent=self)
         self.browse_file_button = BrowseFileButton(parent=self)
         self.output_button = OutButton(parent=self)
@@ -58,7 +68,7 @@ class CreateWidget(QWidget):
         self.v2button = QRadioButton("v2", parent=self)
         self.hybridbutton = QRadioButton("v1+2 (hybrid)", parent=self)
         self.output_input.setDisabled(True)
-        self.spacer = QSpacerItem(50,0)
+        self.spacer = QSpacerItem(50, 0)
         self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -96,7 +106,7 @@ class CreateWidget(QWidget):
         self.layout.addWidget(self.output_label, 7, 0, 1, 1)
         self.layout.addLayout(self.hlayout3, 7, 1, 1, 3)
         self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
-        self.layout.setObjectName(u"createWidget_formLayout")
+        self.layout.setObjectName("createWidget_formLayout")
         self.hlayout2.setObjectName("createWidget_hlayout2")
         self.submit_button.setObjectName("createWidget_submit_button")
         self.private.setObjectName("createWidget_private")
@@ -165,9 +175,8 @@ class SubmitButton(QPushButton):
             obj = TorrentFileV2
         else:
             obj = TorrentFile
-        t = threading.Thread(group=None, target=torrentfile_create,args=(args,obj))
+        t = threading.Thread(group=None, target=torrentfile_create, args=(args, obj))
         t.run()
-
 
 
 class OutButton(QToolButton):
@@ -185,8 +194,9 @@ class OutButton(QToolButton):
     def output(self, outpath=None):
         caption = "Select Output Directory"
         if not outpath:
-            outpath = QFileDialog.getExistingDirectory(parent=self,caption=caption)
-        if not outpath: return
+            outpath = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        if not outpath:
+            return
         self.window.output_input.clear()
         if self.parent().content_dir:
             name = os.path.split(self.parent().content_dir)[-1]
@@ -220,7 +230,8 @@ class BrowseDirButton(QPushButton):
         caption = "Choose Root Directory"
         if not path:
             path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
-        if not path: return
+        if not path:
+            return
         path = os.path.realpath(path)
         self.window.path_input.clear()
         self.window.path_input.insert(path)
@@ -230,7 +241,7 @@ class BrowseDirButton(QPushButton):
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         _, size, piece_length = path_stat(path)
-        if piece_length < (2**20):
+        if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
         else:
             val = f"{piece_length//(2**20)}MB"
@@ -267,7 +278,8 @@ class BrowseFileButton(QPushButton):
         caption = "Choose File"
         if not path:
             path = QFileDialog.getOpenFileName(parent=self, caption=caption)
-        if not path: return
+        if not path:
+            return
         path = os.path.realpath(path)
         self.window.path_input.clear()
         self.window.path_input.insert(path)
@@ -277,7 +289,7 @@ class BrowseFileButton(QPushButton):
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         _, size, piece_length = path_stat(path)
-        if piece_length < (2**20):
+        if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
         else:
             val = f"{piece_length//(2**20)}MB"

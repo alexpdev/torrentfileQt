@@ -1,15 +1,23 @@
 import os
 from PyQt6.QtCore import Qt
 
-from PyQt6.QtWidgets import (QHBoxLayout, QTextBrowser, QPushButton,
-                             QWidget, QFormLayout, QRadioButton, QToolButton,
-                             QFileDialog, )
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QTextBrowser,
+    QPushButton,
+    QWidget,
+    QFormLayout,
+    QRadioButton,
+    QToolButton,
+    QFileDialog,
+)
 
 from torrentfile.metafile import Checker
 
-from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet)
+from torrentfileQt.qss import pushButtonStyleSheet, toolButtonStyleSheet
 
 from torrentfileQt.widgets import Label, LineEdit
+
 
 class CheckWidget(QWidget):
 
@@ -74,6 +82,7 @@ class CheckButton(QPushButton):
     def submit(self):
         Checker
 
+
 class BrowseButton(QToolButton):
     """
     BrowseButton ToolButton for activating filebrowser.
@@ -111,7 +120,8 @@ class BrowseButton(QToolButton):
         caption = "Choose Root Directory"
         if not path:
             path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
-        if not path: return
+        if not path:
+            return
         path = os.path.realpath(path)
         self.inputWidget.clear()
         self.inputWidget.setText(path)
