@@ -1,4 +1,4 @@
-from torrentfileGUI import start
+from torrentfileQt import start
 
 if __name__ == '__main__':
     start()
