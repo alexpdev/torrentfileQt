@@ -41,14 +41,13 @@ def tdir(wind):
     rmpath(root)
 
 
-@pytest.fixture(scope="module", params=list(range(14,28)))
+@pytest.fixture(scope="module", params=list(range(14, 28)))
 def tfile(request):
     path = testfile(val=request.param)
     yield path
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2,
-                                        TorrentFileHybrid])
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def ttorrent1(tfile, request):
     path = tfile
     args = {
@@ -57,15 +56,15 @@ def ttorrent1(tfile, request):
         "announce": "tracker1.com",
         "comment": "this is a comment",
         "source": "Tracker",
-        "announce_list": ["tracker2.com", "tracker3.com"]}
+        "announce_list": ["tracker2.com", "tracker3.com"],
+    }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
     yield outfile
     rmpath(outfile)
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2,
-                                        TorrentFileHybrid])
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def ttorrent2(tfile, request):
     path = tfile
     args = {"path": path}
@@ -137,6 +136,7 @@ def test_create_tab_dir(tdir):
     submit.click()
     assert os.path.exists(torfile)
     rmpath(torfile)
+
 
 def test_create_tab_file(wind, tfile):
     createtab = wind.central.createWidget

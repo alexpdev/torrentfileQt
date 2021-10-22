@@ -18,12 +18,12 @@
 ##############################################################################
 
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import (QMenu, QMenuBar)
+from PyQt6.QtWidgets import QMenu, QMenuBar
+
 
 class Menu(QMenu):
-
-    def __init__(self,text,parent=None):
-        super().__init__(text,parent=parent)
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
         self.menubar = parent
         self.txt = text
         font = self.font()

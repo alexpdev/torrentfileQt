@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
@@ -18,6 +19,8 @@
 ##############################################################################
 
 
+=======
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 pushButtonStyleSheet = """
     QPushButton{
         border-style: solid;
@@ -135,7 +138,7 @@ toolButtonStyleSheet = """
     }"""
 
 
-checkBoxStyleSheet ="""
+checkBoxStyleSheet = """
     QCheckBox {
         color: #000;
         padding: 6px;
