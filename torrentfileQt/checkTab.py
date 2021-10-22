@@ -21,14 +21,23 @@ import os
 from PyQt6.QtCore import Qt
 
 
-from PyQt6.QtWidgets import (QHBoxLayout, QPushButton,
-                             QWidget, QFormLayout, QToolButton,
-                             QFileDialog, QPlainTextEdit)
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QPushButton,
+    QWidget,
+    QFormLayout,
+    QToolButton,
+    QFileDialog,
+    QPlainTextEdit,
+)
 
 from torrentfile.checker import Checker
 
-from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
-                               textEditStyleSheet)
+from torrentfileQt.qss import (
+    pushButtonStyleSheet,
+    toolButtonStyleSheet,
+    textEditStyleSheet,
+)
 
 from torrentfileQt.widgets import Label, LineEdit
 
@@ -101,11 +110,14 @@ class CheckButton(QPushButton):
     def submit(self):
         def parse_text(text):
             window.textEdit.insertPlainText(text + "\n")
+
         window = self.parent()
         tfile = window.fileInput.text()
         folder = window.searchInput.text()
+
         def func(text):
             window.textEdit.insertPlainText(text + "\n")
+
         Checker.add_callback(func)
         checker = Checker(tfile, folder)
         percent = checker.check()
@@ -143,10 +155,11 @@ class BrowseTorrents(QToolButton):
         """
         caption = "Choose .torrent file."
         if not path:
-            path = QFileDialog.getOpenFileName(parent=self,
-                                               caption=caption,
-                                               filter="*.torrent")
-        if not path: return
+            path = QFileDialog.getOpenFileName(
+                parent=self, caption=caption, filter="*.torrent"
+            )
+        if not path:
+            return
         path = os.path.realpath(path[0])
         self.parent().fileInput.clear()
         self.parent().fileInput.setText(path)
@@ -182,7 +195,8 @@ class BrowseFolders(QToolButton):
         caption = "Choose Root Directory"
         if not path:
             path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
-        if not path: return
+        if not path:
+            return
         self.parent().searchInput.clear()
         self.parent().searchInput.setText(path)
 

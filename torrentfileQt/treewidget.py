@@ -2,6 +2,7 @@ import os
 
 from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
+
 class TreeWidget(QTreeWidget):
     """Tree view of the directory structure cataloged in .torrent file.
 
@@ -29,7 +30,9 @@ class TreeWidget(QTreeWidget):
         self.setIndentation(8)
         # self.setSortEnabled(False)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
-        self.root.setChildIndicatorPolicy(self.root.ChildIndicatorPolicy.DontShowIndicatorWhenChildless)
+        self.root.setChildIndicatorPolicy(
+            self.root.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
+        )
         self.setHeaderHidden(True)
         self.setItemsExpandable(True)
         self.setColumnCount(1)
