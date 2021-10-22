@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
@@ -17,10 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""Style Sheets for Qt Widgets a.k.a. QSS."""
 
-
-=======
->>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 pushButtonStyleSheet = """
     QPushButton{
         border-style: solid;
