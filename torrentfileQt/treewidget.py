@@ -60,19 +60,33 @@ class TreeWidget(QTreeWidget):
         mapping = {}
         for item in lst:
             path = item["path"]
-            length = item["length"]
             top = mapping
+            length = item["length"]
             for i, partial in enumerate(path):
                 if i == 0:
                     top = QTreeWidgetItem([partial])
                     top.setText(partial)
                     self.addTopLevelItem(top)
-
-
-                if i == len(path) - 1:
-                    fields = top[partial] = {}
-                    fields["path"] = os.path.join(*path)
-                    fields["length"] =
-                if partial in top:
-                    top = top[partial]
+                    mapping["partial"] = top
+                elif i == len(path) - 1:
+                    parent = mapping[os.path.join(*path[:i])]
+                    part = QTreeWidgetItem([partial])
+                    part.setText(partial)
+                    full = os.path.join(*path)
+                    child1 = QTreeWidgetItem([full])
+                    child1.setText(full)
+                    child2 = QTreeWidgetItem([str(length)])
+                    child2.setText(str(length))
+                    part.addChild(child1)
+                    part.addChild(child2)
+                    parent.addChild(part)
+                    mapping[full] = [partial, length, full]
                 else:
+                    parent = mapping[os.path.join(*path[:i])]
+                    full = os.path.join(parent, partial)
+                    if full not in mapping:
+                        treeitem = QTreeWidgetItem([partial])
+                        treeitem.setText(partial)
+                        parent.addChild(treeitem)
+                        mapping[full] = treeitem
+        self.tree = mapping
