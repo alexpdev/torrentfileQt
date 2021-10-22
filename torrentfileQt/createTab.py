@@ -21,15 +21,28 @@ import os
 import threading
 from PyQt6.QtCore import Qt
 
-from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QSpacerItem, QToolButton,
-                             QPushButton, QWidget, QFormLayout, QRadioButton,
-                             QGridLayout, QPlainTextEdit)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QSpacerItem,
+    QToolButton,
+    QPushButton,
+    QWidget,
+    QFormLayout,
+    QRadioButton,
+    QGridLayout,
+    QPlainTextEdit,
+)
 
 from torrentfile.utils import path_stat
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
-from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
-                                push2ButtonStyleSheet, textEditStyleSheet)
-from torrentfileQt.widgets import (CheckBox, LineEdit, Label, ComboBox)
+from torrentfileQt.qss import (
+    pushButtonStyleSheet,
+    toolButtonStyleSheet,
+    push2ButtonStyleSheet,
+    textEditStyleSheet,
+)
+from torrentfileQt.widgets import CheckBox, LineEdit, Label, ComboBox
 
 
 class CreateWidget(QWidget):
