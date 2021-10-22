@@ -80,8 +80,6 @@ class CheckWidget(QWidget):
         self.searchInput.setObjectName("CheckWidget_searchInput")
 
 
-
-
 class CheckButton(QPushButton):
     """Button Widget for validating torrent files against downloaded contents.
 
@@ -104,10 +102,13 @@ class CheckButton(QPushButton):
         window = self.parent()
         tfile = window.fileInput.text()
         folder = window.searchInput.text()
-        checker = Checker
-        checker.add_callback(parse_text)
-        checker = checker(tfile, folder)
-        checker.check()
+        def func(text):
+            window.textEdit.insertPlainText(text + "\n")
+        Checker.add_callback(func)
+        checker = Checker(tfile, folder)
+        percent = checker.check()
+        window.textEdit.appendPlainText("\n" + percent + "\n")
+
 
 
 class BrowseTorrents(QToolButton):
