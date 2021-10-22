@@ -17,12 +17,14 @@
 # limitations under the License.
 ##############################################################################
 
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QLabel, QLineEdit,
-                             QTextEdit)
+from PyQt6.QtWidgets import QCheckBox, QComboBox, QLabel, QLineEdit, QTextEdit
 
-from torrentfileQt.qss import (comboBoxStyleSheet, lineEditStyleSheet,
-                                checkBoxStyleSheet,
-                                labelStyleSheet)
+from torrentfileQt.qss import (
+    comboBoxStyleSheet,
+    lineEditStyleSheet,
+    checkBoxStyleSheet,
+    labelStyleSheet,
+)
 
 
 class TextEdit(QTextEdit):
@@ -69,9 +71,6 @@ class LineEdit(QLineEdit):
         super().__init__(parent=parent)
         self._parent = parent
         self.setStyleSheet(self.stylesheet)
-
-
-
 
 
 class ComboBox(QComboBox):

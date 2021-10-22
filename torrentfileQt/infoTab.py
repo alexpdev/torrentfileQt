@@ -23,8 +23,14 @@ from datetime import datetime
 import pyben
 
 
-from PyQt6.QtWidgets import (QFileDialog, QLineEdit, QPushButton, QWidget,
-                             QGridLayout, QTreeWidgetItem)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QLineEdit,
+    QPushButton,
+    QWidget,
+    QGridLayout,
+    QTreeWidgetItem,
+)
 
 from torrentfileQt.treewidget import TreeWidget
 from torrentfileQt.qss import pushButtonStyleSheet, altLineEditStyleSheet
@@ -154,7 +160,8 @@ class SelectButton(QPushButton):
             files = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not files: return
+        if not files:
+            return
         meta = pyben.load(files[0])
         info = meta["info"]
         keywords = {}
