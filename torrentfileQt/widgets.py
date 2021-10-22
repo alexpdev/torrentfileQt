@@ -17,12 +17,31 @@
 # limitations under the License.
 ##############################################################################
 
+<<<<<<< HEAD
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QLabel, QLineEdit,
                              QTextEdit)
 
 from torrentfileQt.qss import (comboBoxStyleSheet, lineEditStyleSheet,
                                 checkBoxStyleSheet,
                                 labelStyleSheet)
+=======
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QTextEdit,
+)
+
+from torrentfileQt.qss import (
+    comboBoxStyleSheet,
+    lineEditStyleSheet,
+    checkBoxStyleSheet,
+    labelStyleSheet,
+    textEditStyleSheet,
+)
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 
 
 class TextEdit(QTextEdit):
@@ -39,7 +58,7 @@ class CheckBox(QCheckBox):
 
     stylesheet = checkBoxStyleSheet
 
-    def __init__(self,label, parent=None):
+    def __init__(self, label, parent=None):
         super().__init__(label, parent=parent)
         self.setStyleSheet(self.stylesheet)
 
@@ -86,8 +105,8 @@ class ComboBox(QComboBox):
         self.addItem("")
         for exp in range(14, 24):
             if exp < 20:
-                item = str((2 ** exp) // (2**10)) + "KB"
+                item = str((2 ** exp) // (2 ** 10)) + "KB"
             else:
-                item = str((2 ** exp) // (2**20)) + "MB"
-            self.addItem(item, 2**exp)
+                item = str((2 ** exp) // (2 ** 20)) + "MB"
+            self.addItem(item, 2 ** exp)
         self.setEditable(False)

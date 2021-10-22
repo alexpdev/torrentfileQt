@@ -20,8 +20,14 @@
 import sys
 
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QFormLayout,
-                             QStatusBar, QVBoxLayout, QTabWidget)
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QFormLayout,
+    QStatusBar,
+    QVBoxLayout,
+    QTabWidget,
+)
 
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.infoTab import InfoWidget
@@ -34,6 +40,7 @@ from torrentfileQt.qss import tabBarStyleSheet
 Graphical Extension for Users who prefer a GUI over CLI.
 """
 
+
 class Window(QMainWindow):
     """
     Window MainWindow of GUI extension interface.
@@ -45,7 +52,6 @@ class Window(QMainWindow):
     labelRole = QFormLayout.ItemRole.LabelRole
     fieldRole = QFormLayout.ItemRole.FieldRole
     spanRole = QFormLayout.ItemRole.SpanningRole
-
 
     stylesheet = """
         QMainWindow {
@@ -136,6 +142,7 @@ class TabWidget(QTabWidget):
     Args:
         stylesheet (`str`): QSS styling for Tab Widget.
     """
+
     stylesheet = tabBarStyleSheet
 
     def __init__(self, parent=None):
@@ -149,8 +156,8 @@ class TabWidget(QTabWidget):
         self.checkWidget = CheckWidget()
         self.infoWidget = InfoWidget()
         self.setStyleSheet(self.stylesheet)
-        self.addTab(self.createWidget,"Create Torrent")
-        self.addTab(self.checkWidget,"Check Torrent")
+        self.addTab(self.createWidget, "Create Torrent")
+        self.addTab(self.checkWidget, "Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
 
 

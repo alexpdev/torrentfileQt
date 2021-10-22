@@ -20,16 +20,34 @@
 import os
 from PyQt6.QtCore import Qt
 
+<<<<<<< HEAD
 from PyQt6.QtWidgets import (QHBoxLayout, QPushButton,
                              QWidget, QFormLayout, QToolButton,
                              QFileDialog, QPlainTextEdit)
+=======
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QTextBrowser,
+    QPushButton,
+    QWidget,
+    QFormLayout,
+    QRadioButton,
+    QToolButton,
+    QFileDialog,
+)
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 
 from torrentfile.checker import Checker
 
+<<<<<<< HEAD
 from torrentfileQt.qss import (pushButtonStyleSheet, toolButtonStyleSheet,
                                textEditStyleSheet)
+=======
+from torrentfileQt.qss import pushButtonStyleSheet, toolButtonStyleSheet
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 
 from torrentfileQt.widgets import Label, LineEdit
+
 
 class CheckWidget(QWidget):
 
@@ -110,6 +128,13 @@ class CheckButton(QPushButton):
         window.textEdit.appendPlainText("\n" + percent + "\n")
 
 
+<<<<<<< HEAD
+=======
+
+class BrowseButton(QToolButton):
+    """
+    BrowseButton ToolButton for activating filebrowser.
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
 
 class BrowseTorrents(QToolButton):
     """BrowseButton ToolButton for activating filebrowser.
@@ -181,6 +206,7 @@ class BrowseFolders(QToolButton):
         caption = "Choose Root Directory"
         if not path:
             path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+<<<<<<< HEAD
         if not path: return
         self.parent().searchInput.clear()
         self.parent().searchInput.setText(path)
@@ -195,3 +221,10 @@ class PlainTextEdit(QPlainTextEdit):
         self._parent = parent
         self.setBackgroundVisible(True)
         self.setStyleSheet(self.stylesheet)
+=======
+        if not path:
+            return
+        path = os.path.realpath(path)
+        self.inputWidget.clear()
+        self.inputWidget.setText(path)
+>>>>>>> 8b2985791de7cc1c6157fbed3d81351b671e0a99
