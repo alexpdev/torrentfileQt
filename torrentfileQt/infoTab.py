@@ -23,12 +23,12 @@ from datetime import datetime
 import pyben
 
 
-from PyQt6.QtWidgets import QFileDialog, QLineEdit, QPushButton, QWidget, QGridLayout
-from PyQt6.QtWidgets import QWidget, QGridLayout
+from PyQt6.QtWidgets import (QFileDialog, QLineEdit, QPushButton, QWidget,
+                             QGridLayout, QTreeWidgetItem)
 
-
+from torrentfileQt.treewidget import TreeWidget
 from torrentfileQt.qss import pushButtonStyleSheet, altLineEditStyleSheet
-from torrentfileQt.widgets import Label, TextEdit
+from torrentfileQt.widgets import Label
 
 
 class InfoWidget(QWidget):
@@ -50,7 +50,7 @@ class InfoWidget(QWidget):
         self.dateCreatedLabel = Label("Creation Date: ", parent=self)
         self.createdByLabel = Label("Created By: ", parent=self)
         self.contentsLabel = Label("Contents: ", parent=self)
-        self.contentsEdit = TextEdit(parent=self)
+        self.contentsTree = TreeWidget(parent=self)
         self.sourceEdit = InfoLineEdit(parent=self)
         self.pathEdit = InfoLineEdit(parent=self)
         self.nameEdit = InfoLineEdit(parent=self)
@@ -85,9 +85,9 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.dateCreatedLabel, 10, 0, 1, 1)
         self.layout.addWidget(self.dateCreatedEdit, 10, 1, 1, 1)
         self.layout.addWidget(self.contentsLabel, 11, 0, 1, 1)
-        self.layout.addWidget(self.contentsEdit, 11, 1, 4, 1)
+        self.layout.addWidget(self.contentsTree, 11, 1, 5, 1)
         self.selectButton = SelectButton("Select Torrent", parent=self)
-        self.layout.addWidget(self.selectButton, 15, 0, -1, -1)
+        self.layout.addWidget(self.selectButton, 16, 0, -1, -1)
 
     def fill(self, kws):
         self.pathEdit.setText(kws["path"])
@@ -105,8 +105,14 @@ class InfoWidget(QWidget):
         self.sizeEdit.setText(size)
         total_pieces = math.ceil(kws["length"] / kws["piece_length"])
         self.totalPiecesEdit.setText(str(total_pieces))
-        for item in kws["contents"]:
-            self.contentsEdit.append(item)
+        if "file tree" in kws:
+            self.contentsTree.set_tree(kws["file tree"])
+        elif "files" in kws:
+            self.contentsTree.set_files(kws["files"])
+        else:
+            item = QTreeWidgetItem([kws["name"]])
+            item.setText(0, kws["name"])
+            self.contentsTree.addTopLevelItem(item)
         for widg in [
             self.pathEdit,
             self.nameEdit,
@@ -148,8 +154,7 @@ class SelectButton(QPushButton):
             files = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not files:
-            return
+        if not files: return
         meta = pyben.load(files[0])
         info = meta["info"]
         keywords = {}
@@ -170,6 +175,7 @@ class SelectButton(QPushButton):
             keywords["announce"] = [meta["announce"]]
         files, size = [], 0
         if "files" in info:
+            keywords["files"] = info["files"]
             for entry in info["files"]:
                 files.append(os.path.join(*entry["path"]))
                 size += entry["length"]
@@ -177,6 +183,7 @@ class SelectButton(QPushButton):
             keywords["length"] = size
         elif "file tree" in info:
             paths = parse_filetree(info["file tree"])
+            keywords["file tree"] = info["file tree"]
             for k, v in paths.items():
                 files.append(k)
                 size += v
