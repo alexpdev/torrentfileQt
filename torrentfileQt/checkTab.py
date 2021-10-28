@@ -109,20 +109,21 @@ class CheckButton(QPushButton):
         self.folder = None
 
     def submit(self):
-        window = self.parent()
-        textEdit = window.textEdit
-        treeWidget = window.treeWidget
+        self.window = self.parent()
+        textEdit = self.window.textEdit
+        treeWidget = self.window.treeWidget
         func1 = textEdit.callback
         func2 = treeWidget.callback
         CheckerClass.register_callbacks(func1, func2)
-        self.torrent = window.fileInput.text()
-        self.folder = window.searchInput.text()
+        self.torrent = self.window.fileInput.text()
+        self.folder = self.window.searchInput.text()
         thread = Thread(group=None, target=self.re_check_torrent)
         thread.run()
 
     def re_check_torrent(self):
         checker = CheckerClass(self.torrent, self.folder)
-        self.window.textEdit.insertPlainText(checker.result)
+        msg = f"Torrent Contents are {checker.result}% completely downloaded."
+        self.window.textEdit.insertPlainText(msg)
 
 
 class BrowseTorrents(QToolButton):
@@ -230,8 +231,8 @@ class TreeWidget(QTreeWidget):
         item2 = QTreeWidgetItem(type=0)
         if response:
             self.matched += size
-            amount = str(int((size / self.total) * 100)) + "%"
+            amount = str(int((self.matched / self.total) * 100)) + "%"
         else:
             amount = "0%"
-        item2.setText(0, f"Matches: {amount}")
+        item2.setText(0, f"Piece Patial Match: {amount}")
         item.addChild(item2)

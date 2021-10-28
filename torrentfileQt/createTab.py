@@ -84,7 +84,7 @@ class CreateWidget(QWidget):
         self.announce_input = PlainTextEdit(parent=self)
         self.piece_length = ComboBox(parent=self)
         self.private = CheckBox("Private", parent=self)
-        self.submit_button = SubmitButton("Submit", parent=self)
+        self.submit_button = SubmitButton("Create Torrent", parent=self)
         self.browse_dir_button = BrowseDirButton(parent=self)
         self.browse_file_button = BrowseFileButton(parent=self)
         self.output_button = OutButton(parent=self)
@@ -134,7 +134,7 @@ class CreateWidget(QWidget):
         self.layout.addLayout(self.hlayout3, 6, 1, 1, 3)
         self.layout.addWidget(self.announce_label, 7, 0, 1, 1)
         self.layout.addWidget(self.announce_input, 7, 1, 1, 3)
-        self.layout.addWidget(self.submit_button, 8, 1, 1, 2)
+        self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
 
         self.layout.setObjectName("createWidget_formLayout")
         self.hlayout2.setObjectName("createWidget_hlayout2")

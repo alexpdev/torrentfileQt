@@ -64,3 +64,4 @@ class PlainTextEdit(QPlainTextEdit):
 
     def callback(self, msg):
         self.insertPlainText(msg)
+        self.insertPlainText("\n\n")

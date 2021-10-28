@@ -22,20 +22,23 @@ treeSheet = """
     QTreeWidget {
         border: 1px solid #1a1a6a;
         background-color: #5a5a5a;
+        font: 14pt;
         color: #eeeeee;
     }
     QTreeWidget::item::selected {
         color: #FFFFFF;
+        font-size: 14pt;
     }
     QTreeWidget::item::hover {
+        font-size: 14pt;
         color: #CFF8DC;
     }
     QTreeWidget::indicator::checked {
-        background-color: #80CBC4;
+        background-color: #ffffff;
         border: 1px solid #536D79;
     }
     QTreeWidget::indicator::unchecked {
-	    background-color: #aad;
+	    background-color: #ffffff;
 	    border: 1px solid #536D79;
     }
     """
