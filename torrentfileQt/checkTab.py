@@ -18,6 +18,7 @@
 ##############################################################################
 
 import os
+from threading import Thread
 from PyQt6.QtCore import Qt
 
 
@@ -28,18 +29,15 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QToolButton,
     QFileDialog,
-    QPlainTextEdit,
+    QTreeWidget,
+    QTreeWidgetItem,
 )
 
-from torrentfile.checker import Checker
+from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (
-    pushButtonStyleSheet,
-    toolButtonStyleSheet,
-    textEditStyleSheet,
-)
+from torrentfileQt.qss import pushButtonSheet, toolButtonSheet, treeSheet
 
-from torrentfileQt.widgets import Label, LineEdit
+from torrentfileQt.widgets import Label, LineEdit, PlainTextEdit
 
 
 class CheckWidget(QWidget):
@@ -77,10 +75,12 @@ class CheckWidget(QWidget):
         self.layout.setWidget(2, self.labelRole, self.searchLabel)
         self.layout.setLayout(2, self.fieldRole, self.hlayout2)
         self.textEdit = PlainTextEdit(parent=self)
+        self.treeWidget = TreeWidget(parent=self)
         self.layout.setWidget(3, self.spanRole, self.textEdit)
-        self.layout.setWidget(4, self.spanRole, self.checkButton)
+        self.layout.setWidget(4, self.spanRole, self.treeWidget)
+        self.layout.setWidget(5, self.spanRole, self.checkButton)
 
-        self.layout.setObjectName(u"CheckWidget_layout")
+        self.layout.setObjectName("CheckWidget_layout")
         self.hlayout1.setObjectName("CheckWidget_hlayout1")
         self.hlayout2.setObjectName("CheckWidget_hlayout2")
         self.browseButton2.setObjectName("CheckWidget_browseButton2")
@@ -99,29 +99,30 @@ class CheckButton(QPushButton):
         parent (`QWidget`, default=None): This widgets parent widget.
     """
 
-    stylesheet = pushButtonStyleSheet
-
     def __init__(self, text, parent=None):
         """Construct the CheckButton Widget."""
         super().__init__(text, parent=parent)
         self.pressed.connect(self.submit)
-        self.setStyleSheet(self.stylesheet)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setStyleSheet(pushButtonSheet)
+        self.torrent = None
+        self.folder = None
 
     def submit(self):
-        def parse_text(text):
-            window.textEdit.insertPlainText(text + "\n")
-
         window = self.parent()
-        tfile = window.fileInput.text()
-        folder = window.searchInput.text()
+        textEdit = window.textEdit
+        treeWidget = window.treeWidget
+        func1 = textEdit.callback
+        func2 = treeWidget.callback
+        CheckerClass.register_callbacks(func1, func2)
+        self.torrent = window.fileInput.text()
+        self.folder = window.searchInput.text()
+        thread = Thread(group=None, target=self.re_check_torrent)
+        thread.run()
 
-        def func(text):
-            window.textEdit.insertPlainText(text + "\n")
-
-        Checker.add_callback(func)
-        checker = Checker(tfile, folder)
-        percent = checker.check()
-        window.textEdit.appendPlainText("\n" + percent + "\n")
+    def re_check_torrent(self):
+        checker = CheckerClass(self.torrent, self.folder)
+        self.window.textEdit.insertPlainText(checker.result)
 
 
 class BrowseTorrents(QToolButton):
@@ -133,14 +134,12 @@ class BrowseTorrents(QToolButton):
         parent (`widget`): Parent widget.
     """
 
-    stylesheet = toolButtonStyleSheet
-
     def __init__(self, parent=None):
         """Construct Toolbar Button for selecting .torrentfile to check."""
         super().__init__(parent=parent)
         self.setText("...")
         self.window = parent
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.inputWidget = None
         self.pressed.connect(self.browse)
@@ -172,14 +171,12 @@ class BrowseFolders(QToolButton):
         parent (`QWidget`, default=None): Widget this widget is the child of.
     """
 
-    stylesheet = toolButtonStyleSheet
-
     def __init__(self, parent=None):
         """Construct a BrowseFolders Button Widget."""
         super().__init__(parent=parent)
         self.setText("...")
         self.window = parent
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
@@ -201,12 +198,40 @@ class BrowseFolders(QToolButton):
         self.parent().searchInput.setText(path)
 
 
-class PlainTextEdit(QPlainTextEdit):
+class TreeWidget(QTreeWidget):
+    """Tree Widget for the `Check` tab.
 
-    stylesheet = textEditStyleSheet
+    Displays percentages for matching files and their progress.
+
+    Args:
+        parent(`QWidget`, default=None)
+    """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._parent = parent
-        self.setBackgroundVisible(True)
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(treeSheet)
+        self.setHeaderHidden(True)
+        self.total = None
+        self.tally = 0
+        self.matched = 0
+        self.itemWidgets = {}
+
+    def callback(self, response, path, size, total):
+        if self.total is None:
+            self.total = total
+        self.tally += size
+        if path in self.itemWidgets:
+            item = self.itemWidgets[path]
+        else:
+            item = QTreeWidgetItem(type=0)
+            item.setText(0, path)
+            self.itemWidgets[path] = item
+            self.addTopLevelItem(item)
+        item2 = QTreeWidgetItem(type=0)
+        if response:
+            self.matched += size
+            amount = str(int((size / self.total) * 100)) + "%"
+        else:
+            amount = "0%"
+        item2.setText(0, f"Matches: {amount}")
+        item.addChild(item2)

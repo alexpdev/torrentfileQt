@@ -19,13 +19,13 @@
 
 import os
 import math
+from threading import Thread
 from datetime import datetime
+
 import pyben
-
-
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QFileDialog,
-    QLineEdit,
     QPushButton,
     QWidget,
     QGridLayout,
@@ -33,8 +33,8 @@ from PyQt6.QtWidgets import (
 )
 
 from torrentfileQt.treewidget import TreeWidget
-from torrentfileQt.qss import pushButtonStyleSheet, altLineEditStyleSheet
-from torrentfileQt.widgets import Label
+from torrentfileQt.qss import pushButtonSheet
+from torrentfileQt.widgets import Label, InfoLineEdit
 
 
 class InfoWidget(QWidget):
@@ -131,28 +131,15 @@ class InfoWidget(QWidget):
             widg.setCursorPosition(0)
 
 
-class InfoLineEdit(QLineEdit):
-
-    stylesheet = altLineEditStyleSheet
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.setReadOnly(True)
-        self.setStyleSheet(self.stylesheet)
-        self.setDragEnabled(True)
-        font = self.font()
-        font.setBold(True)
-        self.setFont(font)
-
-
 class SelectButton(QPushButton):
 
-    stylesheet = pushButtonStyleSheet
+    # stylesheet = pushButtonStyleSheet
 
     def __init__(self, text, parent=None):
         super().__init__(text, parent=parent)
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.selectTorrent)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def selectTorrent(self, files=None):
         caption = "Select '.torrent' file"
@@ -208,19 +195,9 @@ class SelectButton(QPushButton):
             keywords["private"] = "False"
         if "contents" not in keywords:
             keywords["contents"] = [info["name"]]
-        self.parent().fill(keywords)
-
-
-def parse_filetree(filetree):
-    paths = {}
-    for key in filetree:
-        if key == "":
-            paths[key] = filetree[key]["length"]
-        else:
-            out = parse_filetree(filetree[key])
-            for k, v in out.items():
-                paths[os.path.join(key, k)] = v
-    return paths
+        tab = self.parent()
+        thread = Thread(group=None, target=tab.fill,args=(keywords,))
+        thread.run()
 
 
 def denom(num):
@@ -246,3 +223,15 @@ def pretty_int(num):
         count += 1
         digits -= 1
     return "".join(seq) + " Bytes"
+
+
+def parse_filetree(filetree):
+    paths = {}
+    for key in filetree:
+        if key == "":
+            paths[key] = filetree[key]["length"]
+        else:
+            out = parse_filetree(filetree[key])
+            for k, v in out.items():
+                paths[os.path.join(key, k)] = v
+    return paths

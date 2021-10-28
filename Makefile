@@ -72,4 +72,8 @@ release: clean test coverage ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
+build: clean ## building app
+	pip install --force-reinstall --upgrade -rrequirements.txt
+
+
 full: clean test checkout coverage
