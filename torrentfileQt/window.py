@@ -23,7 +23,6 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QFormLayout,
     QStatusBar,
     QVBoxLayout,
     QTabWidget,
@@ -33,75 +32,17 @@ from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import tabBarStyleSheet
+from torrentfileQt.qss import tabBarSheet, tabSheet, mainWindowSheet, statusBarSheet
 
-
-"""
-Graphical Extension for Users who prefer a GUI over CLI.
-"""
+"""Graphical Extension for Users who prefer a GUI over CLI."""
 
 
 class Window(QMainWindow):
-    """
-    Window MainWindow of GUI extension interface.
+    """Window MainWindow of GUI extension interface.
 
     Subclass:
         QMainWindow (QWidget): PyQt6 QMainWindow
     """
-
-    labelRole = QFormLayout.ItemRole.LabelRole
-    fieldRole = QFormLayout.ItemRole.FieldRole
-    spanRole = QFormLayout.ItemRole.SpanningRole
-
-    stylesheet = """
-        QMainWindow {
-            background-color:#ddd;
-        }
-        QDialog {
-            background-color:#000000;
-        }
-        QPlainTextEdit {
-            selection-background-color:#f39c12;
-            background-color:#000000;
-            border-style: solid;
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-left-color: transparent;
-            border-bottom-color: transparent;
-            border-width: 1px;
-            color: #a9b7c6;
-        }
-        QStatusBar {
-            color:#027f7f;
-        }
-        QSpinBox {
-            color: #a9b7c6;
-            background-color:#000000;
-        }
-        QDoubleSpinBox {
-            color: #a9b7c6;
-            background-color:#000000;
-        }
-        QToolBox {
-            color: #a9b7c6;
-            background-color:#000000;
-        }
-        QToolBox::tab {
-            color: #a9b7c6;
-            background-color:#000000;
-        }
-        QToolBox::tab:selected {
-            color: #FFFFFF;
-            background-color:#000000;
-        }
-        QScrollArea {
-            color: #FFFFFF;
-            background-color:#000000;
-        }
-        QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-            background: none;
-        }
-        """
 
     def __init__(self, parent=None, app=None):
         """Constructor for Window class.
@@ -122,8 +63,8 @@ class Window(QMainWindow):
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
-        self.setStyleSheet(self.stylesheet)
-        self.resize(500, 450)
+        self.setStyleSheet(mainWindowSheet)
+        self.resize(600, 600)
         self._setupUI()
 
     def _setupUI(self):
@@ -133,17 +74,11 @@ class Window(QMainWindow):
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
         self.statusbar.setObjectName(u"statusbar")
+        self.statusbar.setStyleSheet(statusBarSheet)
 
 
 class TabWidget(QTabWidget):
-    """
-    Tab Widget.
-
-    Args:
-        stylesheet (`str`): QSS styling for Tab Widget.
-    """
-
-    stylesheet = tabBarStyleSheet
+    """Qt Widget subclass for the tab widget."""
 
     def __init__(self, parent=None):
         """Construct Tab Widget for MainWindow.
@@ -155,9 +90,9 @@ class TabWidget(QTabWidget):
         self.createWidget = CreateWidget()
         self.checkWidget = CheckWidget()
         self.infoWidget = InfoWidget()
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(tabBarSheet + tabSheet)
         self.addTab(self.createWidget, "Create Torrent")
-        self.addTab(self.checkWidget, "Check Torrent")
+        self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
 
 

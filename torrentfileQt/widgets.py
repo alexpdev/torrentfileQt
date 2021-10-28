@@ -17,33 +17,16 @@
 # limitations under the License.
 ##############################################################################
 
-from PyQt6.QtWidgets import QCheckBox, QComboBox, QLabel, QLineEdit, QTextEdit
+from PyQt6.QtWidgets import QLineEdit, QLabel, QPlainTextEdit
 
-from torrentfileQt.qss import (
-    comboBoxStyleSheet,
-    lineEditStyleSheet,
-    checkBoxStyleSheet,
-    labelStyleSheet,
-)
+from .qss import lineEditSheet, labelSheet, textEditSheet, altLineEditSheet
 
 
-class TextEdit(QTextEdit):
+class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setReadOnly(True)
-        self.setAcceptRichText(True)
-        self.setFontWeight(10)
-        self.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
-        self.setAutoFormatting(QTextEdit.AutoFormattingFlag.AutoBulletList)
-
-
-class CheckBox(QCheckBox):
-
-    stylesheet = checkBoxStyleSheet
-
-    def __init__(self, label, parent=None):
-        super().__init__(label, parent=parent)
-        self.setStyleSheet(self.stylesheet)
+        self._parent = parent
+        self.setStyleSheet(lineEditSheet)
 
 
 class Label(QLabel):
@@ -52,41 +35,32 @@ class Label(QLabel):
     Subclass: QLabel
     """
 
-    stylesheet = labelStyleSheet
-
     def __init__(self, text, parent=None):
         super().__init__(text, parent=parent)
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(labelSheet)
         font = self.font()
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
 
 
-class LineEdit(QLineEdit):
+class InfoLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setReadOnly(True)
+        self.setStyleSheet(altLineEditSheet)
+        self.setDragEnabled(True)
+        font = self.font()
+        font.setBold(True)
+        self.setFont(font)
 
-    stylesheet = lineEditStyleSheet
 
+class PlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._parent = parent
-        self.setStyleSheet(self.stylesheet)
+        self.setBackgroundVisible(True)
+        self.setStyleSheet(textEditSheet)
 
-
-class ComboBox(QComboBox):
-
-    stylesheet = comboBoxStyleSheet
-
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent=parent)
-        self.args = args
-        self.kwargs = kwargs
-        self.setStyleSheet(self.stylesheet)
-        self.addItem("")
-        for exp in range(14, 24):
-            if exp < 20:
-                item = str((2 ** exp) // (2 ** 10)) + "KB"
-            else:
-                item = str((2 ** exp) // (2 ** 20)) + "MB"
-            self.addItem(item, 2 ** exp)
-        self.setEditable(False)
+    def callback(self, msg):
+        self.insertPlainText(msg)
