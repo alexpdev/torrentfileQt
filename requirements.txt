@@ -1,8 +1,8 @@
 coverage>=5
-pyben>=0.2.3
+pyben
 PyQt6
 PyQt6-Qt6
 PyQt6-sip
 pytest
 pytest-cov
-torrentfile>=0.4.1
+torrentfile
