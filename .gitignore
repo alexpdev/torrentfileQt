@@ -8,6 +8,8 @@ codacy.sh
 
 # C extensions
 *.so
+temp/
+testdir/
 
 # Distribution / packaging
 .vscode/

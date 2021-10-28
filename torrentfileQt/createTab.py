@@ -31,18 +31,20 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QRadioButton,
     QGridLayout,
-    QPlainTextEdit,
+    QComboBox,
+    QCheckBox,
 )
 
 from torrentfile.utils import path_stat
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
 from torrentfileQt.qss import (
-    pushButtonStyleSheet,
-    toolButtonStyleSheet,
-    push2ButtonStyleSheet,
-    textEditStyleSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    push2ButtonSheet,
+    checkBoxSheet,
+    comboBoxSheet,
 )
-from torrentfileQt.widgets import CheckBox, LineEdit, Label, ComboBox
+from torrentfileQt.widgets import LineEdit, Label, PlainTextEdit
 
 
 class CreateWidget(QWidget):
@@ -73,10 +75,12 @@ class CreateWidget(QWidget):
         self.announce_label = Label("Trackers:", parent=self)
         self.source_label = Label("Source:", parent=self)
         self.piece_length_label = Label("Piece Length:", parent=self)
+
         self.path_input = LineEdit(parent=self)
         self.output_input = LineEdit(parent=self)
         self.source_input = LineEdit(parent=self)
         self.comment_input = LineEdit(parent=self)
+
         self.announce_input = PlainTextEdit(parent=self)
         self.piece_length = ComboBox(parent=self)
         self.private = CheckBox("Private", parent=self)
@@ -86,10 +90,12 @@ class CreateWidget(QWidget):
         self.output_button = OutButton(parent=self)
         self.v1button = QRadioButton("v1 (default)", parent=self)
         self.v1button.setChecked(True)
+
         self.v2button = QRadioButton("v2", parent=self)
         self.hybridbutton = QRadioButton("v1+2 (hybrid)", parent=self)
         self.output_input.setDisabled(True)
         self.spacer = QSpacerItem(50, 0)
+
         self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -101,6 +107,7 @@ class CreateWidget(QWidget):
         self.comment_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.hlayout0.addWidget(self.v1button)
         self.hlayout0.addWidget(self.v2button)
         self.hlayout0.addWidget(self.hybridbutton)
@@ -111,6 +118,7 @@ class CreateWidget(QWidget):
         self.hlayout2.addWidget(self.private)
         self.hlayout3.addWidget(self.output_input)
         self.hlayout3.addWidget(self.output_button)
+
         self.layout.addWidget(self.path_label, 0, 0, 2, 1)
         self.layout.addWidget(self.path_input, 0, 1, 1, 3)
         self.layout.addLayout(self.hlayout1, 1, 1, 1, 3)
@@ -120,13 +128,14 @@ class CreateWidget(QWidget):
         self.layout.addWidget(self.source_input, 3, 1, 1, 3)
         self.layout.addWidget(self.comment_label, 4, 0, 1, 1)
         self.layout.addWidget(self.comment_input, 4, 1, 1, 3)
-        self.layout.addWidget(self.announce_label, 5, 0, 1, 1)
-        self.layout.addWidget(self.announce_input, 5, 1, 1, 3)
-        self.layout.addWidget(self.piece_length_label, 6, 0, 1, 1)
-        self.layout.addLayout(self.hlayout2, 6, 1, 1, 3)
-        self.layout.addWidget(self.output_label, 7, 0, 1, 1)
-        self.layout.addLayout(self.hlayout3, 7, 1, 1, 3)
-        self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
+        self.layout.addWidget(self.piece_length_label, 5, 0, 1, 1)
+        self.layout.addLayout(self.hlayout2, 5, 1, 1, 3)
+        self.layout.addWidget(self.output_label, 6, 0, 1, 1)
+        self.layout.addLayout(self.hlayout3, 6, 1, 1, 3)
+        self.layout.addWidget(self.announce_label, 7, 0, 1, 1)
+        self.layout.addWidget(self.announce_input, 7, 1, 1, 3)
+        self.layout.addWidget(self.submit_button, 8, 1, 1, 2)
+
         self.layout.setObjectName("createWidget_formLayout")
         self.hlayout2.setObjectName("createWidget_hlayout2")
         self.submit_button.setObjectName("createWidget_submit_button")
@@ -146,14 +155,16 @@ class CreateWidget(QWidget):
 
 
 def torrentfile_create(args, obj):
-    tfile = obj(**args)
-    tfile.write()
-    return
+    try:
+        tfile = obj(**args)
+        tfile.write()
+    except Exception:
+        return
 
 
 class SubmitButton(QPushButton):
 
-    stylesheet = pushButtonStyleSheet
+    # stylesheet = pushButtonStyleSheet
 
     def __init__(self, text, parent=None):
         """Public Constructor for Submit Button.
@@ -167,7 +178,7 @@ class SubmitButton(QPushButton):
         self.widget = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText(text)
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.submit)
 
     def submit(self):
@@ -181,8 +192,10 @@ class SubmitButton(QPushButton):
         # at least 1 tracker input is required
         announce = self.widget.announce_input.toPlainText()
         announce = [i for i in announce.split("\n") if i]
-        args["announce"] = announce[0]
-        args["announce_list"] = announce[1:]
+        if announce:
+            args["announce"] = announce[0]
+            if len(announce) > 1:
+                args["announce_list"] = announce[1:]
 
         # Calculates piece length if not specified by user.
         args["outfile"] = self.widget.output_input.text()
@@ -201,14 +214,11 @@ class SubmitButton(QPushButton):
 
 
 class OutButton(QToolButton):
-
-    stylesheet = toolButtonStyleSheet
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setText("...")
         self.window = parent
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.output)
 
@@ -227,55 +237,7 @@ class OutButton(QToolButton):
         self.parent().outpath = outpath
 
 
-class BrowseDirButton(QPushButton):
-
-    stylesheet = push2ButtonStyleSheet
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.setText("Select Folder")
-        self.window = parent
-        self.setStyleSheet(self.stylesheet)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.pressed.connect(self.browse)
-
-    def browse(self, path=None):
-        """
-        browse Action performed when user presses button.
-
-        Opens File/Folder Dialog.
-
-        Returns:
-            str: Path to file or folder to include in torrent.
-        """
-        caption = "Choose Root Directory"
-        if not path:
-            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
-        if not path:
-            return
-        path = os.path.realpath(path)
-        self.window.path_input.clear()
-        self.window.path_input.insert(path)
-        self.window.output_input.clear()
-        outdir = os.path.dirname(str(path))
-        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
-        outpath = os.path.realpath(os.path.join(outdir, outfile))
-        self.window.output_input.insert(outpath)
-        _, size, piece_length = path_stat(path)
-        if piece_length < (2 ** 20):
-            val = f"{piece_length//(2**10)}KB"
-        else:
-            val = f"{piece_length//(2**20)}MB"
-        for i in range(self.window.piece_length.count()):
-            if self.window.piece_length.itemText(i) == val:
-                self.window.piece_length.setCurrentIndex(i)
-                break
-        return size
-
-
 class BrowseFileButton(QPushButton):
-    stylesheet = push2ButtonStyleSheet
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         """
@@ -283,7 +245,7 @@ class BrowseFileButton(QPushButton):
         """
         self.setText("Select File")
         self.window = parent
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(push2ButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
@@ -321,12 +283,66 @@ class BrowseFileButton(QPushButton):
         return size
 
 
-class PlainTextEdit(QPlainTextEdit):
-
-    stylesheet = textEditStyleSheet
-
+class BrowseDirButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._parent = parent
-        self.setBackgroundVisible(True)
-        self.setStyleSheet(self.stylesheet)
+        self.setText("Select Folder")
+        self.window = parent
+        self.setStyleSheet(push2ButtonSheet)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.pressed.connect(self.browse)
+
+    def browse(self, path=None):
+        """
+        browse Action performed when user presses button.
+
+        Opens File/Folder Dialog.
+
+        Returns:
+            str: Path to file or folder to include in torrent.
+        """
+        caption = "Choose Root Directory"
+        if not path:
+            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+        if not path:
+            return
+        path = os.path.realpath(path)
+        self.window.path_input.clear()
+        self.window.path_input.insert(path)
+        self.window.output_input.clear()
+        outdir = os.path.dirname(str(path))
+        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
+        outpath = os.path.realpath(os.path.join(outdir, outfile))
+        self.window.output_input.insert(outpath)
+        _, size, piece_length = path_stat(path)
+        if piece_length < (2 ** 20):
+            val = f"{piece_length//(2**10)}KB"
+        else:
+            val = f"{piece_length//(2**20)}MB"
+        for i in range(self.window.piece_length.count()):
+            if self.window.piece_length.itemText(i) == val:
+                self.window.piece_length.setCurrentIndex(i)
+                break
+        return size
+
+
+class ComboBox(QComboBox):
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent=parent)
+        self.args = args
+        self.kwargs = kwargs
+        self.setStyleSheet(comboBoxSheet)
+        self.addItem("")
+        for exp in range(14, 24):
+            if exp < 20:
+                item = str((2 ** exp) // (2 ** 10)) + "KB"
+            else:
+                item = str((2 ** exp) // (2 ** 20)) + "MB"
+            self.addItem(item, 2 ** exp)
+        self.setEditable(False)
+
+
+class CheckBox(QCheckBox):
+    def __init__(self, label, parent=None):
+        super().__init__(label, parent=parent)
+        self.setStyleSheet(checkBoxSheet)

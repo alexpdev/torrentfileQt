@@ -17,8 +17,12 @@
 # limitations under the License.
 ##############################################################################
 
+import webbrowser
+
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenu, QMenuBar
+
+from .qss import menuSheet
 
 
 class Menu(QMenu):
@@ -33,84 +37,41 @@ class Menu(QMenu):
 
 
 class MenuBar(QMenuBar):
-
-    stylesheet = """
-        QMenu{
-            background-color:#000000;
-        }
-        QMenuBar {
-            background:rgb(30, 30, 30);
-            color: #FFFFFF;
-            margin: 2px;
-            font: 9pt;
-        }
-        QMenuBar::item {
-            spacing: 3px;
-            padding: 1px 4px;
-            background: transparent;
-        }
-        QMenuBar::item:selected {
-            border-style: solid;
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-left-color: transparent;
-            border-bottom-color: #e67e22;
-            border-bottom-width: 1px;
-            border-style: solid;
-            color: #FFFFFF;
-            padding-bottom: 0px;
-            background-color: #000000;
-        }
-        QMenu::item:selected {
-            border-style: solid;
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-left-color: #e67e22;
-            border-bottom-color: transparent;
-            border-left-width: 2px;
-            color: #FFFFFF;
-            padding-left:15px;
-            padding-top:4px;
-            padding-bottom:4px;
-            padding-right:7px;
-            background-color:#000000;
-        }
-        QMenu::item {
-            border-style: solid;
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-left-color: transparent;
-            border-bottom-color: transparent;
-            border-bottom-width: 1px;
-            border-style: solid;
-            color: #a9b7c6;
-            padding-left:17px;
-            padding-top:4px;
-            padding-bottom:4px;
-            padding-right:7px;
-            background-color:#000000;
-        }"""
-
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent=parent)
         self.args = args
         self.window = parent
         self.kwargs = kwargs
-        self.setStyleSheet(self.stylesheet)
+        self.setStyleSheet(menuSheet)
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)
         self.addMenu(self.help_menu)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
+        self.actionDocs = QAction(self.window)
+        self.actionRepo = QAction(self.window)
+        self.actionRepo.setText("Github Repository")
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
+        self.actionDocs.setText("Documentation")
         self.file_menu.addAction(self.actionExit)
         self.help_menu.addAction(self.actionAbout)
+        self.help_menu.addAction(self.actionDocs)
+        self.help_menu.addAction(self.actionRepo)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_qt)
+        self.actionDocs.triggered.connect(self.documentation)
+        self.actionRepo.triggered.connect(self.repository)
+        self.actionDocs.setObjectName("actionDocs")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
+
+    def documentation(self):
+        webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
+
+    def repository(self):
+        webbrowser.open_new_tab("https://github.com/torrentfileQt")
 
     def about_qt(self):
         self.window.app.aboutQt()
