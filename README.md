@@ -12,12 +12,12 @@ TorrentFileQt is a Graphical User Interface for [TorrentFile CLI](https://github
 
 ### Screenshots
 
-![torrentfileGUI1.png](./assets/torrentfileGUI1.png)
+![CreateTabScreenShot.png](./assets/CreateTabScreenShot.png)
 
 -------
 
-![torrentfileGUI2.png](./assets/torrentfileGUI2.png)
+![InfoTabScreenShot.png](./assets/InfoTabScreenShot.png)
 
 -------
 
-![torrentfileGUI3.png](./assets/torrentfileGUI3.png)
+![torrentfile.png](./assets/torrentfile.png)
