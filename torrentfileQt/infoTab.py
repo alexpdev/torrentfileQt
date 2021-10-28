@@ -196,7 +196,7 @@ class SelectButton(QPushButton):
         if "contents" not in keywords:
             keywords["contents"] = [info["name"]]
         tab = self.parent()
-        thread = Thread(group=None, target=tab.fill,args=(keywords,))
+        thread = Thread(group=None, target=tab.fill, args=(keywords,))
         thread.run()
 
 
