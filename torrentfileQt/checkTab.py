@@ -31,13 +31,17 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QTreeWidget,
     QTreeWidgetItem,
+    QPlainTextEdit,
+    QProgressBar
 )
+from PyQt6.QtGui import QIcon
 
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import pushButtonSheet, toolButtonSheet, treeSheet
+from torrentfileQt.qss import (pushButtonSheet, toolButtonSheet,
+                               treeSheet, logTextEditSheet)
 
-from torrentfileQt.widgets import Label, LineEdit, PlainTextEdit
+from torrentfileQt.widgets import Label, LineEdit
 
 
 class CheckWidget(QWidget):
@@ -74,7 +78,7 @@ class CheckWidget(QWidget):
         self.layout.setLayout(1, self.fieldRole, self.hlayout1)
         self.layout.setWidget(2, self.labelRole, self.searchLabel)
         self.layout.setLayout(2, self.fieldRole, self.hlayout2)
-        self.textEdit = PlainTextEdit(parent=self)
+        self.textEdit = LogTextEdit(parent=self)
         self.treeWidget = TreeWidget(parent=self)
         self.layout.setWidget(3, self.spanRole, self.textEdit)
         self.layout.setWidget(4, self.spanRole, self.treeWidget)
@@ -199,6 +203,38 @@ class BrowseFolders(QToolButton):
         self.parent().searchInput.setText(path)
 
 
+class ProgressBar(QProgressBar):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+
+class TreePieceItem(QTreeWidgetItem):
+    def __init__(self, type=0, tree=None):
+        super().__init__(type=type)
+        self.val = None
+        self.setChildIndicatorPolicy(self.ChildIndicatorPolicy.ShowIndicator)
+        self.data_role = Qt.ItemDataRole.UserRole
+        self.tree = tree
+
+    def set_top(self, path, icon):
+        self.set_icon(icon)
+        self.setText(1, path)
+
+    def set_icon(self, path):
+        icon = QIcon(path)
+        self.setIcon(0, icon)
+
+    def set_val(self, value):
+        self.val = value
+        self.setText(0, f"Piece Patial Match: {value}")
+
+
+class Progress(QProgressBar):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setRange(0, 100)
+
+
 class TreeWidget(QTreeWidget):
     """Tree Widget for the `Check` tab.
 
@@ -211,28 +247,75 @@ class TreeWidget(QTreeWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setStyleSheet(treeSheet)
-        self.setHeaderHidden(True)
+        # self.setHeaderHidden(True)
+        self.setColumnCount(3)
+        self.setIndentation(30)
         self.total = None
         self.tally = 0
         self.matched = 0
         self.itemWidgets = {}
+        self.callback_event_action = None
+
+    def perform_action(self):
+        for path, value in self.itemWidgets.items():
+            widget = value["widget"]
+            children = value["children"]
+            tally = total = 0
+            for child in children:
+                tally += child.val
+                total += 100
+            percent = int((tally / total) * 100)
+            progressbar = Progress()
+            progressbar.setValue(percent)
+            self.setItemWidget(widget, 2, progressbar)
+
+    def callback_triggered(self):
+        if self.callback_event_action:
+            self.callback_event_action(self.itemWidgets)
 
     def callback(self, response, path, size, total):
         if self.total is None:
             self.total = total
         self.tally += size
         if path in self.itemWidgets:
-            item = self.itemWidgets[path]
+            item = self.itemWidgets[path]["widget"]
         else:
-            item = QTreeWidgetItem(type=0)
-            item.setText(0, path)
-            self.itemWidgets[path] = item
+            item = TreePieceItem(type=0, tree=self)
+            item.set_top(path, "./assets/file.png")
+            self.itemWidgets[path] = {
+                "widget": item,
+                "children": []
+            }
             self.addTopLevelItem(item)
-        item2 = QTreeWidgetItem(type=0)
+            progressbar = Progress()
+            self.setItemWidget(item, 2, progressbar)
+        children = self.itemWidgets[path]["children"]
+        item2 = TreePieceItem(type=0, tree=self)
         if response:
             self.matched += size
-            amount = str(int((self.matched / self.total) * 100)) + "%"
+            amount = 100
         else:
-            amount = "0%"
-        item2.setText(0, f"Piece Patial Match: {amount}")
+            amount = 0
+        item2.set_val(amount)
         item.addChild(item2)
+        children.append(item2)
+        progressBar = Progress()
+        progressBar.setValue(amount)
+        self.setItemWidget(item2, 1, progressBar)
+        self.callback_triggered()
+
+class LogTextEdit(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setBackgroundVisible(True)
+        font = self.font()
+        font.setFamily("Consolas")
+        font.setBold(True)
+        font.setPointSize(11)
+        self.setFont(font)
+        self.setStyleSheet(logTextEditSheet)
+
+    def callback(self, msg):
+        self.insertPlainText(msg)
+        self.insertPlainText("\n\n")
