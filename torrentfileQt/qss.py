@@ -22,7 +22,7 @@ treeSheet = """
     QTreeWidget {
         border: 1px solid #1a1a6a;
         background-color: #5a5a5a;
-        font: 14pt;
+        font: 8pt;
         color: #eeeeee;
     }
     QTreeWidget::item::selected {
@@ -444,16 +444,23 @@ comboBoxSheet = """
     }"""
 
 
+logTextEditSheet = """
+    QPlainTextEdit {
+        selection-background-color: #aaa;
+        background-color: #000;
+        border: #00f 1px solid;
+        color: #fff;
+    }
+"""
+
 textEditSheet = """
     QPlainTextEdit {
         selection-background-color:#f39c12;
         background-color: #646464;
         border: #1a1a1a 2px solid;
         color: #fff;
-        border-style: solid;
         font: 9pt;
         border-radius: 4px;
-        border-width: 1px;
     }
 """
 
