@@ -32,14 +32,18 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QPlainTextEdit,
-    QProgressBar
+    QProgressBar,
 )
 from PyQt6.QtGui import QIcon
 
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (pushButtonSheet, toolButtonSheet,
-                               treeSheet, logTextEditSheet)
+from torrentfileQt.qss import (
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
+    logTextEditSheet,
+)
 
 from torrentfileQt.widgets import Label, LineEdit
 
@@ -282,10 +286,7 @@ class TreeWidget(QTreeWidget):
         else:
             item = TreePieceItem(type=0, tree=self)
             item.set_top(path, "./assets/file.png")
-            self.itemWidgets[path] = {
-                "widget": item,
-                "children": []
-            }
+            self.itemWidgets[path] = {"widget": item, "children": []}
             self.addTopLevelItem(item)
             progressbar = Progress()
             self.setItemWidget(item, 2, progressbar)
@@ -303,6 +304,7 @@ class TreeWidget(QTreeWidget):
         progressBar.setValue(amount)
         self.setItemWidget(item2, 1, progressBar)
         self.callback_triggered()
+
 
 class LogTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
