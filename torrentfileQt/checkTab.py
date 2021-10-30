@@ -19,23 +19,23 @@
 
 import os
 from threading import Thread
+
 from PyQt6.QtCore import Qt
-
-
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
-    QHBoxLayout,
-    QPushButton,
-    QWidget,
-    QFormLayout,
-    QToolButton,
     QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
     QPlainTextEdit,
     QProgressBar,
+    QWidget,
 )
-from PyQt6.QtGui import QIcon
-
 from torrentfile.progress import CheckerClass
 
 from torrentfileQt.qss import (
@@ -43,8 +43,10 @@ from torrentfileQt.qss import (
     toolButtonSheet,
     treeSheet,
     logTextEditSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
 )
-
 from torrentfileQt.widgets import Label, LineEdit
 
 
@@ -125,8 +127,9 @@ class CheckButton(QPushButton):
         CheckerClass.register_callbacks(func1, func2)
         self.torrent = self.window.fileInput.text()
         self.folder = self.window.searchInput.text()
-        thread = Thread(group=None, target=self.re_check_torrent)
-        thread.run()
+        # thread = Thread(group=None, target=self.re_check_torrent)
+        # thread.run()
+        self.re_check_torrent()
 
     def re_check_torrent(self):
         checker = CheckerClass(self.torrent, self.folder)

@@ -16,29 +16,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""Widgets and procedures for the "Torrent Info" tab."""
 
-import os
 import math
-from threading import Thread
+import os
 from datetime import datetime
+from threading import Thread
 
 import pyben
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QFileDialog,
-    QPushButton,
-    QWidget,
     QGridLayout,
+    QPushButton,
     QTreeWidgetItem,
+    QWidget,
 )
 
-from torrentfileQt.treewidget import TreeWidget
 from torrentfileQt.qss import pushButtonSheet
-from torrentfileQt.widgets import Label, InfoLineEdit
+from torrentfileQt.treewidget import TreeWidget
+from torrentfileQt.widgets import InfoLineEdit, Label
 
 
 class InfoWidget(QWidget):
+    """Main parent widget for the Torrent Info tab."""
+
     def __init__(self, parent=None):
+        """Construct and organize Torrent info tab."""
         super().__init__(parent=parent)
         self.layout = QGridLayout()
         self.setLayout(self.layout)
@@ -96,6 +100,11 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.selectButton, 16, 0, -1, -1)
 
     def fill(self, kws):
+        """Fill all child widgets with collected information.
+
+        Args:
+            kws (`dict`): key, value dictionary with keys as field labels.
+        """
         self.pathEdit.setText(kws["path"])
         self.nameEdit.setText(kws["name"])
         self.commentEdit.setText(kws["comment"])
@@ -104,13 +113,16 @@ class InfoWidget(QWidget):
         self.dateCreatedEdit.setText(str(kws["creation_date"]))
         self.createdByEdit.setText(kws["created_by"])
         self.privateEdit.setText(kws["private"])
+
         piece_length = kws["piece_length"]
         plength_str = denom(piece_length) + " / (" + pretty_int(piece_length) + ")"
         self.pieceLengthEdit.setText(plength_str)
+
         size = denom(kws["length"]) + " / (" + pretty_int(kws["length"]) + ")"
         self.sizeEdit.setText(size)
         total_pieces = math.ceil(kws["length"] / kws["piece_length"])
         self.totalPiecesEdit.setText(str(total_pieces))
+
         if "file tree" in kws:
             self.contentsTree.set_tree(kws["file tree"])
         elif "files" in kws:
@@ -119,6 +131,7 @@ class InfoWidget(QWidget):
             item = QTreeWidgetItem([kws["name"]])
             item.setText(0, kws["name"])
             self.contentsTree.addTopLevelItem(item)
+
         for widg in [
             self.pathEdit,
             self.nameEdit,
@@ -149,7 +162,10 @@ class SelectButton(QPushButton):
             )
         if not files:
             return
-        meta = pyben.load(files[0])
+        try:
+            meta = pyben.load(files[0])
+        except Exception:
+            return
         info = meta["info"]
         keywords = {}
         keywords["path"] = files[0]
