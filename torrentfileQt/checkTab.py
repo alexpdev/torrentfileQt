@@ -19,32 +19,46 @@
 
 import os
 from threading import Thread
+
 from PyQt6.QtCore import Qt
-
-
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
-    QHBoxLayout,
-    QPushButton,
-    QWidget,
-    QFormLayout,
-    QToolButton,
     QFileDialog,
-    QTreeWidget,
-    QTreeWidgetItem,
+    QFormLayout,
+    QHBoxLayout,
     QPlainTextEdit,
     QProgressBar,
+    QPushButton,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    QPlainTextEdit,
+    QProgressBar,
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+    QWidget,
 )
-from PyQt6.QtGui import QIcon
-
 from torrentfile.progress import CheckerClass
 
 from torrentfileQt.qss import (
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
     pushButtonSheet,
     toolButtonSheet,
     treeSheet,
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     logTextEditSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
 )
-
 from torrentfileQt.widgets import Label, LineEdit
 
 
