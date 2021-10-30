@@ -25,6 +25,7 @@ from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
 
 from tests.context import testdir, testfile, rmpath
 from torrentfileQt.window import alt_start, TabWidget
+from torrentfileQt import qss
 
 
 @pytest.fixture(scope="module")
@@ -45,9 +46,12 @@ def tdir(wind):
 def tfile(request):
     path = testfile(val=request.param)
     yield path
+    rmpath(path)
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(scope="module", params=[
+    TorrentFile, TorrentFileV2, TorrentFileHybrid
+    ])
 def ttorrent1(tfile, request):
     path = tfile
     args = {
@@ -64,7 +68,9 @@ def ttorrent1(tfile, request):
     rmpath(outfile)
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(scope="module", params=[
+    TorrentFile, TorrentFileV2, TorrentFileHybrid
+    ])
 def ttorrent2(tfile, request):
     path = tfile
     args = {"path": path}
@@ -93,6 +99,15 @@ def test_app2(wind):
 def test_window_menubar1(wind):
     assert wind.menubar is not None
 
+def test_window_menubar_action1(wind):
+    menubar = wind.menubar
+    menubar.actionDocs.trigger()
+    menubar.actionRepo.trigger()
+    menubar.actionExit.trigger()
+    assert True
+
+
+
 
 def test_window_statusbar1(wind):
     assert wind.statusbar is not None
@@ -114,7 +129,7 @@ def test_info_tab_select1(wind, ttorrent1):
     assert infotab.nameEdit.text() != ""
 
 
-def test_info_tab_select1(wind, ttorrent2):
+def test_info_tab_select2(wind, ttorrent2):
     infotab = wind.central.infoWidget
     button = infotab.selectButton
     button.selectTorrent(files=[ttorrent2])
@@ -168,7 +183,7 @@ def test_create_tab_file_v2(wind, tfile):
     submit = createtab.submit_button
     submit.click()
     assert os.path.exists(torfile)
-    rmpath(torfile)
+
 
 
 def test_create_tab_file_hybrid(wind, tfile):
@@ -185,7 +200,6 @@ def test_create_tab_file_hybrid(wind, tfile):
     submit = createtab.submit_button
     submit.click()
     assert os.path.exists(torfile)
-    rmpath(torfile)
 
 
 def test_check_tab(wind, ttorrent1):
@@ -197,7 +211,7 @@ def test_check_tab(wind, ttorrent1):
     assert checktab.fileInput.text() != ""
 
 
-def test_check_tab(wind, ttorrent2):
+def test_check_tab2(wind, ttorrent2):
     checktab = wind.central.checkWidget
     testdir = os.path.dirname(ttorrent2)
     checktab.browseButton1.browse(path=testdir)

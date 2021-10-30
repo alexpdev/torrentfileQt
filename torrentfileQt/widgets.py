@@ -17,9 +17,9 @@
 # limitations under the License.
 ##############################################################################
 
-from PyQt6.QtWidgets import QLineEdit, QLabel, QPlainTextEdit
+from PyQt6.QtWidgets import QLabel, QLineEdit, QPlainTextEdit
 
-from .qss import lineEditSheet, labelSheet, textEditSheet, altLineEditSheet
+from .qss import altLineEditSheet, labelSheet, lineEditSheet, textEditSheet
 
 
 class LineEdit(QLineEdit):

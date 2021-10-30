@@ -47,14 +47,14 @@ test: environment ## run tests quickly with the default Python
 	pip install -U pytest pytest-cov
 	pytest --cov tests
 
-coverage: environment  ## gather coverage data
+coverage: test  ## gather coverage data
 	pip install -U coverage
 	coverage run -m pytest tests
 	coverage report
 	coverage xml -o coverage.xml
 	bash codacy.sh report -r coverage.xml
 
-push: clean test coverage ## push changes to remote
+push: clean coverage ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push -u origin dev

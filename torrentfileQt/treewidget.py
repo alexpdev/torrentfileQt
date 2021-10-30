@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
 from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
+
 from .qss import treeSheet
 
 
