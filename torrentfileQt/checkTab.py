@@ -32,28 +32,16 @@ from PyQt6.QtWidgets import (
     QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     QPlainTextEdit,
     QProgressBar,
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     QWidget,
 )
 from torrentfile.progress import CheckerClass
 
 from torrentfileQt.qss import (
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     pushButtonSheet,
     toolButtonSheet,
     treeSheet,
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     logTextEditSheet,
     pushButtonSheet,
     toolButtonSheet,
