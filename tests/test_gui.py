@@ -46,6 +46,7 @@ def tdir(wind):
 def tfile(request):
     path = testfile(val=request.param)
     yield path
+    rmpath(path)
 
 
 @pytest.fixture(scope="module", params=[
@@ -182,7 +183,7 @@ def test_create_tab_file_v2(wind, tfile):
     submit = createtab.submit_button
     submit.click()
     assert os.path.exists(torfile)
-    rmpath(torfile)
+
 
 
 def test_create_tab_file_hybrid(wind, tfile):
@@ -199,7 +200,6 @@ def test_create_tab_file_hybrid(wind, tfile):
     submit = createtab.submit_button
     submit.click()
     assert os.path.exists(torfile)
-    rmpath(torfile)
 
 
 def test_check_tab(wind, ttorrent1):
