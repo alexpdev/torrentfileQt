@@ -71,7 +71,7 @@ class MenuBar(QMenuBar):
         webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
 
     def repository(self):
-        webbrowser.open_new_tab("https://github.com/torrentfileQt")
+        webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
     def about_qt(self):
         self.window.app.aboutQt()
