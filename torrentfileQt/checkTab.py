@@ -127,9 +127,9 @@ class CheckButton(QPushButton):
         CheckerClass.register_callbacks(func1, func2)
         self.torrent = self.window.fileInput.text()
         self.folder = self.window.searchInput.text()
-        # thread = Thread(group=None, target=self.re_check_torrent)
-        # thread.run()
-        self.re_check_torrent()
+        thread = Thread(group=None, target=self.re_check_torrent)
+        thread.run()
+        # self.re_check_torrent()
 
     def re_check_torrent(self):
         checker = CheckerClass(self.torrent, self.folder)
@@ -171,7 +171,9 @@ class BrowseTorrents(QToolButton):
             )
         if not path:
             return
-        path = os.path.realpath(path[0])
+        if isinstance(path, list):
+            path = path[0]
+        path = os.path.realpath(path)
         self.parent().fileInput.clear()
         self.parent().fileInput.setText(path)
 
