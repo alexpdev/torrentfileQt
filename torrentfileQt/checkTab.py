@@ -18,6 +18,7 @@
 ##############################################################################
 
 import os
+import asyncio
 from threading import Thread
 from collections.abc import Sequence
 
@@ -124,10 +125,10 @@ class CheckButton(QPushButton):
 
     def submit(self):
         self.widget = self.parent()
-        textEdit = self.widget.textEdit
-        treeWidget = self.widget.treeWidget
-        func1 = textEdit.callback
-        func2 = treeWidget.callback
+        self.textEdit = self.widget.textEdit
+        self.treeWidget = self.widget.treeWidget
+        func1 = self.textEdit.callback
+        func2 = self.treeWidget.callback
         CheckerClass.register_callbacks(func1, func2)
         self.torrent = self.widget.fileInput.text()
         self.folder = self.widget.searchInput.text()
@@ -139,8 +140,20 @@ class CheckButton(QPushButton):
     def re_check_torrent(self):
         checker = CheckerClass(self.torrent, self.folder)
         msg = f"Torrent Contents are {checker.result}% completely downloaded."
-        self.widget.textEdit.insertPlainText(msg)
-        self.widget.treeWidget.perform_action()
+        self.textEdit.insertPlainText(msg)
+        last_path = self.treeWidget.paths[-1]
+        value = self.treeWidget.itemWidgets[last_path]
+        widget = value["widget"]
+        children = value["children"]
+        tally = total = 0
+        for child in children:
+            tally += child.val
+            total += 100
+        percent = int((tally / total) * 100)
+        self.treeWidget.removeItemWidget(widget, 2)
+        progressbar = Progress(parent=None)
+        progressbar.setValue(percent)
+        self.treeWidget.setItemWidget(widget, 2, progressbar)
 
 
 class BrowseTorrents(QToolButton):
@@ -248,6 +261,9 @@ class TreePieceItem(QTreeWidgetItem):
         progressbar.setValue(value)
         self.tree.setItemWidget(self, 2, progressbar)
 
+    def __repr__(self):
+        return f"<TreeItem: {self.val}>"
+
 
 class Progress(QProgressBar):
     def __init__(self, parent=None):
@@ -278,73 +294,66 @@ class TreeWidget(QTreeWidget):
         self.setIndentation(10)
         header = self.header()
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
-        # self.setHeaderHidden(True)
+        header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
+        self.setHeaderHidden(True)
         self.root = None
         self.itemWidgets = {}
-        self.item_tree = {}
+        self.paths = []
+        self.item_tree = {"widget" : self.invisibleRootItem()}
 
     def callback(self, response, path, size, total):
         if path.startswith(self.root):
             path = path.strip(self.root)
         if path not in self.itemWidgets:
+            if self.paths:
+                last_path = self.paths[-1]
+                value = self.itemWidgets[last_path]
+                widget = value["widget"]
+                children = value["children"]
+                tally = total = 0
+                for child in children:
+                    tally += child.val
+                    total += 100
+                percent = int((tally / total) * 100)
+                self.removeItemWidget(widget, 2)
+                progressbar = Progress(parent=None)
+                progressbar.setValue(percent)
+                self.setItemWidget(widget, 2, progressbar)
             temp, partials = path, []
             while True:
                 root, base = os.path.split(temp)
                 if not base:
-                    partials.insert(0, root)
                     break
                 partials.insert(0,base)
                 temp = root
             item_tree = self.item_tree
             for i, partial in enumerate(partials):
+                if partial in item_tree:
+                    item_tree = item_tree[partial]
+                    continue
+                widget = item_tree["widget"]
+                item = TreePieceItem(type=0, tree=self)
+                item.set_top(partial, "./assets/folder.png")
+                widget.addChild(item)
+                item_tree[partial] = {"widget": item}
                 if i == len(partials) - 1:
-                    widget = item_tree["widget"]
-                    item = TreePieceItem(type=0)
-                    item.set_top(partial, "./assets/file.png")
                     progressbar = Progress()
                     self.setItemWidget(item, 2, progressbar)
-                    widget.addChild(item)
                     self.itemWidgets[path] = {"children": [], "widget": item}
-                    item_tree[partial] = {"widget": item}
-                elif partial in item_tree:
-                    item_tree = item_tree[partial]
-                else:
-                    widget = item_tree["widget"]
-                    item = TreePieceItem(type=0)
-                    item.set_top(partial, "./assets/folder.png")
-                    widget.addChild(item)
-                    item_tree[partial] = {"widget": item}
-        children = self.itemwidgets[path]["children"]
-        widget = self.itemwidgets[path]["widget"]
-        item2 = TreePieceItem(type=0)
+                item_tree = item_tree[partial]
+            self.paths.append(path)
+        children = self.itemWidgets[path]["children"]
+        widget = self.itemWidgets[path]["widget"]
+        item2 = TreePieceItem(type=0, tree=self)
         widget.addChild(item2)
         amount = 0 if not response else 100
-        item2.setValue(amount)
+        item2.set_val(amount)
         children.append(item2)
         self.window.update()
         self.window.repaint()
 
-
-
     def setRoot(self, root):
         self.root = os.path.split(root)[0]
-
-    def perform_action(self):
-        for _, value in self.itemWidgets.items():
-            self.update_progress(value)
-
-    def update_progress(self, value):
-        widget = value["widget"]
-        children = value["children"]
-        tally = total = 0
-        for child in children:
-            tally += child.val
-            total += 100
-        percent = int((tally / total) * 100)
-        self.removeItemWidget(widget, 2)
-        progressbar = Progress(parent=None)
-        progressbar.setValue(percent)
-        self.setItemWidget(widget, 2, progressbar)
 
     def add_top_item(self, path):
         item = TreePieceItem(type=0, tree=self)

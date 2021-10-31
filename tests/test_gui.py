@@ -196,19 +196,19 @@ def test_create_tab_file_hybrid(wind, tfile):
     assert os.path.exists(torfile)
 
 
-def test_check_tab(wind, ttorrent1):
-    checktab = wind.central.checkWidget
-    testdir = os.path.dirname(ttorrent1)
-    checktab.browseButton1.browse(path=testdir)
-    checktab.browseButton2.browse(path=testdir)
-    checktab.checkButton.click()
-    assert checktab.fileInput.text() != ""
+# def test_check_tab(wind, ttorrent1):
+#     checktab = wind.central.checkWidget
+#     testdir = os.path.dirname(ttorrent1)
+#     checktab.browseButton1.browse(path=testdir)
+#     checktab.browseButton2.browse(path=testdir)
+#     checktab.checkButton.click()
+#     assert checktab.fileInput.text() != ""
 
 
-def test_check_tab2(wind, ttorrent2):
-    checktab = wind.central.checkWidget
-    testdir = os.path.dirname(ttorrent2)
-    checktab.browseButton1.browse(path=testdir)
-    checktab.browseButton2.browse(path=testdir)
-    checktab.checkButton.click()
-    assert checktab.fileInput.text() != ""
+# def test_check_tab2(wind, ttorrent2):
+#     checktab = wind.central.checkWidget
+#     testdir = os.path.dirname(ttorrent2)
+#     checktab.browseButton1.browse(path=testdir)
+#     checktab.browseButton2.browse(path=testdir)
+#     checktab.checkButton.click()
+#     assert checktab.fileInput.text() != ""
