@@ -257,7 +257,7 @@ class TreePieceItem(QTreeWidgetItem):
         self.set_icon("./assets/percentage.png")
         self.setText(1, f"Piece Patial Match: {value}")
         progressbar = Progress()
-        progressbar.setRange(0,100)
+        progressbar.setRange(0, 100)
         progressbar.setValue(value)
         self.tree.setItemWidget(self, 2, progressbar)
 
@@ -299,7 +299,7 @@ class TreeWidget(QTreeWidget):
         self.root = None
         self.itemWidgets = {}
         self.paths = []
-        self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.item_tree = {"widget": self.invisibleRootItem()}
 
     def callback(self, response, path, size, total):
         if path.startswith(self.root):
@@ -324,7 +324,7 @@ class TreeWidget(QTreeWidget):
                 root, base = os.path.split(temp)
                 if not base:
                     break
-                partials.insert(0,base)
+                partials.insert(0, base)
                 temp = root
             item_tree = self.item_tree
             for i, partial in enumerate(partials):
@@ -380,7 +380,6 @@ class TreeWidget(QTreeWidget):
         children.append(item2)
         self.window.update()
         self.window.repaint()
-
 
 
 class LogTextEdit(QPlainTextEdit):
