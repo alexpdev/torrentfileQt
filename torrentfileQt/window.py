@@ -69,7 +69,7 @@ class Window(QMainWindow):
 
     def _setupUI(self):
         """Internal function for setting up UI elements."""
-        self.central = TabWidget()
+        self.central = TabWidget(parent=self)
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
@@ -87,9 +87,10 @@ class TabWidget(QTabWidget):
             parent (`QWidget`, deault=None): QMainWindow
         """
         super().__init__(parent=parent)
-        self.createWidget = CreateWidget()
-        self.checkWidget = CheckWidget()
-        self.infoWidget = InfoWidget()
+        self.window = parent
+        self.createWidget = CreateWidget(parent=self)
+        self.checkWidget = CheckWidget(parent=self)
+        self.infoWidget = InfoWidget(parent=self)
         self.setStyleSheet(tabBarSheet + tabSheet)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
@@ -109,6 +110,7 @@ def start():
     window = Window(parent=None, app=app)
     window.show()
     sys.exit(app.exec())
+
 
 
 def alt_start():

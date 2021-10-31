@@ -27,10 +27,10 @@ treeSheet = """
     }
     QTreeWidget::item::selected {
         color: #FFFFFF;
-        font-size: 14pt;
+        font-size: 9pt;
     }
     QTreeWidget::item::hover {
-        font-size: 14pt;
+        font-size: 9pt;
         color: #CFF8DC;
     }
     QTreeWidget::indicator::checked {
@@ -40,6 +40,26 @@ treeSheet = """
     QTreeWidget::indicator::unchecked {
 	    background-color: #ffffff;
 	    border: 1px solid #536D79;
+    }
+    QTreeWidget QHeaderView::section {
+        background-color: black;
+        color: white;
+    }
+    QTreeWidget QHeaderView::section {
+        border: 1px solid #e57e22;
+        background-color: black;
+        color: white;
+    }
+    QTreeWidget QProgressBar {
+        border: 4px solid black;
+        border-radius: 12px;
+        text-align: center;
+        margin: 3px;
+    }
+    QTreeWidget QProgressBar::chunk {
+        background-color: #66ccff;
+        width: 10px;
+        margin: 1px;
     }
     """
 
@@ -479,3 +499,27 @@ spinboxSheet = """
         color: #a9b7c6;
         background-color:#000000;
 }"""
+
+
+progressbarSheet = """
+    QProgressBar {
+        border: 2px solid black;
+        border-radius: 8px;
+        text-align: center;
+    }
+    QProgressBar::chunck {
+        background-color: black;
+        width: 8px;
+        margin: 1px;
+    }
+"""
+
+
+headerSheet = """
+    QHeaderView {
+        background-color: black;
+        border: 1px solid #e67e22;
+        height: 4px;
+        color: black;
+    }
+"""
