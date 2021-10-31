@@ -9,7 +9,9 @@ codacy.sh
 # C extensions
 *.so
 temp/
+temp/
 testdir/
+main.py
 
 # Distribution / packaging
 .vscode/

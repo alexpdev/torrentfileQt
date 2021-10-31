@@ -17,4 +17,4 @@
 # limitations under the License.
 ##############################################################################
 
-from torrentfileQt.window import Application, Window, start
+from torrentfileQt.window import Application, Window, start, alt_start
