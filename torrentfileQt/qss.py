@@ -51,7 +51,7 @@ treeSheet = """
         color: white;
     }
     QTreeWidget QProgressBar {
-        border: 4px solid black;
+        border: 4px solid #e57e22;
         border-radius: 12px;
         text-align: center;
         margin: 3px;
