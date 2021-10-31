@@ -256,9 +256,9 @@ class Progress(QProgressBar):
         self.setValue(0)
         # self.setStyleSheet(progr6essbarSheet)
 
+
 class CallbackThread(QThread):
     callbackActivated = pyqtSignal()
-
 
 
 class TreeWidget(QTreeWidget):
@@ -280,8 +280,51 @@ class TreeWidget(QTreeWidget):
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         # self.setHeaderHidden(True)
         self.root = None
-        self.total = None
         self.itemWidgets = {}
+        self.item_tree = {}
+
+    def callback(self, response, path, size, total):
+        if path.startswith(self.root):
+            path = path.strip(self.root)
+        if path not in self.itemWidgets:
+            temp, partials = path, []
+            while True:
+                root, base = os.path.split(temp)
+                if not base:
+                    partials.insert(0, root)
+                    break
+                partials.insert(0,base)
+                temp = root
+            item_tree = self.item_tree
+            for i, partial in enumerate(partials):
+                if i == len(partials) - 1:
+                    widget = item_tree["widget"]
+                    item = TreePieceItem(type=0)
+                    item.set_top(partial, "./assets/file.png")
+                    progressbar = Progress()
+                    self.setItemWidget(item, 2, progressbar)
+                    widget.addChild(item)
+                    self.itemWidgets[path] = {"children": [], "widget": item}
+                    item_tree[partial] = {"widget": item}
+                elif partial in item_tree:
+                    item_tree = item_tree[partial]
+                else:
+                    widget = item_tree["widget"]
+                    item = TreePieceItem(type=0)
+                    item.set_top(partial, "./assets/folder.png")
+                    widget.addChild(item)
+                    item_tree[partial] = {"widget": item}
+        children = self.itemwidgets[path]["children"]
+        widget = self.itemwidgets[path]["widget"]
+        item2 = TreePieceItem(type=0)
+        widget.addChild(item2)
+        amount = 0 if not response else 100
+        item2.setValue(amount)
+        children.append(item2)
+        self.window.update()
+        self.window.repaint()
+
+
 
     def setRoot(self, root):
         self.root = os.path.split(root)[0]
@@ -310,8 +353,9 @@ class TreeWidget(QTreeWidget):
         self.addTopLevelItem(item)
         progressbar = Progress()
         self.setItemWidget(item, 2, progressbar)
+        self.total += 1
 
-    def callback(self, response, path, size, total):
+    def callback2(self, response, path, size, total):
         if path.startswith(self.root):
             path = path.strip(self.root)
         if self.total is None:
@@ -322,10 +366,7 @@ class TreeWidget(QTreeWidget):
         children = self.itemWidgets[path]["children"]
         item2 = TreePieceItem(type=0, tree=self)
         item.addChild(item2)
-        if not response:
-            amount = 0
-        else:
-            amount = 100
+        amount = 0 if not response else 100
         item2.set_val(amount)
         children.append(item2)
         self.window.update()
