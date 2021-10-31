@@ -244,7 +244,7 @@ class TreePieceItem(QTreeWidgetItem):
         self.set_icon("./assets/percentage.png")
         self.setText(1, f"Piece Patial Match: {value}")
         progressbar = Progress()
-        progressbar.setRange(0,100)
+        progressbar.setRange(0, 100)
         progressbar.setValue(value)
         self.tree.setItemWidget(self, 2, progressbar)
 
@@ -256,9 +256,9 @@ class Progress(QProgressBar):
         self.setValue(0)
         # self.setStyleSheet(progr6essbarSheet)
 
+
 class CallbackThread(QThread):
     callbackActivated = pyqtSignal()
-
 
 
 class TreeWidget(QTreeWidget):
@@ -330,7 +330,6 @@ class TreeWidget(QTreeWidget):
         children.append(item2)
         self.window.update()
         self.window.repaint()
-
 
 
 class LogTextEdit(QPlainTextEdit):
