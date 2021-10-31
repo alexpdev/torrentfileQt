@@ -49,9 +49,7 @@ def tfile(request):
     rmpath(path)
 
 
-@pytest.fixture(scope="module", params=[
-    TorrentFile, TorrentFileV2, TorrentFileHybrid
-    ])
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def ttorrent1(tfile, request):
     path = tfile
     args = {
@@ -68,9 +66,7 @@ def ttorrent1(tfile, request):
     rmpath(outfile)
 
 
-@pytest.fixture(scope="module", params=[
-    TorrentFile, TorrentFileV2, TorrentFileHybrid
-    ])
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def ttorrent2(tfile, request):
     path = tfile
     args = {"path": path}
@@ -99,14 +95,13 @@ def test_app2(wind):
 def test_window_menubar1(wind):
     assert wind.menubar is not None
 
+
 def test_window_menubar_action1(wind):
     menubar = wind.menubar
     menubar.actionDocs.trigger()
     menubar.actionRepo.trigger()
     menubar.actionExit.trigger()
     assert True
-
-
 
 
 def test_window_statusbar1(wind):
@@ -183,7 +178,6 @@ def test_create_tab_file_v2(wind, tfile):
     submit = createtab.submit_button
     submit.click()
     assert os.path.exists(torfile)
-
 
 
 def test_create_tab_file_hybrid(wind, tfile):
