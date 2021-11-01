@@ -42,7 +42,7 @@ def rmpath(path):
             shutil.rmtree(path)
 
 
-def testDir(func):
+def tstDir(func):
     """Create root testing directory partial function.
 
     Args:
@@ -81,15 +81,15 @@ def fill(path, exp=25):
     return path
 
 
-@testDir
-def testfile(val=20):
+@tstDir
+def tstfile(val=20):
     root = os.path.join(TESTDIR, "file1")
     fill(root, exp=val)
     return root
 
 
-@testDir
-def testdir():
+@tstDir
+def tstdir():
     root = ROOT
     dir1 = os.path.join(root, "dir1")
     file1 = os.path.join(root, "file1")

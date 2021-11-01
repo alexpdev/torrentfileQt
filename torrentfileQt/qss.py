@@ -51,15 +51,15 @@ treeSheet = """
         color: white;
     }
     QTreeWidget QProgressBar {
-        border: 4px solid #e57e22;
-        border-radius: 12px;
+        border: 2px solid #e57e22;
+        border-radius: 6px;
         text-align: center;
-        margin: 3px;
     }
     QTreeWidget QProgressBar::chunk {
-        background-color: #66ccff;
-        width: 10px;
+        background-color: #164caf;
+        width: 25px;
         margin: 1px;
+        border-radius: 30px;
     }
     """
 

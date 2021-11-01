@@ -18,13 +18,13 @@
 ##############################################################################
 
 import os
-import asyncio
 from threading import Thread
 from collections.abc import Sequence
 
-from PyQt6.QtCore import Qt, pyqtSignal, QThread
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
+    QWidget,
     QFileDialog,
     QFormLayout,
     QHBoxLayout,
@@ -34,23 +34,18 @@ from PyQt6.QtWidgets import (
     QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
-    QPlainTextEdit,
-    QProgressBar,
-    QWidget,
 )
 from torrentfile.progress import CheckerClass
 
 
 from torrentfileQt.qss import (
-    pushButtonSheet,
-    toolButtonSheet,
-    treeSheet,
     logTextEditSheet,
     pushButtonSheet,
     toolButtonSheet,
     treeSheet,
     headerSheet,
 )
+
 from torrentfileQt.widgets import Label, LineEdit
 
 
@@ -117,43 +112,54 @@ class CheckButton(QPushButton):
     def __init__(self, text, parent=None):
         """Construct the CheckButton Widget."""
         super().__init__(text, parent=parent)
+        self.widget = parent
         self.pressed.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setStyleSheet(pushButtonSheet)
         self.torrent = None
         self.folder = None
 
+
+    @property
+    def textEdit(self):
+        return self.widget.textEdit
+
+    @property
+    def treeWidget(self):
+        return self.widget.treeWidget
+
+
     def submit(self):
-        self.widget = self.parent()
-        self.textEdit = self.widget.textEdit
-        self.treeWidget = self.widget.treeWidget
+        self.treeWidget.clear()
+        self.textEdit.clear()
         func1 = self.textEdit.callback
         func2 = self.treeWidget.callback
         CheckerClass.register_callbacks(func1, func2)
         self.torrent = self.widget.fileInput.text()
         self.folder = self.widget.searchInput.text()
         self.widget.treeWidget.setRoot(self.folder)
-        # thread = Thread(group=None, target=self.re_check_torrent)
-        # thread.run()
-        self.re_check_torrent()
+        thread = Thread(group=None, target=self.re_check_torrent)
+        thread.run()
+        # self.re_check_torrent()
 
     def re_check_torrent(self):
         checker = CheckerClass(self.torrent, self.folder)
         msg = f"Torrent Contents are {checker.result}% completely downloaded."
         self.textEdit.insertPlainText(msg)
-        last_path = self.treeWidget.paths[-1]
-        value = self.treeWidget.itemWidgets[last_path]
-        widget = value["widget"]
-        children = value["children"]
-        tally = total = 0
-        for child in children:
-            tally += child.val
-            total += 100
-        percent = int((tally / total) * 100)
-        self.treeWidget.removeItemWidget(widget, 2)
-        progressbar = Progress(parent=None)
-        progressbar.setValue(percent)
-        self.treeWidget.setItemWidget(widget, 2, progressbar)
+        if self.treeWidget.paths:
+            last_path = self.treeWidget.paths[-1]
+            value = self.treeWidget.itemWidgets[last_path]
+            widget = value["widget"]
+            children = value["children"]
+            tally = total = 0
+            for child in children:
+                tally += child.val
+                total += 100
+            percent = int((tally / total) * 100)
+            self.treeWidget.removeItemWidget(widget, 2)
+            progressbar = Progress(parent=None)
+            progressbar.setValue(percent)
+            self.treeWidget.setItemWidget(widget, 2, progressbar)
 
 
 class BrowseTorrents(QToolButton):
@@ -192,7 +198,7 @@ class BrowseTorrents(QToolButton):
             return
         if isinstance(path, Sequence):
             path = path[0]
-        path = os.path.realpath(path)
+        path = os.path.normpath(path)
         self.parent().fileInput.clear()
         self.parent().fileInput.setText(path)
 
@@ -227,6 +233,7 @@ class BrowseFolders(QToolButton):
             path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
         if not path:
             return
+        path = os.path.normpath(path)
         self.parent().searchInput.clear()
         self.parent().searchInput.setText(path)
 
@@ -240,7 +247,9 @@ class TreePieceItem(QTreeWidgetItem):
     def __init__(self, type=0, tree=None):
         super().__init__(type=type)
         self.val = None
-        self.setChildIndicatorPolicy(self.ChildIndicatorPolicy.ShowIndicator)
+        self.setChildIndicatorPolicy(
+            self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
+            )
         self.data_role = Qt.ItemDataRole.UserRole
         self.tree = tree
 
@@ -270,11 +279,6 @@ class Progress(QProgressBar):
         super().__init__(parent=parent)
         self.setRange(0, 100)
         self.setValue(0)
-        # self.setStyleSheet(progr6essbarSheet)
-
-
-class CallbackThread(QThread):
-    callbackActivated = pyqtSignal()
 
 
 class TreeWidget(QTreeWidget):
@@ -285,6 +289,7 @@ class TreeWidget(QTreeWidget):
     Args:
         parent(`QWidget`, default=None)
     """
+    callback_activated = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -300,25 +305,36 @@ class TreeWidget(QTreeWidget):
         self.itemWidgets = {}
         self.paths = []
         self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.callback_activated.connect(self.performAction)
+
+    def clear_data(self):
+        self.clear()
+        self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.itemWidgets = {}
+        self.paths = []
+        self.root = None
+
+    def performAction(self):
+        if self.paths:
+            last_path = self.paths[-1]
+            value = self.itemWidgets[last_path]
+            widget = value["widget"]
+            children = value["children"]
+            tally = total = 0
+            for child in children:
+                tally += child.val
+                total += 100
+            percent = int((tally / total) * 100)
+            self.removeItemWidget(widget, 2)
+            progressbar = Progress(parent=None)
+            progressbar.setValue(percent)
+            self.setItemWidget(widget, 2, progressbar)
+
 
     def callback(self, response, path, size, total):
         if path.startswith(self.root):
             path = path.strip(self.root)
         if path not in self.itemWidgets:
-            if self.paths:
-                last_path = self.paths[-1]
-                value = self.itemWidgets[last_path]
-                widget = value["widget"]
-                children = value["children"]
-                tally = total = 0
-                for child in children:
-                    tally += child.val
-                    total += 100
-                percent = int((tally / total) * 100)
-                self.removeItemWidget(widget, 2)
-                progressbar = Progress(parent=None)
-                progressbar.setValue(percent)
-                self.setItemWidget(widget, 2, progressbar)
             temp, partials = path, []
             while True:
                 root, base = os.path.split(temp)
@@ -326,6 +342,7 @@ class TreeWidget(QTreeWidget):
                     break
                 partials.insert(0,base)
                 temp = root
+                self.callback_activated.emit()
             item_tree = self.item_tree
             for i, partial in enumerate(partials):
                 if partial in item_tree:
@@ -355,32 +372,6 @@ class TreeWidget(QTreeWidget):
     def setRoot(self, root):
         self.root = os.path.split(root)[0]
 
-    def add_top_item(self, path):
-        item = TreePieceItem(type=0, tree=self)
-        item.set_top(path, "./assets/file.png")
-        self.itemWidgets[path] = {"widget": item, "children": []}
-        self.addTopLevelItem(item)
-        progressbar = Progress()
-        self.setItemWidget(item, 2, progressbar)
-        self.total += 1
-
-    def callback2(self, response, path, size, total):
-        if path.startswith(self.root):
-            path = path.strip(self.root)
-        if self.total is None:
-            self.total = total
-        if path not in self.itemWidgets:
-            self.add_top_item(path)
-        item = self.itemWidgets[path]["widget"]
-        children = self.itemWidgets[path]["children"]
-        item2 = TreePieceItem(type=0, tree=self)
-        item.addChild(item2)
-        amount = 0 if not response else 100
-        item2.set_val(amount)
-        children.append(item2)
-        self.window.update()
-        self.window.repaint()
-
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -394,6 +385,9 @@ class LogTextEdit(QPlainTextEdit):
         font.setPointSize(11)
         self.setFont(font)
         self.setStyleSheet(logTextEditSheet)
+
+    def clear_data(self):
+        self.clear()
 
     def callback(self, msg):
         self.insertPlainText(msg)

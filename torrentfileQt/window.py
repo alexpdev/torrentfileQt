@@ -64,7 +64,7 @@ class Window(QMainWindow):
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
         self.setStyleSheet(mainWindowSheet)
-        self.resize(600, 600)
+        self.resize(600, 700)
         self._setupUI()
 
     def _setupUI(self):

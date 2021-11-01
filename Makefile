@@ -45,7 +45,7 @@ clean-build: ## remove build artifacts
 
 test: environment ## run tests quickly with the default Python
 	pip install -U pytest pytest-cov
-	pytest --cov tests
+	pytest --cov=torrentfileQt tests
 
 coverage: test  ## gather coverage data
 	pip install -U coverage
