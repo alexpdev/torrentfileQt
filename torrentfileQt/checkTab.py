@@ -119,7 +119,6 @@ class CheckButton(QPushButton):
         self.torrent = None
         self.folder = None
 
-
     @property
     def textEdit(self):
         return self.widget.textEdit
@@ -127,7 +126,6 @@ class CheckButton(QPushButton):
     @property
     def treeWidget(self):
         return self.widget.treeWidget
-
 
     def submit(self):
         self.treeWidget.clear()
@@ -249,7 +247,7 @@ class TreePieceItem(QTreeWidgetItem):
         self.val = None
         self.setChildIndicatorPolicy(
             self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
-            )
+        )
         self.data_role = Qt.ItemDataRole.UserRole
         self.tree = tree
 
@@ -266,7 +264,7 @@ class TreePieceItem(QTreeWidgetItem):
         self.set_icon("./assets/percentage.png")
         self.setText(1, f"Piece Patial Match: {value}")
         progressbar = Progress()
-        progressbar.setRange(0,100)
+        progressbar.setRange(0, 100)
         progressbar.setValue(value)
         self.tree.setItemWidget(self, 2, progressbar)
 
@@ -289,6 +287,7 @@ class TreeWidget(QTreeWidget):
     Args:
         parent(`QWidget`, default=None)
     """
+
     callback_activated = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -304,12 +303,12 @@ class TreeWidget(QTreeWidget):
         self.root = None
         self.itemWidgets = {}
         self.paths = []
-        self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.item_tree = {"widget": self.invisibleRootItem()}
         self.callback_activated.connect(self.performAction)
 
     def clear_data(self):
         self.clear()
-        self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.item_tree = {"widget": self.invisibleRootItem()}
         self.itemWidgets = {}
         self.paths = []
         self.root = None
@@ -330,7 +329,6 @@ class TreeWidget(QTreeWidget):
             progressbar.setValue(percent)
             self.setItemWidget(widget, 2, progressbar)
 
-
     def callback(self, response, path, size, total):
         if path.startswith(self.root):
             path = path.strip(self.root)
@@ -340,7 +338,7 @@ class TreeWidget(QTreeWidget):
                 root, base = os.path.split(temp)
                 if not base:
                     break
-                partials.insert(0,base)
+                partials.insert(0, base)
                 temp = root
                 self.callback_activated.emit()
             item_tree = self.item_tree
@@ -371,7 +369,6 @@ class TreeWidget(QTreeWidget):
 
     def setRoot(self, root):
         self.root = os.path.split(root)[0]
-
 
 
 class LogTextEdit(QPlainTextEdit):

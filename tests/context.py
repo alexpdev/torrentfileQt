@@ -51,6 +51,7 @@ def tstDir(func):
     Returns:
         wrapper (function): This callable.
     """
+
     def wrapper(*args, **kwargs):
         """Wrapper for testDir function."""
         if not os.path.exists(TESTDIR):
