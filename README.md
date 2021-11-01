@@ -20,4 +20,8 @@ TorrentFileQt is a Graphical User Interface for [TorrentFile CLI](https://github
 
 -------
 
+![InfoTabScreenShot.png](./assets/CheckTabScreenShot.png)
+
+-------
+
 ![torrentfile.png](./assets/torrentfile.png)

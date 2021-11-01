@@ -18,12 +18,14 @@
 ##############################################################################
 
 import os
-
 import pytest
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
-from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
+from pathlib import Path
 
-from tests.context import testdir, testfile, rmpath
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
+
+
+from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
+from tests.context import tstdir, tstfile, rmpath
 from torrentfileQt.window import alt_start, TabWidget
 from torrentfileQt import qss
 
@@ -36,17 +38,15 @@ def wind():
 
 
 @pytest.fixture(scope="module")
-def tdir(wind):
-    root = testdir()
-    yield root, wind
-    rmpath(root)
+def tdir():
+    root = tstdir()
+    return root
 
 
 @pytest.fixture(scope="module", params=list(range(14, 28)))
 def tfile(request):
-    path = testfile(val=request.param)
-    yield path
-    rmpath(path)
+    path = tstfile(val=request.param)
+    return path
 
 
 @pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
@@ -62,8 +62,8 @@ def ttorrent1(tfile, request):
     }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    yield outfile
-    rmpath(outfile)
+    return outfile
+
 
 
 @pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
@@ -72,8 +72,7 @@ def ttorrent2(tfile, request):
     args = {"path": path}
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    yield outfile
-    rmpath(outfile)
+    return outfile
 
 
 def test_window1(wind):
@@ -131,8 +130,8 @@ def test_info_tab_select2(wind, ttorrent2):
     assert infotab.nameEdit.text() != ""
 
 
-def test_create_tab_dir(tdir):
-    root, wind = tdir
+def test_create_tab_dir(tdir, wind):
+    root = tdir
     createtab = wind.central.createWidget
     button = createtab.browse_dir_button
     button.browse(path=root)
@@ -196,19 +195,48 @@ def test_create_tab_file_hybrid(wind, tfile):
     assert os.path.exists(torfile)
 
 
-# def test_check_tab(wind, ttorrent1):
-#     checktab = wind.central.checkWidget
-#     testdir = os.path.dirname(ttorrent1)
-#     checktab.browseButton1.browse(path=testdir)
-#     checktab.browseButton2.browse(path=testdir)
-#     checktab.checkButton.click()
-#     assert checktab.fileInput.text() != ""
+def test_check_tab(wind, ttorrent1):
+    checktab = wind.central.checkWidget
+    testdir = os.path.dirname(ttorrent1)
+    checktab.browseButton1.browse(path=testdir)
+    checktab.browseButton2.browse(path=testdir)
+    assert checktab.searchInput.text() != ""
 
 
-# def test_check_tab2(wind, ttorrent2):
-#     checktab = wind.central.checkWidget
-#     testdir = os.path.dirname(ttorrent2)
-#     checktab.browseButton1.browse(path=testdir)
-#     checktab.browseButton2.browse(path=testdir)
-#     checktab.checkButton.click()
-#     assert checktab.fileInput.text() != ""
+def test_check_tab2(wind, ttorrent2):
+    checktab = wind.central.checkWidget
+    testdir = os.path.dirname(ttorrent2)
+    checktab.browseButton1.browse(path=testdir)
+    checktab.browseButton2.browse(path=testdir)
+    assert checktab.fileInput.text() != ""
+
+
+def test_check_tab3(wind, ttorrent1):
+    root = ttorrent1
+    checktab = wind.central.checkWidget
+    tree_widget = checktab.treeWidget
+    tree_widget.setRoot(root)
+    path = Path(root).resolve()
+    parent = path.parent.parent
+    for path in parent.iterdir():
+        tree_widget.callback(True, str(path), 10, 10)
+        tree_widget.performAction()
+    assert tree_widget.invisibleRootItem() is not None
+
+
+def test_check_tab4(wind, ttorrent1):
+    root = ttorrent1
+    checktab = wind.central.checkWidget
+    tree_widget = checktab.treeWidget
+    tree_widget.setRoot(root)
+    tree_widget.clear_data()
+    assert tree_widget.invisibleRootItem() is not None
+
+
+def test_check_tab5(wind, ttorrent2):
+    checktab = wind.central.checkWidget
+    testdir = os.path.dirname(ttorrent2)
+    checktab.browseButton1.browse(path=testdir)
+    checktab.browseButton2.browse(path=testdir)
+    checktab.checkButton.click()
+    assert checktab.textEdit.toPlainText() != ""
