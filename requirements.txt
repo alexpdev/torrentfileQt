@@ -1,8 +1,0 @@
-coverage>=5
-pyben
-PyQt6
-PyQt6-Qt6
-PyQt6-sip
-pytest
-pytest-cov
-torrentfile

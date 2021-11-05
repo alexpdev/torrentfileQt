@@ -51,15 +51,14 @@ treeSheet = """
         color: white;
     }
     QTreeWidget QProgressBar {
-        border: 2px solid #e57e22;
-        border-radius: 6px;
+        border: 8px solid black;
+        border-radius: 8px;
         text-align: center;
     }
     QTreeWidget QProgressBar::chunk {
-        background-color: #164caf;
-        width: 25px;
+        background-color: #3ab1de;
+        width: 20px;
         margin: 1px;
-        border-radius: 30px;
     }
     """
 
@@ -479,7 +478,7 @@ textEditSheet = """
         background-color: #646464;
         border: #1a1a1a 2px solid;
         color: #fff;
-        font: 9pt;
+        font: 7pt;
         border-radius: 4px;
     }
 """
