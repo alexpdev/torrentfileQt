@@ -211,32 +211,7 @@ def test_check_tab2(wind, ttorrent2):
     assert checktab.fileInput.text() != ""
 
 
-def test_check_tab3(wind, ttorrent1):
-    root = ttorrent1
+def test_check_tab4(wind):
     checktab = wind.central.checkWidget
     tree_widget = checktab.treeWidget
-    tree_widget.setRoot(root)
-    path = Path(root).resolve()
-    parent = path.parent.parent
-    for path in parent.iterdir():
-        tree_widget.callback(True, str(path), 10, 10)
-        tree_widget.performAction()
     assert tree_widget.invisibleRootItem() is not None
-
-
-def test_check_tab4(wind, ttorrent1):
-    root = ttorrent1
-    checktab = wind.central.checkWidget
-    tree_widget = checktab.treeWidget
-    tree_widget.setRoot(root)
-    tree_widget.clear_data()
-    assert tree_widget.invisibleRootItem() is not None
-
-
-def test_check_tab5(wind, ttorrent2):
-    checktab = wind.central.checkWidget
-    testdir = os.path.dirname(ttorrent2)
-    checktab.browseButton1.browse(path=testdir)
-    checktab.browseButton2.browse(path=testdir)
-    checktab.checkButton.click()
-    assert checktab.textEdit.toPlainText() != ""

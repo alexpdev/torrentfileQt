@@ -1,6 +1,6 @@
 # TorrentfileQt
 
-TorrentFileQt is a Graphical User Interface for [TorrentFile CLI](https://github.com/alexpdev/torrentfile).
+TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpdev/torrentfile) project.
 
 ## Features
 
