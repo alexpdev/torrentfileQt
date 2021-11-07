@@ -19,7 +19,6 @@
 
 import os
 import pytest
-from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 
@@ -92,14 +91,6 @@ def test_app2(wind):
 
 def test_window_menubar1(wind):
     assert wind.menubar is not None
-
-
-def test_window_menubar_action1(wind):
-    menubar = wind.menubar
-    menubar.actionDocs.trigger()
-    menubar.actionRepo.trigger()
-    menubar.actionExit.trigger()
-    assert True
 
 
 def test_window_statusbar1(wind):

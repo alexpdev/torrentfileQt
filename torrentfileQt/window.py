@@ -57,14 +57,14 @@ class Window(QMainWindow):
         self.app = app
         self.menubar = MenuBar(parent=self)
         self.statusbar = QStatusBar(parent=self)
-        self.icon = QIcon("./assets/torrent-icon.png")
+        self.icon = QIcon("./assets/favicon.png")
         self.setObjectName("Mainwindow")
         self.setWindowTitle("Torrentfile Tools")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
         self.setStyleSheet(mainWindowSheet)
-        self.resize(600, 700)
+        self.resize(800, 600)
         self._setupUI()
 
     def _setupUI(self):

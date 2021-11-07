@@ -34,20 +34,21 @@ from PyQt6.QtWidgets import (
     QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
+    QLineEdit,
+    QLabel
 )
 from torrentfile.progress import CheckerClass
 
 
 from torrentfileQt.qss import (
     logTextEditSheet,
+    lineEditSheet,
+    labelSheet,
     pushButtonSheet,
     toolButtonSheet,
     treeSheet,
     headerSheet,
 )
-
-from torrentfileQt.widgets import Label, LineEdit
-
 
 class CheckWidget(QWidget):
 
@@ -122,12 +123,13 @@ class ReCheckButton(QPushButton):
 
     def submit(self):
         tree = self.widget.treeWidget
+        tree.clear()
         textEdit = self.widget.textEdit
+        textEdit.clear()
         searchInput = self.widget.searchInput
         fileInput = self.widget.fileInput
         metafile = fileInput.text()
         content = searchInput.text()
-        tree.setRoot(content)
         CheckerClass.register_callback(textEdit.callback)
         logging.debug("Registering Callback, setting root")
         piece_hasher(metafile, content, tree)
@@ -230,7 +232,8 @@ class TreePieceItem(QTreeWidgetItem):
     def set_top(self, path, icon):
         pix = QIcon(icon)
         self.setIcon(0, pix)
-        self.setText(1, path)
+        if path:
+            self.setText(1, path)
 
     def setTotal(self, total):
         self.total = total
@@ -328,6 +331,7 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 item.setTotal(size)
+                item.set_top(None, "./assets/file.png")
                 progressbar = ProgressBar()
                 self.setItemWidget(item, 2, progressbar)
                 item.setProgressBar(progressbar)
@@ -368,3 +372,23 @@ def piece_hasher(metafile, content, tree):
             tree.addPathChild.emit(relpath, length)
             itemWidgets.append(relpath)
         tree.valueUpdate.emit([actual, expected, relpath, size])
+
+class LineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setStyleSheet(lineEditSheet)
+
+class Label(QLabel):
+    """Label Identifier for Window Widgets.
+
+    Subclass: QLabel
+    """
+
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
+        self.setStyleSheet(labelSheet)
+        font = self.font()
+        font.setBold(True)
+        font.setPointSize(12)
+        self.setFont(font)
