@@ -178,63 +178,36 @@ pushButtonSheet = """
     QPushButton{
         margin-top: 3px;
         margin-bottom: 3px;
-        border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
+        margin-left: 8px;
+        margin-right: 8px;
+        border-style: outset;
+        border-top-color: #e18133;
+        border-right-color: #e67f2f;
+        border-left-color: #e67f2f;
         border-bottom-color: #e67e22;
-        border-width: 1px;
-        border-radius: 4px;
-        padding: 2px;
-        font: 14pt bold;
-        color: #dedede;
-        background-color: #111;
-    }
-    QPushButton::default{
-        border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: #e67e22;
-        border-radius: 4px;
-        border-width: 1px;
-        padding: 2px;
+        border-radius: 8px;
+        border-width: 3px;
+        padding-top: 4px;
+        padding-bottom: 4px;
         font: 14pt bold;
         color: #dedede;
         background-color: #111;
     }
     QPushButton:hover{
-        border-style: solid;
-        border-top-color: transparent;
-        border-right-color: #e67e22;
-        border-left-color: #e67e22;
-        border-bottom-color: #e67e22;
-        border-width: 2px;
-        border-radius: 3px;
+        border-style: inset;
+        border-width: 3px;
         color: #efefefef;
-        padding: 2px;
-        background-color: #444;
+        background-color: #200;
     }
     QPushButton:pressed{
-        border-style: solid;
-        border-top-color: #e67e22;
-        border-right-color: #e67e22;
-        border-left-color: #e67e22;
-        border-bottom-color: #e67e22;
-        border-radius: 2px;
-        border-bottom-width: 2px;
-        padding: 1px;
+        border-style: inset;
+        border-bottom-width: 3px;
         color: #ffffff;
-
-        background-color: #444;
+        background-color: #112;
     }
     QPushButton:disabled{
         border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: transparent;
-        border-bottom-width: 2px;
+        border-bottom-width: 1px;
         border-style: solid;
         color: #bbb;
         padding-bottom: 1px;
@@ -244,7 +217,7 @@ pushButtonSheet = """
 
 push2ButtonSheet = """
     QPushButton {
-        border-style: solid;
+        border-style: outset;
         border-top-color: #e67e22;
         border-right-color: #e67e22;
         border-left-color: #e67e22;
@@ -256,7 +229,7 @@ push2ButtonSheet = """
         background-color: #444;
     }
     QPushButton:hover{
-        border-style: solid;
+        border-style: outset;
         border-top-color: transparent;
         border-right-color: transparent;
         border-left-color: transparent;
@@ -426,7 +399,27 @@ lineEditSheet = """
     }
     """
 
-altLineEditSheet = """
+
+createLineEditSheet = """
+    QLineEdit {
+        border-color: #1a1a1a;
+        font: 12pt;
+        border-width: 1px;
+        border-radius: 4px;
+        border-style: inset;
+        padding: 0 8px;
+        color: #FFFFFF;
+        background: #646464;
+        selection-background-color: #411;
+        selection-color: #0ff;
+    }
+    QLineEdit::disabled {
+        background-color: #444;
+        color: #ddd;
+    }
+    """
+
+infoLineEditSheet = """
     QLineEdit {
         border-color: #3a3a3a;
         border-bottom-width: 2px;
@@ -449,6 +442,7 @@ comboBoxSheet = """
     QComboBox {
         color: #FFF;
         background: #3a3a3a;
+        font-size: 10pt;
     }
     QComboBox:editable {
         background: #1e1d23;
@@ -486,7 +480,7 @@ textEditSheet = """
         background-color: #646464;
         border: #1a1a1a 2px solid;
         color: #fff;
-        font: 7pt;
+        font: 10pt;
         border-radius: 4px;
     }
 """

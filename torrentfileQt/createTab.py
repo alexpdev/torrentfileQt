@@ -19,6 +19,7 @@
 
 import os
 import threading
+from collections.abc import Sequence
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -33,6 +34,9 @@ from PyQt6.QtWidgets import (
     QSpacerItem,
     QToolButton,
     QWidget,
+    QPlainTextEdit,
+    QLabel,
+    QLineEdit
 )
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
@@ -40,11 +44,13 @@ from torrentfile.utils import path_stat
 from torrentfileQt.qss import (
     checkBoxSheet,
     comboBoxSheet,
+    labelSheet,
     push2ButtonSheet,
     pushButtonSheet,
     toolButtonSheet,
+    textEditSheet,
+    createLineEditSheet
 )
-from torrentfileQt.widgets import Label, LineEdit, PlainTextEdit
 
 
 class CreateWidget(QWidget):
@@ -68,13 +74,13 @@ class CreateWidget(QWidget):
         self.hlayout3 = QHBoxLayout()
         self.hlayout0 = QHBoxLayout()
 
-        self.path_label = Label("Path:", parent=self)
-        self.output_label = Label("Save Path:", parent=self)
-        self.version_label = Label("Meta-version", parent=self)
-        self.comment_label = Label("Comment:", parent=self)
-        self.announce_label = Label("Trackers:", parent=self)
-        self.source_label = Label("Source:", parent=self)
-        self.piece_length_label = Label("Piece Length:", parent=self)
+        self.path_label = Label("Path: ", parent=self)
+        self.output_label = Label("Save Path: ", parent=self)
+        self.version_label = Label("Meta Version: ", parent=self)
+        self.comment_label = Label("Comment: ", parent=self)
+        self.announce_label = Label("Trackers: ", parent=self)
+        self.source_label = Label("Source: ", parent=self)
+        self.piece_length_label = Label("Piece Length: ", parent=self)
 
         self.path_input = LineEdit(parent=self)
         self.output_input = LineEdit(parent=self)
@@ -93,7 +99,6 @@ class CreateWidget(QWidget):
 
         self.v2button = QRadioButton("v2", parent=self)
         self.hybridbutton = QRadioButton("v1+2 (hybrid)", parent=self)
-        self.output_input.setDisabled(True)
         self.spacer = QSpacerItem(50, 0)
 
         self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -124,18 +129,19 @@ class CreateWidget(QWidget):
         self.layout.addLayout(self.hlayout1, 1, 1, 1, 3)
         self.layout.addWidget(self.version_label, 2, 0, 1, 1)
         self.layout.addLayout(self.hlayout0, 2, 1, 1, 3)
-        self.layout.addWidget(self.source_label, 3, 0, 1, 1)
-        self.layout.addWidget(self.source_input, 3, 1, 1, 3)
-        self.layout.addWidget(self.comment_label, 4, 0, 1, 1)
-        self.layout.addWidget(self.comment_input, 4, 1, 1, 3)
-        self.layout.addWidget(self.piece_length_label, 5, 0, 1, 1)
-        self.layout.addLayout(self.hlayout2, 5, 1, 1, 3)
-        self.layout.addWidget(self.output_label, 6, 0, 1, 1)
-        self.layout.addLayout(self.hlayout3, 6, 1, 1, 3)
+        self.layout.addWidget(self.piece_length_label, 3, 0, 1, 1)
+        self.layout.addLayout(self.hlayout2, 3, 1, 1, 3)
+        self.layout.addWidget(self.output_label, 4, 0, 1, 1)
+        self.layout.addLayout(self.hlayout3, 4, 1, 1, 3)
+        self.layout.addWidget(self.source_label, 5, 0, 1, 1)
+        self.layout.addWidget(self.source_input, 5, 1, 1, 3)
+        self.layout.addWidget(self.comment_label, 6, 0, 1, 1)
+        self.layout.addWidget(self.comment_input, 6, 1, 1, 3)
         self.layout.addWidget(self.announce_label, 7, 0, 1, 1)
         self.layout.addWidget(self.announce_input, 7, 1, 1, 3)
         self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
-
+        for i in range(1, self.layout.columnCount()):
+            self.layout.setColumnStretch(i, 1)
         self.layout.setObjectName("createWidget_formLayout")
         self.hlayout2.setObjectName("createWidget_hlayout2")
         self.submit_button.setObjectName("createWidget_submit_button")
@@ -261,9 +267,10 @@ class BrowseFileButton(QPushButton):
         caption = "Choose File"
         if not path:
             path = QFileDialog.getOpenFileName(parent=self, caption=caption)
-        if not path:
-            return
-        path = os.path.realpath(path)
+        if not isinstance(path, str):
+            path = os.path.normpath(path[0])
+        else:
+            path = os.path.normpath(path)
         self.window.path_input.clear()
         self.window.path_input.insert(path)
         self.window.output_input.clear()
@@ -314,7 +321,10 @@ class BrowseDirButton(QPushButton):
         outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
-        _, size, piece_length = path_stat(path)
+        try:
+            _, size, piece_length = path_stat(path)
+        except PermissionError:
+            return
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
         else:
@@ -346,3 +356,36 @@ class CheckBox(QCheckBox):
     def __init__(self, label, parent=None):
         super().__init__(label, parent=parent)
         self.setStyleSheet(checkBoxSheet)
+
+class PlainTextEdit(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setBackgroundVisible(True)
+        self.setStyleSheet(textEditSheet)
+
+    def callback(self, msg):
+        self.insertPlainText(msg)
+        self.insertPlainText("\n\n")
+
+
+
+class Label(QLabel):
+    """Label Identifier for Window Widgets.
+
+    Subclass: QLabel
+    """
+
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
+        self.setStyleSheet(labelSheet)
+        font = self.font()
+        font.setBold(True)
+        font.setPointSize(12)
+        self.setFont(font)
+
+class LineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setStyleSheet(createLineEditSheet)

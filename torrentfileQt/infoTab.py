@@ -31,11 +31,12 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QTreeWidgetItem,
     QWidget,
+    QLineEdit,
+    QLabel,
 )
 
-from torrentfileQt.qss import pushButtonSheet
+from torrentfileQt.qss import pushButtonSheet, infoLineEditSheet, labelSheet
 from torrentfileQt.treewidget import TreeWidget
-from torrentfileQt.widgets import InfoLineEdit, Label
 
 
 class InfoWidget(QWidget):
@@ -251,3 +252,28 @@ def parse_filetree(filetree):
             for k, v in out.items():
                 paths[os.path.join(key, k)] = v
     return paths
+
+class Label(QLabel):
+    """Label Identifier for Window Widgets.
+
+    Subclass: QLabel
+    """
+
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
+        self.setStyleSheet(labelSheet)
+        font = self.font()
+        font.setBold(True)
+        font.setPointSize(12)
+        self.setFont(font)
+
+
+class InfoLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setReadOnly(True)
+        self.setStyleSheet(infoLineEditSheet)
+        self.setDragEnabled(True)
+        font = self.font()
+        font.setBold(True)
+        self.setFont(font)

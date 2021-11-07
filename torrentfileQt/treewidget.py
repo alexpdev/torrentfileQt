@@ -29,7 +29,7 @@ class TreeWidget(QTreeWidget):
                 for item in self.apply_value(value):
                     yield item
             elif isinstance(value, dict):
-                item = TreeItem(self, 0)
+                item = TreeItem(type=0)
                 item.setText(0, key)
                 for child in self.apply_value(value):
                     item.addChild(child)

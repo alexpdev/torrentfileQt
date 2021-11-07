@@ -22,6 +22,7 @@ import os
 import shutil
 import string
 import atexit
+import time
 
 
 TESTS = os.path.dirname(os.path.abspath(__file__))
@@ -106,4 +107,8 @@ def tstdir():
 
 @atexit.register
 def teardown():
-    rmpath(TESTDIR)
+    try:
+        rmpath(TESTDIR)
+    except PermissionError:
+        time.sleep(1.5)
+        teardown()
