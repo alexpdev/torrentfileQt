@@ -74,7 +74,7 @@ class MenuBar(QMenuBar):
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
     def about_qt(self):
-        self.window.app.aboutQt()   # pragma: nocover
+        self.window.app.aboutQt()  # pragma: nocover
 
     def exit_app(self):
-        self.parent().app.quit()   # pragma: nocover
+        self.parent().app.quit()  # pragma: nocover
