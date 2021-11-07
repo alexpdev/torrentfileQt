@@ -64,7 +64,6 @@ def ttorrent1(tfile, request):
     return outfile
 
 
-
 @pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def ttorrent2(tfile, request):
     path = tfile

@@ -109,6 +109,7 @@ class ReCheckButton(QPushButton):
         text (`str`): The text displayed on the button itself.
         parent (`QWidget`, default=None): This widgets parent widget.
     """
+
     process = None
 
     def __init__(self, text, parent=None):
@@ -133,7 +134,6 @@ class ReCheckButton(QPushButton):
         logging.debug("Registering Callback, setting root")
         piece_hasher(metafile, content, tree)
         # tree.start_thread(metafile, content)
-
 
 
 class BrowseTorrents(QToolButton):
@@ -279,6 +279,7 @@ class TreeWidget(QTreeWidget):
     Args:
         parent(`QWidget`, default=None)
     """
+
     valueUpdate = pyqtSignal([list])
     addPathChild = pyqtSignal([str, int])
 
@@ -297,7 +298,7 @@ class TreeWidget(QTreeWidget):
         self.itemWidgets = {}
         self.paths = []
         self.total = 0
-        self.item_tree = {"widget" : self.item}
+        self.item_tree = {"widget": self.item}
         self.valueUpdate.connect(self.updateValue)
         self.addPathChild.connect(self.add_path_child)
 
@@ -310,7 +311,7 @@ class TreeWidget(QTreeWidget):
 
     def clear(self):
         super().clear()
-        self.item_tree = {"widget" : self.invisibleRootItem()}
+        self.item_tree = {"widget": self.invisibleRootItem()}
         self.itemWidgets = {}
         self.paths = []
         self.root = None
@@ -341,7 +342,6 @@ class TreeWidget(QTreeWidget):
 
 
 class LogTextEdit(QPlainTextEdit):
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._parent = parent
