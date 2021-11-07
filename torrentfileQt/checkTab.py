@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QLineEdit,
-    QLabel
+    QLabel,
 )
 from torrentfile.progress import CheckerClass
 
@@ -49,6 +49,7 @@ from torrentfileQt.qss import (
     treeSheet,
     headerSheet,
 )
+
 
 class CheckWidget(QWidget):
 
@@ -373,11 +374,13 @@ def piece_hasher(metafile, content, tree):
             itemWidgets.append(relpath)
         tree.valueUpdate.emit([actual, expected, relpath, size])
 
+
 class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._parent = parent
         self.setStyleSheet(lineEditSheet)
+
 
 class Label(QLabel):
     """Label Identifier for Window Widgets.

@@ -253,6 +253,7 @@ def parse_filetree(filetree):
                 paths[os.path.join(key, k)] = v
     return paths
 
+
 class Label(QLabel):
     """Label Identifier for Window Widgets.
 
