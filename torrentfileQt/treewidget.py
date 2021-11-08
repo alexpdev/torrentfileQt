@@ -1,95 +1,70 @@
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
+import os
 
-from .qss import treeSheet
-
-
-class TreeWidget(QTreeWidget):
-    """Tree view of the directory structure cataloged in .torrent file.
+def sortfiles(path):
+    """Sort entries in path.
 
     Args:
-        parent (`widget`, default=`None`): The widget containing this widget.
+        path (`str`): Target directory for sorting contents.
+
+    Yields:
+        item, full (`str`, `str`): Next item in sorted order.
     """
+    items = sorted(os.listdir(path), key=str.lower)
+    for item in items:
+        full = os.path.join(path, item)
+        yield item, full
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.tree = None
-        self.root = self.invisibleRootItem()
-        self.root.setChildIndicatorPolicy(self.root.ChildIndicatorPolicy.ShowIndicator)
-        self.setIndentation(10)
-        self.setEditTriggers(self.EditTrigger.NoEditTriggers)
-        self.setHeaderHidden(True)
-        self.setItemsExpandable(True)
-        self.setColumnCount(1)
-        self.setStyleSheet(treeSheet)
+def filelist_total(path):
+    """Search directory tree for files.
 
-    def apply_value(self, tree):
-        for key, value in tree.items():
-            if key == "":
-                for item in self.apply_value(value):
-                    yield item
-            elif isinstance(value, dict):
-                item = TreeItem(type=0)
-                item.setText(0, key)
-                for child in self.apply_value(value):
-                    item.addChild(child)
-                yield item
-            else:
-                item = TreeItem(type=0)
-                item.setText(0, key)
-                child = TreeItem(type=0)
-                child.setText(0, str(value))
-                item.addChild(child)
-                yield item
+    Args:
+      path (`str`): Path to file or directory base
+      sort (`bool`): Return list sorted. Defaults to False.
 
-    def set_tree(self, tree):
-        self.tree = tree
-        for key, value in tree.items():
-            top_item = TreeItem(type=0)
-            top_item.setText(0, key)
-            for item in self.apply_value(value):
-                top_item.addChild(item)
-            self.addTopLevelItem(top_item)
-
-    def assign_children(self, groups, parent):
-        for k, v in groups.items():
-            item = TreeItem(type=0)
-            item.setText(0, k)
-            parent.addChild(item)
-            if not isinstance(v, dict):
-                length = TreeItem(type=0)
-                length.setText(0, f"Length: {v} bytes")
-                length.alt_icon()
-                item.addChild(length)
-                continue
-            self.assign_children(v, item)
-
-    def set_files(self, filelist):
-        groups = {}
-        for item in filelist:
-            current = groups
-            partials = item["path"]
-            parts, start = len(partials), 0
-            while start < parts:
-                partial = partials[start]
-                if start == parts - 1:
-                    current[partial] = item["length"]
-                elif partial in current:
-                    current = current[partial]
-                else:
-                    current[partial] = {}
-                    current = current[partial]
-                start += 1
-        self.assign_children(groups, self.root)
+    Returns:
+      (`list`): All file paths within directory tree.
+    """
+    if os.path.isfile(path):
+        file_size = os.path.getsize(path)
+        return file_size, [path]
+    total = 0
+    filelist = []
+    if os.path.isdir(path):
+        for _, full in sortfiles(path):
+            size, paths = filelist_total(full)
+            total += size
+            filelist.extend(paths)
+    return total, filelist
 
 
-class TreeItem(QTreeWidgetItem):
-    def __init__(self, type=0):
-        super().__init__(type=type)
-        icon = QIcon("./assets/folder.png")
-        self.setIcon(0, icon)
-        self.setChildIndicatorPolicy(self.ChildIndicatorPolicy.ShowIndicator)
+def filelist_total1(path):
+    """Search directory tree for files.
 
-    def alt_icon(self):
-        icon = QIcon("./assets/ruler.png")
-        self.setIcon(0, icon)
+    Args:
+      path (`str`): Path to file or directory base
+      sort (`bool`): Return list sorted. Defaults to False.
+
+    Returns:
+      (`list`): All file paths within directory tree.
+    """
+    if os.path.isfile(path):
+        file_size = os.path.getsize(path)
+        return file_size, [path]
+
+    # put all files into filelist within directory
+    files = []
+    total_size = 0
+    filelist = sorted(os.listdir(path), key=str.lower)
+
+    for name in filelist:
+        full = os.path.join(path, name)
+        size, paths = filelist_total(full)
+        total_size += size
+        files.extend(paths)
+    return total_size, files
+
+
+if __name__ == "__main__":
+    path = "./torrentfileQt"
+    print(filelist_total(path))
+    print(filelist_total1(path))

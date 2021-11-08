@@ -268,7 +268,6 @@ class ProgressBar(QProgressBar):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setRange(0, 100)
-        self.setValue(0)
 
 
 class TreeWidget(QTreeWidget):
@@ -298,13 +297,18 @@ class TreeWidget(QTreeWidget):
         self.itemWidgets = {}
         self.paths = []
         self.total = 0
+        self.piece_length = None
         self.item_tree = {"widget": self.item}
         self.valueUpdate.connect(self.updateValue)
         self.addPathChild.connect(self.add_path_child)
 
+    def setPieceLength(self, piece_length):
+        self.piece_length = piece_length
+
     def updateValue(self, args):
         actual, expected, path, size = args
         widget = self.itemWidgets[path]["widget"]
+        # print(actual, expected)
         if actual == expected:
             widget.add_piece(size)
             self.window.repaint()
@@ -340,6 +344,51 @@ class TreeWidget(QTreeWidget):
             self.window.repaint()
         self.paths.append(path)
 
+    def remainder(self, path):
+        widget = self.itemWidgets[path]["widget"]
+        return widget.total - widget.length
+
+
+def piece_hasher(metafile, content, tree):
+    checker = CheckerClass(metafile, content)
+    tree.setPieceLength(checker.piece_length)
+    parent = os.path.dirname(content)
+    pathlist = checker.paths
+    counter = 0
+    itemWidgets = []
+
+    for actual, expected, path, size in checker.iter_hashes():
+        relpath = path.lstrip(parent)
+        if relpath not in itemWidgets:
+
+            def newBranch(src, relpath):
+                length = checker.fileinfo[src]["length"]
+                tree.addPathChild.emit(relpath, length)
+                itemWidgets.append(relpath)
+                return length
+
+            if itemWidgets:
+                remains = tree.remainder(itemWidgets[-1])
+                if remains > 0:
+                    tree.valueUpdate.emit(
+                        [actual, expected, itemWidgets[-1], remains]
+                        )
+                    size -= remains
+
+            if pathlist[counter] != path:
+                for src in pathlist:
+                    if src == path: break
+                    relsrc = src.lstrip(parent)
+                    if relsrc not in itemWidgets:
+                        length = newBranch(src, relsrc)
+                        tree.valueUpdate.emit([actual, expected, relsrc, length])
+                        size -= length
+                        counter += 1
+
+            newBranch(path, relpath)
+            counter += 1
+        tree.valueUpdate.emit([actual, expected, relpath, size])
+
 
 class LogTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
@@ -361,23 +410,12 @@ class LogTextEdit(QPlainTextEdit):
         self.insertPlainText("\n")
 
 
-def piece_hasher(metafile, content, tree):
-    checker = CheckerClass(metafile, content)
-    parent = os.path.dirname(content)
-    itemWidgets = []
-    for actual, expected, path, size in checker.iter_hashes():
-        relpath = path.lstrip(parent)
-        if relpath not in itemWidgets:
-            length = checker.fileinfo[path]["length"]
-            tree.addPathChild.emit(relpath, length)
-            itemWidgets.append(relpath)
-        tree.valueUpdate.emit([actual, expected, relpath, size])
-
 class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._parent = parent
         self.setStyleSheet(lineEditSheet)
+
 
 class Label(QLabel):
     """Label Identifier for Window Widgets.

@@ -369,7 +369,6 @@ class PlainTextEdit(QPlainTextEdit):
         self.insertPlainText("\n\n")
 
 
-
 class Label(QLabel):
     """Label Identifier for Window Widgets.
 
