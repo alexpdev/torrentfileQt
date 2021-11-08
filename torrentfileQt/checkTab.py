@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QLineEdit,
-    QLabel
+    QLabel,
 )
 from torrentfile.progress import CheckerClass
 
@@ -49,6 +49,7 @@ from torrentfileQt.qss import (
     treeSheet,
     headerSheet,
 )
+
 
 class CheckWidget(QWidget):
 
@@ -408,6 +409,19 @@ class LogTextEdit(QPlainTextEdit):
     def callback(self, msg):
         self.insertPlainText(msg)
         self.insertPlainText("\n")
+
+
+def piece_hasher(metafile, content, tree):
+    checker = CheckerClass(metafile, content)
+    parent = os.path.dirname(content)
+    itemWidgets = []
+    for actual, expected, path, size in checker.iter_hashes():
+        relpath = path.lstrip(parent)
+        if relpath not in itemWidgets:
+            length = checker.fileinfo[path]["length"]
+            tree.addPathChild.emit(relpath, length)
+            itemWidgets.append(relpath)
+        tree.valueUpdate.emit([actual, expected, relpath, size])
 
 
 class LineEdit(QLineEdit):

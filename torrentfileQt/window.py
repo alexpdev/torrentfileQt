@@ -112,7 +112,6 @@ def start():
     sys.exit(app.exec())
 
 
-
 def alt_start():
     app = Application()
     window = Window(parent=None, app=app)

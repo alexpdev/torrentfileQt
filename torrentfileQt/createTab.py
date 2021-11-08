@@ -36,7 +36,7 @@ from PyQt6.QtWidgets import (
     QWidget,
     QPlainTextEdit,
     QLabel,
-    QLineEdit
+    QLineEdit,
 )
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
@@ -49,7 +49,7 @@ from torrentfileQt.qss import (
     pushButtonSheet,
     toolButtonSheet,
     textEditSheet,
-    createLineEditSheet
+    createLineEditSheet,
 )
 
 
@@ -357,6 +357,7 @@ class CheckBox(QCheckBox):
         super().__init__(label, parent=parent)
         self.setStyleSheet(checkBoxSheet)
 
+
 class PlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -382,6 +383,7 @@ class Label(QLabel):
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
+
 
 class LineEdit(QLineEdit):
     def __init__(self, parent=None):
