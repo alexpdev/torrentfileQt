@@ -1,5 +1,6 @@
 import os
 
+
 def sortfiles(path):
     """Sort entries in path.
 
@@ -13,6 +14,7 @@ def sortfiles(path):
     for item in items:
         full = os.path.join(path, item)
         yield item, full
+
 
 def filelist_total(path):
     """Search directory tree for files.

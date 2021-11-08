@@ -371,14 +371,13 @@ def piece_hasher(metafile, content, tree):
             if itemWidgets:
                 remains = tree.remainder(itemWidgets[-1])
                 if remains > 0:
-                    tree.valueUpdate.emit(
-                        [actual, expected, itemWidgets[-1], remains]
-                        )
+                    tree.valueUpdate.emit([actual, expected, itemWidgets[-1], remains])
                     size -= remains
 
             if pathlist[counter] != path:
                 for src in pathlist:
-                    if src == path: break
+                    if src == path:
+                        break
                     relsrc = src.lstrip(parent)
                     if relsrc not in itemWidgets:
                         length = newBranch(src, relsrc)

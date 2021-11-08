@@ -50,7 +50,7 @@ class MenuBar(QMenuBar):
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)
         self.addMenu(self.help_menu)
-        self.actionExport= QAction(self.window)
+        self.actionExport = QAction(self.window)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
@@ -77,8 +77,7 @@ class MenuBar(QMenuBar):
 
     def export(self):
         home = str(Path.home())
-        filename = QFileDialog.getSaveFileName(caption="Save location:",
-                                               directory=home)
+        filename = QFileDialog.getSaveFileName(caption="Save location:", directory=home)
         if os.path.exists(os.path.dirname(filename)):
             widget = self.window.tabWidget.infoWidget
             path = widget.pathEdit.text()

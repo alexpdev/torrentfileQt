@@ -36,8 +36,7 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
 )
 
-from torrentfileQt.qss import (pushButtonSheet, infoLineEditSheet,
-                               labelSheet, treeSheet)
+from torrentfileQt.qss import pushButtonSheet, infoLineEditSheet, labelSheet, treeSheet
 
 from PyQt6.QtGui import QIcon
 
