@@ -19,6 +19,7 @@
 
 import os
 import logging
+from pathlib import Path
 from collections.abc import Sequence
 
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -216,35 +217,40 @@ class BrowseFolders(QToolButton):
 class TreePieceItem(QTreeWidgetItem):
     def __init__(self, type=0, tree=None):
         super().__init__(type=type)
-        self.tree = tree
-        self.progressbar = None
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
-        self.setExpanded(True)
-        self.total = 0
-        self.length = 0
+        self.tree = tree
+        self.progbar = None
+        self.total = self.value = self.counted = 0
 
-    def setProgressBar(self, progressbar):
-        self.progressbar = progressbar
+    def setProgressBar(self, progressBar, size):
+        self.total = size
+        self.progbar = progressBar
+        self.progbar.setRange(0, size)
 
-    def getProgressBar(self):
-        return self.progressbar
+    def addValue(self, value):
+        left = self.total - self.counted
+        if left > value:
+            self.progbar.addValue(value)
+            self.value += value
+            self.counted += value
+            return 0
+        self.progbar.addValue(left)
+        self.counted += left
+        self.value += left
+        remainder = value - left
+        return remainder
 
-    def set_top(self, path, icon):
-        pix = QIcon(icon)
-        self.setIcon(0, pix)
-        if path:
-            self.setText(1, path)
+    def counted(self, value):
+        left = self.total - self.counted
+        if left < value:
+            self.counted += left
+            remainder = value - left
+            return remainder
+        self.counted += value
+        return 0
 
-    def setTotal(self, total):
-        self.total = total
 
-    def add_piece(self, length):
-        self.length += length
-        if self.total > 0:
-            val = int(self.length / self.total * 100)
-            progressbar = self.getProgressBar()
-            progressbar.setValue(val)
 
     def __repr__(self):
         return f"<TreeItem: {self.val}>"
@@ -269,6 +275,11 @@ class ProgressBar(QProgressBar):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setRange(0, 100)
+
+    def addValue(self, value):
+        currentvalue = self.value()
+        addedVal = currentvalue + value
+        self.setValue(addedVal)
 
 
 class TreeWidget(QTreeWidget):
@@ -303,9 +314,6 @@ class TreeWidget(QTreeWidget):
         self.valueUpdate.connect(self.updateValue)
         self.addPathChild.connect(self.add_path_child)
 
-    def setPieceLength(self, piece_length):
-        self.piece_length = piece_length
-
     def updateValue(self, args):
         actual, expected, path, size = args
         widget = self.itemWidgets[path]["widget"]
@@ -322,25 +330,28 @@ class TreeWidget(QTreeWidget):
         self.root = None
 
     def add_path_child(self, path, size):
-        partials = path.split(os.sep)
+        path = Path(path)
+        partials = path.parts
         item, item_tree = None, self.item_tree
         for i, partial in enumerate(partials):
             if partial in item_tree:
                 item_tree = item_tree[partial]
                 continue
-            widget = item_tree["widget"]
+            parent = item_tree["widget"]
             item = TreePieceItem(type=0, tree=self)
-            item.set_top(partial, "./assets/folder.png")
-            widget.addChild(item)
-            widget.setExpanded(True)
+            parent.addChild(item)
+            parent.setExpanded(True)
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
-                item.setTotal(size)
-                item.set_top(None, "./assets/file.png")
-                progressbar = ProgressBar()
-                self.setItemWidget(item, 2, progressbar)
-                item.setProgressBar(progressbar)
-                self.itemWidgets[path] = {"widget": item}
+                fileicon = QIcon("./assets/file.png")
+                progressBar = ProgressBar()
+                self.setItemWidget(item, 2, progressBar)
+                item.setProgressBar(progressBar, size)
+                self.itemWidgets[str(path)] = item
+            else:
+                fileicon = QIcon("./assets/folder.png")
+            item.setIcon(0, fileicon)
+            item.setText(1, partial)
             item_tree = item_tree[partial]
             self.window.repaint()
         self.paths.append(path)
@@ -351,44 +362,40 @@ class TreeWidget(QTreeWidget):
 
 
 def piece_hasher(metafile, content, tree):
+    mapping = {}
     checker = CheckerClass(metafile, content)
-    tree.setPieceLength(checker.piece_length)
     parent = os.path.dirname(content)
     pathlist = checker.paths
-    counter = 0
-    itemWidgets = []
-
-    for actual, expected, path, size in checker.iter_hashes():
+    for path in pathlist:
         relpath = path.lstrip(parent)
-        if relpath not in itemWidgets:
-
-            def newBranch(src, relpath):
-                length = checker.fileinfo[src]["length"]
-                tree.addPathChild.emit(relpath, length)
-                itemWidgets.append(relpath)
-                return length
-
-            if itemWidgets:
-                remains = tree.remainder(itemWidgets[-1])
-                if remains > 0:
-                    tree.valueUpdate.emit(
-                        [actual, expected, itemWidgets[-1], remains]
-                        )
-                    size -= remains
-
-            if pathlist[counter] != path:
-                for src in pathlist:
-                    if src == path: break
-                    relsrc = src.lstrip(parent)
-                    if relsrc not in itemWidgets:
-                        length = newBranch(src, relsrc)
-                        tree.valueUpdate.emit([actual, expected, relsrc, length])
-                        size -= length
-                        counter += 1
-
-            newBranch(path, relpath)
-            counter += 1
-        tree.valueUpdate.emit([actual, expected, relpath, size])
+        length = checker.fileinfo[path]["length"]
+        tree.addPathChild.emit(relpath, length)
+    index, current = 0, None
+    for actual, expected, path, size in checker.iter_hashes():
+        print(mapping)
+        if not current: current = path
+        elif path != current:
+            current = path
+            index = pathlist.index(path)
+        relpath = path.lstrip(parent)
+        widget = tree.itemWidgets[relpath]
+        if actual == expected:
+            methodname = "addValue"
+        else:
+            methodname = "counted"
+        method = widget.__getattribute__(methodname)
+        remainder = method(size)
+        mapping[path] = {"size": size, "remiander": remainder}
+        while remainder > 0:
+            index += 1
+            nextpath = pathlist[index]
+            current = nextpath
+            rpath = nextpath.lstrip(parent)
+            nwidget = tree.itemWidgets[rpath]
+            size = remainder
+            method = nwidget.__getattribute__(methodname)
+            remainder = method(size)
+            mapping[nextpath] = {"size": size, "remiander": remainder}
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -411,17 +418,6 @@ class LogTextEdit(QPlainTextEdit):
         self.insertPlainText("\n")
 
 
-def piece_hasher(metafile, content, tree):
-    checker = CheckerClass(metafile, content)
-    parent = os.path.dirname(content)
-    itemWidgets = []
-    for actual, expected, path, size in checker.iter_hashes():
-        relpath = path.lstrip(parent)
-        if relpath not in itemWidgets:
-            length = checker.fileinfo[path]["length"]
-            tree.addPathChild.emit(relpath, length)
-            itemWidgets.append(relpath)
-        tree.valueUpdate.emit([actual, expected, relpath, size])
 
 
 class LineEdit(QLineEdit):
