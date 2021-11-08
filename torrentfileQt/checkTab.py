@@ -250,8 +250,6 @@ class TreePieceItem(QTreeWidgetItem):
         self.counted += value
         return 0
 
-
-
     def __repr__(self):
         return f"<TreeItem: {self.val}>"
 
@@ -373,7 +371,8 @@ def piece_hasher(metafile, content, tree):
     index, current = 0, None
     for actual, expected, path, size in checker.iter_hashes():
         print(mapping)
-        if not current: current = path
+        if not current:
+            current = path
         elif path != current:
             current = path
             index = pathlist.index(path)
@@ -416,8 +415,6 @@ class LogTextEdit(QPlainTextEdit):
     def callback(self, msg):
         self.insertPlainText(msg)
         self.insertPlainText("\n")
-
-
 
 
 class LineEdit(QLineEdit):
