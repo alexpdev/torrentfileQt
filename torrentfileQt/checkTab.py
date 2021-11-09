@@ -401,49 +401,9 @@ def piece_hasher(metafile, content, tree):
                     break
                 current += 1
         return
-
-
-
-class LogTextEdit(QPlainTextEdit):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._parent = parent
-        self.setBackgroundVisible(True)
-        font = self.font()
-        font.setFamily("Consolas")
-        font.setBold(True)
-        font.setPointSize(8)
-        self.setFont(font)
-        self.setStyleSheet(logTextEditSheet)
-
-    def clear_data(self):
-        self.clear()
-
-    def callback(self, msg):
-        self.insertPlainText(msg)
-        self.insertPlainText("\n")
-
-
-
-
-
-class LineEdit(QLineEdit):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._parent = parent
-        self.setStyleSheet(lineEditSheet)
-
-
-class Label(QLabel):
-    """Label Identifier for Window Widgets.
-
-    Subclass: QLabel
-    """
-
-    def __init__(self, text, parent=None):
-        super().__init__(text, parent=parent)
-        self.setStyleSheet(labelSheet)
-        font = self.font()
-        font.setBold(True)
-        font.setPointSize(12)
-        self.setFont(font)
+    for actual, expected, path, size in checker.iter_hashes():
+        if actual == expected:
+            leaf = tree.itemWidgets[path.lstrip(tree.root)]
+            leaf.addValue(size)
+        else:
+            leaf.count(size)
