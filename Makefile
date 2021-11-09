@@ -28,6 +28,10 @@ help:
 
 clean: clean-build ## remove all build, test, coverage and Python artifacts
 
+upgrade: clean  ## upgrade all dependencies
+	python -m pip install --upgrade pip
+	pip install --upgrade --pre -rrequirements.txt
+
 environment:
 	.\env\Scripts\activate.bat
 

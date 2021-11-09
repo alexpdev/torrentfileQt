@@ -20,11 +20,12 @@
 
 import math
 import os
+from pathlib import Path
 from datetime import datetime
 from threading import Thread
 
 import pyben
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QFileDialog,
     QGridLayout,
@@ -36,8 +37,7 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
 )
 
-from torrentfileQt.qss import (pushButtonSheet, infoLineEditSheet,
-                               labelSheet, treeSheet)
+from torrentfileQt.qss import pushButtonSheet, infoLineEditSheet, labelSheet, treeSheet
 
 from PyQt6.QtGui import QIcon
 
@@ -49,88 +49,58 @@ class TreeWidget(QTreeWidget):
         parent (`widget`, default=`None`): The widget containing this widget.
     """
 
+    itemReady = pyqtSignal([str, int])
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.tree = None
+        self.window = parent
         self.root = self.invisibleRootItem()
+        header = self.header()
+        header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         self.root.setChildIndicatorPolicy(self.root.ChildIndicatorPolicy.ShowIndicator)
         self.setIndentation(10)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setHeaderHidden(True)
         self.setItemsExpandable(True)
-        self.setColumnCount(1)
+        self.setColumnCount(2)
         self.setStyleSheet(treeSheet)
+        self.itemtree = {"widget": self.root}
+        self.itemReady.connect(self.apply_value)
 
-    def apply_value(self, tree):
-        for key, value in tree.items():
-            if key == "":
-                for item in self.apply_value(value):
-                    yield item
-            elif isinstance(value, dict):
+    def apply_value(self, text, length):
+        partials = Path(text).parts
+        tree = self.itemtree
+        for i, partial in enumerate(partials):
+            if partial not in tree:
                 item = TreeItem(type=0)
-                item.setText(0, key)
-                for child in self.apply_value(value):
-                    item.addChild(child)
-                yield item
-            else:
-                item = TreeItem(type=0)
-                item.setText(0, key)
-                child = TreeItem(type=0)
-                child.setText(0, str(value))
-                item.addChild(child)
-                yield item
-
-    def set_tree(self, tree):
-        self.tree = tree
-        for key, value in tree.items():
-            top_item = TreeItem(type=0)
-            top_item.setText(0, key)
-            for item in self.apply_value(value):
-                top_item.addChild(item)
-            self.addTopLevelItem(top_item)
-
-    def assign_children(self, groups, parent):
-        for k, v in groups.items():
-            item = TreeItem(type=0)
-            item.setText(0, k)
-            parent.addChild(item)
-            if not isinstance(v, dict):
-                length = TreeItem(type=0)
-                length.setText(0, f"Length: {v} bytes")
-                length.alt_icon()
-                item.addChild(length)
-                continue
-            self.assign_children(v, item)
-
-    def set_files(self, filelist):
-        groups = {}
-        for item in filelist:
-            current = groups
-            partials = item["path"]
-            parts, start = len(partials), 0
-            while start < parts:
-                partial = partials[start]
-                if start == parts - 1:
-                    current[partial] = item["length"]
-                elif partial in current:
-                    current = current[partial]
+                if i + 1 == len(partials):
+                    iconpath = "./assets/file.png"
+                    item.setLength(length)
                 else:
-                    current[partial] = {}
-                    current = current[partial]
-                start += 1
-        self.assign_children(groups, self.root)
+                    iconpath = "./assets/folder.png"
+                icon = QIcon(iconpath)
+                item.setIcon(0, icon)
+                item.setText(1, partial)
+                tree["widget"].addChild(item)
+                item.setExpanded(True)
+                tree[partial] = {"widget": item}
+            tree = tree[partial]
 
 
 class TreeItem(QTreeWidgetItem):
     def __init__(self, type=0):
         super().__init__(type=type)
-        icon = QIcon("./assets/folder.png")
-        self.setIcon(0, icon)
-        self.setChildIndicatorPolicy(self.ChildIndicatorPolicy.ShowIndicator)
+        policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
+        self.setChildIndicatorPolicy(policy)
 
-    def alt_icon(self):
-        icon = QIcon("./assets/ruler.png")
-        self.setIcon(0, icon)
+    def setLength(self, length):
+        child = TreeItem(type=0)
+        icon = QIcon("./assets/scale.png")
+        child.setIcon(0, icon)
+        child.setText(1, f"Size: {length} (bytes)")
+        self.setExpanded(True)
+        self.addChild(child)
 
 
 class InfoWidget(QWidget):
@@ -152,11 +122,13 @@ class InfoWidget(QWidget):
         self.privateLabel = Label("Private: ", parent=self)
         self.sourceLabel = Label("Source: ", parent=self)
         self.commentLabel = Label("Comment: ", parent=self)
+        self.metaVersionLabel = Label("Meta-Version:", parent=self)
         self.dateCreatedLabel = Label("Creation Date: ", parent=self)
         self.createdByLabel = Label("Created By: ", parent=self)
         self.contentsLabel = Label("Contents: ", parent=self)
         self.contentsTree = TreeWidget(parent=self)
         self.sourceEdit = InfoLineEdit(parent=self)
+        self.metaVersionEdit = InfoLineEdit(parent=self)
         self.pathEdit = InfoLineEdit(parent=self)
         self.nameEdit = InfoLineEdit(parent=self)
         self.pieceLengthEdit = InfoLineEdit(parent=self)
@@ -179,20 +151,22 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.totalPiecesEdit, 4, 1, 1, 1)
         self.layout.addWidget(self.trackerLabel, 5, 0, 1, 1)
         self.layout.addWidget(self.trackerEdit, 5, 1, 1, 1)
-        self.layout.addWidget(self.privateLabel, 6, 0, 1, 1)
-        self.layout.addWidget(self.privateEdit, 6, 1, 1, 1)
-        self.layout.addWidget(self.sourceLabel, 7, 0, 1, 1)
-        self.layout.addWidget(self.sourceEdit, 7, 1, 1, 1)
-        self.layout.addWidget(self.commentLabel, 8, 0, 1, 1)
-        self.layout.addWidget(self.commentEdit, 8, 1, 1, 1)
-        self.layout.addWidget(self.createdByLabel, 9, 0, 1, 1)
-        self.layout.addWidget(self.createdByEdit, 9, 1, 1, 1)
-        self.layout.addWidget(self.dateCreatedLabel, 10, 0, 1, 1)
-        self.layout.addWidget(self.dateCreatedEdit, 10, 1, 1, 1)
-        self.layout.addWidget(self.contentsLabel, 11, 0, 1, 1)
-        self.layout.addWidget(self.contentsTree, 11, 1, 5, 1)
+        self.layout.addWidget(self.metaVersionLabel, 6, 0, 1, 1)
+        self.layout.addWidget(self.metaVersionEdit, 6, 1, 1, 1)
+        self.layout.addWidget(self.privateLabel, 7, 0, 1, 1)
+        self.layout.addWidget(self.privateEdit, 7, 1, 1, 1)
+        self.layout.addWidget(self.sourceLabel, 8, 0, 1, 1)
+        self.layout.addWidget(self.sourceEdit, 8, 1, 1, 1)
+        self.layout.addWidget(self.commentLabel, 9, 0, 1, 1)
+        self.layout.addWidget(self.commentEdit, 9, 1, 1, 1)
+        self.layout.addWidget(self.createdByLabel, 10, 0, 1, 1)
+        self.layout.addWidget(self.createdByEdit, 10, 1, 1, 1)
+        self.layout.addWidget(self.dateCreatedLabel, 11, 0, 1, 1)
+        self.layout.addWidget(self.dateCreatedEdit, 11, 1, 1, 1)
+        self.layout.addWidget(self.contentsLabel, 12, 0, 1, 1)
+        self.layout.addWidget(self.contentsTree, 12, 1, 5, 1)
         self.selectButton = SelectButton("Select Torrent", parent=self)
-        self.layout.addWidget(self.selectButton, 16, 0, -1, -1)
+        self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
 
     def fill(self, kws):
         """Fill all child widgets with collected information.
@@ -208,25 +182,17 @@ class InfoWidget(QWidget):
         self.dateCreatedEdit.setText(str(kws["creation_date"]))
         self.createdByEdit.setText(kws["created_by"])
         self.privateEdit.setText(kws["private"])
+        self.metaVersionEdit.setText(str(kws["meta version"]))
 
         piece_length = kws["piece_length"]
         plength_str = denom(piece_length) + " / (" + pretty_int(piece_length) + ")"
         self.pieceLengthEdit.setText(plength_str)
-
         size = denom(kws["length"]) + " / (" + pretty_int(kws["length"]) + ")"
         self.sizeEdit.setText(size)
         total_pieces = math.ceil(kws["length"] / kws["piece_length"])
         self.totalPiecesEdit.setText(str(total_pieces))
-
-        if "file tree" in kws:
-            self.contentsTree.set_tree(kws["file tree"])
-        elif "files" in kws:
-            self.contentsTree.set_files(kws["files"])
-        else:
-            item = QTreeWidgetItem([kws["name"]])
-            item.setText(0, kws["name"])
-            self.contentsTree.addTopLevelItem(item)
-
+        for path, size in kws["contents"].items():
+            self.contentsTree.itemReady.emit(path, size)
         for widg in [
             self.pathEdit,
             self.nameEdit,
@@ -265,6 +231,12 @@ class SelectButton(QPushButton):
         keywords = {}
         keywords["path"] = files[0]
         keywords["piece_length"] = info["piece length"]
+        if "meta version" not in info:
+            keywords["meta version"] = 1
+        elif "pieces" in info:
+            keywords["meta version"] = 3
+        else:
+            keywords["meta version"] = 2
         if "created by" in meta:
             keywords["created_by"] = meta["created by"]
         else:
@@ -278,22 +250,23 @@ class SelectButton(QPushButton):
             keywords["announce"] = info["announce list"] + [meta["announce"]]
         else:
             keywords["announce"] = [meta["announce"]]
-        files, size = [], 0
+        size = 0
         if "files" in info:
-            keywords["files"] = info["files"]
+            contents = {}
             for entry in info["files"]:
-                files.append(os.path.join(*entry["path"]))
+                contents[os.path.join(info["name"], *entry["path"])] = entry["length"]
                 size += entry["length"]
-            keywords["contents"] = files
-            keywords["length"] = size
+            keywords["contents"] = contents
         elif "file tree" in info:
-            paths = parse_filetree(info["file tree"])
-            keywords["file tree"] = info["file tree"]
-            for k, v in paths.items():
-                files.append(k)
+            contents = {}
+            for k, v in parse_filetree(info["file tree"]).items():
+                contents[os.path.join(info["name"], k)] = v
                 size += v
-            keywords["contents"] = files
-            keywords["length"] = size
+            keywords["contents"] = contents
+        else:
+            keywords["contents"] = {info["name"]: info["length"]}
+            size = info["length"]
+        keywords["length"] = size
         if "creation date" in meta:
             date = datetime.fromtimestamp(meta["creation date"])
             text = date.strftime("%B %d, %Y %H:%M")
@@ -304,48 +277,9 @@ class SelectButton(QPushButton):
             keywords["private"] = "True"
         else:
             keywords["private"] = "False"
-        if "contents" not in keywords:
-            keywords["contents"] = [info["name"]]
         tab = self.parent()
         thread = Thread(group=None, target=tab.fill, args=(keywords,))
         thread.run()
-
-
-def denom(num):
-    txt = str(num)
-    if num < 1000:
-        return txt
-    if 1000 <= num <= 999999:
-        return "".join([txt[:-3], ".", txt[-3], "KB"])
-    if 1_000_000 <= num < 1_000_000_000:
-        return "".join([txt[:-6], ".", txt[-6], "MB"])
-    if num >= 1_000_000_000:
-        return "".join([txt[:-9], ".", txt[-9], "GB"])
-
-
-def pretty_int(num):
-    text, seq = str(num), []
-    digits, count = len(text) - 1, 0
-    while digits >= 0:
-        if count == 3:
-            seq.insert(0, ",")
-            count = 0
-        seq.insert(0, text[digits])
-        count += 1
-        digits -= 1
-    return "".join(seq) + " Bytes"
-
-
-def parse_filetree(filetree):
-    paths = {}
-    for key in filetree:
-        if key == "":
-            paths[key] = filetree[key]["length"]
-        else:
-            out = parse_filetree(filetree[key])
-            for k, v in out.items():
-                paths[os.path.join(key, k)] = v
-    return paths
 
 
 class Label(QLabel):
@@ -372,3 +306,40 @@ class InfoLineEdit(QLineEdit):
         font = self.font()
         font.setBold(True)
         self.setFont(font)
+
+
+def denom(num):
+    txt = str(num)
+    if int(num) < 1000:
+        return txt
+    if 1000 <= num <= 999999:
+        return "".join([txt[:-3], ".", txt[-3], "KB"])
+    if 1_000_000 <= num < 1_000_000_000:
+        return "".join([txt[:-6], ".", txt[-6], "MB"])
+    if num >= 1_000_000_000:
+        return "".join([txt[:-9], ".", txt[-9], "GB"])
+
+
+def pretty_int(num):
+    text, seq = str(num), []
+    digits, count = len(text) - 1, 0
+    while digits >= 0:
+        if count == 3:
+            seq.insert(0, ",")
+            count = 0
+        seq.insert(0, text[digits])
+        count += 1
+        digits -= 1
+    return "".join(seq) + " Bytes"
+
+
+def parse_filetree(filetree):
+    paths = {}
+    for key, value in filetree:
+        if value == "":
+            return {key: filetree[key]["length"]}
+        else:
+            out = parse_filetree(value)
+            for k, v in out.items():
+                paths[os.path.join(key, k)] = v
+    return paths
