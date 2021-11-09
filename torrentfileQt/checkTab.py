@@ -135,7 +135,6 @@ class ReCheckButton(QPushButton):
         CheckerClass.register_callback(textEdit.callback)
         logging.debug("Registering Callback, setting root")
         piece_hasher(metafile, content, tree)
-        # tree.start_thread(metafile, content)
 
 
 class BrowseTorrents(QToolButton):
@@ -214,67 +213,93 @@ class BrowseFolders(QToolButton):
         self.parent().searchInput.setText(path)
 
 
+class LineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setStyleSheet(lineEditSheet)
+
+
+class LogTextEdit(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._parent = parent
+        self.setBackgroundVisible(True)
+        font = self.font()
+        font.setFamily("Consolas")
+        font.setBold(True)
+        font.setPointSize(8)
+        self.setFont(font)
+        self.setStyleSheet(logTextEditSheet)
+
+    def clear_data(self):
+        self.clear()
+
+    def callback(self, msg):
+        self.insertPlainText(msg)
+        self.insertPlainText("\n")
+
+
+class Label(QLabel):
+    """Label Identifier for Window Widgets.
+
+    Subclass: QLabel
+    """
+
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
+        self.setStyleSheet(labelSheet)
+        font = self.font()
+        font.setBold(True)
+        font.setPointSize(12)
+        self.setFont(font)
+
+
 class TreePieceItem(QTreeWidgetItem):
+
     def __init__(self, type=0, tree=None):
         super().__init__(type=type)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
         self.tree = tree
+        self.window = tree.window
+        self.counted = self.value = 0
         self.progbar = None
-        self.total = self.value = self.counted = 0
 
-    def setProgressBar(self, progressBar, size):
-        self.total = size
-        self.progbar = progressBar
-        self.progbar.setRange(0, size)
+    @property
+    def total(self):
+        return self.progbar.total
 
     def addValue(self, value):
-        left = self.total - self.counted
-        if left > value:
-            self.progbar.addValue(value)
-            self.value += value
-            self.counted += value
-            return 0
-        self.progbar.addValue(left)
-        self.counted += left
-        self.value += left
-        remainder = value - left
-        return remainder
+        if self.counted + value > self.total:
+            consumed = self.total - self.value
+        else:
+            consumed = value
+        self.value += consumed
+        self.counted += consumed
+        self.progbar.valueChanged.emit(consumed)
+        self.window.app.processEvents()
+        return consumed
 
-    def counted(self, value):
-        left = self.total - self.counted
-        if left < value:
-            self.counted += left
-            remainder = value - left
-            return remainder
+    def cont(self, value):
+        if self.counted + value > self.total:
+            consumed = self.total - self.value
+            self.counted += consumed
+            return consumed
         self.counted += value
-        return 0
-
-
-
-    def __repr__(self):
-        return f"<TreeItem: {self.val}>"
-
-
-class Filler:
-    def __init__(self, **kwargs):
-        self.tree = kwargs["tree"]
-        self.value = None
-        self.expected = None
-
-    def set_val(self, val, expected):
-        self.expected = expected
-        self.value = val
-
-    def text(self):
-        if self.expected:
-            return self.expected
+        return value
 
 
 class ProgressBar(QProgressBar):
-    def __init__(self, parent=None):
+
+    valueChanged = pyqtSignal([int])
+
+    def __init__(self, parent=None, size=0):
         super().__init__(parent=parent)
-        self.setRange(0, 100)
+        self.total = size
+        self.setValue(0)
+        self.setRange(0, size)
+        self.valueChanged.connect(self.addValue)
 
     def addValue(self, value):
         currentvalue = self.value()
@@ -311,16 +336,7 @@ class TreeWidget(QTreeWidget):
         self.total = 0
         self.piece_length = None
         self.item_tree = {"widget": self.item}
-        self.valueUpdate.connect(self.updateValue)
         self.addPathChild.connect(self.add_path_child)
-
-    def updateValue(self, args):
-        actual, expected, path, size = args
-        widget = self.itemWidgets[path]["widget"]
-        # print(actual, expected)
-        if actual == expected:
-            widget.add_piece(size)
-            self.window.repaint()
 
     def clear(self):
         super().clear()
@@ -344,16 +360,16 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 fileicon = QIcon("./assets/file.png")
-                progressBar = ProgressBar()
+                progressBar = ProgressBar(parent=None,size=size)
                 self.setItemWidget(item, 2, progressBar)
-                item.setProgressBar(progressBar, size)
+                item.progbar = progressBar
                 self.itemWidgets[str(path)] = item
             else:
                 fileicon = QIcon("./assets/folder.png")
             item.setIcon(0, fileicon)
             item.setText(1, partial)
             item_tree = item_tree[partial]
-            self.window.repaint()
+            self.window.app.processEvents()
         self.paths.append(path)
 
     def remainder(self, path):
@@ -362,26 +378,35 @@ class TreeWidget(QTreeWidget):
 
 
 def piece_hasher(metafile, content, tree):
-    mapping = {}
     checker = CheckerClass(metafile, content)
-    parent = os.path.dirname(content)
+    fileinfo = checker.fileinfo
     pathlist = checker.paths
     for path in pathlist:
-        relpath = path.lstrip(parent)
-        length = checker.fileinfo[path]["length"]
+        relpath = path.lstrip(tree.root)
+        length = fileinfo[path]["length"]
         tree.addPathChild.emit(relpath, length)
-    index, current = 0, None
+    if checker.meta_version == 1:
+        current = 0
+        for actual, expected, path, size in checker.iter_hashes():
+            value = size
+            while True:
+                path = pathlist[current].lstrip(tree.root)
+                widget = tree.itemWidgets[path]
+                if actual == expected:
+                    consumed = widget.addValue(value)
+                else:
+                    consumed = widget.count(value)
+                value -= consumed
+                if not value:
+                    break
+                current += 1
+        return
     for actual, expected, path, size in checker.iter_hashes():
-        print(mapping)
-        if not current: current = path
-        elif path != current:
-            current = path
-            index = pathlist.index(path)
-        relpath = path.lstrip(parent)
-        widget = tree.itemWidgets[relpath]
         if actual == expected:
-            methodname = "addValue"
+            leaf = tree.itemWidgets[path.lstrip(tree.root)]
+            leaf.addValue(size)
         else:
+<<<<<<< Updated upstream
             methodname = "counted"
         method = widget.__getattribute__(methodname)
         remainder = method(size)
@@ -441,3 +466,6 @@ class Label(QLabel):
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
+=======
+            leaf.count(size)
+>>>>>>> Stashed changes
