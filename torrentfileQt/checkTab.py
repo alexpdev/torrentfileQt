@@ -256,7 +256,6 @@ class Label(QLabel):
 
 
 class TreePieceItem(QTreeWidgetItem):
-
     def __init__(self, type=0, tree=None):
         super().__init__(type=type)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
@@ -360,7 +359,7 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 fileicon = QIcon("./assets/file.png")
-                progressBar = ProgressBar(parent=None,size=size)
+                progressBar = ProgressBar(parent=None, size=size)
                 self.setItemWidget(item, 2, progressBar)
                 item.progbar = progressBar
                 self.itemWidgets[str(path)] = item

@@ -37,8 +37,7 @@ from PyQt6.QtWidgets import (
     QTreeWidget,
 )
 
-from torrentfileQt.qss import (pushButtonSheet, infoLineEditSheet,
-                               labelSheet, treeSheet)
+from torrentfileQt.qss import pushButtonSheet, infoLineEditSheet, labelSheet, treeSheet
 
 from PyQt6.QtGui import QIcon
 
@@ -155,17 +154,17 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.metaVersionLabel, 6, 0, 1, 1)
         self.layout.addWidget(self.metaVersionEdit, 6, 1, 1, 1)
         self.layout.addWidget(self.privateLabel, 7, 0, 1, 1)
-        self.layout.addWidget(self.privateEdit,  7, 1, 1, 1)
-        self.layout.addWidget(self.sourceLabel,  8, 0, 1, 1)
-        self.layout.addWidget(self.sourceEdit,   8, 1, 1, 1)
+        self.layout.addWidget(self.privateEdit, 7, 1, 1, 1)
+        self.layout.addWidget(self.sourceLabel, 8, 0, 1, 1)
+        self.layout.addWidget(self.sourceEdit, 8, 1, 1, 1)
         self.layout.addWidget(self.commentLabel, 9, 0, 1, 1)
-        self.layout.addWidget(self.commentEdit,  9, 1, 1, 1)
+        self.layout.addWidget(self.commentEdit, 9, 1, 1, 1)
         self.layout.addWidget(self.createdByLabel, 10, 0, 1, 1)
-        self.layout.addWidget(self.createdByEdit,  10, 1, 1, 1)
+        self.layout.addWidget(self.createdByEdit, 10, 1, 1, 1)
         self.layout.addWidget(self.dateCreatedLabel, 11, 0, 1, 1)
-        self.layout.addWidget(self.dateCreatedEdit,  11, 1, 1, 1)
+        self.layout.addWidget(self.dateCreatedEdit, 11, 1, 1, 1)
         self.layout.addWidget(self.contentsLabel, 12, 0, 1, 1)
-        self.layout.addWidget(self.contentsTree,  12, 1, 5, 1)
+        self.layout.addWidget(self.contentsTree, 12, 1, 5, 1)
         self.selectButton = SelectButton("Select Torrent", parent=self)
         self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
 
@@ -255,12 +254,12 @@ class SelectButton(QPushButton):
         if "files" in info:
             contents = {}
             for entry in info["files"]:
-                contents[os.path.join(info["name"],*entry["path"])] = entry["length"]
+                contents[os.path.join(info["name"], *entry["path"])] = entry["length"]
                 size += entry["length"]
             keywords["contents"] = contents
         elif "file tree" in info:
             contents = {}
-            for k,v in parse_filetree(info["file tree"]).items():
+            for k, v in parse_filetree(info["file tree"]).items():
                 contents[os.path.join(info["name"], k)] = v
                 size += v
             keywords["contents"] = contents
@@ -308,6 +307,7 @@ class InfoLineEdit(QLineEdit):
         font.setBold(True)
         self.setFont(font)
 
+
 def denom(num):
     txt = str(num)
     if int(num) < 1000:
@@ -341,5 +341,5 @@ def parse_filetree(filetree):
         else:
             out = parse_filetree(value)
             for k, v in out.items():
-                paths[os.path.join(key,k)] = v
+                paths[os.path.join(key, k)] = v
     return paths
