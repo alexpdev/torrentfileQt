@@ -401,26 +401,7 @@ def piece_hasher(metafile, content, tree):
                     break
                 current += 1
         return
-    for actual, expected, path, size in checker.iter_hashes():
-        if actual == expected:
-            leaf = tree.itemWidgets[path.lstrip(tree.root)]
-            leaf.addValue(size)
-        else:
-<<<<<<< Updated upstream
-            methodname = "counted"
-        method = widget.__getattribute__(methodname)
-        remainder = method(size)
-        mapping[path] = {"size": size, "remiander": remainder}
-        while remainder > 0:
-            index += 1
-            nextpath = pathlist[index]
-            current = nextpath
-            rpath = nextpath.lstrip(parent)
-            nwidget = tree.itemWidgets[rpath]
-            size = remainder
-            method = nwidget.__getattribute__(methodname)
-            remainder = method(size)
-            mapping[nextpath] = {"size": size, "remiander": remainder}
+
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -466,6 +447,3 @@ class Label(QLabel):
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
-=======
-            leaf.count(size)
->>>>>>> Stashed changes
