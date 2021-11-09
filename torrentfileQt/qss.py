@@ -66,20 +66,21 @@ treeSheet = """
         margin-bottom: 1px;
         border-radius: 3px;
         width: 16px;
-
     }
     """
 
 menuSheet = """
     QMenu{
         background-color:#000000;
+        padding-top: 2px;
+        padding-bottom: 2px;
     }
     QMenuBar {
+        font-size: 11pt;
         background:rgb(30, 30, 30);
         color: #FFFFFF;
         margin-bottom: 1px;
         padding-bottom: 2px;
-        font-size: 11pt;
     }
     QMenuBar::item {
         spacing: 3px;
@@ -147,7 +148,6 @@ statusBarSheet = """
     }
     """
 
-
 toolBoxSheet = """
     QToolBox {
         color: #a9b7c6;
@@ -170,8 +170,7 @@ scrollAreaSheet = """
     }
     QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         background: none;
-    }
-    """
+    }"""
 
 
 pushButtonSheet = """
@@ -239,35 +238,43 @@ push2ButtonSheet = """
         color: #FFFFFF;
         padding-bottom: 1px;
         background-color: #000000;
-    }"""
+    }
+    """
 
 
 toolButtonSheet = """
     QToolButton {
         font-size: 10pt;
         border-style: solid;
-        border-top-color: #e67e22;
-        border-right-color: #e67e22;
-        border-left-color: #e67e22;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        border-top-color: transparent;
         border-bottom-color: #e67e22;
-        border-bottom-width: 1px;
+        border-bottom-width: 3px;
+        padding: 2px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-top: 1px;
+        margin-bottom: 1px;
         border-style: solid;
         color: #a9b7c6;
-        padding: 2px;
         background-color: #444;
     }
     QToolButton:hover{
         border-style: solid;
         border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
+        border-right-color: #e67e22;
+        border-left-color: #e67e22;
         border-bottom-color: #e67e22;
-        border-bottom-width: 2px;
+        border-width: 2px;
         border-style: solid;
         color: #FFFFFF;
         padding-bottom: 1px;
         background-color: #000000;
-    }"""
+    }
+    """
 
 
 checkBoxSheet = """
@@ -279,7 +286,6 @@ checkBoxSheet = """
         color: #808086;
         padding: 6px;
     }
-
     QCheckBox:hover {
         border-radius: 4px;
         border-style: #611 solid;
@@ -289,7 +295,6 @@ checkBoxSheet = """
         background-color:#dddddd;
     }
     QCheckBox::indicator:checked {
-
         height: 13px;
         width: 13px;
         border-style:solid;
@@ -299,7 +304,6 @@ checkBoxSheet = """
         background-color: #d63d12;
     }
     QCheckBox::indicator:unchecked {
-
         height: 11px;
         width: 11px;
         border-style:solid;
@@ -322,7 +326,7 @@ tabSheet = """
 
 tabBarSheet = """
     QTabBar::tab {
-        border-style: solid;
+        border-style: outset;
         border-top-color: transparent;
         border-right-color: transparent;
         border-left-color: transparent;
@@ -340,15 +344,15 @@ tabBarSheet = """
         border-right-color: #e67e22;
         border-left-color: #e67e22;
         border-bottom-color: #e67e22;
-        border-bottom-width: 2px;
-        font-size: 11pt;
         font-style: bold;
-        border-style: solid;
+        border-width: 3px;
+        border-style: inset;
         color: #FFF;
         padding-left: 8px;
         padding-right: 8px;
+        padding-bottom: 3px;
         margin-right: 2px;
-        background-color: #444;
+        background-color: #333;
     }"""
 
 

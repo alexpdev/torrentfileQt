@@ -17,10 +17,13 @@
 # limitations under the License.
 ##############################################################################
 
+import os
 import webbrowser
+from pathlib import Path
 
+import pyben
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMenu, QMenuBar
+from PyQt6.QtWidgets import QMenu, QMenuBar, QFileDialog
 
 from .qss import menuSheet
 
@@ -47,6 +50,7 @@ class MenuBar(QMenuBar):
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)
         self.addMenu(self.help_menu)
+        self.actionExport= QAction(self.window)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
@@ -55,17 +59,34 @@ class MenuBar(QMenuBar):
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
         self.actionDocs.setText("Documentation")
+        self.actionExport.setText("Save to")
         self.file_menu.addAction(self.actionExit)
+        self.file_menu.addAction(self.actionExport)
         self.help_menu.addAction(self.actionAbout)
         self.help_menu.addAction(self.actionDocs)
         self.help_menu.addAction(self.actionRepo)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_qt)
+        self.actionExport.triggered.connect(self.export)
         self.actionDocs.triggered.connect(self.documentation)
         self.actionRepo.triggered.connect(self.repository)
         self.actionDocs.setObjectName("actionDocs")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
+        self.actionExport.setObjectName("actionExport")
+
+    def export(self):
+        home = str(Path.home())
+        filename = QFileDialog.getSaveFileName(caption="Save location:",
+                                               directory=home)
+        if os.path.exists(os.path.dirname(filename)):
+            widget = self.window.tabWidget.infoWidget
+            path = widget.pathEdit.text()
+            if os.path.exists(path):
+                data = pyben.load(path)
+                with open(filename, "wt") as fd:
+                    fd.write(str(data))
+        return
 
     def documentation(self):
         webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
