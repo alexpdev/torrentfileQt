@@ -18,12 +18,11 @@
 ##############################################################################
 """Setup and Teardown functions and fixtures used for Unit Tests."""
 
+import atexit
 import os
 import shutil
 import string
-import atexit
 import time
-
 
 TESTS = os.path.dirname(os.path.abspath(__file__))
 TESTDIR = os.path.join(TESTS, "TESTDIR")
@@ -36,14 +35,17 @@ def rmpath(path):
     Args:
         path (`str`): File or Folder to delete.
     """
-    if os.path.exists(path):
+    while os.path.exists(path):
         if os.path.isfile(path):
-            os.remove(path)
+            try:
+                os.remove(path)
+            except PermissionError:
+                time.sleep(.5)
         elif os.path.isdir(path):
             try:
                 shutil.rmtree(path)
             except PermissionError:
-                pass
+                time.sleep(.5)
 
 
 def tstDir(func):

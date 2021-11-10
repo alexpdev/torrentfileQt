@@ -15,7 +15,7 @@ aggressive = 3
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
-    "torrentfile",
+    "torrentfileQt",
 ]
 
 [build-system]
