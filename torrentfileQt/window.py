@@ -105,7 +105,7 @@ class Application(QApplication):
         super().__init__(self.args)
 
 
-def start():     # pragma: no cover
+def start():  # pragma: no cover
     app = Application()
     window = Window(parent=None, app=app)
     window.show()

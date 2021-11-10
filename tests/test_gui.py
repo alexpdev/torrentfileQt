@@ -264,6 +264,7 @@ def test_check_tab4(wind):
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None
 
+
 def test_check_2tab5(wind, ttorrent2):
     checktab = wind.central.checkWidget
     metafile = ttorrent2
@@ -272,6 +273,7 @@ def test_check_2tab5(wind, ttorrent2):
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
     assert True
+
 
 def test_check_1tab5(wind, ttorrent1):
     checktab = wind.central.checkWidget
@@ -292,6 +294,7 @@ def test_check_d2tab5(wind, dtorrent2):
     checktab.checkButton.click()
     assert True
 
+
 def test_check_tab5(wind, dtorrent1):
     checktab = wind.central.checkWidget
     metafile = dtorrent1
@@ -300,6 +303,7 @@ def test_check_tab5(wind, dtorrent1):
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
     assert True
+
 
 def test_export_menu(wind, ttorrent2):
     infotab = wind.central.infoWidget

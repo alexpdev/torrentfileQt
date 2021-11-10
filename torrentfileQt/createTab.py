@@ -343,7 +343,7 @@ class BrowseDirButton(QPushButton):
         self.window.output_input.insert(outpath)
         try:
             _, size, piece_length = path_stat(path)
-        except PermissionError:    # pragma: no cover
+        except PermissionError:  # pragma: no cover
             return
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
