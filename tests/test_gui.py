@@ -17,21 +17,16 @@
 # limitations under the License.
 ##############################################################################
 
-from tests.context import tstdir3
 import os
-import pytest
 from pathlib import Path
 
+import pytest
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
+from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-
-from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
-
-from tests.context import tstdir, tstfile, tstdir2, rmpath
-from torrentfileQt.window import alt_start, TabWidget
-from torrentfileQt import menu
-from torrentfileQt import qss
-
+from tests.context import rmpath, tstdir, tstdir2, tstdir3, tstfile
+from torrentfileQt import menu, qss
+from torrentfileQt.window import TabWidget, alt_start
 
 @pytest.fixture(scope="module")
 def wind():
@@ -43,13 +38,15 @@ def wind():
 @pytest.fixture(scope="module", params=[tstdir, tstdir2])
 def tdir(request):
     root = request.param()
-    return root
+    yield root
+    rmpath(root)
 
 
 @pytest.fixture(scope="module", params=list(range(14, 28)))
 def tfile(request):
     path = tstfile(val=request.param)
-    return path
+    yield path
+    rmpath(path)
 
 
 @pytest.fixture(
@@ -66,7 +63,8 @@ def ttorrent1(tfile, request):
     }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    return outfile
+    yield outfile
+    rmpath(outfile)
 
 
 @pytest.fixture(
@@ -83,7 +81,8 @@ def dtorrent1(tdir, request):
     }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    return outfile
+    yield outfile
+    rmpath(outfile)
 
 
 @pytest.fixture(
@@ -94,7 +93,8 @@ def ttorrent2(tfile, request):
     args = {"path": path}
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    return outfile
+    yield outfile
+    rmpath(outfile)
 
 
 @pytest.fixture(
@@ -104,7 +104,8 @@ def dtorrent2(tdir, request):
     args = {"path": tdir}
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    return outfile
+    yield outfile
+    rmpath(outfile)
 
 
 def test_window1(wind):
@@ -335,7 +336,8 @@ def wind2():
 @pytest.fixture
 def tdir3():
     path = tstdir3()
-    return path
+    yield path
+    rmpath(path)
 
 
 @pytest.fixture(params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
@@ -350,7 +352,8 @@ def dtorrent1(tdir3, request):
     }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
-    return outfile
+    yield outfile
+    rmpath(outfile)
 
 
 def test_missing_files_check(dtorrent1, wind):

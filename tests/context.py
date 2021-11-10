@@ -18,12 +18,11 @@
 ##############################################################################
 """Setup and Teardown functions and fixtures used for Unit Tests."""
 
+import atexit
 import os
 import shutil
 import string
-import atexit
 import time
-
 
 TESTS = os.path.dirname(os.path.abspath(__file__))
 TESTDIR = os.path.join(TESTS, "TESTDIR")
