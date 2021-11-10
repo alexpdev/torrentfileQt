@@ -27,6 +27,7 @@ from tests.context import tstdir2, tstdir3, tstdir, tstfile, rmpath
 from torrentfileQt import qss
 from torrentfileQt.window import TabWidget, alt_start
 
+
 @pytest.fixture(scope="module")
 def wind():
     window, app = alt_start()
@@ -339,7 +340,9 @@ def tdir3():
     rmpath(path)
 
 
-@pytest.fixture(scope="module",params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(
+    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def dtorrent1(tdir3, request):
     path = tdir3
     args = {

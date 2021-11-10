@@ -40,12 +40,12 @@ def rmpath(path):
             try:
                 os.remove(path)
             except PermissionError:
-                time.sleep(.5)
+                time.sleep(0.5)
         elif os.path.isdir(path):
             try:
                 shutil.rmtree(path)
             except PermissionError:
-                time.sleep(.5)
+                time.sleep(0.5)
 
 
 def tstDir(func):

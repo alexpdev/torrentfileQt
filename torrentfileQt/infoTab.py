@@ -27,12 +27,24 @@ from threading import Thread
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
-                             QPushButton, QTreeWidget, QTreeWidgetItem,
-                             QWidget)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QGridLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
 
-from torrentfileQt.qss import (infoLineEditSheet, labelSheet, pushButtonSheet,
-                               treeSheet)
+from torrentfileQt.qss import (
+    infoLineEditSheet,
+    labelSheet,
+    pushButtonSheet,
+    treeSheet,
+)
+
 
 class TreeWidget(QTreeWidget):
     """Tree view of the directory structure cataloged in .torrent file.
