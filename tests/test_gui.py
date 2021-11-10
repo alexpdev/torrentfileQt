@@ -23,9 +23,8 @@ from pathlib import Path
 import pytest
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
-
-from tests.context import rmpath, tstdir, tstdir2, tstdir3, tstfile
-from torrentfileQt import menu, qss
+from tests.context import tstdir2, tstdir3, tstdir, tstfile, rmpath
+from torrentfileQt import qss
 from torrentfileQt.window import TabWidget, alt_start
 
 @pytest.fixture(scope="module")
@@ -326,21 +325,21 @@ def test_export_menu(wind, ttorrent2):
     rmpath(path)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def wind2():
     window, app = alt_start()
     yield window
     app.quit()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def tdir3():
     path = tstdir3()
     yield path
     rmpath(path)
 
 
-@pytest.fixture(params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(scope="module",params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def dtorrent1(tdir3, request):
     path = tdir3
     args = {
