@@ -104,6 +104,7 @@ class Application(QApplication):
 
 def start():  # pragma: no cover
     """Entrypoint for program."""
+
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
