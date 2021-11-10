@@ -358,6 +358,7 @@ class BrowseDirButton(QPushButton):
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         try:
+
             _, size, piece_length = path_stat(filename)
         except PermissionError:  # pragma: no cover
             return None

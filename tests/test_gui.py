@@ -285,6 +285,7 @@ def test_check_2tab5(wind, ttorrent2):
     assert checktab.textEdit.toPlainText() != ""
 
 
+
 def test_check_1tab5(wind, ttorrent1):
     checktab = wind.central.checkWidget
     metafile = ttorrent1
@@ -305,6 +306,7 @@ def test_check_d2tab5(wind, dtorrent2):
     assert checktab.treeWidget.topLevelItemCount() > 0
 
 
+
 def test_check_tab5(wind, dtorrent1):
     checktab = wind.central.checkWidget
     metafile = dtorrent1
@@ -313,6 +315,7 @@ def test_check_tab5(wind, dtorrent1):
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
     assert checktab.treeWidget.topLevelItemCount() > 0
+
 
 
 def test_export_menu(wind, ttorrent2):
