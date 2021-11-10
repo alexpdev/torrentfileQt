@@ -38,8 +38,8 @@ treeSheet = """
         border: 1px solid #536D79;
     }
     QTreeWidget::indicator::unchecked {
-	    background-color: #ffffff;
-	    border: 1px solid #536D79;
+        background-color: #ffffff;
+        border: 1px solid #536D79;
     }
     QTreeWidget QHeaderView::section {
         background-color: black;

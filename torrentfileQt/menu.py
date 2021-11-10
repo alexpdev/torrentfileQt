@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""Module for the menu bar."""
+
 
 import os
 import webbrowser
@@ -23,13 +25,16 @@ from pathlib import Path
 
 import pyben
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMenu, QMenuBar, QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar
 
 from .qss import menuSheet
 
 
 class Menu(QMenu):
+    """Menu item for MenuBar widget."""
+
     def __init__(self, text, parent=None):
+        """Constructor for Menu Widget."""
         super().__init__(text, parent=parent)
         self.menubar = parent
         self.txt = text
@@ -40,11 +45,12 @@ class Menu(QMenu):
 
 
 class MenuBar(QMenuBar):
-    def __init__(self, parent=None, *args, **kwargs):
+    """Main menu bar for top level menu of program."""
+
+    def __init__(self, parent=None):
+        """Constructor for top level widgets."""
         super().__init__(parent=parent)
-        self.args = args
         self.window = parent
-        self.kwargs = kwargs
         self.setStyleSheet(menuSheet)
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
@@ -68,14 +74,15 @@ class MenuBar(QMenuBar):
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_qt)
         self.actionExport.triggered.connect(self.export)
-        self.actionDocs.triggered.connect(self.documentation)
-        self.actionRepo.triggered.connect(self.repository)
+        self.actionDocs.triggered.connect(documentation)
+        self.actionRepo.triggered.connect(repository)
         self.actionDocs.setObjectName("actionDocs")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
         self.actionExport.setObjectName("actionExport")
 
     def export(self, path=None):
+        """Export data from info widget to file."""
         home = str(Path.home())
         if path:
             filename = path
@@ -90,16 +97,21 @@ class MenuBar(QMenuBar):
                 data = pyben.load(path)
                 with open(filename, "wt") as fd:
                     fd.write(str(data))
-        return
-
-    def documentation(self):
-        webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
-
-    def repository(self):
-        webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
     def about_qt(self):
+        """Open the about qt menu."""
         self.window.app.aboutQt()  # pragma: nocover
 
     def exit_app(self):
+        """Close application."""
         self.parent().app.quit()  # pragma: nocover
+
+
+def documentation():
+    """Open webbrowser to TorrentFileQt documentation."""
+    webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
+
+
+def repository():
+    """Open webbrowser to GitHub Repo."""
+    webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")

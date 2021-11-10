@@ -35,14 +35,14 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QGridLayout,
     QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
     QPushButton,
     QRadioButton,
     QSpacerItem,
     QToolButton,
     QWidget,
-    QPlainTextEdit,
-    QLabel,
-    QLineEdit,
 )
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
@@ -50,12 +50,12 @@ from torrentfile.utils import path_stat
 from torrentfileQt.qss import (
     checkBoxSheet,
     comboBoxSheet,
+    createLineEditSheet,
     labelSheet,
     push2ButtonSheet,
     pushButtonSheet,
-    toolButtonSheet,
     textEditSheet,
-    createLineEditSheet,
+    toolButtonSheet,
 )
 
 
@@ -169,7 +169,7 @@ class CreateWidget(QWidget):
         self.path_label.setObjectName("createWidget_path_label")
         self.path_input.setObjectName("createWidget_path_input")
         self.piece_length.setObjectName("createWidget_piece_length")
-        self.piece_length_label.setObjectName("createWidget_piece_length_label")
+        self.piece_length_label.setObjectName("createWidgetPiece_lengthLabel")
         self.source_label.setObjectName("createWidget_source_label")
         self.source_input.setObjectName("createWidget_source_input")
         self.announce_input.setObjectName("createWidget_announce_input")
@@ -186,25 +186,24 @@ def torrentfile_create(args, obj):
 
     Args:
         args ([`dict`]): keyword arguements for the torrent creator.
-        obj ([`torrentfile.MetaBase`]): The procedure class for creating the file.
+        obj ([`torrentfile.MetaBase`]): The procedure class for creating file.
     """
     try:
         tfile = obj(**args)
         tfile.write()
-    except Exception:
-        return
+    except PermissionError:
+        print("No Permission to access file.")
 
 
 class SubmitButton(QPushButton):
-
-    # stylesheet = pushButtonStyleSheet
+    """Button widget."""
 
     def __init__(self, text, parent=None):
         """Public Constructor for Submit Button.
 
         Args:
             text (str): Text displayed on the button itself.
-            parent (QWidget, optional): This Widget's parent. Defaults to None.
+            parent (QWidget, optional): This Widget's parent. Defaults None.
         """
         super().__init__(text, parent=parent)
         self._text = text
@@ -229,7 +228,9 @@ class SubmitButton(QPushButton):
         # Calculates piece length if not specified by user.
         args["outfile"] = self.widget.output_input.text()
         piece_length_index = self.widget.piece_length.currentIndex()
-        args["piece_length"] = self.widget.piece_length.itemData(piece_length_index)
+        args["piece_length"] = self.widget.piece_length.itemData(
+            piece_length_index
+        )
         args["comment"] = self.widget.comment_input.text()
         print(args)
 
@@ -239,23 +240,31 @@ class SubmitButton(QPushButton):
             obj = TorrentFileV2
         else:
             obj = TorrentFile
-        t = threading.Thread(group=None, target=torrentfile_create, args=(args, obj))
+        t = threading.Thread(
+            group=None, target=torrentfile_create, args=(args, obj)
+        )
         t.run()
 
 
 class OutButton(QToolButton):
+    """Button widget."""
+
     def __init__(self, parent=None):
+        """Constructor for file picker for outfile button."""
         super().__init__(parent=parent)
-        self.setText("...")
         self.window = parent
-        self.setStyleSheet(toolButtonSheet)
+        self.setText("...")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setStyleSheet(toolButtonSheet)
         self.pressed.connect(self.output)
 
     def output(self, outpath=None):
+        """Assign output path for created torrent file."""
         caption = "Select Output Directory"
         if not outpath:
-            outpath = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+            outpath = QFileDialog.getExistingDirectory(
+                parent=self, caption=caption
+            )
         if not outpath:
             return
         self.window.output_input.clear()
@@ -264,11 +273,11 @@ class OutButton(QToolButton):
 
 
 class BrowseFileButton(QPushButton):
+    """Button widget for browse."""
+
     def __init__(self, parent=None):
+        """Public constructor for browsebutton class."""
         super().__init__(parent=parent)
-        """
-        __init__ public constructor for BrowseButton Class.
-        """
         self.setText("Select File")
         self.window = parent
         self.setStyleSheet(push2ButtonSheet)
@@ -295,7 +304,8 @@ class BrowseFileButton(QPushButton):
         self.window.path_input.insert(path)
         self.window.output_input.clear()
         outdir = os.path.dirname(str(path))
-        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
+        txt = os.path.split(str(path))[-1]
+        outfile = os.path.splitext(txt)[0] + ".torrent"
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         _, size, piece_length = path_stat(path)
@@ -311,17 +321,19 @@ class BrowseFileButton(QPushButton):
 
 
 class BrowseDirButton(QPushButton):
+    """Browse filesystem folders for path."""
+
     def __init__(self, parent=None):
+        """Constructor for folder browser button."""
         super().__init__(parent=parent)
         self.setText("Select Folder")
         self.window = parent
         self.setStyleSheet(push2ButtonSheet)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-    def browse(self, path=None):
-        """
-        browse Action performed when user presses button.
+    def browse(self, filename=None):
+        """Browse action performed when user presses button.
 
         Opens File/Folder Dialog.
 
@@ -329,22 +341,27 @@ class BrowseDirButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not path:
-            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
-        if not path:
-            return
-        path = os.path.realpath(path)
+        if not filename:
+            filename = QFileDialog.getExistingDirectory(
+                parent=self, caption=caption
+            )
+        if not filename:
+            return None
+        filename = os.path.realpath(filename)
         self.window.path_input.clear()
-        self.window.path_input.insert(path)
+        self.window.path_input.insert(filename)
         self.window.output_input.clear()
-        outdir = os.path.dirname(str(path))
-        outfile = os.path.splitext(os.path.split(str(path))[-1])[0] + ".torrent"
+        outdir = os.path.dirname(str(filename))
+        outfile = (
+            os.path.splitext(os.path.split(str(filename))[-1])[0] + ".torrent"
+        )
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         try:
-            _, size, piece_length = path_stat(path)
+
+            _, size, piece_length = path_stat(filename)
         except PermissionError:  # pragma: no cover
-            return
+            return None
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
         else:
@@ -357,10 +374,11 @@ class BrowseDirButton(QPushButton):
 
 
 class ComboBox(QComboBox):
-    def __init__(self, parent=None, *args, **kwargs):
+    """Combo box options for selecting piece length."""
+
+    def __init__(self, parent=None):
+        """Constructor for ComboBox."""
         super().__init__(parent=parent)
-        self.args = args
-        self.kwargs = kwargs
         self.setStyleSheet(comboBoxSheet)
         self.addItem("")
         for exp in range(14, 24):
@@ -373,13 +391,19 @@ class ComboBox(QComboBox):
 
 
 class CheckBox(QCheckBox):
+    """Checkbox widget."""
+
     def __init__(self, label, parent=None):
+        """Constructor for check box widgit."""
         super().__init__(label, parent=parent)
         self.setStyleSheet(checkBoxSheet)
 
 
 class PlainTextEdit(QPlainTextEdit):
+    """Text edit widget for trackers."""
+
     def __init__(self, parent=None):
+        """Constructor for plain text edit."""
         super().__init__(parent=parent)
         self.setBackgroundVisible(True)
         self.setStyleSheet(textEditSheet)
@@ -392,16 +416,21 @@ class Label(QLabel):
     """
 
     def __init__(self, text, parent=None):
+        """Constructor for label widgit."""
         super().__init__(text, parent=parent)
-        self.setStyleSheet(labelSheet)
         font = self.font()
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
+        self.setStyleSheet(labelSheet)
 
 
 class LineEdit(QLineEdit):
+    """Line edit widget for input fields."""
+
     def __init__(self, parent=None):
+        """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self._parent = parent
+        self.window = parent.window
         self.setStyleSheet(createLineEditSheet)
