@@ -16,49 +16,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""Module for the Check Tab Widget."""
 
-import os
 import logging
-from pathlib import Path
+import os
 from collections.abc import Sequence
+from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QWidget,
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QToolButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QLineEdit,
-    QLabel,
-)
+from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPlainTextEdit, QProgressBar,
+                             QPushButton, QToolButton, QTreeWidget,
+                             QTreeWidgetItem, QWidget)
 from torrentfile.progress import CheckerClass
 
-
-from torrentfileQt.qss import (
-    logTextEditSheet,
-    lineEditSheet,
-    labelSheet,
-    pushButtonSheet,
-    toolButtonSheet,
-    treeSheet,
-    headerSheet,
-)
+from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
+                               logTextEditSheet, pushButtonSheet,
+                               toolButtonSheet, treeSheet)
 
 
 class CheckWidget(QWidget):
+    """Check tab widget for QMainWindow."""
 
     labelRole = QFormLayout.ItemRole.LabelRole
     fieldRole = QFormLayout.ItemRole.FieldRole
     spanRole = QFormLayout.ItemRole.SpanningRole
 
     def __init__(self, parent=None):
+        """Constructor for check tab."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.layout = QFormLayout()
@@ -124,6 +110,7 @@ class ReCheckButton(QPushButton):
         self.setStyleSheet(pushButtonSheet)
 
     def submit(self):
+        """Submit data to piece hasher."""
         tree = self.widget.treeWidget
         tree.clear()
         textEdit = self.widget.textEdit
@@ -139,8 +126,6 @@ class ReCheckButton(QPushButton):
 
 class BrowseTorrents(QToolButton):
     """BrowseButton ToolButton for activating filebrowser.
-
-    Subclass of QToolButton
 
     Args:
         parent (`widget`): Parent widget.
@@ -158,8 +143,6 @@ class BrowseTorrents(QToolButton):
 
     def browse(self, path=None):
         """Browse action performed when user presses button.
-
-        Opens File/Folder Dialog.
 
         Returns:
             path (`str`): Path to file or folder to include in torrent.
@@ -195,17 +178,16 @@ class BrowseFolders(QToolButton):
         self.pressed.connect(self.browse)
 
     def browse(self, path=None):
-        """
-        browse Action performed when user presses button.
-
-        Opens File/Folder Dialog.
+        """Browse Action performed when user presses button.
 
         Returns:
-            str: Path to file or folder to include in torrent.
+            `str`: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
         if not path:
-            path = QFileDialog.getExistingDirectory(parent=self, caption=caption)
+            path = QFileDialog.getExistingDirectory(
+                parent=self, caption=caption
+            )
         if not path:
             return
         path = os.path.normpath(path)
@@ -214,14 +196,20 @@ class BrowseFolders(QToolButton):
 
 
 class LineEdit(QLineEdit):
+    """Line edit widget."""
+
     def __init__(self, parent=None):
+        """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self._parent = parent
         self.setStyleSheet(lineEditSheet)
 
 
 class LogTextEdit(QPlainTextEdit):
+    """Text Edit widget for check tab."""
+
     def __init__(self, parent=None):
+        """Constructor for LogTextEdit"""
         super().__init__(parent=parent)
         self._parent = parent
         self.setBackgroundVisible(True)
@@ -233,9 +221,11 @@ class LogTextEdit(QPlainTextEdit):
         self.setStyleSheet(logTextEditSheet)
 
     def clear_data(self):
+        """Remove any text."""
         self.clear()
 
     def callback(self, msg):
+        """Callback function for CheckerClass."""
         self.insertPlainText(msg)
         self.insertPlainText("\n")
 
@@ -247,6 +237,7 @@ class Label(QLabel):
     """
 
     def __init__(self, text, parent=None):
+        """Constructor for Label."""
         super().__init__(text, parent=parent)
         self.setStyleSheet(labelSheet)
         font = self.font()
@@ -256,8 +247,11 @@ class Label(QLabel):
 
 
 class TreePieceItem(QTreeWidgetItem):
-    def __init__(self, type=0, tree=None):
-        super().__init__(type=type)
+    """Item Widgets that are leafs to Tree Widget branches."""
+
+    def __init__(self, group, tree=None):
+        """Constructor for tree widget items."""
+        super().__init__(group)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
         self.tree = tree
@@ -267,9 +261,11 @@ class TreePieceItem(QTreeWidgetItem):
 
     @property
     def total(self):
+        """Returns current value of progress bar."""
         return self.progbar.total
 
     def addValue(self, value):
+        """Increase progress bar value."""
         if self.counted + value > self.total:
             consumed = self.total - self.value
         else:
@@ -281,6 +277,7 @@ class TreePieceItem(QTreeWidgetItem):
         return consumed
 
     def count(self, value):
+        """Increase count without increasing value."""
         if self.counted + value > self.total:
             consumed = self.total - self.value
             self.counted += consumed
@@ -290,10 +287,12 @@ class TreePieceItem(QTreeWidgetItem):
 
 
 class ProgressBar(QProgressBar):
+    """Progress Bar Widget."""
 
     valueChanged = pyqtSignal([int])
 
     def __init__(self, parent=None, size=0):
+        """Constructor for the progress bar widget."""
         super().__init__(parent=parent)
         self.total = size
         self.setValue(0)
@@ -301,6 +300,7 @@ class ProgressBar(QProgressBar):
         self.valueChanged.connect(self.addValue)
 
     def addValue(self, value):
+        """Increase value of progressbar."""
         currentvalue = self.value()
         addedVal = currentvalue + value
         self.setValue(addedVal)
@@ -315,10 +315,11 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
-    valueUpdate = pyqtSignal([list])
+    rootSet = pyqtSignal([list])
     addPathChild = pyqtSignal([str, int])
 
     def __init__(self, parent=None):
+        """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.setStyleSheet(treeSheet + headerSheet)
@@ -333,11 +334,18 @@ class TreeWidget(QTreeWidget):
         self.itemWidgets = {}
         self.paths = []
         self.total = 0
+        self.root = None
         self.piece_length = None
         self.item_tree = {"widget": self.item}
         self.addPathChild.connect(self.add_path_child)
+        self.rootSet.connect(self.assignRoot)
+
+    def assignRoot(self, root):
+        """Assign root dir."""
+        self.root = root
 
     def clear(self):
+        """Remove any objects from Tree Widget."""
         super().clear()
         self.item_tree = {"widget": self.invisibleRootItem()}
         self.itemWidgets = {}
@@ -345,6 +353,7 @@ class TreeWidget(QTreeWidget):
         self.root = None
 
     def add_path_child(self, path, size):
+        """Add branch to tree."""
         path = Path(path)
         partials = path.parts
         item, item_tree = None, self.item_tree
@@ -353,7 +362,7 @@ class TreeWidget(QTreeWidget):
                 item_tree = item_tree[partial]
                 continue
             parent = item_tree["widget"]
-            item = TreePieceItem(type=0, tree=self)
+            item = TreePieceItem(0, tree=self)
             parent.addChild(item)
             parent.setExpanded(True)
             item_tree[partial] = {"widget": item}
@@ -373,6 +382,7 @@ class TreeWidget(QTreeWidget):
 
 
 def piece_hasher(metafile, content, tree):
+    """Validate data on disk with torrent file."""
     checker = CheckerClass(metafile, content)
     fileinfo = checker.fileinfo
     pathlist = checker.paths

@@ -20,26 +20,19 @@
 
 import math
 import os
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from threading import Thread
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QPushButton,
-    QTreeWidgetItem,
-    QWidget,
-    QLineEdit,
-    QLabel,
-    QTreeWidget,
-)
-
-from torrentfileQt.qss import pushButtonSheet, infoLineEditSheet, labelSheet, treeSheet
-
 from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                             QPushButton, QTreeWidget, QTreeWidgetItem,
+                             QWidget)
+
+from torrentfileQt.qss import (infoLineEditSheet, labelSheet, pushButtonSheet,
+                               treeSheet)
 
 
 class TreeWidget(QTreeWidget):
@@ -52,13 +45,16 @@ class TreeWidget(QTreeWidget):
     itemReady = pyqtSignal([str, int])
 
     def __init__(self, parent=None):
+        """Constructor for tree widget."""
         super().__init__(parent=parent)
         self.window = parent
         self.root = self.invisibleRootItem()
         header = self.header()
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
-        self.root.setChildIndicatorPolicy(self.root.ChildIndicatorPolicy.ShowIndicator)
+        self.root.setChildIndicatorPolicy(
+            self.root.ChildIndicatorPolicy.ShowIndicator
+        )
         self.setIndentation(10)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setHeaderHidden(True)
@@ -69,11 +65,12 @@ class TreeWidget(QTreeWidget):
         self.itemReady.connect(self.apply_value)
 
     def apply_value(self, text, length):
+        """Add path partials and file lengths to tree branches."""
         partials = Path(text).parts
         tree = self.itemtree
         for i, partial in enumerate(partials):
             if partial not in tree:
-                item = TreeItem(type=0)
+                item = TreeItem(0)
                 if i + 1 == len(partials):
                     iconpath = "./assets/file.png"
                     item.setLength(length)
@@ -89,13 +86,17 @@ class TreeWidget(QTreeWidget):
 
 
 class TreeItem(QTreeWidgetItem):
-    def __init__(self, type=0):
-        super().__init__(type=type)
+    """Item widget for tree leaves and branches."""
+
+    def __init__(self, group):
+        """Constructor for tree item widget."""
+        super().__init__(group)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
 
     def setLength(self, length):
-        child = TreeItem(type=0)
+        """Set length leaf for tree branches."""
+        child = TreeItem(0)
         icon = QIcon("./assets/scale.png")
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
@@ -185,7 +186,9 @@ class InfoWidget(QWidget):
         self.metaVersionEdit.setText(str(kws["meta version"]))
 
         piece_length = kws["piece_length"]
-        plength_str = denom(piece_length) + " / (" + pretty_int(piece_length) + ")"
+        plength_str = (
+            denom(piece_length) + " / (" + pretty_int(piece_length) + ")"
+        )
         self.pieceLengthEdit.setText(plength_str)
         size = denom(kws["length"]) + " / (" + pretty_int(kws["length"]) + ")"
         self.sizeEdit.setText(size)
@@ -206,16 +209,17 @@ class InfoWidget(QWidget):
 
 
 class SelectButton(QPushButton):
-
-    # stylesheet = pushButtonStyleSheet
+    """Button for choosing the torrent file."""
 
     def __init__(self, text, parent=None):
+        """Constructor for select button."""
         super().__init__(text, parent=parent)
         self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def selectTorrent(self, files=None):
+        """Collect torrent information and send to the screen for display."""
         caption = "Select '.torrent' file"
         if not files:
             files = QFileDialog.getOpenFileName(
@@ -223,10 +227,7 @@ class SelectButton(QPushButton):
             )
         if not files:
             return
-        try:
-            meta = pyben.load(files[0])
-        except Exception:
-            return
+        meta = pyben.load(files[0])
         info = meta["info"]
         keywords = {}
         keywords["path"] = files[0]
@@ -254,7 +255,9 @@ class SelectButton(QPushButton):
         if "files" in info:
             contents = {}
             for entry in info["files"]:
-                contents[os.path.join(info["name"], *entry["path"])] = entry["length"]
+                contents[os.path.join(info["name"], *entry["path"])] = entry[
+                    "length"
+                ]
                 size += entry["length"]
             keywords["contents"] = contents
         elif "file tree" in info:
@@ -283,22 +286,23 @@ class SelectButton(QPushButton):
 
 
 class Label(QLabel):
-    """Label Identifier for Window Widgets.
-
-    Subclass: QLabel
-    """
+    """Label Identifier for Window Widgets."""
 
     def __init__(self, text, parent=None):
+        """Constructor for Label Widget."""
         super().__init__(text, parent=parent)
-        self.setStyleSheet(labelSheet)
         font = self.font()
         font.setBold(True)
-        font.setPointSize(12)
+        self.setStyleSheet(labelSheet)
         self.setFont(font)
+        font.setPointSize(12)
 
 
 class InfoLineEdit(QLineEdit):
+    """Line Edit Widget."""
+
     def __init__(self, parent=None):
+        """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self.setReadOnly(True)
         self.setStyleSheet(infoLineEditSheet)
@@ -309,6 +313,7 @@ class InfoLineEdit(QLineEdit):
 
 
 def denom(num):
+    """Determine appropriate denomination for size of file."""
     txt = str(num)
     if int(num) < 1000:
         return txt
@@ -318,9 +323,11 @@ def denom(num):
         return "".join([txt[:-6], ".", txt[-6], "MB"])
     if num >= 1_000_000_000:
         return "".join([txt[:-9], ".", txt[-9], "GB"])
+    return str(num)
 
 
 def pretty_int(num):
+    """Format integer."""
     text, seq = str(num), []
     digits, count = len(text) - 1, 0
     while digits >= 0:
@@ -334,6 +341,7 @@ def pretty_int(num):
 
 
 def parse_filetree(filetree):
+    """Iterate through dictionary to create pathstrings."""
     paths = {}
     for key, value in filetree.items():
         if "" in value:

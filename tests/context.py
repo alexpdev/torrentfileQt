@@ -40,7 +40,10 @@ def rmpath(path):
         if os.path.isfile(path):
             os.remove(path)
         elif os.path.isdir(path):
-            shutil.rmtree(path)
+            try:
+                shutil.rmtree(path)
+            except PermissionError:
+                pass
 
 
 def tstDir(func):
@@ -58,6 +61,7 @@ def tstDir(func):
         if not os.path.exists(TESTDIR):
             os.mkdir(TESTDIR)
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -106,6 +110,23 @@ def tstdir():
 
 
 @tstDir
+def tstdir3():
+    root = ROOT
+    dir1 = os.path.join(root, "dir1")
+    file3 = os.path.join(dir1, "file3")
+    file4 = os.path.join(dir1, "file4")
+    dir2 = os.path.join(dir1, "dir2")
+    file1 = os.path.join(dir2, "file1")
+    file2 = os.path.join(dir2, "file2")
+    for folder in [root, dir1, dir2]:
+        rmpath(folder)
+        os.mkdir(folder)
+    for file in [file1, file2, file3, file4]:
+        fill(file, 22)
+    return root
+
+
+@tstDir
 def tstdir2():
     root = ROOT
     dir1 = os.path.join(root, "dir1")
@@ -123,14 +144,10 @@ def tstdir2():
 
 
 @atexit.register
-def teardown():
+def teardown():  # pragma: no cover
     try:
         rmpath(TESTDIR)
         return True
     except PermissionError:
         time.sleep(1.5)
         teardown()
-
-
-def test_teardown():
-    assert teardown()

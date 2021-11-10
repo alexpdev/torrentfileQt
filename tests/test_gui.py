@@ -19,6 +19,7 @@
 
 import os
 import pytest
+from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 
@@ -36,8 +37,6 @@ def wind():
     window, app = alt_start()
     yield window
     app.quit()
-
-
 @pytest.fixture(scope="module", params=[tstdir, tstdir2])
 def tdir(request):
     root = request.param()
@@ -50,7 +49,9 @@ def tfile(request):
     return path
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(
+    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def ttorrent1(tfile, request):
     path = tfile
     args = {
@@ -63,9 +64,9 @@ def ttorrent1(tfile, request):
     torrent = request.param(**args)
     outfile, _ = torrent.write()
     return outfile
-
-
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(
+    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def dtorrent1(tdir, request):
     path = tdir
     args = {
@@ -80,7 +81,9 @@ def dtorrent1(tdir, request):
     return outfile
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(
+    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def ttorrent2(tfile, request):
     path = tfile
     args = {"path": path}
@@ -89,7 +92,9 @@ def ttorrent2(tfile, request):
     return outfile
 
 
-@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+@pytest.fixture(
+    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def dtorrent2(tdir, request):
     args = {"path": tdir}
     torrent = request.param(**args)
@@ -166,7 +171,7 @@ def test_create_tab_dir(tdir, wind):
     root = tdir
     createtab = wind.central.createWidget
     button = createtab.browse_dir_button
-    button.browse(path=root)
+    button.browse(root)
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
@@ -182,7 +187,7 @@ def test_create_tab_dir(tdir, wind):
 def test_create_tab_file(wind, tfile):
     createtab = wind.central.createWidget
     button = createtab.browse_file_button
-    button.browse(path=tfile)
+    button.browse(tfile)
     torfile = tfile + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
@@ -199,7 +204,7 @@ def test_create_tab_file_v2(wind, tfile):
     createtab = wind.central.createWidget
     button = createtab.browse_file_button
     createtab.v2button.click()
-    button.browse(path=tfile)
+    button.browse(tfile)
     torfile = tfile + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
@@ -264,6 +269,7 @@ def test_check_tab4(wind):
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None
 
+
 def test_check_2tab5(wind, ttorrent2):
     checktab = wind.central.checkWidget
     metafile = ttorrent2
@@ -271,7 +277,8 @@ def test_check_2tab5(wind, ttorrent2):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert True
+    assert checktab.textEdit.toPlainText() != ""
+
 
 def test_check_1tab5(wind, ttorrent1):
     checktab = wind.central.checkWidget
@@ -280,7 +287,7 @@ def test_check_1tab5(wind, ttorrent1):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert True
+    assert checktab.treeWidget.topLevelItemCount() > 0
 
 
 def test_check_d2tab5(wind, dtorrent2):
@@ -290,7 +297,8 @@ def test_check_d2tab5(wind, dtorrent2):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert True
+    assert checktab.treeWidget.topLevelItemCount() > 0
+
 
 def test_check_tab5(wind, dtorrent1):
     checktab = wind.central.checkWidget
@@ -299,7 +307,8 @@ def test_check_tab5(wind, dtorrent1):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert True
+    assert checktab.treeWidget.topLevelItemCount() > 0
+
 
 def test_export_menu(wind, ttorrent2):
     infotab = wind.central.infoWidget
@@ -309,3 +318,44 @@ def test_export_menu(wind, ttorrent2):
     wind.menubar.export(path=path)
     assert os.path.exists(path)
     rmpath(path)
+
+from tests.context import tstdir3
+
+@pytest.fixture
+def wind2():
+    window, app = alt_start()
+    yield window
+    app.quit()
+
+@pytest.fixture
+def tdir3():
+    path = tstdir3()
+    return path
+
+@pytest.fixture(params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+def dtorrent1(tdir3, request):
+    path = tdir3
+    args = {
+        "path": path,
+        "private": 1,
+        "announce": "tracker1.com",
+        "comment": "this is a comment",
+        "source": "Tracker",
+    }
+    torrent = request.param(**args)
+    outfile, _ = torrent.write()
+    return outfile
+
+
+def test_missing_files_check(dtorrent1, wind):
+    checktab = wind.central.checkWidget
+    metafile = dtorrent1
+    contents = os.path.splitext(dtorrent1)[0]
+    dir1 = Path(contents) / "dir1"
+    for item in dir1.iterdir():
+        if item.is_file():
+            os.remove(item)
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert checktab.treeWidget.topLevelItemCount() > 0

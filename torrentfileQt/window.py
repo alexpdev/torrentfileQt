@@ -16,25 +16,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""Graphical Extension for Users who prefer a GUI over CLI."""
 
 import sys
 
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QStatusBar,
-    QTabWidget,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QStatusBar, QTabWidget,
+                             QVBoxLayout)
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import mainWindowSheet, statusBarSheet, tabBarSheet, tabSheet
-
-"""Graphical Extension for Users who prefer a GUI over CLI."""
+from torrentfileQt.qss import (mainWindowSheet, statusBarSheet, tabBarSheet,
+                               tabSheet)
 
 
 class Window(QMainWindow):
@@ -64,7 +59,7 @@ class Window(QMainWindow):
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
         self.setStyleSheet(mainWindowSheet)
-        self.resize(800, 600)
+        self.resize(750, 650)
         self._setupUI()
 
     def _setupUI(self):
@@ -73,7 +68,7 @@ class Window(QMainWindow):
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar.setObjectName("statusbar")
         self.statusbar.setStyleSheet(statusBarSheet)
 
 
@@ -98,14 +93,18 @@ class TabWidget(QTabWidget):
 
 
 class Application(QApplication):
+    """QApplication Widget."""
+
     def __init__(self, args=None):
+        """Constructor for QApplication."""
         self.args = args
         if not args:
             self.args = sys.argv
         super().__init__(self.args)
 
 
-def start():     # pragma: no cover
+def start():  # pragma: no cover
+    """Entrypoint for program."""
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
@@ -113,6 +112,7 @@ def start():     # pragma: no cover
 
 
 def alt_start():
+    """Entrypoint for testing scripts."""
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
