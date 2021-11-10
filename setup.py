@@ -51,7 +51,9 @@ setup(
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     license=INFO["license"],
     packages=find_packages(exclude=["env"]),
-    entry_points={"console_scripts": "torrentfileQt = torrentfileQt.window:start"},
+    entry_points={
+        "console_scripts": "torrentfileQt = torrentfileQt.window:start"
+    },
     include_package_data=True,
     tests_require=["pytest"],
     install_require=INFO["torrentfile", "PyQt6", "pyben"],
