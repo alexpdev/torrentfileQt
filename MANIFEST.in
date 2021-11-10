@@ -1,6 +1,7 @@
 include LICENSE
 include README
 include Makefile
+recursive-include assets
 recursive-include tests *
 recursive-include torrentfile
 recursive-exclude * __pycache__

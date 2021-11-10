@@ -16,10 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
+"""
+Tab Widget containing all controls for creating a new .torrent file.
+
+User must provide the path to the directory containing the what the
+.torrent file will be created from.
+"""
+
 
 import os
 import threading
-from collections.abc import Sequence
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -54,18 +60,32 @@ from torrentfileQt.qss import (
 
 
 class CreateWidget(QWidget):
+    """
+    CreateWidget contains all controls for creating a new .torrent file.
+
+
+    Args:
+        QWidget (`QObject`): Parent class to CreateWidget.
+    """
 
     labelRole = QFormLayout.ItemRole.LabelRole
     fieldRole = QFormLayout.ItemRole.FieldRole
     spanRole = QFormLayout.ItemRole.SpanningRole
 
     def __init__(self, parent=None):
+        """
+        Constructor for Create Widget.
+
+        Args:
+            parent ([`QWidget`], optional): Parent Widget. Defaults to None.
+        """
         super().__init__(parent=parent)
-        self.setup_Ui()
+        self._setup_Ui()
         self.content_dir = None
         self.outpath = None
 
-    def setup_Ui(self):
+    def _setup_Ui(self):
+
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -161,6 +181,13 @@ class CreateWidget(QWidget):
 
 
 def torrentfile_create(args, obj):
+    """
+    Create new .torrent file in a seperate thread.
+
+    Args:
+        args ([`dict`]): keyword arguements for the torrent creator.
+        obj ([`torrentfile.MetaBase`]): The procedure class for creating the file.
+    """
     try:
         tfile = obj(**args)
         tfile.write()
@@ -198,16 +225,13 @@ class SubmitButton(QPushButton):
         # at least 1 tracker input is required
         announce = self.widget.announce_input.toPlainText()
         announce = [i for i in announce.split("\n") if i]
-        if announce:
-            args["announce"] = announce[0]
-            if len(announce) > 1:
-                args["announce_list"] = announce[1:]
-
+        args["announce"] = announce
         # Calculates piece length if not specified by user.
         args["outfile"] = self.widget.output_input.text()
         piece_length_index = self.widget.piece_length.currentIndex()
         args["piece_length"] = self.widget.piece_length.itemData(piece_length_index)
         args["comment"] = self.widget.comment_input.text()
+        print(args)
 
         if self.widget.hybridbutton.isChecked():
             obj = TorrentFileHybrid
@@ -235,10 +259,6 @@ class OutButton(QToolButton):
         if not outpath:
             return
         self.window.output_input.clear()
-        if self.parent().content_dir:
-            name = os.path.split(self.parent().content_dir)[-1]
-            outpath = os.path.join(str(outpath), name)
-            outpath = os.path.realpath(outpath)
         self.parent().output_input.insert(outpath)
         self.parent().outpath = outpath
 
@@ -265,7 +285,7 @@ class BrowseFileButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose File"
-        if not path:
+        if not path:  # pragma: no cover
             path = QFileDialog.getOpenFileName(parent=self, caption=caption)
         if not isinstance(path, str):
             path = os.path.normpath(path[0])
@@ -323,7 +343,7 @@ class BrowseDirButton(QPushButton):
         self.window.output_input.insert(outpath)
         try:
             _, size, piece_length = path_stat(path)
-        except PermissionError:
+        except PermissionError:  # pragma: no cover
             return
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
@@ -361,13 +381,8 @@ class CheckBox(QCheckBox):
 class PlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._parent = parent
         self.setBackgroundVisible(True)
         self.setStyleSheet(textEditSheet)
-
-    def callback(self, msg):
-        self.insertPlainText(msg)
-        self.insertPlainText("\n\n")
 
 
 class Label(QLabel):

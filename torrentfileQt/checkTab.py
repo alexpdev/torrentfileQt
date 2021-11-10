@@ -280,7 +280,7 @@ class TreePieceItem(QTreeWidgetItem):
         self.window.app.processEvents()
         return consumed
 
-    def cont(self, value):
+    def count(self, value):
         if self.counted + value > self.total:
             consumed = self.total - self.value
             self.counted += consumed
@@ -370,10 +370,6 @@ class TreeWidget(QTreeWidget):
             item_tree = item_tree[partial]
             self.window.app.processEvents()
         self.paths.append(path)
-
-    def remainder(self, path):
-        widget = self.itemWidgets[path]["widget"]
-        return widget.total - widget.length
 
 
 def piece_hasher(metafile, content, tree):

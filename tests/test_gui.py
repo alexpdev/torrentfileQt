@@ -24,8 +24,10 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 
 
 from torrentfile import TorrentFile, TorrentFileV2, TorrentFileHybrid
-from tests.context import tstdir, tstfile, rmpath
+
+from tests.context import tstdir, tstfile, tstdir2, rmpath
 from torrentfileQt.window import alt_start, TabWidget
+from torrentfileQt import menu
 from torrentfileQt import qss
 
 
@@ -36,9 +38,9 @@ def wind():
     app.quit()
 
 
-@pytest.fixture(scope="module")
-def tdir():
-    root = tstdir()
+@pytest.fixture(scope="module", params=[tstdir, tstdir2])
+def tdir(request):
+    root = request.param()
     return root
 
 
@@ -57,7 +59,21 @@ def ttorrent1(tfile, request):
         "announce": "tracker1.com",
         "comment": "this is a comment",
         "source": "Tracker",
-        "announce_list": ["tracker2.com", "tracker3.com"],
+    }
+    torrent = request.param(**args)
+    outfile, _ = torrent.write()
+    return outfile
+
+
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+def dtorrent1(tdir, request):
+    path = tdir
+    args = {
+        "path": path,
+        "private": 1,
+        "announce": "tracker1.com",
+        "comment": "this is a comment",
+        "source": "Tracker",
     }
     torrent = request.param(**args)
     outfile, _ = torrent.write()
@@ -68,6 +84,14 @@ def ttorrent1(tfile, request):
 def ttorrent2(tfile, request):
     path = tfile
     args = {"path": path}
+    torrent = request.param(**args)
+    outfile, _ = torrent.write()
+    return outfile
+
+
+@pytest.fixture(scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
+def dtorrent2(tdir, request):
+    args = {"path": tdir}
     torrent = request.param(**args)
     outfile, _ = torrent.write()
     return outfile
@@ -87,6 +111,10 @@ def test_app1(wind):
 
 def test_app2(wind):
     assert isinstance(wind.app, QApplication)
+
+
+def test_qss():
+    assert qss
 
 
 def test_window_menubar1(wind):
@@ -117,6 +145,20 @@ def test_info_tab_select2(wind, ttorrent2):
     infotab = wind.central.infoWidget
     button = infotab.selectButton
     button.selectTorrent(files=[ttorrent2])
+    assert infotab.nameEdit.text() != ""
+
+
+def test_info_tab_dselect1(wind, dtorrent1):
+    infotab = wind.central.infoWidget
+    button = infotab.selectButton
+    button.selectTorrent(files=[dtorrent1])
+    assert infotab.nameEdit.text() != ""
+
+
+def test_info_tab_dselect2(wind, dtorrent2):
+    infotab = wind.central.infoWidget
+    button = infotab.selectButton
+    button.selectTorrent(files=[dtorrent2])
     assert infotab.nameEdit.text() != ""
 
 
@@ -201,7 +243,73 @@ def test_check_tab2(wind, ttorrent2):
     assert checktab.fileInput.text() != ""
 
 
+def test_check_dtab(wind, dtorrent1):
+    checktab = wind.central.checkWidget
+    testdir = os.path.dirname(dtorrent1)
+    checktab.browseButton1.browse(path=testdir)
+    checktab.browseButton2.browse(path=testdir)
+    assert checktab.searchInput.text() != ""
+
+
+def test_check_dtab2(wind, dtorrent2):
+    checktab = wind.central.checkWidget
+    testdir = os.path.dirname(dtorrent2)
+    checktab.browseButton1.browse(path=testdir)
+    checktab.browseButton2.browse(path=testdir)
+    assert checktab.fileInput.text() != ""
+
+
 def test_check_tab4(wind):
     checktab = wind.central.checkWidget
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None
+
+
+def test_check_2tab5(wind, ttorrent2):
+    checktab = wind.central.checkWidget
+    metafile = ttorrent2
+    contents = os.path.splitext(ttorrent2)[0]
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert True
+
+
+def test_check_1tab5(wind, ttorrent1):
+    checktab = wind.central.checkWidget
+    metafile = ttorrent1
+    contents = os.path.splitext(ttorrent1)[0]
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert True
+
+
+def test_check_d2tab5(wind, dtorrent2):
+    checktab = wind.central.checkWidget
+    metafile = dtorrent2
+    contents = os.path.splitext(dtorrent2)[0]
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert True
+
+
+def test_check_tab5(wind, dtorrent1):
+    checktab = wind.central.checkWidget
+    metafile = dtorrent1
+    contents = os.path.splitext(dtorrent1)[0]
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert True
+
+
+def test_export_menu(wind, ttorrent2):
+    infotab = wind.central.infoWidget
+    button = infotab.selectButton
+    button.selectTorrent(files=[ttorrent2])
+    path = os.path.abspath("./tests/testfile.txt")
+    wind.menubar.export(path=path)
+    assert os.path.exists(path)
+    rmpath(path)

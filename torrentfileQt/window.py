@@ -105,7 +105,7 @@ class Application(QApplication):
         super().__init__(self.args)
 
 
-def start():
+def start():  # pragma: no cover
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
@@ -120,4 +120,4 @@ def alt_start():
 
 
 if __name__ == "__main__":
-    start()
+    start()  # pragma: no cover

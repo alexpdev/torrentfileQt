@@ -1,7 +1,7 @@
 {
   "name": "torrentfileqt",
   "displayName": "TorrentfileQt",
-  "version": "1.2.0",
+  "version": "1.0.beta",
   "description": "GUI torrentfile creator.",
   "repository": {
     "type": "git",
@@ -12,7 +12,6 @@
   "url": "https://github.com/alexpdev/torrentfileQt",
   "email": "alexpdev@protonmail.com",
   "license": "Apache",
-
   "bugs": {
     "url": "https://github.com/alexpdev/TorrentfileQt/issues"
   },
