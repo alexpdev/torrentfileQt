@@ -17,6 +17,7 @@
 # limitations under the License.
 ##############################################################################
 
+from tests.context import tstdir3
 import os
 import pytest
 from pathlib import Path
@@ -37,6 +38,8 @@ def wind():
     window, app = alt_start()
     yield window
     app.quit()
+
+
 @pytest.fixture(scope="module", params=[tstdir, tstdir2])
 def tdir(request):
     root = request.param()
@@ -64,6 +67,8 @@ def ttorrent1(tfile, request):
     torrent = request.param(**args)
     outfile, _ = torrent.write()
     return outfile
+
+
 @pytest.fixture(
     scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
 )
@@ -319,7 +324,6 @@ def test_export_menu(wind, ttorrent2):
     assert os.path.exists(path)
     rmpath(path)
 
-from tests.context import tstdir3
 
 @pytest.fixture
 def wind2():
@@ -327,10 +331,12 @@ def wind2():
     yield window
     app.quit()
 
+
 @pytest.fixture
 def tdir3():
     path = tstdir3()
     return path
+
 
 @pytest.fixture(params=[TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def dtorrent1(tdir3, request):

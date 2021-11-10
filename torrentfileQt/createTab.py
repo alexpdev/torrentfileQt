@@ -28,17 +28,35 @@ import os
 import threading
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout,
-                             QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-                             QPlainTextEdit, QPushButton, QRadioButton,
-                             QSpacerItem, QToolButton, QWidget)
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
-                               createLineEditSheet, labelSheet,
-                               push2ButtonSheet, pushButtonSheet,
-                               textEditSheet, toolButtonSheet)
+from torrentfileQt.qss import (
+    checkBoxSheet,
+    comboBoxSheet,
+    createLineEditSheet,
+    labelSheet,
+    push2ButtonSheet,
+    pushButtonSheet,
+    textEditSheet,
+    toolButtonSheet,
+)
 
 
 class CreateWidget(QWidget):
@@ -334,9 +352,9 @@ class BrowseDirButton(QPushButton):
         self.window.path_input.insert(filename)
         self.window.output_input.clear()
         outdir = os.path.dirname(str(filename))
-        outfile = os.path.splitext(
-            os.path.split(str(filename))[-1]
-            )[0] + ".torrent"
+        outfile = (
+            os.path.splitext(os.path.split(str(filename))[-1])[0] + ".torrent"
+        )
         outpath = os.path.realpath(os.path.join(outdir, outfile))
         self.window.output_input.insert(outpath)
         try:
