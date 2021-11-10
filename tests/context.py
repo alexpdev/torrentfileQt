@@ -58,11 +58,10 @@ def tstDir(func):
         if not os.path.exists(TESTDIR):
             os.mkdir(TESTDIR)
         return func(*args, **kwargs)
-
     return wrapper
 
 
-def fill(path, exp=25):
+def fill(path, exp=21):
     """Fill file paths with meaningless bytes for testing purposes.
 
     Args:
@@ -106,10 +105,32 @@ def tstdir():
     return root
 
 
+@tstDir
+def tstdir2():
+    root = ROOT
+    dir1 = os.path.join(root, "dir1")
+    dir2 = os.path.join(dir1, "dir2")
+    file1 = os.path.join(dir2, "file1")
+    file2 = os.path.join(dir2, "file2")
+    file3 = os.path.join(dir1, "file3")
+    file4 = os.path.join(dir1, "file4")
+    for folder in [root, dir1, dir2]:
+        rmpath(folder)
+        os.mkdir(folder)
+    for file in [file1, file2, file3, file4]:
+        fill(file, 26)
+    return root
+
+
 @atexit.register
 def teardown():
     try:
         rmpath(TESTDIR)
+        return True
     except PermissionError:
         time.sleep(1.5)
         teardown()
+
+
+def test_teardown():
+    assert teardown()

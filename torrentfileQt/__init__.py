@@ -18,3 +18,6 @@
 ##############################################################################
 
 from torrentfileQt.window import Application, Window, start, alt_start
+
+__author__ = "alexpdev"
+__version__ = "1.0.beta"

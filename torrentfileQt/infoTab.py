@@ -335,9 +335,9 @@ def pretty_int(num):
 
 def parse_filetree(filetree):
     paths = {}
-    for key, value in filetree:
-        if value == "":
-            return {key: filetree[key]["length"]}
+    for key, value in filetree.items():
+        if "" in value:
+            paths[key] = value[""]["length"]
         else:
             out = parse_filetree(value)
             for k, v in out.items():

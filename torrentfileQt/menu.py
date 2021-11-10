@@ -75,12 +75,17 @@ class MenuBar(QMenuBar):
         self.actionAbout.setObjectName("actionAbout")
         self.actionExport.setObjectName("actionExport")
 
-    def export(self):
+    def export(self, path=None):
         home = str(Path.home())
-        filename = QFileDialog.getSaveFileName(caption="Save location:",
-                                               directory=home)
+        if path:
+            filename = path
+        else:
+            filename = QFileDialog.getSaveFileName(
+                caption="Save location:",
+                directory=home
+            )
         if os.path.exists(os.path.dirname(filename)):
-            widget = self.window.tabWidget.infoWidget
+            widget = self.window.central.infoWidget
             path = widget.pathEdit.text()
             if os.path.exists(path):
                 data = pyben.load(path)

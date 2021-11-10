@@ -1,4 +1,8 @@
-# TorrentfileQt
+# TorrentFileQt
+
+![torrentfileQt.png](./assets/torrentfileQt.png)
+
+-------
 
 TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpdev/torrentfile) project.
 
@@ -12,16 +16,12 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ### Screenshots
 
-![CreateTabScreenShot.png](./assets/CreateTabScreenShot.png)
+![torrentfile-create.png](./assets/torrentfile-create.png)
 
 -------
 
-![InfoTabScreenShot.png](./assets/InfoTabScreenShot.png)
+![torrentfile-recheck.png](./assets/torrentfile-recheck.png)
 
 -------
 
-![InfoTabScreenShot.png](./assets/CheckTabScreenShot.png)
-
--------
-
-![torrentfile.png](./assets/torrentfile.png)
+![torrentfile-info.png](./assets/torrentfile-info.png)
