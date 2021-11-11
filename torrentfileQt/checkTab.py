@@ -25,31 +25,15 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QToolButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPlainTextEdit, QProgressBar,
+                             QPushButton, QSplitter, QToolButton, QTreeWidget,
+                             QTreeWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (
-    headerSheet,
-    labelSheet,
-    lineEditSheet,
-    logTextEditSheet,
-    pushButtonSheet,
-    toolButtonSheet,
-    treeSheet,
-)
+from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
+                               logTextEditSheet, pushButtonSheet,
+                               toolButtonSheet, treeSheet)
 
 
 class CheckWidget(QWidget):
@@ -63,8 +47,12 @@ class CheckWidget(QWidget):
         """Constructor for check tab."""
         super().__init__(parent=parent)
         self.window = parent.window
+        self.vlayout = QVBoxLayout()
         self.layout = QFormLayout()
-        self.setLayout(self.layout)
+        self.setLayout(self.vlayout)
+        self.vlayout.addLayout(self.layout)
+        self.splitter = QSplitter(parent=self)
+        self.vlayout.addWidget(self.splitter)
 
         self.hlayout1 = QHBoxLayout()
         self.hlayout2 = QHBoxLayout()
@@ -91,9 +79,10 @@ class CheckWidget(QWidget):
         self.layout.setLayout(2, self.fieldRole, self.hlayout2)
         self.textEdit = LogTextEdit(parent=self)
         self.treeWidget = TreeWidget(parent=self)
-        self.layout.setWidget(3, self.spanRole, self.textEdit)
-        self.layout.setWidget(4, self.spanRole, self.treeWidget)
-        self.layout.setWidget(5, self.spanRole, self.checkButton)
+        self.splitter.addWidget(self.treeWidget)
+        self.splitter.addWidget(self.textEdit)
+        self.splitter.setOrientation(Qt.Orientation.Vertical)
+        self.vlayout.addWidget(self.checkButton)
 
         self.layout.setObjectName("CheckWidget_layout")
         self.hlayout1.setObjectName("CheckWidget_hlayout1")
@@ -138,7 +127,7 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             CheckerClass.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
-            piece_hasher(metafile, content, tree)
+            tree.reChecking.emit(metafile, content)
 
 
 class BrowseTorrents(QToolButton):
@@ -256,8 +245,8 @@ class Label(QLabel):
     def __init__(self, text, parent=None):
         """Constructor for Label."""
         super().__init__(text, parent=parent)
-        self.setStyleSheet(labelSheet)
         font = self.font()
+        self.setStyleSheet(labelSheet)
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
@@ -266,9 +255,9 @@ class Label(QLabel):
 class TreePieceItem(QTreeWidgetItem):
     """Item Widgets that are leafs to Tree Widget branches."""
 
-    def __init__(self, group, tree=None):
+    def __init__(self, type=0, tree=None):
         """Constructor for tree widget items."""
-        super().__init__(group)
+        super().__init__(type=type)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
         self.tree = tree
@@ -281,7 +270,12 @@ class TreePieceItem(QTreeWidgetItem):
         """Returns current value of progress bar."""
         return self.progbar.total
 
-    def addValue(self, value):
+    @property
+    def left(self):
+        """Remaining amount of data left to check."""
+        return self.progbar.total - self.counted
+
+    def addProgress(self, value):
         """Increase progress bar value."""
         if self.counted + value > self.total:
             consumed = self.total - self.value
@@ -334,6 +328,9 @@ class TreeWidget(QTreeWidget):
 
     rootSet = pyqtSignal([str])
     addPathChild = pyqtSignal([str, int])
+    reChecking = pyqtSignal([str, str])
+    addValue = pyqtSignal([str, int])
+    addCount = pyqtSignal([str, int])
 
     def __init__(self, parent=None):
         """Constructor for Tree Widget."""
@@ -356,6 +353,25 @@ class TreeWidget(QTreeWidget):
         self.item_tree = {"widget": self.item}
         self.addPathChild.connect(self.add_path_child)
         self.rootSet.connect(self.assignRoot)
+        self.reChecking.connect(self.get_hashes)
+        self.addValue.connect(self.setItemValue)
+        self.addCount.connect(self.setItemCount)
+
+    def setItemValue(self, path, val):
+        """Set child widgets value to val."""
+        widget = self.itemWidgets[path]
+        widget.addProgress(val)
+
+    def setItemCount(self, path, val):
+        """Set child widgets count to val."""
+        widget = self.itemWidgets[path]
+        widget.count(val)
+
+    def get_hashes(self, metafile, contents):
+        """Fill tree widget with contents of torrentfile."""
+        phashes = PieceHasher(metafile, contents, self)
+        phashes.addTreeWidgets()
+        phashes.iter_hashes()
 
     def assignRoot(self, root):
         """Assign root dir."""
@@ -398,46 +414,58 @@ class TreeWidget(QTreeWidget):
         self.paths.append(path)
 
 
-def piece_hasher(metafile, content, tree):
-    """Validate data on disk with torrent file."""
-    checker = CheckerClass(metafile, content)
-    root = checker.root
-    tree.rootSet.emit(root)
-    fileinfo = checker.fileinfo
-    pathlist = checker.paths
-    for path in pathlist:
-        if path == root:
-            relpath = os.path.split(root)[-1]
-        else:
-            relpath = os.path.relpath(path, root)
-        length = fileinfo[path]["length"]
-        tree.addPathChild.emit(relpath, length)
-    if checker.meta_version == 1:
-        current = 0
-        for actual, expected, path, size in checker.iter_hashes():
-            value = size
-            while True:
-                if path == root:
-                    relpath = os.path.split(root)[-1]
-                else:
-                    relpath = os.path.relpath(path, root)
-                widget = tree.itemWidgets[relpath]
-                if actual == expected:
-                    consumed = widget.addValue(value)
-                else:
-                    consumed = widget.count(value)
-                value -= consumed
-                if not value:
-                    break
-                current += 1
-        return
-    for actual, expected, path, size in checker.iter_hashes():
-        if actual == expected:
-            if path == root:
-                relpath = os.path.split(root)[-1]
+class PieceHasher:
+    """Piece Hasher class for iterating through captured torrent pieces."""
+
+    def __init__(self, metafile, content, tree):
+        """Constructor for PieceHasher class."""
+        self.metafile = metafile
+        self.content = content
+        self.tree = tree
+        self.checker = CheckerClass(metafile, content)
+        self.root = os.path.dirname(self.checker.root)
+        self.fileinfo = self.checker.fileinfo
+        self.pathlist = self.checker.paths
+        self.current = 0
+
+    def addTreeWidgets(self):
+        """Add tree widgets items to tree widget."""
+        for path in self.pathlist:
+            if path == self.root:
+                relpath = os.path.split(self.root)[-1]
             else:
-                relpath = os.path.relpath(path, root)
-            leaf = tree.itemWidgets[relpath]
-            leaf.addValue(size)
-        else:
-            leaf.count(size)
+                relpath = os.path.relpath(path, self.root)
+            length = self.fileinfo[path]["length"]
+            self.tree.addPathChild.emit(relpath, length)
+
+    def iter_hashes(self):
+        """Iter through hashes one at a time and compare to torrentfile hashes."""
+        for actual, expected, path, size in self.checker.iter_hashes():
+            if self.checker.meta_version == 1:
+                while size > 0:
+                    current = self.pathlist[self.current]
+                    relpath = os.path.relpath(current, self.root)
+                    widget = self.tree.itemWidgets[relpath]
+                    if widget.left == 0:
+                        self.current += 1
+                        if self.current >= len(self.pathlist):
+                            return None
+                        continue
+                    left, amount = widget.left, None
+                    if actual == expected:
+                        amount = left if left < size else size
+                        self.tree.addValue.emit(relpath, amount)
+                    else:
+                        amount = left if left < size else size
+                        self.tree.addCount.emit(relpath, amount)
+                    size -= amount
+            else:
+                if path == self.root:
+                    relpath = os.path.split(self.root)[-1]
+                else:
+                    relpath = os.path.relpath(path, self.root)
+                if actual == expected:
+                    self.tree.addValue.emit(relpath, size)
+                else:
+                    self.tree.addCount.emit(relpath, size)
+            return None

@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
-
+"""Module for testing procedures on Check Tab."""
 import os
 from pathlib import Path
 
@@ -29,29 +29,30 @@ from torrentfileQt.window import alt_start
 
 @pytest.fixture(scope="module")
 def wind():
-    window, app = alt_start()
-    yield window
-    app.quit()
+    """Pytest fixture for generating a new mainwindow wiget."""
+    winow, _ = alt_start()
+    yield winow
 
 
 @pytest.fixture(scope="module", params=[tstdir, tstdir2])
 def tdir(request):
+    """Temporary directory fcr testing."""
     root = request.param()
     yield root
-    rmpath(root)
 
 
 @pytest.fixture(scope="module", params=list(range(12, 26)))
 def tfile(request):
+    """Temporary files for testing."""
     path = tstfile(val=request.param)
     yield path
-    rmpath(path)
 
 
 @pytest.mark.parametrize(
     "hasher", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
 )
 def test_missing_files_check(hasher, wind, tdir):
+    """Test missing files checker proceduire."""
     checktab = wind.central.checkWidget
     args = {"path": tdir}
     torrent = hasher(**args)
@@ -64,8 +65,7 @@ def test_missing_files_check(hasher, wind, tdir):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert checktab.treeWidget.topLevelItemCount() > 0
-    rmpath(metafile)
+    assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
 
 
 # @pytest.mark.parametrize("hasher", [TorrentFile, TorrentFileV2,
@@ -79,7 +79,7 @@ def test_missing_files_check(hasher, wind, tdir):
 #     checktab.fileInput.setText(metafile)
 #     checktab.searchInput.setText(contents)
 #     checktab.checkButton.click()
-#     assert checktab.textEdit.toPlainText() != ""
+#     assert checktab.textEdit.toPlainText() != ""     # nosec
 #     rmpath(metafile)
 
 
@@ -87,6 +87,7 @@ def test_missing_files_check(hasher, wind, tdir):
     "hasher", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
 )
 def test_check_2tab(hasher, wind, tfile):
+    """Test checker procedure."""
     checktab = wind.central.checkWidget
     args = {"path": tfile}
     torrent = hasher(**args)
@@ -95,11 +96,11 @@ def test_check_2tab(hasher, wind, tfile):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
-    assert checktab.textEdit.toPlainText() != ""
-    rmpath(metafile)
+    assert checktab.textEdit.toPlainText() != ""  # nosec
 
 
 def test_check_tab4(wind):
+    """Test checker procedure again."""
     checktab = wind.central.checkWidget
     tree_widget = checktab.treeWidget
-    assert tree_widget.invisibleRootItem() is not None
+    assert tree_widget.invisibleRootItem() is not None  # nosec

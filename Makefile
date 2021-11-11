@@ -71,9 +71,6 @@ release: clean test ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
-build: clean ## building app
-	pip install --force-reinstall --upgrade -rrequirements.txt
-
 install: clean ## install app in eedit mode
 	pip install --upgrade --force-reinstall -rrequirements.txt
 	pip install -e .

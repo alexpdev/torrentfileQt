@@ -61,7 +61,7 @@ def tstDir(func):
     return wrapper
 
 
-def fill(path, exp=21):
+def fill(path, exp=18):
     """Fill file paths with meaningless bytes for testing purposes.
 
     Args:
@@ -83,7 +83,8 @@ def fill(path, exp=21):
 
 
 @tstDir
-def tstfile(val=20):
+def tstfile(val=18):
+    """Temporary test file creation."""
     root = os.path.join(TESTDIR, "file1")
     fill(root, exp=val)
     return root
@@ -91,6 +92,7 @@ def tstfile(val=20):
 
 @tstDir
 def tstdir():
+    """Temporary test folder creation."""
     root = ROOT
     dir1 = os.path.join(root, "dir1")
     file1 = os.path.join(root, "file1")
@@ -101,12 +103,13 @@ def tstdir():
         rmpath(folder)
         os.mkdir(folder)
     for file in [file1, file2, file3, file4]:
-        fill(file, 26)
+        fill(file, 23)
     return root
 
 
 @tstDir
 def tstdir2():
+    """Another temporary test folder creation."""
     root = ROOT
     dir1 = os.path.join(root, "dir1")
     dir2 = os.path.join(dir1, "dir2")
@@ -118,15 +121,17 @@ def tstdir2():
         rmpath(folder)
         os.mkdir(folder)
     for file in [file1, file2, file3, file4]:
-        fill(file, 24)
+        fill(file, 22)
     return root
 
 
 @atexit.register
 def teardown():  # pragma: no cover
+    """Remove all testing files and folders as teardown action."""
     try:
         rmpath(TESTDIR)
         return True
     except PermissionError:
         time.sleep(1.5)
         teardown()
+        return True
