@@ -59,7 +59,6 @@ from torrentfileQt.qss import (
 )
 
 
-
 class CreateWidget(QWidget):
     """CreateWidget contains all controls for creating a new .torrent file.
 

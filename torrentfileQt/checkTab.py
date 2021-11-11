@@ -52,7 +52,6 @@ from torrentfileQt.qss import (
 )
 
 
-
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 

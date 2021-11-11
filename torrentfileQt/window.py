@@ -33,13 +33,7 @@ from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import (
-    mainWindowSheet,
-    statusBarSheet,
-    tabBarSheet,
-    tabSheet,
-)
-
+from torrentfileQt.qss import mainWindowSheet, statusBarSheet, tabBarSheet, tabSheet
 
 
 class Window(QMainWindow):

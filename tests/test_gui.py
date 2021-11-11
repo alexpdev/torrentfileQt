@@ -23,7 +23,7 @@ import pytest
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests.context import tstdir2, tstdir, tstfile, rmpath
+from tests.context import rmpath, tstdir, tstdir2, tstfile
 from torrentfileQt import qss
 from torrentfileQt.window import TabWidget, alt_start
 

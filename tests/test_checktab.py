@@ -22,7 +22,8 @@ from pathlib import Path
 
 import pytest
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
-from tests.context import tstdir2, tstdir, tstfile, rmpath
+
+from tests.context import rmpath, tstdir, tstdir2, tstfile
 from torrentfileQt.window import alt_start
 
 
@@ -47,8 +48,9 @@ def tfile(request):
     rmpath(path)
 
 
-@pytest.mark.parametrize("hasher", [TorrentFile, TorrentFileV2,
-                                    TorrentFileHybrid])
+@pytest.mark.parametrize(
+    "hasher", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def test_missing_files_check(hasher, wind, tdir):
     checktab = wind.central.checkWidget
     args = {"path": tdir}
@@ -81,8 +83,9 @@ def test_missing_files_check(hasher, wind, tdir):
 #     rmpath(metafile)
 
 
-@pytest.mark.parametrize("hasher", [TorrentFile, TorrentFileV2,
-                                    TorrentFileHybrid])
+@pytest.mark.parametrize(
+    "hasher", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
 def test_check_2tab(hasher, wind, tfile):
     checktab = wind.central.checkWidget
     args = {"path": tfile}
