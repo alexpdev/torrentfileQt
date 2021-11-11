@@ -29,6 +29,7 @@ from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar
 
 from .qss import menuSheet
 
+
 class Menu(QMenu):
     """Menu item for MenuBar widget."""
 

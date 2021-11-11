@@ -23,7 +23,6 @@ import json
 
 from setuptools import find_packages, setup
 
-
 INFO = json.load(open("package.json"))
 INFO["long_description"] = open("README.md").read()
 with open("requirements.txt") as req:
@@ -50,13 +49,13 @@ setup(
     url=INFO["url"],
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     license=INFO["license"],
-    packages=find_packages(exclude=["env"]),
+    packages=find_packages(exclude=["env", "tests"]),
     entry_points={
         "console_scripts": "torrentfileQt = torrentfileQt.window:start"
     },
     include_package_data=True,
     tests_require=["pytest"],
-    install_require=INFO["torrentfile", "PyQt6", "pyben"],
+    install_require=["torrentfile", "PyQt6", "pyben"],
     setup_requires=["setuptools", "wheel"],
     zip_safe=False,
     test_suite="complete",

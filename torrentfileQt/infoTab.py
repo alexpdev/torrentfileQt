@@ -38,12 +38,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from torrentfileQt.qss import (
-    infoLineEditSheet,
-    labelSheet,
-    pushButtonSheet,
-    treeSheet,
-)
+from torrentfileQt.qss import infoLineEditSheet, labelSheet, pushButtonSheet, treeSheet
 
 
 class TreeWidget(QTreeWidget):
