@@ -25,15 +25,32 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPlainTextEdit, QProgressBar,
-                             QPushButton, QToolButton, QTreeWidget,
-                             QTreeWidgetItem, QWidget)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
-                               logTextEditSheet, pushButtonSheet,
-                               toolButtonSheet, treeSheet)
+from torrentfileQt.qss import (
+    headerSheet,
+    labelSheet,
+    lineEditSheet,
+    logTextEditSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
+)
+
 
 
 class CheckWidget(QWidget):
