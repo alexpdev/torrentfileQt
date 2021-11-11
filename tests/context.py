@@ -41,6 +41,7 @@ def rmpath(path):
         elif os.path.isdir(path):
             shutil.rmtree(path)
 
+
 def tstDir(func):
     """Create root testing directory partial function.
 

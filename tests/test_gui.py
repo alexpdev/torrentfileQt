@@ -246,4 +246,3 @@ def test_export_menu(wind, ttorrent2):
     wind.menubar.export(path=path)
     assert os.path.exists(path)
     rmpath(path)
-
