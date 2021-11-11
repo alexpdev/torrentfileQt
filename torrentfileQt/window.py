@@ -31,6 +31,7 @@ from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import (mainWindowSheet, statusBarSheet, tabBarSheet,
                                tabSheet)
 
+
 class Window(QMainWindow):
     """Window MainWindow of GUI extension interface.
 
@@ -42,10 +43,10 @@ class Window(QMainWindow):
         """Constructor for Window class.
 
         Args:
-            parent (QWidget, optional):
-                The current Widget's parent. Defaults to None.
-            app (QApplication, optional):
-                Controls the GUI application. Defaults to None.
+            parent (QWidget, optional): The current Widget's parent.
+                Defaults to None.
+            app (QApplication, optional): Controls the GUI application.
+                Defaults to None.
         """
         super().__init__(parent=parent)
         self.app = app
@@ -95,7 +96,11 @@ class Application(QApplication):
     """QApplication Widget."""
 
     def __init__(self, args=None):
-        """Constructor for QApplication."""
+        """Constructor for main application backend.
+
+        Args:
+            args (list, optional): list of args to pass to window. Defaults to None.
+        """
         self.args = args
         if not args:
             self.args = sys.argv
@@ -104,7 +109,6 @@ class Application(QApplication):
 
 def start():  # pragma: no cover
     """Entrypoint for program."""
-
     app = Application()
     window = Window(parent=None, app=app)
     window.show()

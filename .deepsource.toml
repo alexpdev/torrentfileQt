@@ -1,7 +1,8 @@
 version = 1
+
 test_patterns = [
   "tests/**",
-  "test_*.py"
+  "tests/*.py",
 ]
 
 [[analyzers]]
@@ -12,13 +13,13 @@ enabled = true
 name = "python"
 enabled = true
 
-  [analyzers.meta]
-  runtime_version = "3.x.x"
+[analyzers.meta]
+runtime_version = "3.x.x"
 
 [[transformers]]
-name = "isort"
+name = "black"
 enabled = true
 
 [[transformers]]
-name = "autopep8"
+name = "isort"
 enabled = true

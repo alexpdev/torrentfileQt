@@ -35,6 +35,7 @@ from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
                                logTextEditSheet, pushButtonSheet,
                                toolButtonSheet, treeSheet)
 
+
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 
@@ -118,9 +119,10 @@ class ReCheckButton(QPushButton):
         fileInput = self.widget.fileInput
         metafile = fileInput.text()
         content = searchInput.text()
-        CheckerClass.register_callback(textEdit.callback)
-        logging.debug("Registering Callback, setting root")
-        piece_hasher(metafile, content, tree)
+        if os.path.exists(metafile):
+            CheckerClass.register_callback(textEdit.callback)
+            logging.debug("Registering Callback, setting root")
+            piece_hasher(metafile, content, tree)
 
 
 class BrowseTorrents(QToolButton):
@@ -208,7 +210,7 @@ class LogTextEdit(QPlainTextEdit):
     """Text Edit widget for check tab."""
 
     def __init__(self, parent=None):
-        """Constructor for LogTextEdit"""
+        """Constructor for LogTextEdit."""
         super().__init__(parent=parent)
         self._parent = parent
         self.setBackgroundVisible(True)
@@ -314,7 +316,7 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
-    rootSet = pyqtSignal([list])
+    rootSet = pyqtSignal([str])
     addPathChild = pyqtSignal([str, int])
 
     def __init__(self, parent=None):
@@ -383,10 +385,15 @@ class TreeWidget(QTreeWidget):
 def piece_hasher(metafile, content, tree):
     """Validate data on disk with torrent file."""
     checker = CheckerClass(metafile, content)
+    root = checker.root
+    tree.rootSet.emit(root)
     fileinfo = checker.fileinfo
     pathlist = checker.paths
     for path in pathlist:
-        relpath = path.lstrip(tree.root)
+        if path == root:
+            relpath = os.path.split(root)[-1]
+        else:
+            relpath = os.path.relpath(path, root)
         length = fileinfo[path]["length"]
         tree.addPathChild.emit(relpath, length)
     if checker.meta_version == 1:
@@ -394,8 +401,11 @@ def piece_hasher(metafile, content, tree):
         for actual, expected, path, size in checker.iter_hashes():
             value = size
             while True:
-                path = pathlist[current].lstrip(tree.root)
-                widget = tree.itemWidgets[path]
+                if path == root:
+                    relpath = os.path.split(root)[-1]
+                else:
+                    relpath = os.path.relpath(path, root)
+                widget = tree.itemWidgets[relpath]
                 if actual == expected:
                     consumed = widget.addValue(value)
                 else:
@@ -407,7 +417,11 @@ def piece_hasher(metafile, content, tree):
         return
     for actual, expected, path, size in checker.iter_hashes():
         if actual == expected:
-            leaf = tree.itemWidgets[path.lstrip(tree.root)]
+            if path == root:
+                relpath = os.path.split(root)[-1]
+            else:
+                relpath = os.path.relpath(path, root)
+            leaf = tree.itemWidgets[relpath]
             leaf.addValue(size)
         else:
             leaf.count(size)

@@ -34,6 +34,7 @@ from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
 from torrentfileQt.qss import (infoLineEditSheet, labelSheet, pushButtonSheet,
                                treeSheet)
 
+
 class TreeWidget(QTreeWidget):
     """Tree view of the directory structure cataloged in .torrent file.
 

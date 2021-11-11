@@ -35,17 +35,11 @@ def rmpath(path):
     Args:
         path (`str`): File or Folder to delete.
     """
-    while os.path.exists(path):
+    if os.path.exists(path):
         if os.path.isfile(path):
-            try:
-                os.remove(path)
-            except PermissionError:
-                time.sleep(.5)
+            os.remove(path)
         elif os.path.isdir(path):
-            try:
-                shutil.rmtree(path)
-            except PermissionError:
-                time.sleep(.5)
+            shutil.rmtree(path)
 
 
 def tstDir(func):
@@ -112,23 +106,6 @@ def tstdir():
 
 
 @tstDir
-def tstdir3():
-    root = ROOT
-    dir1 = os.path.join(root, "dir1")
-    file3 = os.path.join(dir1, "file3")
-    file4 = os.path.join(dir1, "file4")
-    dir2 = os.path.join(dir1, "dir2")
-    file1 = os.path.join(dir2, "file1")
-    file2 = os.path.join(dir2, "file2")
-    for folder in [root, dir1, dir2]:
-        rmpath(folder)
-        os.mkdir(folder)
-    for file in [file1, file2, file3, file4]:
-        fill(file, 22)
-    return root
-
-
-@tstDir
 def tstdir2():
     root = ROOT
     dir1 = os.path.join(root, "dir1")
@@ -141,7 +118,7 @@ def tstdir2():
         rmpath(folder)
         os.mkdir(folder)
     for file in [file1, file2, file3, file4]:
-        fill(file, 26)
+        fill(file, 24)
     return root
 
 

@@ -40,10 +40,9 @@ from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
                                push2ButtonSheet, pushButtonSheet,
                                textEditSheet, toolButtonSheet)
 
-class CreateWidget(QWidget):
-    """
-    CreateWidget contains all controls for creating a new .torrent file.
 
+class CreateWidget(QWidget):
+    """CreateWidget contains all controls for creating a new .torrent file.
 
     Args:
         QWidget (`QObject`): Parent class to CreateWidget.
@@ -62,6 +61,7 @@ class CreateWidget(QWidget):
         """
         super().__init__(parent=parent)
         self._setup_Ui()
+        self.window = parent.window
         self.content_dir = None
         self.outpath = None
 
@@ -189,6 +189,7 @@ class SubmitButton(QPushButton):
         super().__init__(text, parent=parent)
         self._text = text
         self.widget = parent
+        self.window = parent.window
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText(text)
         self.setStyleSheet(pushButtonSheet)
@@ -225,6 +226,8 @@ class SubmitButton(QPushButton):
             group=None, target=torrentfile_create, args=(args, obj)
         )
         t.run()
+        while t.is_alive():
+            self.window.app.processEvents()
 
 
 class OutButton(QToolButton):
@@ -266,8 +269,7 @@ class BrowseFileButton(QPushButton):
         self.pressed.connect(self.browse)
 
     def browse(self, path=None):
-        """
-        browse Action performed when user presses button.
+        """Browse Action performed when user presses button.
 
         Opens File/Folder Dialog.
 
