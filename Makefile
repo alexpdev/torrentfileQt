@@ -59,6 +59,12 @@ push: clean test ## push changes to remote
 	git push
 	bash codacy.sh report -r coverage.xml
 
+altpush: clean test ## push changes to remote
+	git add .
+	git commit -m "$m"
+	git push -u origin dev
+	bash codacy.sh report -r coverage.xml
+
 branch: ## create dev git branch
 	git stash
 	git checkout main
