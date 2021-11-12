@@ -25,7 +25,20 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
 
 from tests.context import Temp, build, hashers, mktorrent, pathstruct, rmpath
 from torrentfileQt import qss
+from torrentfileQt.infoTab import denom
 from torrentfileQt.window import TabWidget
+
+
+def test_denom():
+    """Test denom function."""
+    num = denom(50000000000)
+    assert num == "50.0GB"      # nosec
+
+
+def test_denom_small():
+    """Test denom function for small number."""
+    num = denom(357)
+    assert num == "357"     # nosec
 
 
 def test_window1():
@@ -146,7 +159,7 @@ def test_create_tab_fields(struct, field):
     submit = createtab.submit_button
     submit.click()
     result = pyben.load(torfile)
-    assert field in result or field in result["info"]        # nosec
+    assert field in result or field in result["info"]  # nosec
 
 
 @pytest.mark.parametrize("struct", pathstruct())

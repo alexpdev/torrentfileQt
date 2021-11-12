@@ -220,11 +220,11 @@ class SelectButton(QPushButton):
     def selectTorrent(self, files=None):
         """Collect torrent information and send to the screen for display."""
         caption = "Select '.torrent' file"
-        if not files:
+        if not files:  # pragma: no cover
             files = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not files:
+        if not files:   # pragma: no cover
             return
         meta = pyben.load(files[0])
         info = meta["info"]
@@ -240,7 +240,7 @@ class SelectButton(QPushButton):
         if "created by" in meta:
             keywords["created_by"] = meta["created by"]
         else:
-            keywords["created_by"] = ""
+            keywords["created_by"] = ""   # pragma: no cover
         for kw in ["name", "length", "comment", "source"]:
             if kw in info:
                 keywords[kw] = info[kw]
@@ -265,7 +265,7 @@ class SelectButton(QPushButton):
                 contents[os.path.join(info["name"], k)] = v
                 size += v
             keywords["contents"] = contents
-        else:
+        else:    # pragma: no cover
             keywords["contents"] = {info["name"]: info["length"]}
             size = info["length"]
         keywords["length"] = size
@@ -274,10 +274,10 @@ class SelectButton(QPushButton):
             text = date.strftime("%B %d, %Y %H:%M")
             keywords["creation_date"] = text
         else:
-            keywords["creation_date"] = ""
+            keywords["creation_date"] = ""  # pragma: no cover
         if "private" in info:
             keywords["private"] = "True"
-        else:
+        else:  # pragma: no cover
             keywords["private"] = "False"
         self.parent().fill(**keywords)
 
@@ -320,7 +320,7 @@ def denom(num):
         return "".join([txt[:-6], ".", txt[-6], "MB"])
     if num >= 1_000_000_000:
         return "".join([txt[:-9], ".", txt[-9], "GB"])
-    return str(num)
+    return str(num)  # pragma: no cover
 
 
 def pretty_int(num):

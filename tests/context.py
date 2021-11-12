@@ -137,6 +137,13 @@ def hashers():
 def mktorrent(path, hasher=None):
     """Create .torrent file."""
     args = {"path": path}
+    otherargs = {
+        "private": True,
+        "announce": ["announce1", "announce2", "announce3"],
+        "source": "source243324",
+        "comment": "this"
+    }
+    args.update(otherargs)
     torrent = hasher(**args)
     outfile, _ = torrent.write()
     return outfile

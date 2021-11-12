@@ -1,6 +1,3 @@
-#! /usr/bin/python3
-# -*- coding: utf-8 -*-
-
 ##############################################################################
 # Copyright 2020 AlexPDev
 #
@@ -16,13 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
-"""Init module for TorrentfileQt project."""
+"""Application version id tag."""
 
-from torrentfileQt.version import _version
-from torrentfileQt.window import Application, Window, alt_start, start
-
-__author__ = "alexpdev"
-
-__version__ = _version
-
-__all__ = ["Application", "Window", "alt_start", "start", "__version__"]
+_version = "0.2.1"
