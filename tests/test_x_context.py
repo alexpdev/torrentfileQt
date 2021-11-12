@@ -45,4 +45,4 @@ def test_x_teardown():
     temp = context.Temp
     path = temp.root
     context.teardown()
-    assert not os.path.exists(path)   # nosec
+    assert not os.path.exists(path)  # nosec
