@@ -18,8 +18,8 @@
 ##############################################################################
 """Init module for TorrentfileQt project."""
 
-from torrentfileQt.window import Application, Window, alt_start, start
 from torrentfileQt.version import _version
+from torrentfileQt.window import Application, Window, alt_start, start
 
 __author__ = "alexpdev"
 

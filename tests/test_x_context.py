@@ -22,6 +22,7 @@ import os
 
 from tests import context
 
+
 def test_rmpath():
     """Test rmpath function."""
     temp = os.path.join(context.Temp.root, "rmpathfile")

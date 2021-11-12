@@ -26,18 +26,12 @@ from pathlib import Path
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                             QPushButton, QTreeWidget, QTreeWidgetItem,
+                             QWidget)
 
-from torrentfileQt.qss import infoLineEditSheet, labelSheet, pushButtonSheet, treeSheet
+from torrentfileQt.qss import (infoLineEditSheet, labelSheet, pushButtonSheet,
+                               treeSheet)
 
 
 class TreeWidget(QTreeWidget):
@@ -246,7 +240,7 @@ class SelectButton(QPushButton):
         if "created by" in meta:
             keywords["created_by"] = meta["created by"]
         else:
-            keywords["created_by"] = ""
+            keywords["created_by"] = ""   # pragma: no cover
         for kw in ["name", "length", "comment", "source"]:
             if kw in info:
                 keywords[kw] = info[kw]
@@ -271,7 +265,7 @@ class SelectButton(QPushButton):
                 contents[os.path.join(info["name"], k)] = v
                 size += v
             keywords["contents"] = contents
-        else:
+        else:    # pragma: no cover
             keywords["contents"] = {info["name"]: info["length"]}
             size = info["length"]
         keywords["length"] = size
@@ -283,7 +277,7 @@ class SelectButton(QPushButton):
             keywords["creation_date"] = ""  # pragma: no cover
         if "private" in info:
             keywords["private"] = "True"
-        else:
+        else:  # pragma: no cover
             keywords["private"] = "False"
         self.parent().fill(**keywords)
 

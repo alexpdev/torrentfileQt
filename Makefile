@@ -84,8 +84,7 @@ install: clean ## install app in eedit mode
 
 build:  clean install
 	python setup.py sdist bdist_wheel bdist_egg
-
-	# twine upload dist/*
+	twine upload dist/*
 	rm -rfv ../runner
 	mkdir ../runner
 	touch ../runner/exe
