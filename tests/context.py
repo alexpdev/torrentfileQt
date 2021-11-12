@@ -141,7 +141,7 @@ def mktorrent(path, hasher=None):
         "private": True,
         "announce": ["announce1", "announce2", "announce3"],
         "source": "source243324",
-        "comment": "this"
+        "comment": "this",
     }
     args.update(otherargs)
     torrent = hasher(**args)

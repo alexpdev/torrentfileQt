@@ -25,15 +25,33 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPlainTextEdit, QProgressBar,
-                             QPushButton, QSplitter, QToolButton, QTreeWidget,
-                             QTreeWidgetItem, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
-                               logTextEditSheet, pushButtonSheet,
-                               toolButtonSheet, treeSheet)
+from torrentfileQt.qss import (
+    headerSheet,
+    labelSheet,
+    lineEditSheet,
+    logTextEditSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
+)
 
 
 class CheckWidget(QWidget):
@@ -159,7 +177,7 @@ class BrowseTorrents(QToolButton):
                 parent=self, caption=caption, filter="*.torrent"
             )
         if not path:
-            return    # pragma: no cover
+            return  # pragma: no cover
         if isinstance(path, Sequence):
             path = path[0]
         path = os.path.normpath(path)
@@ -190,7 +208,7 @@ class BrowseFolders(QToolButton):
             `str`: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not path:    # pragma: no cover
+        if not path:  # pragma: no cover
             path = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
@@ -375,7 +393,7 @@ class TreeWidget(QTreeWidget):
 
     def assignRoot(self, root):
         """Assign root dir."""
-        self.root = root   # pragma: no cover
+        self.root = root  # pragma: no cover
 
     def clear(self):
         """Remove any objects from Tree Widget."""
@@ -432,7 +450,7 @@ class PieceHasher:
         """Add tree widgets items to tree widget."""
         for path in self.pathlist:
             if path == self.root:
-                relpath = os.path.split(self.root)[-1]   # pragma: no cover
+                relpath = os.path.split(self.root)[-1]  # pragma: no cover
             else:
                 relpath = os.path.relpath(path, self.root)
             length = self.fileinfo[path]["length"]
@@ -461,7 +479,7 @@ class PieceHasher:
                     size -= amount
             else:
                 if path == self.root:
-                    relpath = os.path.split(self.root)[-1]   # pragma: no cover
+                    relpath = os.path.split(self.root)[-1]  # pragma: no cover
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:
