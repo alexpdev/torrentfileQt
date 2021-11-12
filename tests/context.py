@@ -19,114 +19,135 @@
 """Setup and Teardown functions and fixtures used for Unit Tests."""
 
 import atexit
+import inspect
 import os
 import shutil
 import string
+import sys
 import time
+from datetime import datetime
+from pathlib import Path
 
-TESTS = os.path.dirname(os.path.abspath(__file__))
-TESTDIR = os.path.join(TESTS, "TESTDIR")
-ROOT = os.path.join(TESTDIR, "Root")
+from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
+
+from torrentfileQt import alt_start
 
 
-def rmpath(path):
+def rmpath(paths):
     """Remove File or Folder.
 
     Args:
-        path (`str`): File or Folder to delete.
+        paths (`str` or `list`): File or Folder to delete.
     """
-    if os.path.exists(path):
-        if os.path.isfile(path):
-            os.remove(path)
-        elif os.path.isdir(path):
-            shutil.rmtree(path)
+    if isinstance(paths, (str, os.PathLike)):
+        paths = [paths]
+    for path in paths:
+        if os.path.exists(path):
+            if os.path.isfile(path):
+                func = os.remove
+            else:
+                func = shutil.rmtree
+            try:
+                func(path)
+            except PermissionError:
+                pass
 
 
-def tstDir(func):
-    """Create root testing directory partial function.
-
-    Args:
-        func (function): The function to execute in the body.
-
-    Returns:
-        wrapper (function): This callable.
-    """
-
-    def wrapper(*args, **kwargs):
-        """Wrapper for testDir function."""
-        if not os.path.exists(TESTDIR):
-            os.mkdir(TESTDIR)
-        return func(*args, **kwargs)
-
-    return wrapper
+def exception_hook(exctype, value, traceback):  # pragma:  no cover
+    """Except hook capturing."""
+    print(exctype, value, traceback)
+    sys._excepthook(exctype, value, traceback)
+    sys.exit(1)
 
 
-def fill(path, exp=21):
-    """Fill file paths with meaningless bytes for testing purposes.
+class Temp:
+    """Namespace for global objects."""
 
-    Args:
-        path (`str`):  The path to file destination.
-        exp (`int`):  Number indicating the power of 2 for the file size.
-
-    Returns:
-        path (`str`): the root path.
-    """
-    text = (string.printable + string.whitespace + string.hexdigits) * 8
-    btext = text.encode("utf-8")
-    btextlen = len(btext)
-    size = 2 ** exp
-    with open(path, "wb") as fd:
-        while size >= 0:
-            fd.write(btext)
-            size -= btextlen
-    return path
+    WINDOW, APP = alt_start()
+    sys._excepthook = sys.excepthook
+    sys.excepthook = exception_hook
+    parent = os.path.abspath(os.getcwd())
+    root = os.path.join(parent, "tests", "TESTINGDIR")
+    seq = string.printable + string.hexdigits + string.whitespace
+    if not os.path.exists(root):
+        os.mkdir(root)
 
 
-@tstDir
-def tstfile(val=20):
-    root = os.path.join(TESTDIR, "file1")
-    fill(root, exp=val)
-    return root
+def fillfile(filepath, size=21):
+    """Fill temp files with content."""
+    seq = Temp.seq * 8
+    size = 2 ** size
+    with open(filepath, "bw") as binfile:
+        while size > 0:
+            binfile.write(seq.encode("utf-8"))
+            size -= len(seq)
 
 
-@tstDir
-def tstdir():
-    root = ROOT
-    dir1 = os.path.join(root, "dir1")
-    file1 = os.path.join(root, "file1")
-    file2 = os.path.join(root, "file2")
-    file3 = os.path.join(dir1, "file3")
-    file4 = os.path.join(dir1, "file4")
-    for folder in [root, dir1]:
-        rmpath(folder)
-        os.mkdir(folder)
-    for file in [file1, file2, file3, file4]:
-        fill(file, 26)
-    return root
+def build(paths, size=21):
+    """Build temporary paths provided."""
+    stamp = str(datetime.timestamp(datetime.now()))
+    funcname = inspect.stack()[1].function
+    base = os.path.join(Temp.root, stamp + funcname)
+    os.mkdir(base)
+    for path in paths:
+        parts = Path(path).parts
+        bottom = base
+        for part in parts[0:-1]:
+            folder = os.path.join(bottom, part)
+            if not os.path.exists(folder):
+                os.mkdir(folder)
+            bottom = folder
+        filepath = os.path.join(base, path)
+        fillfile(filepath, size=size)
+    return base
 
 
-@tstDir
-def tstdir2():
-    root = ROOT
-    dir1 = os.path.join(root, "dir1")
-    dir2 = os.path.join(dir1, "dir2")
-    file1 = os.path.join(dir2, "file1")
-    file2 = os.path.join(dir2, "file2")
-    file3 = os.path.join(dir1, "file3")
-    file4 = os.path.join(dir1, "file4")
-    for folder in [root, dir1, dir2]:
-        rmpath(folder)
-        os.mkdir(folder)
-    for file in [file1, file2, file3, file4]:
-        fill(file, 24)
-    return root
+def pathstruct():
+    """Temporary directory fcr testing."""
+    return [
+        [
+            "dir1/file1.bin",
+            "dir2/file2.bin",
+            "dir1/file3.bin",
+            "file4.bin",
+        ],
+        [
+            "dir1/dir2/file1.bin",
+            "dir1/dir2/file2.bin",
+            "dir3/file3.bin",
+            "dir1/file4.bin",
+            "dir3/file5.bin",
+        ],
+        [
+            "dir1/file1.bin",
+            "dir1/file2.bin",
+            "dir1/file3.bin",
+            "dir1/file4.bin",
+            "dir1/file5.bin",
+        ],
+        [f"file1{str(datetime.timestamp(datetime.now()))}"],
+    ]
+
+
+def hashers():
+    """List of hashing classes."""
+    return [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+
+
+def mktorrent(path, hasher=None):
+    """Create .torrent file."""
+    args = {"path": path}
+    torrent = hasher(**args)
+    outfile, _ = torrent.write()
+    return outfile
 
 
 @atexit.register
-def teardown():  # pragma: no cover
+def teardown():
+    """Remove temporary directories."""
     try:
-        rmpath(TESTDIR)
-        return True
-    except PermissionError:
-        time.sleep(1.5)
+        rmpath(Temp.root)
+    except PermissionError:  # pragma: no cover
+        print("Teardown Failing")
+        time.sleep(0.5)
         teardown()

@@ -22,23 +22,16 @@ import math
 import os
 from datetime import datetime
 from pathlib import Path
-from threading import Thread
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                             QPushButton, QTreeWidget, QTreeWidgetItem,
+                             QWidget)
 
-from torrentfileQt.qss import infoLineEditSheet, labelSheet, pushButtonSheet, treeSheet
+from torrentfileQt.qss import (infoLineEditSheet, labelSheet, pushButtonSheet,
+                               treeSheet)
 
 
 class TreeWidget(QTreeWidget):
@@ -175,7 +168,7 @@ class InfoWidget(QWidget):
         self.selectButton = SelectButton("Select Torrent", parent=self)
         self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
 
-    def fill(self, kws):
+    def fill(self, **kws):
         """Fill all child widgets with collected information.
 
         Args:
@@ -286,9 +279,7 @@ class SelectButton(QPushButton):
             keywords["private"] = "True"
         else:
             keywords["private"] = "False"
-        tab = self.parent()
-        thread = Thread(group=None, target=tab.fill, args=(keywords,))
-        thread.run()
+        self.parent().fill(**keywords)
 
 
 class Label(QLabel):
@@ -299,9 +290,9 @@ class Label(QLabel):
         super().__init__(text, parent=parent)
         font = self.font()
         font.setBold(True)
+        font.setPointSize(12)
         self.setStyleSheet(labelSheet)
         self.setFont(font)
-        font.setPointSize(12)
 
 
 class InfoLineEdit(QLineEdit):

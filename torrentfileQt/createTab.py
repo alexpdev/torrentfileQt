@@ -25,38 +25,19 @@ User must provide the path to the directory containing the what the
 
 
 import os
-import threading
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QFileDialog,
-    QFormLayout,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QPushButton,
-    QRadioButton,
-    QSpacerItem,
-    QToolButton,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout,
+                             QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+                             QPlainTextEdit, QPushButton, QRadioButton,
+                             QSpacerItem, QToolButton, QWidget)
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (
-    checkBoxSheet,
-    comboBoxSheet,
-    createLineEditSheet,
-    labelSheet,
-    push2ButtonSheet,
-    pushButtonSheet,
-    textEditSheet,
-    toolButtonSheet,
-)
+from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
+                               createLineEditSheet, labelSheet,
+                               push2ButtonSheet, pushButtonSheet,
+                               textEditSheet, toolButtonSheet)
 
 
 class CreateWidget(QWidget):
@@ -190,7 +171,7 @@ def torrentfile_create(args, obj):
     try:
         tfile = obj(**args)
         tfile.write()
-    except PermissionError:
+    except PermissionError:  # pragma: no cover
         print("No Permission to access file.")
 
 
@@ -232,20 +213,13 @@ class SubmitButton(QPushButton):
             piece_length_index
         )
         args["comment"] = self.widget.comment_input.text()
-        print(args)
-
         if self.widget.hybridbutton.isChecked():
             obj = TorrentFileHybrid
         elif self.widget.v2button.isChecked():
             obj = TorrentFileV2
         else:
             obj = TorrentFile
-        t = threading.Thread(
-            group=None, target=torrentfile_create, args=(args, obj)
-        )
-        t.run()
-        while t.is_alive():
-            self.window.app.processEvents()
+        torrentfile_create(args, obj)
 
 
 class OutButton(QToolButton):
@@ -419,11 +393,11 @@ class Label(QLabel):
     def __init__(self, text, parent=None):
         """Constructor for label widgit."""
         super().__init__(text, parent=parent)
+        self.setStyleSheet(labelSheet)
         font = self.font()
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
-        self.setStyleSheet(labelSheet)
 
 
 class LineEdit(QLineEdit):
