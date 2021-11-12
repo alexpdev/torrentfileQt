@@ -25,7 +25,6 @@ User must provide the path to the directory containing the what the
 
 
 import os
-import threading
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout,
@@ -172,7 +171,7 @@ def torrentfile_create(args, obj):
     try:
         tfile = obj(**args)
         tfile.write()
-    except PermissionError:
+    except PermissionError:  # pragma: no cover
         print("No Permission to access file.")
 
 
@@ -214,8 +213,6 @@ class SubmitButton(QPushButton):
             piece_length_index
         )
         args["comment"] = self.widget.comment_input.text()
-        print(args)
-
         if self.widget.hybridbutton.isChecked():
             obj = TorrentFileHybrid
         elif self.widget.v2button.isChecked():
@@ -223,7 +220,6 @@ class SubmitButton(QPushButton):
         else:
             obj = TorrentFile
         torrentfile_create(args, obj)
-
 
 
 class OutButton(QToolButton):

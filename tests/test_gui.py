@@ -19,114 +19,33 @@
 """Testing module for most of GUI."""
 import os
 
+import pyben
 import pytest
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
-from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests.context import rmpath, tstdir, tstdir2, tstfile
+from tests.context import Temp, build, hashers, mktorrent, pathstruct, rmpath
 from torrentfileQt import qss
-from torrentfileQt.window import TabWidget, alt_start
+from torrentfileQt.window import TabWidget
 
 
-@pytest.fixture(scope="module")
-def wind():
-    """Pytest fixture for generating a new mainwindow wiget."""
-    window, _ = alt_start()
-    yield window
-    print(window)
-
-
-@pytest.fixture(scope="module", params=[tstdir, tstdir2])
-def tdir(request):
-    """Generate temporary directorie for tesing."""
-    root = request.param()
-    yield root
-
-
-@pytest.fixture(scope="module", params=list(range(14, 28)))
-def tfile(request):
-    """Create temporary file for testing."""
-    path = tstfile(val=request.param)
-    yield path
-
-
-@pytest.fixture(
-    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
-def ttorrent1(tfile, request):
-    """Generate a metafile for testing."""
-    path = tfile
-    args = {
-        "path": path,
-        "private": 1,
-        "announce": "tracker1.com",
-        "comment": "this is a comment",
-        "source": "Tracker",
-    }
-    torrent = request.param(**args)
-    outfile, _ = torrent.write()
-    yield outfile
-
-
-@pytest.fixture(
-    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
-def dtorrent1(tdir, request):
-    """Generate a metafile for testing with dir."""
-    path = tdir
-    args = {
-        "path": path,
-        "private": 1,
-        "announce": "tracker1.com",
-        "comment": "this is a comment",
-        "source": "Tracker",
-    }
-    torrent = request.param(**args)
-    outfile, _ = torrent.write()
-    yield outfile
-
-
-@pytest.fixture(
-    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
-def ttorrent2(tfile, request):
-    """Generate a metafile for testing with file."""
-    path = tfile
-    args = {"path": path}
-    torrent = request.param(**args)
-    outfile, _ = torrent.write()
-    yield outfile
-
-
-@pytest.fixture(
-    scope="module", params=[TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
-def dtorrent2(tdir, request):
-    """Generate a metafile for testing with second dir."""
-    args = {"path": tdir}
-    torrent = request.param(**args)
-    outfile, _ = torrent.write()
-    yield outfile
-
-
-def test_window1(wind):
+def test_window1():
     """Test Main Window Functionality."""
-    assert wind is not None  # nosec
+    assert Temp.WINDOW is not None  # nosec
 
 
-def test_window2(wind):
+def test_window2():
     """Test Window Functionality."""
-    assert isinstance(wind, QMainWindow)  # nosec
+    assert isinstance(Temp.WINDOW, QMainWindow)  # nosec
 
 
-def test_app1(wind):
+def test_app1():
     """Test app subclass."""
-    assert wind.app is not None  # nosec
+    assert Temp.WINDOW.app is not None  # nosec
 
 
-def test_app2(wind):
+def test_app2():
     """Test app subclass instance attribute."""
-    assert isinstance(wind.app, QApplication)  # nosec
+    assert isinstance(Temp.WINDOW.app, QApplication)  # nosec
 
 
 def test_qss():
@@ -134,63 +53,55 @@ def test_qss():
     assert qss  # nosec
 
 
-def test_window_menubar1(wind):
+def test_window_menubar1():
     """Test window Menubar widget."""
-    assert wind.menubar is not None  # nosec
+    assert Temp.WINDOW.menubar is not None  # nosec
 
 
-def test_window_statusbar1(wind):
+def test_window_statusbar1():
     """Test window Statusbar widget."""
-    assert wind.statusbar is not None  # nosec
+    assert Temp.WINDOW.statusbar is not None  # nosec
 
 
-def test_window_statusbar2(wind):
+def test_window_statusbar2():
     """Test window Statusbar widget again."""
-    assert isinstance(wind.statusbar, QStatusBar)  # nosec
+    assert isinstance(Temp.WINDOW.statusbar, QStatusBar)  # nosec
 
 
-def test_tab_widget(wind):
+def test_tab_widget():
     """Test window Tab widget."""
-    tabwidget = wind.central
+    tabwidget = Temp.WINDOW.central
     assert isinstance(tabwidget, TabWidget)  # nosec
 
 
-def test_info_tab_select1(wind, ttorrent1):
+@pytest.mark.parametrize("struct", pathstruct())
+def test_create_tab_browse(struct):
     """Test Info tab select1."""
-    infotab = wind.central.infoWidget
+    path = build(struct)
+    createtab = Temp.WINDOW.central.createWidget
+    button = createtab.browse_file_button
+    button.browse(path=path)
+    assert createtab.path_input.text() == path  # nosec
+
+
+@pytest.mark.parametrize("struct", pathstruct())
+@pytest.mark.parametrize("hasher", hashers())
+def test_info_tab_select1(struct, hasher):
+    """Test Info tab select1."""
+    path = build(struct)
+    torrent = mktorrent(path, hasher)
+    infotab = Temp.WINDOW.central.infoWidget
     button = infotab.selectButton
-    button.selectTorrent(files=[ttorrent1])
+    button.selectTorrent(files=[torrent])
     assert infotab.nameEdit.text() != ""  # nosec
 
 
-def test_info_tab_select2(wind, ttorrent2):
-    """Test Info tab selection."""
-    infotab = wind.central.infoWidget
-    button = infotab.selectButton
-    button.selectTorrent(files=[ttorrent2])
-    assert infotab.nameEdit.text() != ""  # nosec
-
-
-def test_info_tab_dselect1(wind, dtorrent1):
-    """Test Info tab selection directory."""
-    infotab = wind.central.infoWidget
-    button = infotab.selectButton
-    button.selectTorrent(files=[dtorrent1])
-    assert infotab.nameEdit.text() != ""  # nosec
-
-
-def test_info_tab_dselect2(wind, dtorrent2):
-    """Test Info tab selection directory again."""
-    infotab = wind.central.infoWidget
-    button = infotab.selectButton
-    button.selectTorrent(files=[dtorrent2])
-    assert infotab.nameEdit.text() != ""  # nosec
-
-
-def test_create_tab_dir(tdir, wind):
+@pytest.mark.parametrize("struct", pathstruct())
+def test_create_tab_dir(struct):
     """Test create tab with folder."""
-    root = tdir
-    createtab = wind.central.createWidget
+    path = build(struct)
+    root = path
+    createtab = Temp.WINDOW.central.createWidget
     button = createtab.browse_dir_button
     button.browse(root)
     torfile = root + ".test.torrent"
@@ -204,62 +115,50 @@ def test_create_tab_dir(tdir, wind):
     assert os.path.exists(torfile)  # nosec
 
 
-def test_create_tab_file(wind, tfile):
-    """Test create tab with file."""
-    createtab = wind.central.createWidget
-    button = createtab.browse_file_button
-    button.browse(tfile)
-    torfile = tfile + ".test.torrent"
+@pytest.mark.parametrize(
+    "field",
+    [
+        "announce",
+        "announce list",
+        "source",
+        "private",
+        "comment",
+        "piece length",
+    ],
+)
+@pytest.mark.parametrize("struct", pathstruct())
+def test_create_tab_fields(struct, field):
+    """Test create tab with folder."""
+    path = build(struct)
+    root = path
+    createtab = Temp.WINDOW.central.createWidget
+    button = createtab.browse_dir_button
+    button.browse(root)
+    torfile = root + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
-    createtab.announce_input.setPlainText("announce.com")
-    createtab.comment_input.setText("comment")
-    createtab.private.click()
+    createtab.announce_input.setPlainText(
+        "https://announce.com\n" "http://announce2.com\n" "http://announce4.com"
+    )
+    createtab.comment_input.setText("some comment")
+    createtab.private.setChecked(True)
+    createtab.source_input.setText("TestSource")
     submit = createtab.submit_button
     submit.click()
-    assert os.path.exists(torfile)  # nosec
+    result = pyben.load(torfile)
+    assert field in result or field in result["info"]        # nosec
 
 
-def test_create_tab_file_v2(wind, tfile):
-    """Test create tab with file v2."""
-    createtab = wind.central.createWidget
-    button = createtab.browse_file_button
-    createtab.v2button.click()
-    button.browse(tfile)
-    torfile = tfile + ".test.torrent"
-    outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
-    createtab.announce_input.setPlainText("announce.com")
-    createtab.comment_input.setText("comment")
-    createtab.private.click()
-    submit = createtab.submit_button
-    submit.click()
-    assert os.path.exists(torfile)  # nosec
-
-
-def test_create_tab_file_hybrid(wind, tfile):
-    """Test create tab with file hybrid."""
-    createtab = wind.central.createWidget
-    button = createtab.browse_file_button
-    createtab.hybridbutton.click()
-    button.browse(path=tfile)
-    torfile = tfile + ".test.torrent"
-    outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
-    createtab.announce_input.setPlainText("announce.com")
-    createtab.comment_input.setText("comment")
-    createtab.private.click()
-    submit = createtab.submit_button
-    submit.click()
-    assert os.path.exists(torfile)  # nosec
-
-
-def test_export_menu(wind, ttorrent2):
+@pytest.mark.parametrize("struct", pathstruct())
+@pytest.mark.parametrize("hasher", hashers())
+def test_export_menu(struct, hasher):
     """Test menubar action menu expornt."""
-    infotab = wind.central.infoWidget
+    path = build(struct)
+    torrent = mktorrent(path, hasher)
+    infotab = Temp.WINDOW.central.infoWidget
     button = infotab.selectButton
-    button.selectTorrent(files=[ttorrent2])
-    path = os.path.abspath("./tests/testfile.txt")
-    wind.menubar.export(path=path)
-    assert os.path.exists(path)  # nosec
-    rmpath(path)
+    button.selectTorrent(files=[torrent])
+    tpath = os.path.abspath(os.path.join(os.path.dirname(path), "torrent.txt"))
+    Temp.WINDOW.menubar.export(path=tpath)
+    assert os.path.exists(tpath)  # nosec
+    rmpath(tpath)

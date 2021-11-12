@@ -46,16 +46,17 @@ clean-build: ## remove build artifacts
 	rm -f corbertura.xml
 	rm -fr .pytest_cache
 	rm -rf *.egg-info
+	rm -rfv tests/TESTINGDIR
 
 test: environment ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests
+	pytest tests --cov=torrentfileQt --cov=tests -vv --capture=tee-sys
 	coverage report
 	coverage xml -o coverage.xml
 
 push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
-	git push -u origin dev
+	git push
 	bash codacy.sh report -r coverage.xml
 
 branch: ## create dev git branch

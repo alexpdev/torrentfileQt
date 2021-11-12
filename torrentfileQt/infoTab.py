@@ -22,7 +22,6 @@ import math
 import os
 from datetime import datetime
 from pathlib import Path
-from threading import Thread
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -169,7 +168,7 @@ class InfoWidget(QWidget):
         self.selectButton = SelectButton("Select Torrent", parent=self)
         self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
 
-    def fill(self, kws):
+    def fill(self, **kws):
         """Fill all child widgets with collected information.
 
         Args:
@@ -280,9 +279,7 @@ class SelectButton(QPushButton):
             keywords["private"] = "True"
         else:
             keywords["private"] = "False"
-        tab = self.parent()
-        thread = Thread(group=None, target=tab.fill, args=(keywords,))
-        thread.run()
+        self.parent().fill(**keywords)
 
 
 class Label(QLabel):

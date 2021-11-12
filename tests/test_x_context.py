@@ -16,9 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
-"""Constructor for TorrentfileQt."""
+"""Module for testing procedures on context module."""
 
-from torrentfileQt.window import Application, Window, alt_start, start
+import os
 
-__author__ = "alexpdev"
-__version__ = "1.0.beta"
+from tests import context
+
+
+def test_teardown():
+    """Teast teardown function last."""
+    temp = context.Temp
+    path = temp.root
+    context.teardown()
+    assert not os.path.exists(path)   # nosec
