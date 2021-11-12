@@ -24,6 +24,7 @@ from pathlib import Path
 import pytest
 
 from tests.context import Temp, build, hashers, mktorrent, pathstruct, rmpath
+from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
 
 @pytest.mark.parametrize("struct", pathstruct())
@@ -47,7 +48,37 @@ def test_missing_files_check(hasher, struct):
 
 @pytest.mark.parametrize("struct", pathstruct())
 @pytest.mark.parametrize("hasher", hashers())
-def test_check_2tab(hasher, struct):
+def test_shorter_files_check(hasher, struct):
+    """Test missing files checker proceduire."""
+    contents = build(struct)
+    metafile = mktorrent(contents, hasher)
+    checktab = Temp.WINDOW.central.checkWidget
+    dir1 = Path(contents) / "dir1"
+
+    def shortenfile(item):
+        temp = bytearray(2**12)
+        with open(item, "rb") as fd:
+            fd.readinto(temp)
+        with open(item, "wb") as fd:
+            fd.write(temp)
+
+    if os.path.exists(dir1):
+        for item in dir1.iterdir():
+            if item.is_file():
+                shortenfile(item)
+    elif len(os.listdir(contents)) == 1:
+        full = os.path.join(contents, os.listdir(contents)[0])
+        shortenfile(full)
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
+    rmpath([metafile, contents])
+
+
+@pytest.mark.parametrize("struct", pathstruct())
+@pytest.mark.parametrize("hasher", hashers())
+def test_check_tab(hasher, struct):
     """Test checker procedure."""
     path = build(struct)
     checktab = Temp.WINDOW.central.checkWidget
@@ -85,3 +116,22 @@ def test_check_tab4():
     checktab = Temp.WINDOW.central.checkWidget
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None  # nosec
+
+
+def test_clear_logtext():
+    """Test checker logTextEdit widget function."""
+    checktab = Temp.WINDOW.central.checkWidget
+    text_edit = checktab.textEdit
+    text_edit.insertPlainText("sometext")
+    text_edit.clear_data()
+    assert text_edit.toPlainText() == ""  # nosec
+
+
+def test_checktab_tree():
+    """Check tree item counting functionality."""
+    checktab = Temp.WINDOW.central.checkWidget
+    tree = TreeWidget(parent=checktab)
+    item = TreePieceItem(type=0, tree=tree)
+    item.progbar = ProgressBar(parent=tree, size=1000000)
+    item.count(100000000)
+    assert item.counted == 1000000  # nosec

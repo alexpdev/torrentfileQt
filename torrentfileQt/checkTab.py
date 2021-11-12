@@ -154,12 +154,12 @@ class BrowseTorrents(QToolButton):
             path (`str`): Path to file or folder to include in torrent.
         """
         caption = "Choose .torrent file."
-        if not path:
+        if not path:  # pragma: no cover
             path = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
         if not path:
-            return
+            return    # pragma: no cover
         if isinstance(path, Sequence):
             path = path[0]
         path = os.path.normpath(path)
@@ -190,12 +190,12 @@ class BrowseFolders(QToolButton):
             `str`: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not path:
+        if not path:    # pragma: no cover
             path = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
         if not path:
-            return
+            return  # pragma: no cover
         path = os.path.normpath(path)
         self.parent().searchInput.clear()
         self.parent().searchInput.setText(path)
@@ -278,7 +278,7 @@ class TreePieceItem(QTreeWidgetItem):
     def addProgress(self, value):
         """Increase progress bar value."""
         if self.counted + value > self.total:
-            consumed = self.total - self.value
+            consumed = self.total - self.value  # pragma: no cover
         else:
             consumed = value
         self.value += consumed
@@ -375,7 +375,7 @@ class TreeWidget(QTreeWidget):
 
     def assignRoot(self, root):
         """Assign root dir."""
-        self.root = root
+        self.root = root   # pragma: no cover
 
     def clear(self):
         """Remove any objects from Tree Widget."""
@@ -432,7 +432,7 @@ class PieceHasher:
         """Add tree widgets items to tree widget."""
         for path in self.pathlist:
             if path == self.root:
-                relpath = os.path.split(self.root)[-1]
+                relpath = os.path.split(self.root)[-1]   # pragma: no cover
             else:
                 relpath = os.path.relpath(path, self.root)
             length = self.fileinfo[path]["length"]
@@ -446,7 +446,7 @@ class PieceHasher:
                     current = self.pathlist[self.current]
                     relpath = os.path.relpath(current, self.root)
                     widget = self.tree.itemWidgets[relpath]
-                    if widget.left == 0:
+                    if widget.left == 0:  # pragma: no cover
                         self.current += 1
                         if self.current >= len(self.pathlist):
                             return None
@@ -461,7 +461,7 @@ class PieceHasher:
                     size -= amount
             else:
                 if path == self.root:
-                    relpath = os.path.split(self.root)[-1]
+                    relpath = os.path.split(self.root)[-1]   # pragma: no cover
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:

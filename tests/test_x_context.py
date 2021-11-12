@@ -22,9 +22,26 @@ import os
 
 from tests import context
 
+def test_rmpath():
+    """Test rmpath function."""
+    temp = os.path.join(context.Temp.root, "rmpathfile")
+    with open(temp, "wt") as fd:
+        fd.write("10101")
+    assert os.path.exists(temp)   # nosec
+    context.rmpath(temp)
+    assert not os.path.exists(temp)    # nosec
 
-def test_teardown():
-    """Teast teardown function last."""
+
+def test_fillfile():
+    """Test fill file function."""
+    temp = os.path.join(context.Temp.root, "fillfile1")
+    context.fillfile(temp)
+    assert os.path.exists(temp)   # nosec
+    context.rmpath(temp)
+
+
+def test_x_teardown():
+    """Test teardown function last."""
     temp = context.Temp
     path = temp.root
     context.teardown()

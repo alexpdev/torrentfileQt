@@ -79,25 +79,30 @@ release: clean test ## release to pypi
 	twine upload dist/*
 
 install: clean ## install app in eedit mode
-	pip install --upgrade --force-reinstall -rrequirements.txt
+	pip install --upgrade -rrequirements.txt
 	pip install -e .
 
 build:  clean install
 	python setup.py sdist bdist_wheel bdist_egg
+
 	# twine upload dist/*
 	rm -rfv ../runner
 	mkdir ../runner
 	touch ../runner/exe
 	cp ./assets/torrentfile.ico ../runner/torrentfile.ico
+	cp -rvf ./assets ../runner/assets
 	@echo "import torrentfileQt" >> ../runner/exe
 	@echo "torrentfileQt.start()" >> ../runner/exe
 	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
-		-F -n torrentfileQt -c -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG
+		-F -n torrentfileQt -w -i ../runner/torrentfile.ico \
+		--specpath ../runner/ ../runner/exe --log-level DEBUG \
+		--add-data "./assets;./assets"
 	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
-		-D -n torrentfileQt -c -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG
+		-D -n torrentfileQt -w -i ../runner/torrentfile.ico \
+		--specpath ../runner/ ../runner/exe --log-level DEBUG \
+		--add-data "./assets/*;./assets/"
 	cp -rfv ../runner/dist/* ./dist/
 	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
+	python fixes.py
 
 full: clean test checkout

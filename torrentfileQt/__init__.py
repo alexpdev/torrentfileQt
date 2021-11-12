@@ -16,9 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
-"""Constructor for TorrentfileQt."""
+"""Init module for TorrentfileQt project."""
 
 from torrentfileQt.window import Application, Window, alt_start, start
+from torrentfileQt.version import _version
 
 __author__ = "alexpdev"
-__version__ = "1.0.beta"
+
+__version__ = _version
+
+__all__ = ["Application", "Window", "alt_start", "start", "__version__"]
