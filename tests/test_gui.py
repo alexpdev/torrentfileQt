@@ -146,7 +146,7 @@ def test_create_tab_fields(struct, field):
     submit = createtab.submit_button
     submit.click()
     result = pyben.load(torfile)
-    assert field in result or field in result["info"]        # nosec
+    assert field in result or field in result["info"]  # nosec
 
 
 @pytest.mark.parametrize("struct", pathstruct())
