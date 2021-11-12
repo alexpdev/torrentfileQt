@@ -56,7 +56,7 @@ def test_shorter_files_check(hasher, struct):
     dir1 = Path(contents) / "dir1"
 
     def shortenfile(item):
-        temp = bytearray(2**12)
+        temp = bytearray(2 ** 12)
         with open(item, "rb") as fd:
             fd.readinto(temp)
         with open(item, "wb") as fd:
