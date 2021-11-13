@@ -206,13 +206,15 @@ class InfoWidget(QWidget):
         self.totalPiecesEdit.setText(str(total_pieces))
         for path, size in kws["contents"].items():
             self.contentsTree.itemReady.emit(path, size)
-        for widg in [self.pathEdit,
-                     self.nameEdit,
-                     self.trackerEdit,
-                     self.privateEdit,
-                     self.pieceLengthEdit,
-                     self.sizeEdit,
-                     self.totalPiecesEdit]:
+        for widg in [
+            self.pathEdit,
+            self.nameEdit,
+            self.trackerEdit,
+            self.privateEdit,
+            self.pieceLengthEdit,
+            self.sizeEdit,
+            self.totalPiecesEdit,
+        ]:
             widg.setCursorPosition(0)
 
 

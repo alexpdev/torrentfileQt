@@ -27,17 +27,34 @@ User must provide the path to the directory containing the what the
 import os
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog,
-                             QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-                             QPlainTextEdit, QPushButton, QRadioButton,
-                             QSpacerItem, QToolButton, QWidget)
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
-                               createLineEditSheet, labelSheet,
-                               push2ButtonSheet, pushButtonSheet,
-                               textEditSheet, toolButtonSheet)
+from torrentfileQt.qss import (
+    checkBoxSheet,
+    comboBoxSheet,
+    createLineEditSheet,
+    labelSheet,
+    push2ButtonSheet,
+    pushButtonSheet,
+    textEditSheet,
+    toolButtonSheet,
+)
 
 
 class CreateWidget(QWidget):
@@ -312,7 +329,7 @@ class BrowseDirButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not filename:   # pragma: no cover
+        if not filename:  # pragma: no cover
             filename = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )

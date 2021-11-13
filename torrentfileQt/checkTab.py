@@ -58,7 +58,6 @@ from torrentfileQt.qss import (
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 
-
     def __init__(self, parent=None):
         """Constructor for check tab."""
         super().__init__(parent=parent)
@@ -81,8 +80,12 @@ class CheckWidget(QWidget):
         self.searchLabel = Label("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.searchInput = LineEdit(parent=self)
-        self.browseButton2 = BrowseFolders.create(parent=self, text="Folder", mode=0)
-        self.browseButton3 = BrowseFolders.create(parent=self, text="File", mode=1)
+        self.browseButton2 = BrowseFolders.create(
+            parent=self, text="Folder", mode=0
+        )
+        self.browseButton3 = BrowseFolders.create(
+            parent=self, text="File", mode=1
+        )
         self.checkButton = ReCheckButton("Check", parent=self)
 
         self.hlayout1.addWidget(self.fileInput)
@@ -202,12 +205,12 @@ class BrowseFolders(QToolButton):
             "func": QFileDialog.getExistingDirectory,
             "caption": "Select Contents Folder...",
             "directory": str(Path.home()),
-            },
+        },
         1: {
             "func": QFileDialog.getOpenFileName,
             "caption": "Select Contents File...",
             "directory": str(Path.home()),
-            }
+        },
     }
 
     def __init__(self, parent=None):
@@ -234,8 +237,11 @@ class BrowseFolders(QToolButton):
         """
         if not path:  # pragma: no cover
             mode = self.modes[self.mode]
-            path = mode["func"](directory=mode["directory"],
-                                parent=self, caption=mode["caption"])
+            path = mode["func"](
+                directory=mode["directory"],
+                parent=self,
+                caption=mode["caption"],
+            )
         if not path:
             return  # pragma: no cover
         path = os.path.normpath(path)
@@ -421,8 +427,6 @@ class TreeWidget(QTreeWidget):
             print(phashes.pathlist)
             raise Exception from exp
 
-
-
     def assignRoot(self, root):
         """Assign root dir."""
         self.root = root  # pragma: no cover
@@ -452,9 +456,10 @@ class TreeWidget(QTreeWidget):
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
                     fileicon = QIcon("./assets/video.png")
-                elif (path.suffix in [".rar", ".zip", ".gz", ".7z"]
-                      or re.match(r"\.r\d+$", path.suffix)):
-                    fileicon=QIcon("./assets/archive.png")
+                elif path.suffix in [".rar", ".zip", ".gz", ".7z"] or re.match(
+                    r"\.r\d+$", path.suffix
+                ):
+                    fileicon = QIcon("./assets/archive.png")
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
