@@ -130,12 +130,6 @@ menuSheet = """
     }"""
 
 
-mainWindowSheet = """
-    QMainWindow {
-        background-color:#ddd;
-    }
-    """
-
 dialogSheet = """
     QDialog {
         background-color:#000000;
@@ -213,6 +207,7 @@ pushButtonSheet = """
         background-color: #444;
     }
     """
+
 
 push2ButtonSheet = """
     QPushButton {
@@ -528,3 +523,10 @@ headerSheet = """
         color: black;
     }
 """
+
+
+mainWindowSheet = """
+    QMainWindow {
+        background-color:#ddd;
+    }
+    """

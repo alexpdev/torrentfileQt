@@ -23,17 +23,20 @@ from pathlib import Path
 
 import pytest
 
-from tests.context import Temp, build, hashers, mktorrent, pathstruct, rmpath
+from tests.context import Temp, build, mktorrent, pathstruct, rmpath
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
 
 @pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", hashers())
+@pytest.mark.parametrize("hasher", Temp.hashers)
 def test_missing_files_check(hasher, struct):
     """Test missing files checker proceduire."""
     contents = build(struct)
+    print("NEW FUNCTION \n\n\n\n\n\n\n\n\n\n\n\n")
+    print(struct, hasher)
     metafile = mktorrent(contents, hasher)
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     dir1 = Path(contents) / "dir1"
     if os.path.exists(dir1):
         for item in dir1.iterdir():
@@ -47,16 +50,18 @@ def test_missing_files_check(hasher, struct):
 
 
 @pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", hashers())
+@pytest.mark.parametrize("hasher", Temp.hashers)
 def test_shorter_files_check(hasher, struct):
     """Test missing files checker proceduire."""
     contents = build(struct)
     metafile = mktorrent(contents, hasher)
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     dir1 = Path(contents) / "dir1"
 
     def shortenfile(item):
-        temp = bytearray(2**12)
+        """Shave some data off the end of file."""
+        temp = bytearray(2 ** 19)
         with open(item, "rb") as fd:
             fd.readinto(temp)
         with open(item, "wb") as fd:
@@ -77,11 +82,12 @@ def test_shorter_files_check(hasher, struct):
 
 
 @pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", hashers())
+@pytest.mark.parametrize("hasher", Temp.hashers)
 def test_check_tab(hasher, struct):
     """Test checker procedure."""
     path = build(struct)
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     args = {"path": path}
     torrent = hasher(**args)
     metafile, _ = torrent.write()
@@ -97,7 +103,8 @@ def test_check_tab(hasher, struct):
 def test_check_tab_input1(struct):
     """Test checker procedure."""
     path = build(struct)
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     checktab.browseButton2.browse(path)
     assert checktab.searchInput.text() != ""  # nosec
 
@@ -106,21 +113,24 @@ def test_check_tab_input1(struct):
 def test_check_tab_input_2(struct):
     """Test checker procedure."""
     path = build(struct)
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     checktab.browseButton1.browse(path)
     assert checktab.fileInput.text() != ""  # nosec
 
 
 def test_check_tab4():
     """Test checker procedure again."""
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None  # nosec
 
 
 def test_clear_logtext():
     """Test checker logTextEdit widget function."""
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     text_edit = checktab.textEdit
     text_edit.insertPlainText("sometext")
     text_edit.clear_data()
@@ -129,7 +139,8 @@ def test_clear_logtext():
 
 def test_checktab_tree():
     """Check tree item counting functionality."""
-    checktab = Temp.WINDOW.central.checkWidget
+    checktab = Temp.window.central.checkWidget
+    Temp.window.central.setCurrentWidget(checktab)
     tree = TreeWidget(parent=checktab)
     item = TreePieceItem(type=0, tree=tree)
     item.progbar = ProgressBar(parent=tree, size=1000000)

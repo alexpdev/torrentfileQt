@@ -57,18 +57,21 @@ def exception_hook(exctype, value, traceback):  # pragma:  no cover
     """Except hook capturing."""
     print(exctype, value, traceback)
     sys._excepthook(exctype, value, traceback)
-    sys.exit(1)
 
 
 class Temp:
     """Namespace for global objects."""
 
-    WINDOW, APP = alt_start()
     sys._excepthook = sys.excepthook
     sys.excepthook = exception_hook
-    parent = os.path.abspath(os.getcwd())
-    root = os.path.join(parent, "tests", "TESTINGDIR")
+
+    window, app = alt_start()
+    testdir = os.path.dirname(os.path.abspath(__file__))
+    root = os.path.join(testdir, "TESTINGDIR")
+
+    hashers = [TorrentFile, TorrentFileV2, TorrentFileHybrid]
     seq = string.printable + string.hexdigits + string.whitespace
+
     if not os.path.exists(root):
         os.mkdir(root)
 
@@ -129,22 +132,16 @@ def pathstruct():
     ]
 
 
-def hashers():
-    """List of hashing classes."""
-    return [TorrentFile, TorrentFileV2, TorrentFileHybrid]
-
-
 def mktorrent(path, hasher=None):
     """Create .torrent file."""
-    args = {"path": path}
-    otherargs = {
+    kwargs = {
+        "path": path,
         "private": True,
         "announce": ["announce1", "announce2", "announce3"],
         "source": "source243324",
-        "comment": "this"
+        "comment": "this",
     }
-    args.update(otherargs)
-    torrent = hasher(**args)
+    torrent = hasher(**kwargs)
     outfile, _ = torrent.write()
     return outfile
 

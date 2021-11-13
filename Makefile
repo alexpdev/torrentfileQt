@@ -49,7 +49,12 @@ clean-build: ## remove build artifacts
 	rm -rfv tests/TESTINGDIR
 
 test: environment ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests -vv --capture=tee-sys
+	pytest tests --cov=torrentfileQt --cov=tests
+	coverage report
+	coverage xml -o coverage.xml
+
+alttest: environment ## run tests quickly with the default Python
+	pytest tests --cov=torrentfileQt --cov=tests --capture=tee-sys
 	coverage report
 	coverage xml -o coverage.xml
 
