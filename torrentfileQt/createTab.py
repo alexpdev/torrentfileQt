@@ -27,7 +27,7 @@ User must provide the path to the directory containing the what the
 import os
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout,
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog,
                              QGridLayout, QHBoxLayout, QLabel, QLineEdit,
                              QPlainTextEdit, QPushButton, QRadioButton,
                              QSpacerItem, QToolButton, QWidget)
@@ -46,10 +46,6 @@ class CreateWidget(QWidget):
     Args:
         QWidget (`QObject`): Parent class to CreateWidget.
     """
-
-    labelRole = QFormLayout.ItemRole.LabelRole
-    fieldRole = QFormLayout.ItemRole.FieldRole
-    spanRole = QFormLayout.ItemRole.SpanningRole
 
     def __init__(self, parent=None):
         """
@@ -271,7 +267,7 @@ class BrowseFileButton(QPushButton):
         caption = "Choose File"
         if not path:  # pragma: no cover
             path = QFileDialog.getOpenFileName(parent=self, caption=caption)
-        if not isinstance(path, str):
+        if not isinstance(path, str):  # pragma: no cover
             path = os.path.normpath(path[0])
         else:
             path = os.path.normpath(path)
@@ -316,11 +312,11 @@ class BrowseDirButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not filename:
+        if not filename:   # pragma: no cover
             filename = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if not filename:
+        if not filename:  # pragma: no cover
             return None
         filename = os.path.realpath(filename)
         self.window.path_input.clear()
@@ -406,6 +402,8 @@ class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
-        self._parent = parent
         self.window = parent.window
         self.setStyleSheet(createLineEditSheet)
+        font = self.font()
+        font.setPointSize(11)
+        self.setFont(font)

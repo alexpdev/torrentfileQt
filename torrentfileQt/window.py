@@ -58,7 +58,7 @@ class Window(QMainWindow):
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
-        self.setStyleSheet(mainWindowSheet)
+        self.setStyleSheet(mainWindowSheet + statusBarSheet)
         self.resize(750, 650)
         self._setupUI()
 
@@ -69,7 +69,9 @@ class Window(QMainWindow):
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
         self.statusbar.setObjectName("statusbar")
-        self.statusbar.setStyleSheet(statusBarSheet)
+        self.menubar.setObjectName("menubar")
+        self.central.setObjectName("centralTabWidget")
+        self.centralLayout.setObjectName("centralLayout")
 
 
 class TabWidget(QTabWidget):
@@ -90,6 +92,9 @@ class TabWidget(QTabWidget):
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
+        self.createWidget.setObjectName("createTab")
+        self.checkWidget.setObjectName("checkTab")
+        self.infoWidget.setObjectName("infoTab")
 
 
 class Application(QApplication):

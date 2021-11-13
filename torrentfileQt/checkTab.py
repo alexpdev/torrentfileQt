@@ -19,6 +19,7 @@
 """Module for the Check Tab Widget."""
 
 import logging
+import re
 import os
 from collections.abc import Sequence
 from pathlib import Path
@@ -57,9 +58,6 @@ from torrentfileQt.qss import (
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 
-    labelRole = QFormLayout.ItemRole.LabelRole
-    fieldRole = QFormLayout.ItemRole.FieldRole
-    spanRole = QFormLayout.ItemRole.SpanningRole
 
     def __init__(self, parent=None):
         """Constructor for check tab."""
@@ -83,18 +81,22 @@ class CheckWidget(QWidget):
         self.searchLabel = Label("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.searchInput = LineEdit(parent=self)
-        self.browseButton2 = BrowseFolders(parent=self)
+        self.browseButton2 = BrowseFolders.create(parent=self, text="Folder", mode=0)
+        self.browseButton3 = BrowseFolders.create(parent=self, text="File", mode=1)
         self.checkButton = ReCheckButton("Check", parent=self)
 
         self.hlayout1.addWidget(self.fileInput)
         self.hlayout1.addWidget(self.browseButton1)
         self.hlayout2.addWidget(self.searchInput)
         self.hlayout2.addWidget(self.browseButton2)
+        self.hlayout2.addWidget(self.browseButton3)
 
-        self.layout.setWidget(1, self.labelRole, self.fileLabel)
-        self.layout.setLayout(1, self.fieldRole, self.hlayout1)
-        self.layout.setWidget(2, self.labelRole, self.searchLabel)
-        self.layout.setLayout(2, self.fieldRole, self.hlayout2)
+        labelRole = QFormLayout.ItemRole.LabelRole
+        fieldRole = QFormLayout.ItemRole.FieldRole
+        self.layout.setWidget(1, labelRole, self.fileLabel)
+        self.layout.setLayout(1, fieldRole, self.hlayout1)
+        self.layout.setWidget(2, labelRole, self.searchLabel)
+        self.layout.setLayout(2, fieldRole, self.hlayout2)
         self.textEdit = LogTextEdit(parent=self)
         self.treeWidget = TreeWidget(parent=self)
         self.splitter.addWidget(self.treeWidget)
@@ -145,7 +147,11 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             CheckerClass.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
-            tree.reChecking.emit(metafile, content)
+            try:
+                tree.reChecking.emit(metafile, content)
+            except Exception as exp:
+                print(exp)
+                raise Exception(exp) from exp
 
 
 class BrowseTorrents(QToolButton):
@@ -162,7 +168,6 @@ class BrowseTorrents(QToolButton):
         self.window = parent
         self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.inputWidget = None
         self.pressed.connect(self.browse)
 
     def browse(self, path=None):
@@ -192,14 +197,34 @@ class BrowseFolders(QToolButton):
         parent (`QWidget`, default=None): Widget this widget is the child of.
     """
 
+    modes = {
+        0: {
+            "func": QFileDialog.getExistingDirectory,
+            "caption": "Select Contents Folder...",
+            "directory": str(Path.home()),
+            },
+        1: {
+            "func": QFileDialog.getOpenFileName,
+            "caption": "Select Contents File...",
+            "directory": str(Path.home()),
+            }
+    }
+
     def __init__(self, parent=None):
         """Construct a BrowseFolders Button Widget."""
         super().__init__(parent=parent)
-        self.setText("...")
         self.window = parent
         self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.mode = None
         self.pressed.connect(self.browse)
+
+    @classmethod
+    def create(cls, parent=None, text=None, mode=None):
+        btn = cls(parent=parent)
+        btn.setText(text)
+        btn.mode = mode
+        return btn
 
     def browse(self, path=None):
         """Browse Action performed when user presses button.
@@ -207,11 +232,10 @@ class BrowseFolders(QToolButton):
         Returns:
             `str`: Path to file or folder to include in torrent.
         """
-        caption = "Choose Root Directory"
         if not path:  # pragma: no cover
-            path = QFileDialog.getExistingDirectory(
-                parent=self, caption=caption
-            )
+            mode = self.modes[self.mode]
+            path = mode["func"](directory=mode["directory"],
+                                parent=self, caption=mode["caption"])
         if not path:
             return  # pragma: no cover
         path = os.path.normpath(path)
@@ -225,8 +249,10 @@ class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
-        self._parent = parent
         self.setStyleSheet(lineEditSheet)
+        font = self.font()
+        font.setPointSize(11.5)
+        self.setFont(font)
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -389,7 +415,13 @@ class TreeWidget(QTreeWidget):
         """Fill tree widget with contents of torrentfile."""
         phashes = PieceHasher(metafile, contents, self)
         phashes.addTreeWidgets()
-        phashes.iter_hashes()
+        try:
+            phashes.iter_hashes()
+        except Exception as exp:
+            print(phashes.pathlist)
+            raise Exception from exp
+
+
 
     def assignRoot(self, root):
         """Assign root dir."""
@@ -418,7 +450,13 @@ class TreeWidget(QTreeWidget):
             parent.setExpanded(True)
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
-                fileicon = QIcon("./assets/file.png")
+                if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
+                    fileicon = QIcon("./assets/video.png")
+                elif (path.suffix in [".rar", ".zip", ".gz", ".7z"]
+                      or re.match(r"\.r\d+$", path.suffix)):
+                    fileicon=QIcon("./assets/archive.png")
+                else:
+                    fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
                 self.setItemWidget(item, 2, progressBar)
                 item.progbar = progressBar
@@ -461,13 +499,13 @@ class PieceHasher:
         for actual, expected, path, size in self.checker.iter_hashes():
             if self.checker.meta_version == 1:
                 while size > 0:
+                    if self.current >= len(self.pathlist):
+                        break
                     current = self.pathlist[self.current]
                     relpath = os.path.relpath(current, self.root)
                     widget = self.tree.itemWidgets[relpath]
                     if widget.left == 0:  # pragma: no cover
                         self.current += 1
-                        if self.current >= len(self.pathlist):
-                            return None
                         continue
                     left, amount = widget.left, None
                     if actual == expected:
@@ -486,4 +524,3 @@ class PieceHasher:
                     self.tree.addValue.emit(relpath, size)
                 else:
                     self.tree.addCount.emit(relpath, size)
-            return None

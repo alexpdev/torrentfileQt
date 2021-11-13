@@ -3,6 +3,12 @@
 ![torrentfileQt.png](./assets/torrentfileQt.png)
 
 -------
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=alexpdev/torrentfileQt&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Coverage)
+[![codecov](https://codecov.io/gh/alexpdev/torrentfileQt/branch/main/graph/badge.svg?token=S5Q9CRD6C2)](https://codecov.io/gh/alexpdev/torrentfileQt)
+![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
+![PyPI - License](https://img.shields.io/pypi/l/torrentfileQt?color=orange&style=plastic)
+![Codecov](https://img.shields.io/codecov/c/github/alexpdev/torrentfileQt)
 
 TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpdev/torrentfile) project.
 
@@ -16,12 +22,12 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ### Screenshots
 
-![createTab.png](./assets/createTab.png =300x300)
+![createTab.png](./assets/createTab.png)
 
 -------
 
-![checkTab.png](./assets/checkTab.png =300x300)
+![checkTab.png](./assets/checkTab.png)
 
 -------
 
-![infoTab.png](./assets/infoTab.png =300x300)
+![infoTab.png](./assets/infoTab.png)
