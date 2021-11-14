@@ -85,6 +85,10 @@ menuSheet = """
     QMenuBar::item {
         spacing: 3px;
         padding: 1px 4px;
+        padding-left: 6px;
+        padding-right: 6px;
+        padding-top: 3px;
+        padding-bottom: 3px;
         background: transparent;
     }
     QMenuBar::item:selected {

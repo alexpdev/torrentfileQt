@@ -151,7 +151,7 @@ def test_create_tab_fields(struct, field):
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
     createtab.announce_input.setPlainText(
-        "https://announce.com\n" "http://announce2.com\n" "http://announce4.com"
+        "https://announce.com\nhttp://announce2.com\nhttp://announce4.com"
     )
     createtab.comment_input.setText("some comment")
     createtab.private.setChecked(True)

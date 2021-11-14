@@ -14,6 +14,7 @@ pep257:
     - D407
     - D406
     - D203
+    - D401
 
 pycodestyle:
   disable:

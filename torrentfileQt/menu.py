@@ -18,7 +18,6 @@
 ##############################################################################
 """Module for the menu bar."""
 
-
 import os
 import webbrowser
 from pathlib import Path

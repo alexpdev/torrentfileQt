@@ -21,24 +21,16 @@
 import sys
 
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QStatusBar,
-    QTabWidget,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QStatusBar, QTabWidget,
+                             QVBoxLayout)
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
+from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import (
-    mainWindowSheet,
-    statusBarSheet,
-    tabBarSheet,
-    tabSheet,
-)
+from torrentfileQt.qss import (mainWindowSheet, statusBarSheet, tabBarSheet,
+                               tabSheet)
 
 
 class Window(QMainWindow):
@@ -97,13 +89,16 @@ class TabWidget(QTabWidget):
         self.createWidget = CreateWidget(parent=self)
         self.checkWidget = CheckWidget(parent=self)
         self.infoWidget = InfoWidget(parent=self)
+        self.editorWidget = EditorWidget(parent=self)
         self.setStyleSheet(tabBarSheet + tabSheet)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
+        self.addTab(self.editorWidget, "Torrent Editor")
         self.createWidget.setObjectName("createTab")
         self.checkWidget.setObjectName("checkTab")
         self.infoWidget.setObjectName("infoTab")
+        self.editorWidget.setObjectName("editorTab")
 
 
 class Application(QApplication):
@@ -113,11 +108,10 @@ class Application(QApplication):
         """Constructor for main application backend.
 
         Args:
-            args (list, optional): list of args to pass to window. Defaults to None.
+            args (`list`, optional): argument list passed to window.
+                Defaults to None.
         """
-        self.args = args
-        if not args:
-            self.args = sys.argv
+        self.args = args if args else sys.argv
         super().__init__(self.args)
 
 

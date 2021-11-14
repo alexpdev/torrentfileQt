@@ -18,11 +18,9 @@
 ##############################################################################
 """Init module for TorrentfileQt project."""
 
-from torrentfileQt.version import _version
+from torrentfileQt.version import __version__
 from torrentfileQt.window import Application, Window, alt_start, start
 
 __author__ = "alexpdev"
-
-__version__ = _version
 
 __all__ = ["Application", "Window", "alt_start", "start", "__version__"]
