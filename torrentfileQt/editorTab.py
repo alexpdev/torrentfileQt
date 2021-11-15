@@ -19,11 +19,11 @@
 """Module for the Check Tab Widget."""
 
 import os
-from collections.abc import Mapping, Sequence
+# from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 import pyben
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QToolButton, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
@@ -73,7 +73,6 @@ class DoneButton(QPushButton):
         super().__init__(text, parent=parent)
         self.widget = parent
         self.window = parent.window
-        self.pressed.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setStyleSheet(pushButtonSheet)
 
@@ -131,30 +130,7 @@ class BrowseFolders(QToolButton):
         if not path:
             return  # pragma: no cover
         path = os.path.normpath(path[0])
-        name = os.path.splitext(os.path.basename(path))[0]
-        meta = pyben.load(path)
-        item = FieldItem(type=0, tree=self.tree)
-        item.setText(0, name)
-        self.tree.addTopLevelItem(item)
-        parse_meta(meta, item, self.tree)
-
-
-def parse_meta(meta, parent, tree):
-    """Iterate through fields and assign them to leafs of treewidget."""
-    if isinstance(meta, (int, str, bytes, bool, float)):
-        parent.setText(1, str(meta))
-    elif isinstance(meta, Mapping):
-        for k, v in meta.items():
-            item = FieldItem(type=0, tree=tree)
-            item.setText(0, str(k))
-            parent.addChild(item)
-            parse_meta(v, item, tree)
-    elif isinstance(meta, Sequence):
-        for i, field in enumerate(meta):
-            item = FieldItem(type=0, tree=tree)
-            item.setText(0, f"[{i}]")
-            parent.addChild(item)
-            parse_meta(field, item, tree)
+        self.tree.handleTorrent.emit(path)
 
 
 class LineEdit(QLineEdit):
@@ -214,6 +190,19 @@ class FieldItem(QTreeWidgetItem):
         super().addChild(child)
         self.tree.window.app.processEvents()
 
+    @classmethod
+    def create(cls, meta, tree=None):
+        """Create item for tree."""
+        item = cls(type=0, tree=tree)
+        item.setValue(meta)
+        if isinstance(meta, (bytes, bytearray)):
+            item.setText(0, meta.hex())
+        elif isinstance(meta, str):
+            item.setText(0, meta)
+        elif isinstance(meta, (int, float, bool)):
+            item.setText(0, str(meta))
+        return item
+
 
 class TreeWidget(QTreeWidget):
     """Tree Widget for the `Check` tab.
@@ -224,6 +213,8 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
+    handleTorrent = pyqtSignal([str])
+
     def __init__(self, parent=None):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
@@ -231,15 +222,34 @@ class TreeWidget(QTreeWidget):
         self.setStyleSheet(treeSheet + headerSheet)
         self.setColumnCount(2)
         self.setIndentation(10)
-        # header = self.header()
-        # header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
-        # header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
-        # self.setHeaderHidden(True)
         self.setEditTriggers(
             self.EditTrigger.DoubleClicked
             | self.EditTrigger.EditKeyPressed
             | self.EditTrigger.SelectedClicked
         )
+        # header = self.header()
+        # header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
+        # header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
+        # self.setHeaderHidden(True)
+        self.handleTorrent.connect(self.showTorrent)
+
+    def showTorrent(self, path):
+        """Display inforrmation contained in torrentfile."""
+        try:
+            meta = pyben.load(path)
+        except PermissionError:
+            self.window.statusbar.showMessage("Access Denied")
+            return
+        self.meta = meta
+        root_item = FieldItem(type=0, tree=self)
+        name = os.path.basename(path)
+        root_item.setText(0, name)
+        self.addTopLevelItem(root_item)
+        self.traverse_meta(meta, root_item)
+
+    def traverse_meta(self, meta, parent):
+        """Traverse dictionary to create items for tree."""
+        print(meta, parent, self)
 
     def clear(self):
         """Remove any objects from Tree Widget."""
