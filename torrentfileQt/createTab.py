@@ -22,9 +22,9 @@ Tab Widget containing all controls for creating a new .torrent file.
 User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
-
-
 import os
+import shutil
+import subprocess  # nosec
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -42,7 +42,6 @@ from PyQt6.QtWidgets import (
     QToolButton,
     QWidget,
 )
-from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_stat
 
 from torrentfileQt.qss import (
@@ -73,12 +72,16 @@ class CreateWidget(QWidget):
         """
         super().__init__(parent=parent)
         self._setup_Ui()
-        self.window = parent.window
         self.content_dir = None
         self.outpath = None
 
-    def _setup_Ui(self):
+    @property
+    def window(self):
+        """Window attribute as a property."""
+        return self.parent().window
 
+    def _setup_Ui(self):
+        """Setup display widgits for window layout."""
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -181,11 +184,15 @@ def torrentfile_create(args, obj):
         args ([`dict`]): keyword arguements for the torrent creator.
         obj ([`torrentfile.MetaBase`]): The procedure class for creating file.
     """
-    try:
-        tfile = obj(**args)
-        tfile.write()
-    except PermissionError:  # pragma: no cover
-        print("No Permission to access file.")
+    tfile = obj(**args)
+    tfile.write()
+
+
+def create_torrent(args):
+    """Create torrent file in seperate process."""
+    tfexe = shutil.which("torrentfile")
+    result = subprocess.run([tfexe, *args])  # nosec
+    return result
 
 
 class SubmitButton(QPushButton):
@@ -210,29 +217,48 @@ class SubmitButton(QPushButton):
     def submit(self):
         """Submit Action performed when user presses Submit Button."""
         # Gather Information from other Widgets.
-        args = {}
-        args["path"] = self.widget.path_input.text()
-        args["private"] = 1 if self.widget.private.isChecked() else 0
-        args["source"] = self.widget.source_input.text()
+        args = []
+        if self.widget.private.isChecked():
+            args.append("--private")
+
+        # add source to metadata
+        sourcetext = self.widget.source_input.text()
+        if sourcetext:
+            args.extend(["--source", sourcetext])
+
+        # add comments to metadata
+        commenttext = self.widget.comment_input.text()
+        if commenttext:
+            args.extend(["--comment", commenttext])
 
         # at least 1 tracker input is required
         announce = self.widget.announce_input.toPlainText()
         announce = [i for i in announce.split("\n") if i]
-        args["announce"] = announce
+        if announce:
+            args.append("-a")
+            args.extend(announce)
+
         # Calculates piece length if not specified by user.
-        args["outfile"] = self.widget.output_input.text()
-        piece_length_index = self.widget.piece_length.currentIndex()
-        args["piece_length"] = self.widget.piece_length.itemData(
-            piece_length_index
-        )
-        args["comment"] = self.widget.comment_input.text()
+        outtext = os.path.realpath(self.widget.output_input.text())
+        if outtext:
+            args.extend(["-o", outtext])
+
+        current = self.widget.piece_length.currentIndex()
+        if current:
+            piece_length_index = self.widget.piece_length.currentIndex()
+            piece_length = self.widget.piece_length.itemData(piece_length_index)
+            args.extend(["--piece-length", str(piece_length)])
+
         if self.widget.hybridbutton.isChecked():
-            obj = TorrentFileHybrid
+            args.extend(["--meta-version", "3"])
         elif self.widget.v2button.isChecked():
-            obj = TorrentFileV2
-        else:
-            obj = TorrentFile
-        torrentfile_create(args, obj)
+            args.extend(["--meta-version", "2"])
+
+        path = self.widget.path_input.text()
+        args.append(path)
+        result = create_torrent(args)
+        if result:
+            self.window.statusBar().showMessage("Success")
 
 
 class OutButton(QToolButton):

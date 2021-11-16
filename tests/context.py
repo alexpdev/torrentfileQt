@@ -152,6 +152,5 @@ def teardown():
     try:
         rmpath(Temp.root)
     except PermissionError:  # pragma: no cover
-        print("Teardown Failing")
         time.sleep(0.5)
         teardown()

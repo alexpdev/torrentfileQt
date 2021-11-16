@@ -29,11 +29,23 @@ with open("requirements.txt") as req:
     INFO["install_requires"] = req.read().split("\n")
 
 setup(
+    url=INFO["url"],
     name=INFO["name"],
+    author=INFO["author"],
+    license=INFO["license"],
     version=INFO["version"],
+    keywords=INFO["keywords"],
+    include_package_data=True,
+    author_email=INFO["email"],
     description=INFO["description"],
     long_description=INFO["long_description"],
+    packages=find_packages(exclude=["env", "tests"]),
+    install_requires=["torrentfile", "PyQt6", "pyben"],
+    project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     long_description_content_type="text/markdown",
+    entry_points={
+        "console_scripts": "torrentfileQt = torrentfileQt.window:start"
+    },
     classifiers=[
         "Development Status :: 4 - Beta",
         "Operating System :: OS Independent",
@@ -43,20 +55,4 @@ setup(
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: Apache Software License",
     ],
-    keywords=INFO["keywords"],
-    author=INFO["author"],
-    author_email=INFO["email"],
-    url=INFO["url"],
-    project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
-    license=INFO["license"],
-    packages=find_packages(exclude=["env", "tests"]),
-    entry_points={
-        "console_scripts": "torrentfileQt = torrentfileQt.window:start"
-    },
-    include_package_data=True,
-    tests_require=["pytest"],
-    install_require=["torrentfile", "PyQt6", "pyben"],
-    setup_requires=["setuptools", "wheel"],
-    zip_safe=False,
-    test_suite="complete",
 )

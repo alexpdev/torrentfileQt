@@ -19,8 +19,8 @@
 """Module for the Check Tab Widget."""
 
 import logging
-import re
 import os
+import re
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -153,7 +153,6 @@ class ReCheckButton(QPushButton):
             try:
                 tree.reChecking.emit(metafile, content)
             except Exception as exp:
-                print(exp)
                 raise Exception(exp) from exp
 
 
@@ -224,6 +223,7 @@ class BrowseFolders(QToolButton):
 
     @classmethod
     def create(cls, parent=None, text=None, mode=None):
+        """Create new instance of button with mode."""
         btn = cls(parent=parent)
         btn.setText(text)
         btn.mode = mode
@@ -424,7 +424,6 @@ class TreeWidget(QTreeWidget):
         try:
             phashes.iter_hashes()
         except Exception as exp:
-            print(phashes.pathlist)
             raise Exception from exp
 
     def assignRoot(self, root):
@@ -500,7 +499,7 @@ class PieceHasher:
             self.tree.addPathChild.emit(relpath, length)
 
     def iter_hashes(self):
-        """Iter through hashes one at a time and compare to torrentfile hashes."""
+        """Iterate through hashes and compare to torrentfile hashes."""
         for actual, expected, path, size in self.checker.iter_hashes():
             if self.checker.meta_version == 1:
                 while size > 0:

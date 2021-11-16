@@ -21,6 +21,21 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+define FIXES
+import os
+from pathlib import Path
+from torrentfileQt.version import _version
+
+distpath =  Path(__file__).resolve().parent / "dist"
+for item in distpath.iterdir():
+    if item.name == "torrentfileQt.exe":
+        os.rename(item, distpath / f"torrentfileQt-v{_version}.exe")
+    elif item.name == "torrentfileQt.zip":
+        os.rename(item, distpath / f"torrentfileQt-v{_version}-Winx64.zip")
+endef
+export FIXES
+
+
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
@@ -48,13 +63,14 @@ clean-build: ## remove build artifacts
 	rm -rf *.egg-info
 	rm -rfv tests/TESTINGDIR
 
-test: environment ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests
-	coverage report
-	coverage xml -o coverage.xml
+lint: environment ## run linters on codebase
+	isort torrentfileQt tests
+	pyroma .
+	prospector torrentfileQt
+	prospector tests
 
-alttest: environment ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests --capture=tee-sys
+test: lint ## run tests quickly with the default Python
+	pytest tests --cov=torrentfileQt --cov=tests --pylint
 	coverage report
 	coverage xml -o coverage.xml
 
@@ -83,13 +99,12 @@ release: clean test ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
-install: clean ## install app in eedit mode
+install: ## install app in eedit mode
 	pip install --upgrade -rrequirements.txt
 	pip install -e .
 
 build:  clean install
 	python setup.py sdist bdist_wheel bdist_egg
-	twine upload dist/*
 	rm -rfv ../runner
 	mkdir ../runner
 	touch ../runner/exe
@@ -108,5 +123,3 @@ build:  clean install
 	cp -rfv ../runner/dist/* ./dist/
 	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
 	python fixes.py
-
-full: clean test checkout
