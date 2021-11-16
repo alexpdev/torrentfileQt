@@ -23,12 +23,26 @@ from pathlib import Path
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                             QPushButton, QTableWidget, QTableWidgetItem,
-                             QToolButton, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
-from torrentfileQt.qss import (labelSheet, lineEditSheet, pushButtonSheet,
-                               tableSheet, toolButtonSheet)
+from torrentfileQt.qss import (
+    labelSheet,
+    lineEditSheet,
+    pushButtonSheet,
+    tableSheet,
+    toolButtonSheet,
+)
 
 
 class EditorWidget(QWidget):
@@ -117,7 +131,7 @@ class FileButton(QToolButton):
             path = QFileDialog.getOpenFileName(
                 directory=Path().home,
                 caption="Select Torrent File",
-                filter="*.torrent"
+                filter="*.torrent",
             )
         self.widget.table.clear()
         self.widget.line.setText(path)
@@ -175,8 +189,17 @@ class Table(QTableWidget):
     def flatten_data(self, data):
         """Flatten the meta dictionary found in the selected .torrent file."""
         for k, v in data.items():
-            if k in ["source", "private", "announce", "name", "piece length",
-                     "comment", "creation date", "created by", "announce list"]:
+            if k in [
+                "source",
+                "private",
+                "announce",
+                "name",
+                "piece length",
+                "comment",
+                "creation date",
+                "created by",
+                "announce list",
+            ]:
                 self.info[k] = v
             elif k == "info":
                 self.flatten_data(v)
