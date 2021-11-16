@@ -32,8 +32,6 @@ from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 def test_missing_files_check(hasher, struct):
     """Test missing files checker proceduire."""
     contents = build(struct)
-    print("NEW FUNCTION \n\n\n\n\n\n\n\n\n\n\n\n")
-    print(struct, hasher)
     metafile = mktorrent(contents, hasher)
     checktab = Temp.window.central.checkWidget
     Temp.window.central.setCurrentWidget(checktab)

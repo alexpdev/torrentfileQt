@@ -167,11 +167,8 @@ def torrentfile_create(args, obj):
         args ([`dict`]): keyword arguements for the torrent creator.
         obj ([`torrentfile.MetaBase`]): The procedure class for creating file.
     """
-    try:
-        tfile = obj(**args)
-        tfile.write()
-    except PermissionError:  # pragma: no cover
-        print("No Permission to access file.")
+    tfile = obj(**args)
+    tfile.write()
 
 
 def create_torrent(args):

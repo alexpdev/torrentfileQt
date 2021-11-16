@@ -27,7 +27,6 @@ from pathlib import Path
 from torrentfileQt.version import _version
 
 distpath =  Path(__file__).resolve().parent / "dist"
-print(distpath)
 for item in distpath.iterdir():
     if item.name == "torrentfileQt.exe":
         os.rename(item, distpath / f"torrentfileQt-v{_version}.exe")

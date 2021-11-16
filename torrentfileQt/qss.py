@@ -69,6 +69,88 @@ treeSheet = """
     }
     """
 
+treeViewSheet = """
+    QTreeView {
+        border: 1px solid #1a1a6a;
+        background-color: #5a5a5a;
+        font: 8pt;
+        color: #eeeeee;
+    }
+    QTreeView::item::selected {
+        color: #FFFFFF;
+        font-size: 9pt;
+    }
+    QTreeView::item::hover {
+        font-size: 9pt;
+        color: #CFF8DC;
+    }
+    QTreeView::indicator::checked {
+        background-color: #ffffff;
+        border: 1px solid #536D79;
+    }
+    QTreeView::indicator::unchecked {
+        background-color: #ffffff;
+        border: 1px solid #536D79;
+    }
+    QTreeView QHeaderView::section {
+        background-color: black;
+        color: white;
+    }
+    QTreeView QHeaderView::section {
+        border: 1px solid #e57e22;
+        background-color: black;
+        color: white;
+    }
+    QTreeView QProgressBar {
+        background-color: #7a7a7a;
+        border: 1px solid black;
+        border-radius: 3px;
+        margin-left: 2px;
+        margin-right: 2px;
+        text-align: center;
+    }
+    QTreeView QProgressBar::chunk {
+        background-color: #3ae1de;
+        margin-left: .5px;
+        margin-right: .5px;
+        margin-top: 1px;
+        margin-bottom: 1px;
+        border-radius: 3px;
+        width: 16px;
+    }
+    """
+
+
+tableSheet = """
+    QTableWidget {
+        background-color: #5a5a5a;
+        color: #ddd;
+        border-color: #e57e22;
+        border-width: 2px;
+        border-style: ridge;
+        font-size: 12pt;
+        selection-background-color: #3a3a3a;
+        selection-color: #FFF;
+        gridline-color: #ac4a02;
+    }
+    QTableWidget QTableCornerButton::section{
+        background-color: black;
+        border: 2px brown solid;
+    }
+    QTableWidget QHeaderView {
+        border: 1px solid #e57e22;
+        font-size: 12pt;
+        background-color: black;
+        color: white;
+    }
+    QTableWidget QHeaderView::section {
+        border: 1px solid #e57e22;
+        background-color: black;
+        color: white;
+    }
+"""
+
+
 menuSheet = """
     QMenu{
         background-color:#000000;
@@ -142,7 +224,7 @@ dialogSheet = """
 
 statusBarSheet = """
     QStatusBar {
-        color:#027f7f;
+        color:#a11;
     }
     """
 
@@ -249,28 +331,25 @@ toolButtonSheet = """
         border-right-color: transparent;
         border-top-color: transparent;
         border-bottom-color: #e67e22;
-        border-bottom-width: 3px;
-        padding: 2px;
-        padding-top: 3px;
-        padding-bottom: 3px;
-        padding-left: 5px;
-        padding-right: 5px;
+        border-width: 2px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 3px;
+        padding-right: 3px;
         margin-top: 1px;
         margin-bottom: 1px;
-        border-style: solid;
         color: #a9b7c6;
         background-color: #444;
     }
     QToolButton:hover{
-        border-style: solid;
         border-top-color: transparent;
         border-right-color: #e67e22;
         border-left-color: #e67e22;
         border-bottom-color: #e67e22;
-        border-width: 2px;
-        border-style: solid;
+        border-width: 3px;
+        border-style: inset;
         color: #FFFFFF;
-        padding-bottom: 1px;
+        padding-bottom: 3px;
         background-color: #000000;
     }
     """
@@ -286,12 +365,7 @@ checkBoxSheet = """
         padding: 6px;
     }
     QCheckBox:hover {
-        border-radius: 4px;
-        border-style: #611 solid;
-        padding: 4px;
-        border-width: 2px;
-        border-color: rgb(0, 0, 0);
-        background-color:#dddddd;
+        color: #00a;
     }
     QCheckBox::indicator:checked {
         height: 13px;
@@ -326,30 +400,28 @@ tabSheet = """
 tabBarSheet = """
     QTabBar::tab {
         border-style: outset;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: #e67e22;
-        border-width: 2px;
+        border-color: #951;
+        border-width: 3px;
         font-size: 11pt;
         color: #e9e7e6;
         padding-left: 8px;
         padding-right: 8px;
         margin-right: 2px;
+        padding-bottom: 2px;
         background-color: #444;
     }
-    QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
-        border-top-color: transparent;
-        border-right-color: #e67e22;
-        border-left-color: #e67e22;
-        border-bottom-color: #e67e22;
+    QTabBar::tab:hover {
+        color: #ffffff;
+    }
+    QTabBar::tab:selected, QTabBar::tab:last:selected {
+        border-color: #e76500;
         font-style: bold;
-        border-width: 3px;
+        border-width: 2px;
         border-style: inset;
-        color: #FFF;
+        color: #ffffff;
         padding-left: 8px;
         padding-right: 8px;
-        padding-bottom: 3px;
+        padding-bottom: 0px;
         margin-right: 2px;
         background-color: #333;
     }"""
@@ -490,6 +562,10 @@ textEditSheet = """
 
 labelSheet = """
     QLabel {
+        font-size: 12pt;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        font-weight: bold;
         color: #191716;
     }
 """

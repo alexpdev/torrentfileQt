@@ -135,7 +135,6 @@ class ReCheckButton(QPushButton):
             try:
                 tree.reChecking.emit(metafile, content)
             except Exception as exp:
-                print(exp)
                 raise Exception(exp) from exp
 
 
@@ -407,7 +406,6 @@ class TreeWidget(QTreeWidget):
         try:
             phashes.iter_hashes()
         except Exception as exp:
-            print(phashes.pathlist)
             raise Exception from exp
 
     def assignRoot(self, root):
