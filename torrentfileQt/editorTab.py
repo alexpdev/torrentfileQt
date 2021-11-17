@@ -173,8 +173,17 @@ class Table(QTableWidget):
     def flatten_data(self, data):
         """Flatten the meta dictionary found in the selected .torrent file."""
         for k, v in data.items():
-            if k in ["source", "private", "announce", "name", "piece length",
-                     "comment", "creation date", "created by", "announce list"]:
+            if k in [
+                "source",
+                "private",
+                "announce",
+                "name",
+                "piece length",
+                "comment",
+                "creation date",
+                "created by",
+                "announce list",
+            ]:
                 self.info[k] = v
             elif k == "info":
                 self.flatten_data(v)

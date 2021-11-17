@@ -66,6 +66,6 @@ def test_editor_torrent_saving(struct, hasher, size):
     Temp.app.processEvents()
     editor.button.click()
     meta = pyben.load(torrent)
-    assert meta["announce"] == "other"   # nosec
+    assert meta["announce"] == "other"  # nosec
     rmpath(path)
     rmpath(torrent)
