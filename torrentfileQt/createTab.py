@@ -176,7 +176,7 @@ class CreateWidget(QWidget):
         self.browse_file_button.setObjectName("createWidget_browsefile_button")
 
 
-def torrentfile_create(args, obj):
+def torrentfile_create(args, obj):  # pragma: no cover
     """
     Create new .torrent file in a seperate thread.
 
@@ -249,7 +249,7 @@ class SubmitButton(QPushButton):
             piece_length = self.widget.piece_length.itemData(piece_length_index)
             args.extend(["--piece-length", str(piece_length)])
 
-        if self.widget.hybridbutton.isChecked():
+        if self.widget.hybridbutton.isChecked():  # pragma: no cover
             args.extend(["--meta-version", "3"])
         elif self.widget.v2button.isChecked():
             args.extend(["--meta-version", "2"])
@@ -276,11 +276,11 @@ class OutButton(QToolButton):
     def output(self, outpath=None):
         """Assign output path for created torrent file."""
         caption = "Select Output Directory"
-        if not outpath:
+        if not outpath:  # pragma: no cover
             outpath = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if not outpath:
+        if not outpath:  # pragma: no cover
             return
         self.window.output_input.clear()
         self.parent().output_input.insert(outpath)
@@ -325,7 +325,7 @@ class BrowseFileButton(QPushButton):
         _, size, piece_length = path_stat(path)
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
-        else:
+        else:  # pragma: no cover
             val = f"{piece_length//(2**20)}MB"
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
@@ -378,7 +378,7 @@ class BrowseDirButton(QPushButton):
             return None
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
-        else:
+        else:  # pragma: no cover
             val = f"{piece_length//(2**20)}MB"
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:

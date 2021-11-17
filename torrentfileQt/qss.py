@@ -158,11 +158,11 @@ menuSheet = """
         padding-bottom: 2px;
     }
     QMenuBar {
-        font-size: 11pt;
+        font-size: 10pt;
         background:rgb(30, 30, 30);
         color: #FFFFFF;
         margin-bottom: 1px;
-        padding-bottom: 2px;
+        padding: 3px;
     }
     QMenuBar::item {
         spacing: 3px;
@@ -201,6 +201,7 @@ menuSheet = """
     }
     QMenu::item {
         border-style: solid;
+        font-size: 10px;
         border-top-color: transparent;
         border-right-color: transparent;
         border-left-color: transparent;
@@ -298,26 +299,27 @@ pushButtonSheet = """
 push2ButtonSheet = """
     QPushButton {
         border-style: outset;
-        border-top-color: #e67e22;
-        border-right-color: #e67e22;
-        border-left-color: #e67e22;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
         border-bottom-color: #e67e22;
         border-bottom-width: 1px;
         border-style: solid;
         color: #FEFEFE;
-        padding: 2px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin: 2px;
         background-color: #444;
     }
     QPushButton:hover{
         border-style: outset;
         border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
+        border-right-color: #d65e22;
+        border-left-color: #d65e22;
         border-bottom-color: #e67e22;
-        border-bottom-width: 2px;
+        border-width: 2px;
         border-style: solid;
         color: #FFFFFF;
-        padding-bottom: 1px;
         background-color: #000000;
     }
     """
@@ -358,7 +360,8 @@ toolButtonSheet = """
 checkBoxSheet = """
     QCheckBox {
         color: #000;
-        padding: 6px;
+        padding: 4px;
+        font-size: 15px;
     }
     QCheckBox:disabled {
         color: #808086;
@@ -458,7 +461,7 @@ radioButtonSheet = """
 lineEditSheet = """
     QLineEdit {
         border-color: #1a1a1a;
-        font-size: 10pt;
+        font-size: 12pt;
         border-width: 1px;
         border-radius: 4px;
         border-style: inset;
@@ -517,7 +520,7 @@ comboBoxSheet = """
     QComboBox {
         color: #FFF;
         background: #3a3a3a;
-        font-size: 10pt;
+        font-size: 12pt;
     }
     QComboBox:editable {
         background: #1e1d23;
