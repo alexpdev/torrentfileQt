@@ -134,7 +134,7 @@ class ReCheckButton(QPushButton):
             logging.debug("Registering Callback, setting root")
             try:
                 tree.reChecking.emit(metafile, content)
-            except Exception as exp:
+            except Exception as exp:  # pragma: no cover
                 raise Exception(exp) from exp
 
 
@@ -405,7 +405,7 @@ class TreeWidget(QTreeWidget):
         phashes.addTreeWidgets()
         try:
             phashes.iter_hashes()
-        except Exception as exp:
+        except Exception as exp:  # pragma: no cover
             raise Exception from exp
 
     def assignRoot(self, root):
@@ -436,11 +436,11 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon("./assets/video.png")
+                    fileicon = QIcon("./assets/video.png")  # pragma: no cover
                 elif path.suffix in [".rar", ".zip", ".gz", ".7z"] or re.match(
                     r"\.r\d+$", path.suffix
                 ):
-                    fileicon = QIcon("./assets/archive.png")
+                    fileicon = QIcon("./assets/archive.png")  # pragma: no cover
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)

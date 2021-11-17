@@ -259,11 +259,11 @@ class OutButton(QToolButton):
     def output(self, outpath=None):
         """Assign output path for created torrent file."""
         caption = "Select Output Directory"
-        if not outpath:
+        if not outpath:  # pragma: no cover
             outpath = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if not outpath:
+        if not outpath:  # pragma: no cover
             return
         self.window.output_input.clear()
         self.parent().output_input.insert(outpath)

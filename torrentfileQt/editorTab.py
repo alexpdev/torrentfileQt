@@ -117,7 +117,7 @@ class FileButton(QToolButton):
             path = QFileDialog.getOpenFileName(
                 directory=str(Path().home),
                 caption="Select Torrent File",
-                filter="*.torrent"
+                filter="*.torrent",
             )[0]
         self.widget.table.clear()
         self.widget.line.setText(path)
@@ -153,7 +153,7 @@ class Table(QTableWidget):
 
     def export_data(self, path):
         """Slot for the handleTorrent signal."""
-        if not os.path.exists(path):
+        if not os.path.exists(path):  # pragma: no cover
             return
         self.original = pyben.load(path)
         self.flatten_data(self.original)

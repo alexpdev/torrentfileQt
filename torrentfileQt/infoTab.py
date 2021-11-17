@@ -248,7 +248,7 @@ class SelectButton(QPushButton):
                 keywords[kw] = ""
         if "announce list" in info:
             keywords["announce"] = info["announce list"] + [meta["announce"]]
-        else:
+        else:  # pragma: no cover
             keywords["announce"] = [meta["announce"]]
         size = 0
         if "files" in info:

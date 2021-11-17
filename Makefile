@@ -122,4 +122,4 @@ build:  clean install
 		--add-data "./assets/*;./assets/"
 	cp -rfv ../runner/dist/* ./dist/
 	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
-	python fixes.py
+	@python -c "$$FIXES"

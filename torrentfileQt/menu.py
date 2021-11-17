@@ -85,7 +85,7 @@ class MenuBar(QMenuBar):
         home = str(Path.home())
         if path:
             filename = path
-        else:
+        else:  # pragma: no cover
             filename = QFileDialog.getSaveFileName(
                 caption="Save location:", directory=home
             )
@@ -106,11 +106,11 @@ class MenuBar(QMenuBar):
         self.parent().app.quit()  # pragma: nocover
 
 
-def documentation():
+def documentation():  # pragma: no cover
     """Open webbrowser to TorrentFileQt documentation."""
     webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
 
 
-def repository():
+def repository():  # pragma: no cover
     """Open webbrowser to GitHub Repo."""
     webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
