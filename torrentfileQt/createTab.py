@@ -27,16 +27,33 @@ import shutil
 import subprocess  # nosec
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                             QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                             QPushButton, QRadioButton, QSpacerItem,
-                             QToolButton, QWidget)
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
-                               createLineEditSheet, labelSheet,
-                               push2ButtonSheet, pushButtonSheet,
-                               textEditSheet, toolButtonSheet)
+from torrentfileQt.qss import (
+    checkBoxSheet,
+    comboBoxSheet,
+    createLineEditSheet,
+    labelSheet,
+    push2ButtonSheet,
+    pushButtonSheet,
+    textEditSheet,
+    toolButtonSheet,
+)
 
 
 class CreateWidget(QWidget):
