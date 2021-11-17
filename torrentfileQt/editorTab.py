@@ -115,10 +115,10 @@ class FileButton(QToolButton):
         """Browse method for finding the .torrent file user wishes to edit."""
         if not path:  # pragma: no coverage
             path = QFileDialog.getOpenFileName(
-                directory=Path().home,
+                directory=str(Path().home),
                 caption="Select Torrent File",
                 filter="*.torrent"
-            )
+            )[0]
         self.widget.table.clear()
         self.widget.line.setText(path)
         self.widget.table.handleTorrent.emit(path)
@@ -169,8 +169,6 @@ class Table(QTableWidget):
             item2.setText(str(v))
             self.setItem(counter, 1, item2)
             counter += 1
-        self.resizeRowsToContents()
-        self.resizeColumnsToContents()
 
     def flatten_data(self, data):
         """Flatten the meta dictionary found in the selected .torrent file."""
