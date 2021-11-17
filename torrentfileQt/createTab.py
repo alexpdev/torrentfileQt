@@ -27,16 +27,33 @@ import shutil
 import subprocess  # nosec
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                             QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                             QPushButton, QRadioButton, QSpacerItem,
-                             QToolButton, QWidget)
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (checkBoxSheet, comboBoxSheet,
-                               createLineEditSheet, labelSheet,
-                               push2ButtonSheet, pushButtonSheet,
-                               textEditSheet, toolButtonSheet)
+from torrentfileQt.qss import (
+    checkBoxSheet,
+    comboBoxSheet,
+    createLineEditSheet,
+    labelSheet,
+    push2ButtonSheet,
+    pushButtonSheet,
+    textEditSheet,
+    toolButtonSheet,
+)
 
 
 class CreateWidget(QWidget):
@@ -308,7 +325,7 @@ class BrowseFileButton(QPushButton):
         _, size, piece_length = path_stat(path)
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
-        else:     # pragma: no cover
+        else:  # pragma: no cover
             val = f"{piece_length//(2**20)}MB"
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
@@ -361,7 +378,7 @@ class BrowseDirButton(QPushButton):
             return None
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
-        else:   # pragma: no cover
+        else:  # pragma: no cover
             val = f"{piece_length//(2**20)}MB"
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
