@@ -105,7 +105,7 @@ def test_info_tab_select1(struct, hasher):
     torrent = mktorrent(path, hasher)
     infotab = Temp.window.central.infoWidget
     button = infotab.selectButton
-    button.selectTorrent(files=[torrent])
+    button.selectTorrent(path=torrent)
     assert infotab.nameEdit.text() != ""  # nosec
 
 
@@ -170,7 +170,7 @@ def test_export_menu(struct, hasher):
     torrent = mktorrent(path, hasher)
     infotab = Temp.window.central.infoWidget
     button = infotab.selectButton
-    button.selectTorrent(files=[torrent])
+    button.selectTorrent(path=torrent)
     tpath = os.path.abspath(os.path.join(os.path.dirname(path), "torrent.txt"))
     Temp.window.menubar.export(path=tpath)
     assert os.path.exists(tpath)  # nosec

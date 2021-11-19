@@ -24,14 +24,14 @@ export PRINT_HELP_PYSCRIPT
 define FIXES
 import os
 from pathlib import Path
-from torrentfileQt.version import _version
+from torrentfileQt.version import __version__
 
-distpath =  Path(__file__).resolve().parent / "dist"
+distpath =  Path(os.getcwd()).resolve() / "dist"
 for item in distpath.iterdir():
     if item.name == "torrentfileQt.exe":
-        os.rename(item, distpath / f"torrentfileQt-v{_version}.exe")
+        os.rename(item, distpath / f"torrentfileQt-v{__version__}.exe")
     elif item.name == "torrentfileQt.zip":
-        os.rename(item, distpath / f"torrentfileQt-v{_version}-Winx64.zip")
+        os.rename(item, distpath / f"torrentfileQt-v{__version__}-Winx64.zip")
 endef
 export FIXES
 
@@ -70,7 +70,7 @@ lint: environment ## run linters on codebase
 	prospector tests
 
 test: lint ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests --pylint
+	pytest tests --cov=torrentfileQt --cov=tests --pylint --maxfail=2
 	coverage report
 	coverage xml -o coverage.xml
 
@@ -100,7 +100,7 @@ release: clean test ## release to pypi
 	twine upload dist/*
 
 install: ## install app in eedit mode
-	pip install --upgrade -rrequirements.txt
+	pip install --upgrade -rrequirements.txt --force-reinstall --pre
 	pip install -e .
 
 build:  clean install

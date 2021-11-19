@@ -26,33 +26,15 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QSplitter,
-    QToolButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPlainTextEdit, QProgressBar,
+                             QPushButton, QSplitter, QToolButton, QTreeWidget,
+                             QTreeWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (
-    headerSheet,
-    labelSheet,
-    lineEditSheet,
-    logTextEditSheet,
-    pushButtonSheet,
-    toolButtonSheet,
-    treeSheet,
-)
+from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
+                               logTextEditSheet, pushButtonSheet,
+                               toolButtonSheet, treeSheet)
 
 
 class CheckWidget(QWidget):
@@ -150,10 +132,7 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             CheckerClass.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
-            try:
-                tree.reChecking.emit(metafile, content)
-            except Exception as exp:  # pragma: no cover
-                raise Exception(exp) from exp
+            tree.reChecking.emit(metafile, content)
 
 
 class BrowseTorrents(QToolButton):
@@ -183,13 +162,12 @@ class BrowseTorrents(QToolButton):
             path = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not path:
-            return  # pragma: no cover
-        if isinstance(path, Sequence):
-            path = path[0]
-        path = os.path.normpath(path)
-        self.parent().fileInput.clear()
-        self.parent().fileInput.setText(path)
+        if path:
+            if isinstance(path, Sequence):
+                path = path[0]
+            path = os.path.normpath(path)
+            self.parent().fileInput.clear()
+            self.parent().fileInput.setText(path)
 
 
 class BrowseFolders(QToolButton):
@@ -242,11 +220,10 @@ class BrowseFolders(QToolButton):
                 parent=self,
                 caption=mode["caption"],
             )
-        if not path:
-            return  # pragma: no cover
-        path = os.path.normpath(path)
-        self.parent().searchInput.clear()
-        self.parent().searchInput.setText(path)
+        if path:
+            path = os.path.normpath(path)
+            self.parent().searchInput.clear()
+            self.parent().searchInput.setText(path)
 
 
 class LineEdit(QLineEdit):
@@ -256,9 +233,6 @@ class LineEdit(QLineEdit):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self.setStyleSheet(lineEditSheet)
-        font = self.font()
-        font.setPointSize(11.5)
-        self.setFont(font)
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -272,7 +246,6 @@ class LogTextEdit(QPlainTextEdit):
         font = self.font()
         font.setFamily("Consolas")
         font.setBold(True)
-        font.setPointSize(8)
         self.setFont(font)
         self.setStyleSheet(logTextEditSheet)
 
@@ -376,7 +349,6 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
-    rootSet = pyqtSignal([str])
     addPathChild = pyqtSignal([str, int])
     reChecking = pyqtSignal([str, str])
     addValue = pyqtSignal([str, int])
@@ -402,7 +374,6 @@ class TreeWidget(QTreeWidget):
         self.piece_length = None
         self.item_tree = {"widget": self.item}
         self.addPathChild.connect(self.add_path_child)
-        self.rootSet.connect(self.assignRoot)
         self.reChecking.connect(self.get_hashes)
         self.addValue.connect(self.setItemValue)
         self.addCount.connect(self.setItemCount)
@@ -421,14 +392,7 @@ class TreeWidget(QTreeWidget):
         """Fill tree widget with contents of torrentfile."""
         phashes = PieceHasher(metafile, contents, self)
         phashes.addTreeWidgets()
-        try:
-            phashes.iter_hashes()
-        except Exception as exp:  # pragma: no cover
-            raise Exception from exp
-
-    def assignRoot(self, root):
-        """Assign root dir."""
-        self.root = root  # pragma: no cover
+        phashes.iter_hashes()
 
     def clear(self):
         """Remove any objects from Tree Widget."""
@@ -454,11 +418,11 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon("./assets/video.png")  # pragma: no cover
+                    fileicon = QIcon("./assets/video.png")
                 elif path.suffix in [".rar", ".zip", ".gz", ".7z"] or re.match(
                     r"\.r\d+$", path.suffix
                 ):
-                    fileicon = QIcon("./assets/archive.png")  # pragma: no cover
+                    fileicon = QIcon("./assets/archive.png")
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
@@ -504,11 +468,11 @@ class PieceHasher:
             if self.checker.meta_version == 1:
                 while size > 0:
                     if self.current >= len(self.pathlist):
-                        break
+                        break   # pragma: no cover
                     current = self.pathlist[self.current]
                     relpath = os.path.relpath(current, self.root)
                     widget = self.tree.itemWidgets[relpath]
-                    if widget.left == 0:  # pragma: no cover
+                    if widget.left == 0:
                         self.current += 1
                         continue
                     left, amount = widget.left, None

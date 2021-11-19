@@ -23,26 +23,12 @@ from pathlib import Path
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTableWidget,
-    QTableWidgetItem,
-    QToolButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
+                             QPushButton, QTableWidget, QTableWidgetItem,
+                             QToolButton, QVBoxLayout, QWidget)
 
-from torrentfileQt.qss import (
-    labelSheet,
-    lineEditSheet,
-    pushButtonSheet,
-    tableSheet,
-    toolButtonSheet,
-)
+from torrentfileQt.qss import (labelSheet, lineEditSheet, pushButtonSheet,
+                               tableSheet, toolButtonSheet)
 
 
 class EditorWidget(QWidget):

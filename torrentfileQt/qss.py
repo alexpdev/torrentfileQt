@@ -558,7 +558,7 @@ textEditSheet = """
         background-color: #646464;
         border: #1a1a1a 2px solid;
         color: #fff;
-        font: 10pt;
+        font-size: 12pt;
         border-radius: 4px;
     }
 """

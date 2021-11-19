@@ -69,6 +69,11 @@ class Temp:
     testdir = os.path.dirname(os.path.abspath(__file__))
     root = os.path.join(testdir, "TESTINGDIR")
 
+    @staticmethod
+    def stamp():
+        """Return timestamp as string."""
+        return str(datetime.timestamp(datetime.now()))
+
     hashers = [TorrentFile, TorrentFileV2, TorrentFileHybrid]
     seq = string.printable + string.hexdigits + string.whitespace
 
@@ -88,7 +93,7 @@ def fillfile(filepath, size=21):
 
 def build(paths, size=21):
     """Build temporary paths provided."""
-    stamp = str(datetime.timestamp(datetime.now()))
+    stamp = Temp.stamp()
     funcname = inspect.stack()[1].function
     base = os.path.join(Temp.root, stamp + funcname)
     os.mkdir(base)
