@@ -38,7 +38,7 @@ def test_create_with_hasher1(size, struct):
     creator.v1button.setChecked(True)
     creator.piece_length.setCurrentIndex(2)
     creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")   # nosec
+    assert os.path.exists(path + ".torrent")  # nosec
     rmpath([path, path + ".torrent"])
 
 
@@ -56,7 +56,7 @@ def test_create_with_hasher2(size, struct):
     creator.v2button.setChecked(True)
     creator.piece_length.setCurrentIndex(2)
     creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")   # nosec
+    assert os.path.exists(path + ".torrent")  # nosec
     rmpath([path, path + ".torrent"])
 
 
@@ -74,5 +74,5 @@ def test_create_with_hash1(size, struct):
     creator.hybridbutton.setChecked(True)
     creator.piece_length.setCurrentIndex(2)
     creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")      # nosec
+    assert os.path.exists(path + ".torrent")  # nosec
     rmpath([path, path + ".torrent"])

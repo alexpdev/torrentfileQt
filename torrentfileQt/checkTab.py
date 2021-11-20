@@ -26,15 +26,33 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPlainTextEdit, QProgressBar,
-                             QPushButton, QSplitter, QToolButton, QTreeWidget,
-                             QTreeWidgetItem, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
-                               logTextEditSheet, pushButtonSheet,
-                               toolButtonSheet, treeSheet)
+from torrentfileQt.qss import (
+    headerSheet,
+    labelSheet,
+    lineEditSheet,
+    logTextEditSheet,
+    pushButtonSheet,
+    toolButtonSheet,
+    treeSheet,
+)
 
 
 class CheckWidget(QWidget):
@@ -468,7 +486,7 @@ class PieceHasher:
             if self.checker.meta_version == 1:
                 while size > 0:
                     if self.current >= len(self.pathlist):
-                        break   # pragma: no cover
+                        break  # pragma: no cover
                     current = self.pathlist[self.current]
                     relpath = os.path.relpath(current, self.root)
                     widget = self.tree.itemWidgets[relpath]
