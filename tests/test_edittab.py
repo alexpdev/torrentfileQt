@@ -31,7 +31,6 @@ from tests.context import Temp, build, mktorrent, pathstruct, rmpath
 def test_editor_torrent_loading(struct, hasher, size, field):
     """Testing editor widget functionality."""
     editor = Temp.window.central.editorWidget
-    Temp.window.central.setCurrentWidget(editor)
     path = build(struct, size=size)
     editor.window.central.setCurrentWidget(editor)
     torrent = mktorrent(path, hasher=hasher)

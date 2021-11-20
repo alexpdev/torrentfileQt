@@ -228,19 +228,19 @@ class SelectButton(QPushButton):
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-    def selectTorrent(self, files=None):
+    def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
         caption = "Select '.torrent' file"
-        if not files:  # pragma: no cover
-            files = QFileDialog.getOpenFileName(
+        if not path:  # pragma: no cover
+            path, _ = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not files:  # pragma: no cover
+        if not path:  # pragma: no cover
             return
-        meta = pyben.load(files[0])
+        meta = pyben.load(path)
         info = meta["info"]
         keywords = {}
-        keywords["path"] = files[0]
+        keywords["path"] = path
         keywords["piece_length"] = info["piece length"]
         if "meta version" not in info:
             keywords["meta version"] = 1

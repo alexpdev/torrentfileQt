@@ -249,7 +249,7 @@ class SubmitButton(QPushButton):
             piece_length = self.widget.piece_length.itemData(piece_length_index)
             args.extend(["--piece-length", str(piece_length)])
 
-        if self.widget.hybridbutton.isChecked():  # pragma: no cover
+        if self.widget.hybridbutton.isChecked():
             args.extend(["--meta-version", "3"])
         elif self.widget.v2button.isChecked():
             args.extend(["--meta-version", "2"])
@@ -280,11 +280,10 @@ class OutButton(QToolButton):
             outpath = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if not outpath:  # pragma: no cover
-            return
-        self.window.output_input.clear()
-        self.parent().output_input.insert(outpath)
-        self.parent().outpath = outpath
+        if outpath:
+            self.window.output_input.clear()
+            self.parent().output_input.insert(outpath)
+            self.parent().outpath = outpath
 
 
 class BrowseFileButton(QPushButton):
@@ -325,8 +324,8 @@ class BrowseFileButton(QPushButton):
         _, size, piece_length = path_stat(path)
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
-        else:  # pragma: no cover
-            val = f"{piece_length//(2**20)}MB"
+        else:
+            val = f"{piece_length//(2**20)}MB"  # pragma: no cover
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
                 self.window.piece_length.setCurrentIndex(i)
@@ -359,32 +358,31 @@ class BrowseDirButton(QPushButton):
             filename = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if not filename:  # pragma: no cover
-            return None
-        filename = os.path.realpath(filename)
-        self.window.path_input.clear()
-        self.window.path_input.insert(filename)
-        self.window.output_input.clear()
-        outdir = os.path.dirname(str(filename))
-        outfile = (
-            os.path.splitext(os.path.split(str(filename))[-1])[0] + ".torrent"
-        )
-        outpath = os.path.realpath(os.path.join(outdir, outfile))
-        self.window.output_input.insert(outpath)
-        try:
-
-            _, size, piece_length = path_stat(filename)
-        except PermissionError:  # pragma: no cover
-            return None
-        if piece_length < (2 ** 20):
-            val = f"{piece_length//(2**10)}KB"
-        else:  # pragma: no cover
-            val = f"{piece_length//(2**20)}MB"
-        for i in range(self.window.piece_length.count()):
-            if self.window.piece_length.itemText(i) == val:
-                self.window.piece_length.setCurrentIndex(i)
-                break
-        return size
+        if filename:
+            filename = os.path.realpath(filename)
+            self.window.path_input.clear()
+            self.window.path_input.insert(filename)
+            self.window.output_input.clear()
+            outdir = os.path.dirname(str(filename))
+            outfile = (
+                os.path.splitext(os.path.split(str(filename))[-1])[0]
+                + ".torrent"
+            )
+            outpath = os.path.realpath(os.path.join(outdir, outfile))
+            self.window.output_input.insert(outpath)
+            try:
+                _, _, piece_length = path_stat(filename)
+            except PermissionError:  # pragma: no cover
+                return
+            if piece_length < (2 ** 20):
+                val = f"{piece_length//(2**10)}KB"
+            else:  # pragma: no cover
+                val = f"{piece_length//(2**20)}MB"
+            for i in range(self.window.piece_length.count()):
+                if self.window.piece_length.itemText(i) == val:
+                    self.window.piece_length.setCurrentIndex(i)
+                    break
+        return
 
 
 class ComboBox(QComboBox):
