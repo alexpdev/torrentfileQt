@@ -148,10 +148,11 @@ def test_checktab_tree():
     assert item.counted == 1000000  # nosec
 
 
-@pytest.mark.parametrize("size", list(range(16, 23)))
+@pytest.mark.parametrize("size", list(range(17, 22)))
 @pytest.mark.parametrize("index", list(range(1, 7)))
-@pytest.mark.parametrize("ext", [".mkv", ".mp4", ".rar", ".zip"])
-def test_singlefile(size, ext, index):
+@pytest.mark.parametrize("version", [1, 2, 3])
+@pytest.mark.parametrize("ext", [".mkv", ".rar"])
+def test_singlefile(size, ext, index, version):
     """Test the singlefile for create and check tabs."""
     createtab = Temp.window.central.createWidget
     checktab = Temp.window.central.checkWidget
@@ -161,9 +162,13 @@ def test_singlefile(size, ext, index):
     createtab.path_input.clear()
     createtab.output_input.clear()
     createtab.browse_file_button.browse(path)
-    # createtab.path_input.setText(path)
     createtab.output_input.setText(path + ".torrent")
     createtab.piece_length.setCurrentIndex(index)
+    btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
+    for i, btn in enumerate(btns):
+        if i + 1 == version:
+            btn.click()
+            break
     createtab.submit_button.click()
     checktab.fileInput.clear()
     checktab.searchInput.clear()

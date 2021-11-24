@@ -35,6 +35,7 @@ def test_editor_torrent_loading(struct, hasher, size, field):
     editor.window.central.setCurrentWidget(editor)
     torrent = mktorrent(path, hasher=hasher)
     editor.fileButton.browse(torrent)
+    Temp.app.processEvents()
     fields = []
     for i in range(editor.table.rowCount()):
         fields.append(editor.table.item(i, 0).text())
@@ -49,7 +50,7 @@ def test_editor_torrent_loading(struct, hasher, size, field):
 def test_editor_torrent_saving(struct, hasher, size):
     """Testing editor widget saving functionality."""
     editor = Temp.window.central.editorWidget
-    Temp.window.central.setCurrentWidget(editor)
+    editor.window.central.setCurrentWidget(editor)
     Temp.app.processEvents()
     path = build(struct, size=size)
     editor.window.central.setCurrentWidget(editor)

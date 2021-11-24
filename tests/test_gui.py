@@ -92,6 +92,8 @@ def test_create_tab_browse(struct):
     """Test Info tab select1."""
     path = build(struct)
     createtab = Temp.window.central.createWidget
+    createtab.window.central.setCurrentWidget(createtab)
+    Temp.app.processEvents()
     button = createtab.browse_file_button
     button.browse(path=path)
     assert createtab.path_input.text() == path  # nosec
@@ -104,6 +106,8 @@ def test_info_tab_select1(struct, hasher):
     path = build(struct)
     torrent = mktorrent(path, hasher)
     infotab = Temp.window.central.infoWidget
+    Temp.app.processEvents()
+    Temp.window.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=torrent)
     assert infotab.nameEdit.text() != ""  # nosec
@@ -116,6 +120,8 @@ def test_create_tab_dir(struct):
     root = path
     createtab = Temp.window.central.createWidget
     button = createtab.browse_dir_button
+    Temp.window.central.setCurrentWidget(createtab)
+    Temp.app.processEvents()
     button.browse(root)
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
@@ -147,6 +153,8 @@ def test_create_tab_fields(struct, field):
     createtab = Temp.window.central.createWidget
     button = createtab.browse_dir_button
     button.browse(root)
+    createtab.window.central.setCurrentWidget(createtab)
+    Temp.app.processEvents()
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
@@ -169,6 +177,8 @@ def test_export_menu(struct, hasher):
     path = build(struct)
     torrent = mktorrent(path, hasher)
     infotab = Temp.window.central.infoWidget
+    infotab.window.central.setCurrentWidget(infotab)
+    Temp.app.processEvents()
     button = infotab.selectButton
     button.selectTorrent(path=torrent)
     tpath = os.path.abspath(os.path.join(os.path.dirname(path), "torrent.txt"))

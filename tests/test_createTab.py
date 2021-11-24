@@ -28,9 +28,10 @@ from tests.context import Temp, build, pathstruct, rmpath
 @pytest.mark.parametrize("struct", pathstruct())
 def test_create_with_hasher1(size, struct):
     """Test the radio buttons on create tab v1 hasher."""
-    creator = Temp.window.central.createWidget
-    Temp.window.central.setCurrentWidget(creator)
     path = build(struct, size=size)
+    creator = Temp.window.central.createWidget
+    creator.window.central.setCurrentWidget(creator)
+    Temp.app.processEvents()
     creator.path_input.clear()
     creator.path_input.setText(path)
     creator.output_input.clear()
@@ -47,8 +48,9 @@ def test_create_with_hasher1(size, struct):
 def test_create_with_hasher2(size, struct):
     """Test the radio buttons on create tab v2 hasher."""
     creator = Temp.window.central.createWidget
-    Temp.window.central.setCurrentWidget(creator)
     path = build(struct, size=size)
+    creator.window.central.setCurrentWidget(creator)
+    Temp.app.processEvents()
     creator.path_input.clear()
     creator.path_input.setText(path)
     creator.output_input.clear()
@@ -65,9 +67,10 @@ def test_create_with_hasher2(size, struct):
 def test_create_with_hash1(size, struct):
     """Test the radio buttons on create tab hybrid hasher."""
     creator = Temp.window.central.createWidget
-    Temp.window.central.setCurrentWidget(creator)
     path = build(struct, size=size)
     creator.path_input.clear()
+    creator.window.central.setCurrentWidget(creator)
+    Temp.app.processEvents()
     creator.path_input.setText(path)
     creator.output_input.clear()
     creator.output_input.setText(path + ".torrent")

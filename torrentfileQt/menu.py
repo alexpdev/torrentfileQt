@@ -26,7 +26,7 @@ import pyben
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar
 
-from .qss import menuSheet
+# from .qss import menuSheet
 
 
 class Menu(QMenu):
@@ -50,7 +50,7 @@ class MenuBar(QMenuBar):
         """Constructor for top level widgets."""
         super().__init__(parent=parent)
         self.window = parent
-        self.setStyleSheet(menuSheet)
+        # self.setStyleSheet(menuSheet)
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)

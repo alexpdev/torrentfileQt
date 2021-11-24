@@ -26,33 +26,15 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QSplitter,
-    QToolButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPlainTextEdit, QProgressBar,
+                             QPushButton, QSplitter, QToolButton, QTreeWidget,
+                             QTreeWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.progress import CheckerClass
 
-from torrentfileQt.qss import (
-    headerSheet,
-    labelSheet,
-    lineEditSheet,
-    logTextEditSheet,
-    pushButtonSheet,
-    toolButtonSheet,
-    treeSheet,
-)
+# from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
+#                                logTextEditSheet, pushButtonSheet,
+#                                toolButtonSheet, treeSheet)
 
 
 class CheckWidget(QWidget):
@@ -135,7 +117,7 @@ class ReCheckButton(QPushButton):
         self.window = parent.window
         self.pressed.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setStyleSheet(pushButtonSheet)
+        # self.setStyleSheet(pushButtonSheet)
 
     def submit(self):
         """Submit data to piece hasher."""
@@ -165,7 +147,7 @@ class BrowseTorrents(QToolButton):
         super().__init__(parent=parent)
         self.setText("...")
         self.window = parent
-        self.setStyleSheet(toolButtonSheet)
+        # self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
@@ -212,7 +194,7 @@ class BrowseFolders(QToolButton):
         """Construct a BrowseFolders Button Widget."""
         super().__init__(parent=parent)
         self.window = parent
-        self.setStyleSheet(toolButtonSheet)
+        # self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mode = None
         self.pressed.connect(self.browse)
@@ -250,7 +232,7 @@ class LineEdit(QLineEdit):
     def __init__(self, parent=None):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
-        self.setStyleSheet(lineEditSheet)
+        # self.setStyleSheet(lineEditSheet)
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -265,7 +247,7 @@ class LogTextEdit(QPlainTextEdit):
         font.setFamily("Consolas")
         font.setBold(True)
         self.setFont(font)
-        self.setStyleSheet(logTextEditSheet)
+        # self.setStyleSheet(logTextEditSheet)
 
     def clear_data(self):
         """Remove any text."""
@@ -287,7 +269,7 @@ class Label(QLabel):
         """Constructor for Label."""
         super().__init__(text, parent=parent)
         font = self.font()
-        self.setStyleSheet(labelSheet)
+        # self.setStyleSheet(labelSheet)
         font.setBold(True)
         font.setPointSize(12)
         self.setFont(font)
@@ -376,7 +358,7 @@ class TreeWidget(QTreeWidget):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.setStyleSheet(treeSheet + headerSheet)
+        # self.setStyleSheet(treeSheet + headerSheet)
         self.setColumnCount(3)
         self.setIndentation(10)
         self.item = self.invisibleRootItem()

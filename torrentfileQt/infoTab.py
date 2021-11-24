@@ -26,23 +26,11 @@ from pathlib import Path
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                             QPushButton, QTreeWidget, QTreeWidgetItem,
+                             QWidget)
 
-from torrentfileQt.qss import (
-    infoLineEditSheet,
-    labelSheet,
-    pushButtonSheet,
-    treeSheet,
-)
+from torrentfileQt.qss import infoLineEdit
 
 
 class TreeWidget(QTreeWidget):
@@ -57,7 +45,8 @@ class TreeWidget(QTreeWidget):
     def __init__(self, parent=None):
         """Constructor for tree widget."""
         super().__init__(parent=parent)
-        self.window = parent
+        self.window = parent.window
+        self.widget = parent
         self.root = self.invisibleRootItem()
         header = self.header()
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
@@ -65,12 +54,11 @@ class TreeWidget(QTreeWidget):
         self.root.setChildIndicatorPolicy(
             self.root.ChildIndicatorPolicy.ShowIndicator
         )
-        self.setIndentation(10)
+        self.setIndentation(8)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setHeaderHidden(True)
         self.setItemsExpandable(True)
         self.setColumnCount(2)
-        self.setStyleSheet(treeSheet)
         self.itemtree = {"widget": self.root}
         self.itemReady.connect(self.apply_value)
 
@@ -120,6 +108,7 @@ class InfoWidget(QWidget):
     def __init__(self, parent=None):
         """Construct and organize Torrent info tab."""
         super().__init__(parent=parent)
+        self.window = parent.window
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -178,6 +167,32 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.contentsTree, 12, 1, 4, -1)
         self.selectButton = SelectButton("Select Torrent", parent=self)
         self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
+        self.pathLabel.setObjectName("pathLabel")
+        self.pathEdit.setObjectName("pathEdit")
+        self.nameLabel.setObjectName("nameLabel")
+        self.nameEdit.setObjectName("nameEdit")
+        self.sizeLabel.setObjectName("sizeLabel")
+        self.sizeEdit.setObjectName("sizeEdit")
+        self.pieceLengthLabel.setObjectName("pieceLengthLabel")
+        self.pieceLengthEdit.setObjectName("pieceLengthEdit")
+        self.totalPiecesLabel.setObjectName("totalPiecesLabel")
+        self.totalPiecesEdit.setObjectName("totalPiecesEdit")
+        self.trackerLabel.setObjectName("trackerLabel")
+        self.trackerEdit.setObjectName("trackerEdit")
+        self.metaVersionLabel.setObjectName("metaVersionLabel")
+        self.metaVersionEdit.setObjectName("metaVersionEdit")
+        self.privateLabel.setObjectName("privateLabel")
+        self.privateEdit.setObjectName("privateEdit")
+        self.sourceLabel.setObjectName("sourceLabel")
+        self.sourceEdit.setObjectName("sourceEdit")
+        self.commentLabel.setObjectName("commentLabel")
+        self.commentEdit.setObjectName("commentEdit")
+        self.createdByLabel.setObjectName("createdByLabel")
+        self.createdByEdit.setObjectName("createdByEdit")
+        self.dateCreatedLabel.setObjectName("dateCreatedLabel")
+        self.dateCreatedEdit.setObjectName("dateCreatedEdit")
+        self.contentsLabel.setObjectName("contentsLabel")
+        self.contentsTree.setObjectName("contentsTree")
 
     def fill(self, **kws):
         """Fill all child widgets with collected information.
@@ -224,7 +239,7 @@ class SelectButton(QPushButton):
     def __init__(self, text, parent=None):
         """Constructor for select button."""
         super().__init__(text, parent=parent)
-        self.setStyleSheet(pushButtonSheet)
+        # self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -301,8 +316,7 @@ class Label(QLabel):
         super().__init__(text, parent=parent)
         font = self.font()
         font.setBold(True)
-        font.setPointSize(12)
-        self.setStyleSheet(labelSheet)
+        font.setPointSize(11)
         self.setFont(font)
 
 
@@ -313,11 +327,8 @@ class InfoLineEdit(QLineEdit):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self.setReadOnly(True)
-        self.setStyleSheet(infoLineEditSheet)
+        self.setStyleSheet(infoLineEdit)
         self.setDragEnabled(True)
-        font = self.font()
-        font.setBold(True)
-        self.setFont(font)
 
 
 def denom(num):

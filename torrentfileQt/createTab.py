@@ -27,33 +27,13 @@ import shutil
 import subprocess  # nosec
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QFileDialog,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QPushButton,
-    QRadioButton,
-    QSpacerItem,
-    QToolButton,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                             QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+                             QPushButton, QRadioButton, QSpacerItem,
+                             QToolButton, QWidget)
 from torrentfile.utils import path_stat
 
-from torrentfileQt.qss import (
-    checkBoxSheet,
-    comboBoxSheet,
-    createLineEditSheet,
-    labelSheet,
-    push2ButtonSheet,
-    pushButtonSheet,
-    textEditSheet,
-    toolButtonSheet,
-)
+from torrentfileQt.qss import pushButtonEdit
 
 
 class CreateWidget(QWidget):
@@ -71,17 +51,9 @@ class CreateWidget(QWidget):
             parent ([`QWidget`], optional): Parent Widget. Defaults to None.
         """
         super().__init__(parent=parent)
-        self._setup_Ui()
         self.content_dir = None
         self.outpath = None
-
-    @property
-    def window(self):
-        """Window attribute as a property."""
-        return self.parent().window
-
-    def _setup_Ui(self):
-        """Setup display widgits for window layout."""
+        self.window = parent.window
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -143,12 +115,12 @@ class CreateWidget(QWidget):
         self.layout.addWidget(self.path_label, 0, 0, 2, 1)
         self.layout.addWidget(self.path_input, 0, 1, 1, 3)
         self.layout.addLayout(self.hlayout1, 1, 1, 1, 3)
-        self.layout.addWidget(self.version_label, 2, 0, 1, 1)
-        self.layout.addLayout(self.hlayout0, 2, 1, 1, 3)
+        self.layout.addWidget(self.version_label, 4, 0, 1, 1)
+        self.layout.addLayout(self.hlayout0, 4, 1, 1, 3)
         self.layout.addWidget(self.piece_length_label, 3, 0, 1, 1)
         self.layout.addLayout(self.hlayout2, 3, 1, 1, 3)
-        self.layout.addWidget(self.output_label, 4, 0, 1, 1)
-        self.layout.addLayout(self.hlayout3, 4, 1, 1, 3)
+        self.layout.addWidget(self.output_label, 2, 0, 1, 1)
+        self.layout.addLayout(self.hlayout3, 2, 1, 1, 3)
         self.layout.addWidget(self.source_label, 5, 0, 1, 1)
         self.layout.addWidget(self.source_input, 5, 1, 1, 3)
         self.layout.addWidget(self.comment_label, 6, 0, 1, 1)
@@ -211,7 +183,6 @@ class SubmitButton(QPushButton):
         self.window = parent.window
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText(text)
-        self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.submit)
 
     def submit(self):
@@ -270,7 +241,6 @@ class OutButton(QToolButton):
         self.window = parent
         self.setText("...")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setStyleSheet(toolButtonSheet)
         self.pressed.connect(self.output)
 
     def output(self, outpath=None):
@@ -294,7 +264,7 @@ class BrowseFileButton(QPushButton):
         super().__init__(parent=parent)
         self.setText("Select File")
         self.window = parent
-        self.setStyleSheet(push2ButtonSheet)
+        self.setStyleSheet(pushButtonEdit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
@@ -341,7 +311,7 @@ class BrowseDirButton(QPushButton):
         super().__init__(parent=parent)
         self.setText("Select Folder")
         self.window = parent
-        self.setStyleSheet(push2ButtonSheet)
+        self.setStyleSheet(pushButtonEdit)
         self.pressed.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -391,7 +361,7 @@ class ComboBox(QComboBox):
     def __init__(self, parent=None):
         """Constructor for ComboBox."""
         super().__init__(parent=parent)
-        self.setStyleSheet(comboBoxSheet)
+        # self.setStyleSheet(comboBoxSheet)
         self.addItem("")
         for exp in range(14, 24):
             if exp < 20:
@@ -408,7 +378,7 @@ class CheckBox(QCheckBox):
     def __init__(self, label, parent=None):
         """Constructor for check box widgit."""
         super().__init__(label, parent=parent)
-        self.setStyleSheet(checkBoxSheet)
+        # self.setStyleSheet(checkBoxSheet)
 
 
 class PlainTextEdit(QPlainTextEdit):
@@ -418,7 +388,7 @@ class PlainTextEdit(QPlainTextEdit):
         """Constructor for plain text edit."""
         super().__init__(parent=parent)
         self.setBackgroundVisible(True)
-        self.setStyleSheet(textEditSheet)
+        # self.setStyleSheet(textEditSheet)
 
 
 class Label(QLabel):
@@ -430,7 +400,7 @@ class Label(QLabel):
     def __init__(self, text, parent=None):
         """Constructor for label widgit."""
         super().__init__(text, parent=parent)
-        self.setStyleSheet(labelSheet)
+        # self.setStyleSheet(labelSheet)
         font = self.font()
         font.setBold(True)
         font.setPointSize(12)
@@ -444,7 +414,7 @@ class LineEdit(QLineEdit):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.setStyleSheet(createLineEditSheet)
+        # self.setStyleSheet(createLineEditSheet)
         font = self.font()
         font.setPointSize(11)
         self.setFont(font)
