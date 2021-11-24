@@ -50,7 +50,6 @@ class MenuBar(QMenuBar):
         """Constructor for top level widgets."""
         super().__init__(parent=parent)
         self.window = parent
-        # self.setStyleSheet(menuSheet)
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)

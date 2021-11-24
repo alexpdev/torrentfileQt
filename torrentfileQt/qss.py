@@ -485,6 +485,7 @@ stylesheet = (
     }
     QLabel {
         padding: 2px;
+        font-size: 11pt;
         font-weight: bold;
     }
     """

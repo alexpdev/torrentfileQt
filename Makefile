@@ -47,6 +47,10 @@ upgrade: clean  ## upgrade all dependencies
 	python -m pip install --upgrade pip
 	pip install --upgrade --pre -rrequirements.txt
 
+upgradeunix: clean  ## upgrade all dependencies
+	python3 -m pip install --upgrade pip
+	pip3 install --upgrade --pre -rrequirements.txt
+
 environment:
 	.\env\Scripts\activate.bat
 
@@ -74,13 +78,13 @@ test: lint ## run tests quickly with the default Python
 	coverage report
 	coverage xml -o coverage.xml
 
-push: clean test ## push changes to remote
+altpush: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push
 	bash codacy.sh report -r coverage.xml
 
-altpush: clean test ## push changes to remote
+push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push -u origin dev
@@ -99,9 +103,17 @@ release: clean test ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
+releaseunix: clean test ## release to pypi
+	python setup.py sdist bdist_wheel bdist_egg
+	twine upload dist/*
+
 install: ## install app in eedit mode
 	pip install --upgrade -rrequirements.txt --force-reinstall --pre
 	pip install -e .
+
+installunix: ## install app in eedit mode
+	pip3 install --upgrade -rrequirements.txt --force-reinstall --pre
+	pip3 install -e .
 
 build:  clean install
 	python setup.py sdist bdist_wheel bdist_egg
@@ -123,3 +135,25 @@ build:  clean install
 	cp -rfv ../runner/dist/* ./dist/
 	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
 	@python -c "$$FIXES"
+
+
+buildunix:  clean upgradeunix installunix
+	python3 setup.py sdist bdist_wheel bdist_egg
+	rm -rfv ../runner
+	mkdir ../runner
+	touch ../runner/exe
+	cp ./assets/torrentfile.ico ../runner/torrentfile.ico
+	cp -rvf ./assets ../runner/assets
+	@echo "import torrentfileQt" >> ../runner/exe
+	@echo "torrentfileQt.start()" >> ../runner/exe
+	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
+		-F -n torrentfileQt -w -i ../runner/torrentfile.ico \
+		--specpath ../runner/ ../runner/exe --log-level DEBUG \
+		--add-data "./assets;./assets"
+	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
+		-D -n torrentfileQt -w -i ../runner/torrentfile.ico \
+		--specpath ../runner/ ../runner/exe --log-level DEBUG \
+		--add-data "./assets/*;./assets/"
+	cp -rfv ../runner/dist/* ./dist/
+	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
+	@python3 -c "$$FIXES"

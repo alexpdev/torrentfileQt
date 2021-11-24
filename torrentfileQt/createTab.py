@@ -62,22 +62,22 @@ class CreateWidget(QWidget):
         self.hlayout3 = QHBoxLayout()
         self.hlayout0 = QHBoxLayout()
 
-        self.path_label = Label("Path: ", parent=self)
-        self.output_label = Label("Save Path: ", parent=self)
-        self.version_label = Label("Meta Version: ", parent=self)
-        self.comment_label = Label("Comment: ", parent=self)
-        self.announce_label = Label("Trackers: ", parent=self)
-        self.source_label = Label("Source: ", parent=self)
-        self.piece_length_label = Label("Piece Length: ", parent=self)
+        self.path_label = QLabel("Path: ", parent=self)
+        self.output_label = QLabel("Save Path: ", parent=self)
+        self.version_label = QLabel("Meta Version: ", parent=self)
+        self.comment_label = QLabel("Comment: ", parent=self)
+        self.announce_label = QLabel("Trackers: ", parent=self)
+        self.source_label = QLabel("Source: ", parent=self)
+        self.piece_length_label = QLabel("Piece Length: ", parent=self)
 
-        self.path_input = LineEdit(parent=self)
-        self.output_input = LineEdit(parent=self)
-        self.source_input = LineEdit(parent=self)
-        self.comment_input = LineEdit(parent=self)
+        self.path_input = QLineEdit(parent=self)
+        self.output_input = QLineEdit(parent=self)
+        self.source_input = QLineEdit(parent=self)
+        self.comment_input = QLineEdit(parent=self)
 
-        self.announce_input = PlainTextEdit(parent=self)
+        self.announce_input = QPlainTextEdit(parent=self)
         self.piece_length = ComboBox(parent=self)
-        self.private = CheckBox("Private", parent=self)
+        self.private = QCheckBox("Private", parent=self)
         self.submit_button = SubmitButton("Create Torrent", parent=self)
         self.browse_dir_button = BrowseDirButton(parent=self)
         self.browse_file_button = BrowseFileButton(parent=self)
@@ -361,7 +361,6 @@ class ComboBox(QComboBox):
     def __init__(self, parent=None):
         """Constructor for ComboBox."""
         super().__init__(parent=parent)
-        # self.setStyleSheet(comboBoxSheet)
         self.addItem("")
         for exp in range(14, 24):
             if exp < 20:
@@ -370,51 +369,3 @@ class ComboBox(QComboBox):
                 item = str((2 ** exp) // (2 ** 20)) + "MB"
             self.addItem(item, 2 ** exp)
         self.setEditable(False)
-
-
-class CheckBox(QCheckBox):
-    """Checkbox widget."""
-
-    def __init__(self, label, parent=None):
-        """Constructor for check box widgit."""
-        super().__init__(label, parent=parent)
-        # self.setStyleSheet(checkBoxSheet)
-
-
-class PlainTextEdit(QPlainTextEdit):
-    """Text edit widget for trackers."""
-
-    def __init__(self, parent=None):
-        """Constructor for plain text edit."""
-        super().__init__(parent=parent)
-        self.setBackgroundVisible(True)
-        # self.setStyleSheet(textEditSheet)
-
-
-class Label(QLabel):
-    """Label Identifier for Window Widgets.
-
-    Subclass: QLabel
-    """
-
-    def __init__(self, text, parent=None):
-        """Constructor for label widgit."""
-        super().__init__(text, parent=parent)
-        # self.setStyleSheet(labelSheet)
-        font = self.font()
-        font.setBold(True)
-        font.setPointSize(12)
-        self.setFont(font)
-
-
-class LineEdit(QLineEdit):
-    """Line edit widget for input fields."""
-
-    def __init__(self, parent=None):
-        """Constructor for line edit widget."""
-        super().__init__(parent=parent)
-        self.window = parent.window
-        # self.setStyleSheet(createLineEditSheet)
-        font = self.font()
-        font.setPointSize(11)
-        self.setFont(font)

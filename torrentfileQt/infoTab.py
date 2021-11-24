@@ -239,7 +239,6 @@ class SelectButton(QPushButton):
     def __init__(self, text, parent=None):
         """Constructor for select button."""
         super().__init__(text, parent=parent)
-        # self.setStyleSheet(pushButtonSheet)
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 

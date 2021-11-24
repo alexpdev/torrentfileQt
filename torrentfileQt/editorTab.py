@@ -27,9 +27,6 @@ from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QTableWidget, QTableWidgetItem,
                              QToolButton, QVBoxLayout, QWidget)
 
-# from torrentfileQt.qss import (labelSheet, lineEditSheet, pushButtonSheet,
-#                                tableSheet, toolButtonSheet)
-
 
 class EditorWidget(QWidget):
     """Main widget for the torrent editor tab."""
@@ -43,11 +40,10 @@ class EditorWidget(QWidget):
         super().__init__(parent=parent)
         self.window = parent.window
         self.layout = QVBoxLayout()
-        self.line = LineEdit(parent=self)
+        self.line = QLineEdit(parent=self)
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
         self.label = QLabel("Torrent File:", parent=self)
-        # self.label.setStyleSheet(labelSheet)
         self.table = Table(parent=self)
         self.hlayout = QHBoxLayout()
         self.hlayout.addWidget(self.label)
@@ -59,25 +55,12 @@ class EditorWidget(QWidget):
         self.setLayout(self.layout)
 
 
-class LineEdit(QLineEdit):
-    """Line edit class from QLineEdit."""
-
-    def __init__(self, parent=None):
-        """Constructor for the LineEdit on torrent editor tab."""
-        super().__init__(parent=parent)
-        # self.setStyleSheet(lineEditSheet)
-        self.setDisabled(True)
-        self.widget = parent
-        self.window = parent.window
-
-
 class Button(QPushButton):
     """Button Widget for saving results to .torrent file."""
 
     def __init__(self, text, parent=None):
         """Constructor for the save button on torrent editor tab."""
         super().__init__(text, parent=parent)
-        # self.setStyleSheet(pushButtonSheet)
         self.widget = parent
         self.pressed.connect(self.save)
 
@@ -108,7 +91,6 @@ class FileButton(QToolButton):
         self.widget = parent
         self.setText("...")
         self.window = parent.window
-        # self.setStyleSheet(toolButtonSheet)
         self.pressed.connect(self.browse)
 
     def browse(self, path=None):
@@ -132,7 +114,6 @@ class Table(QTableWidget):
     def __init__(self, parent=None):
         """Constructor for the Table Widget on torrent editor tab."""
         super().__init__(parent=parent)
-        # self.setStyleSheet(tableSheet)
         self.info = {}
         self.window = parent.window
         self.original = None
