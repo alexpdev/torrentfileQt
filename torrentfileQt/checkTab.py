@@ -25,7 +25,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon, QTextOption
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
     QFileDialog,
     QFormLayout,
