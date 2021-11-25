@@ -1,7 +1,7 @@
 recursive-include \
-    assets \
-    tests \
-    torrentfileQt \
+  assets \
+  tests \
+  torrentfileQt \
 
 include \
   *.ini \

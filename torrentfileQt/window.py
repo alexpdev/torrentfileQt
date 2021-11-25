@@ -21,22 +21,13 @@
 import sys
 
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QStatusBar,
-    QTabWidget,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
-from torrentfileQt.menu import MenuBar
-
-# from torrentfileQt.qss import (mainWindowSheet, statusBarSheet, tabBarSheet,
-#                                tabSheet)
+from torrentfileQt.menu import MenuBar, StatusBar
 from torrentfileQt.qss import stylesheet
 
 
@@ -59,14 +50,13 @@ class Window(QMainWindow):
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
-        self.statusbar = QStatusBar(parent=self)
-        self.icon = QIcon("./assets/favicon.png")
+        self.statusbar = StatusBar(parent=self)
+        self.icon = QIcon("./assets/torrentfile.png")
         self.setObjectName("Mainwindow")
-        self.setWindowTitle("Torrentfile Tools")
+        self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.setStatusBar(self.statusbar)
-        # self.setStyleSheet(mainWindowSheet + statusBarSheet)
         self.setStyleSheet(stylesheet)
         self.resize(750, 650)
         self._setupUI()
@@ -74,6 +64,7 @@ class Window(QMainWindow):
     def _setupUI(self):
         """Internal function for setting up UI elements."""
         self.central = TabWidget(parent=self)
+        self.central.setContentsMargins(0, 0, 0, 0)
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
@@ -98,7 +89,6 @@ class TabWidget(QTabWidget):
         self.checkWidget = CheckWidget(parent=self)
         self.infoWidget = InfoWidget(parent=self)
         self.editorWidget = EditorWidget(parent=self)
-        # self.setStyleSheet(tabBarSheet + tabSheet)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")

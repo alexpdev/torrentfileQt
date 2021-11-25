@@ -74,13 +74,13 @@ test: lint ## run tests quickly with the default Python
 	coverage report
 	coverage xml -o coverage.xml
 
-push: clean test ## push changes to remote
+altpush: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push
 	bash codacy.sh report -r coverage.xml
 
-altpush: clean test ## push changes to remote
+push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push -u origin dev
@@ -123,3 +123,5 @@ build:  clean install
 	cp -rfv ../runner/dist/* ./dist/
 	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
 	@python -c "$$FIXES"
+
+full: clean environment upgrade test push install release build

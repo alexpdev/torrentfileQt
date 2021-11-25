@@ -18,14 +18,13 @@
 ##############################################################################
 """Module for stylesheets."""
 
-stylesheet = (
-    """
+stylesheet = """
     * {
         background-color: #19232D;
         color: #FFFFFF;
         padding: 0px;
         margin: 0px;
-        border-width: 2px;
+        border-width: 0px;
         border-style: solid;
     }
     QMenu,
@@ -42,9 +41,9 @@ stylesheet = (
     QComboBox QAbstractItemView,
     QProgressBar,
     QScrollBar {
-        border-width: 2px;
+        border-width: 0px;
         border-style: solid;
-        border-radius: 2px;
+        border-radius: 0px;
         padding: 0px;
         margin: 0px;
     }
@@ -68,13 +67,19 @@ stylesheet = (
         border-color: transparent;
         selection-background-color: #2f4f4f;
     }
+    QMainWindow::separator {
+        background: #000;
+        border-width: 0px;
+    }
+    QMainWindow::separator:hover {
+        background: transparent;
+    }
     QWidget {
-        background-color: #39434d
+        background-color: #39434d;
+        border-width: 0px;
     }
     QLineEdit {
-        background: qradialgradient(cx: 0.3, cy: -0.4,
-        fx: 0.3, fy: -0.4,
-        radius: 1.35, stop: 0 #444, stop: 1 #111);
+        border-width: 2px;
         padding: 4px;
         border-radius: 8px;
     }
@@ -187,6 +192,12 @@ stylesheet = (
         subcontrol-position: top;
         subcontrol-origin: margin;
     }
+    QTabWidget::pane {
+        border-top: 2px solid black
+    }
+    QTabWidget::tab-bar {
+        left: 5px;
+    }
     QTabBar::tab {
         border-style: outset;
         border-color: #f51;
@@ -295,12 +306,10 @@ stylesheet = (
     QRadioButton::indicator::checked {
         border: 2px inset #d73;
         border-radius: 5px;
-        background-color: #f00;
+        background-color: #ff5;
         width: 13px;
         height: 13px;
     }
-    """
-    """
     QCheckBox {
         color: #fff;
         padding: 4px;
@@ -328,8 +337,7 @@ stylesheet = (
         border-color: #e67e22;
         color: #a9b7c6;
         background-color: transparent;
-    }"""
-    """
+    }
     QTreeWidget {
         border: 1px solid #1a1a6a;
         background-color: #5a5a5a;
@@ -380,8 +388,6 @@ stylesheet = (
         border-radius: 3px;
         width: 16px;
     }
-    """
-    """
     QTableWidget {
         background-color: #5a5a5a;
         color: #ddd;
@@ -408,72 +414,41 @@ stylesheet = (
         background-color: black;
         color: white;
     }
-    """
-    """
     QMenu{
         background-color:#000000;
-        padding-top: 2px;
-        padding-bottom: 2px;
     }
     QMenuBar {
         font-size: 10pt;
+        border-bottom: 3px groove #115;
         background:rgb(30, 30, 30);
         color: #FFFFFF;
         margin-bottom: 1px;
         padding: 3px;
     }
     QMenuBar::item {
-        spacing: 3px;
-        padding: 1px 4px;
-        padding-left: 6px;
-        padding-right: 6px;
-        padding-top: 3px;
-        padding-bottom: 3px;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        font-size: 10px;
+        padding: 6px;
+        padding-top: 2px;
         background: transparent;
+        border-bottom-width: 1px;
+        border-style: solid;
+        color: #a9b7c6;
     }
     QMenuBar::item:selected {
-        border-style: solid;
+        border-style: ridge;
         border-top-color: transparent;
         border-right-color: transparent;
         border-left-color: transparent;
         border-bottom-color: #e67e22;
         border-bottom-width: 1px;
-        border-style: solid;
         color: #FFFFFF;
-        padding-bottom: 0px;
+        padding-bottom: 3px;
         background-color: #000000;
     }
-    QMenu::item:selected {
-        border-style: solid;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: #e67e22;
-        border-bottom-color: transparent;
-        border-left-width: 2px;
-        color: #FFFFFF;
-        padding-left:15px;
-        padding-top:4px;
-        padding-bottom:4px;
-        padding-right:7px;
-        background-color:#000000;
-    }
-    QMenu::item {
-        border-style: solid;
-        font-size: 10px;
-        border-top-color: transparent;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: transparent;
-        border-bottom-width: 1px;
-        border-style: solid;
-        color: #a9b7c6;
-        padding-left:17px;
-        padding-top:4px;
-        padding-bottom:4px;
-        padding-right:7px;
-        background-color:#000000;
-    }"""
-    """
     QDialog {
         background-color:#000000;
     }
@@ -485,10 +460,13 @@ stylesheet = (
     }
     QLabel {
         padding: 2px;
+        font-size: 11pt;
         font-weight: bold;
     }
+    QStatusBar {
+        border: 2px groove black;
+    }
     """
-)
 
 infoLineEdit = """
     QLineEdit {
@@ -503,7 +481,6 @@ infoLineEdit = """
         border-right-color: transparent;
         border-top-color: transparent;
     }
-
 """
 
 pushButtonEdit = """

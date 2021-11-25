@@ -44,10 +44,6 @@ from PyQt6.QtWidgets import (
 )
 from torrentfile.progress import CheckerClass
 
-# from torrentfileQt.qss import (headerSheet, labelSheet, lineEditSheet,
-#                                logTextEditSheet, pushButtonSheet,
-#                                toolButtonSheet, treeSheet)
-
 
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
@@ -66,14 +62,14 @@ class CheckWidget(QWidget):
         self.hlayout1 = QHBoxLayout()
         self.hlayout2 = QHBoxLayout()
 
-        self.fileLabel = Label("Torrent File", parent=self)
+        self.fileLabel = QLabel("Torrent File", parent=self)
         self.fileLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.fileInput = LineEdit(parent=self)
+        self.fileInput = QLineEdit(parent=self)
         self.browseButton1 = BrowseTorrents(parent=self)
 
-        self.searchLabel = Label("Search Path", parent=self)
+        self.searchLabel = QLabel("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.searchInput = LineEdit(parent=self)
+        self.searchInput = QLineEdit(parent=self)
         self.browseButton2 = BrowseFolders.create(
             parent=self, text="Folder", mode=0
         )
@@ -129,7 +125,6 @@ class ReCheckButton(QPushButton):
         self.window = parent.window
         self.pressed.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        # self.setStyleSheet(pushButtonSheet)
 
     def submit(self):
         """Submit data to piece hasher."""
@@ -159,7 +154,6 @@ class BrowseTorrents(QToolButton):
         super().__init__(parent=parent)
         self.setText("...")
         self.window = parent
-        # self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.browse)
 
@@ -206,7 +200,6 @@ class BrowseFolders(QToolButton):
         """Construct a BrowseFolders Button Widget."""
         super().__init__(parent=parent)
         self.window = parent
-        # self.setStyleSheet(toolButtonSheet)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mode = None
         self.pressed.connect(self.browse)
@@ -238,15 +231,6 @@ class BrowseFolders(QToolButton):
             self.parent().searchInput.setText(path)
 
 
-class LineEdit(QLineEdit):
-    """Line edit widget."""
-
-    def __init__(self, parent=None):
-        """Constructor for line edit widget."""
-        super().__init__(parent=parent)
-        # self.setStyleSheet(lineEditSheet)
-
-
 class LogTextEdit(QPlainTextEdit):
     """Text Edit widget for check tab."""
 
@@ -254,12 +238,12 @@ class LogTextEdit(QPlainTextEdit):
         """Constructor for LogTextEdit."""
         super().__init__(parent=parent)
         self._parent = parent
+        self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         self.setBackgroundVisible(True)
         font = self.font()
         font.setFamily("Consolas")
         font.setBold(True)
         self.setFont(font)
-        # self.setStyleSheet(logTextEditSheet)
 
     def clear_data(self):
         """Remove any text."""
@@ -269,22 +253,8 @@ class LogTextEdit(QPlainTextEdit):
         """Callback function for CheckerClass."""
         self.insertPlainText(msg)
         self.insertPlainText("\n")
-
-
-class Label(QLabel):
-    """Label Identifier for Window Widgets.
-
-    Subclass: QLabel
-    """
-
-    def __init__(self, text, parent=None):
-        """Constructor for Label."""
-        super().__init__(text, parent=parent)
-        font = self.font()
-        # self.setStyleSheet(labelSheet)
-        font.setBold(True)
-        font.setPointSize(12)
-        self.setFont(font)
+        vertscroll = self.verticalScrollBar()
+        vertscroll.triggerAction(vertscroll.SliderAction.SliderToMaximum)
 
 
 class TreePieceItem(QTreeWidgetItem):
@@ -370,7 +340,6 @@ class TreeWidget(QTreeWidget):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        # self.setStyleSheet(treeSheet + headerSheet)
         self.setColumnCount(3)
         self.setIndentation(10)
         self.item = self.invisibleRootItem()
@@ -504,3 +473,4 @@ class PieceHasher:
                     self.tree.addValue.emit(relpath, size)
                 else:
                     self.tree.addCount.emit(relpath, size)
+        self.tree.window.statusbar.emitMessage.emit("Complete")
