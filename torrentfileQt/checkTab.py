@@ -25,7 +25,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QTextOption
 from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPlainTextEdit, QProgressBar,
                              QPushButton, QSplitter, QToolButton, QTreeWidget,
@@ -226,6 +226,7 @@ class LogTextEdit(QPlainTextEdit):
         """Constructor for LogTextEdit."""
         super().__init__(parent=parent)
         self._parent = parent
+        self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         self.setBackgroundVisible(True)
         font = self.font()
         font.setFamily("Consolas")
@@ -240,6 +241,8 @@ class LogTextEdit(QPlainTextEdit):
         """Callback function for CheckerClass."""
         self.insertPlainText(msg)
         self.insertPlainText("\n")
+        vertscroll = self.verticalScrollBar()
+        vertscroll.triggerAction(vertscroll.SliderAction.SliderToMaximum)
 
 
 class TreePieceItem(QTreeWidgetItem):
@@ -325,7 +328,6 @@ class TreeWidget(QTreeWidget):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        # self.setStyleSheet(treeSheet + headerSheet)
         self.setColumnCount(3)
         self.setIndentation(10)
         self.item = self.invisibleRootItem()
@@ -459,3 +461,4 @@ class PieceHasher:
                     self.tree.addValue.emit(relpath, size)
                 else:
                     self.tree.addCount.emit(relpath, size)
+        self.tree.window.statusbar.emitMessage.emit("Complete")
