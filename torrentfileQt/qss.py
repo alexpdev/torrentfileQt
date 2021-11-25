@@ -18,8 +18,7 @@
 ##############################################################################
 """Module for stylesheets."""
 
-stylesheet = (
-    """
+stylesheet = """
     * {
         background-color: #19232D;
         color: #FFFFFF;
@@ -468,7 +467,6 @@ stylesheet = (
         border: 2px groove black;
     }
     """
-)
 
 infoLineEdit = """
     QLineEdit {
