@@ -410,7 +410,6 @@ stylesheet = """
         color: white;
     }
     QTableWidget QHeaderView::section {
-        border: 1px solid #e57e22;
         background-color: black;
         color: white;
     }
@@ -465,6 +464,19 @@ stylesheet = """
     }
     QStatusBar {
         border: 2px groove black;
+    }
+
+    QComboBox {
+        border: 2px solid #f73;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+    QComboBox::down-arrow {
+        image: url("assets/down-arrow.png");
+    }
+    QComboBox QAbstractItemView {
+        border: 1px solid #444;
+        selection-background-color: lightgray;
     }
     """
 

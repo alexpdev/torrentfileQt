@@ -39,11 +39,3 @@ def test_fillfile():
     context.fillfile(temp)
     assert os.path.exists(temp)  # nosec
     context.rmpath(temp)
-
-
-def test_x_teardown():
-    """Test teardown function last."""
-    temp = context.Temp
-    path = temp.root
-    context.teardown()
-    assert not os.path.exists(path)  # nosec

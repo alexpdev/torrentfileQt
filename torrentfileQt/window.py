@@ -27,7 +27,7 @@ from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
-from torrentfileQt.menu import MenuBar, StatusBar
+from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import stylesheet
 
 
@@ -50,13 +50,11 @@ class Window(QMainWindow):
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
-        self.statusbar = StatusBar(parent=self)
         self.icon = QIcon("./assets/torrentfile.png")
         self.setObjectName("Mainwindow")
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
-        self.setStatusBar(self.statusbar)
         self.setStyleSheet(stylesheet)
         self.resize(750, 650)
         self._setupUI()
@@ -68,7 +66,6 @@ class Window(QMainWindow):
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
-        self.statusbar.setObjectName("statusbar")
         self.menubar.setObjectName("menubar")
         self.central.setObjectName("centralTabWidget")
         self.centralLayout.setObjectName("centralLayout")

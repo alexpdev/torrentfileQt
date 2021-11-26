@@ -23,34 +23,8 @@ import webbrowser
 from pathlib import Path
 
 import pyben
-from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar, QStatusBar
-
-
-class StatusBar(QStatusBar):
-    """Main window's status bar."""
-
-    emitMessage = pyqtSignal([str])
-
-    def __init__(self, parent=None):
-        """Construct the status bar for the main window.
-
-        Args:
-            parent (`QMainWindow`): The window possessing the status bar.
-        """
-        super().__init__(parent=parent)
-        self.emitMessage.connect(self.setMessage)
-
-    def setMessage(self, message, timeout=0):
-        """Set the status message in the status bar.
-
-        Args:
-            message (`str`): The message displayed in the status bar.
-            timeout (`int`): Number of milliseconds to display the message.
-        """
-        self.clearMessage()
-        self.showMessage(message, timeout)
+from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar
 
 
 class Menu(QMenu):

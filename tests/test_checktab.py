@@ -175,5 +175,6 @@ def test_singlefile(size, ext, index, version):
     checktab.fileInput.setText(path + ".torrent")
     checktab.searchInput.setText(path)
     checktab.checkButton.click()
-    assert "100%" in checktab.textEdit.toPlainText()  # nosec
+    ptext = checktab.textEdit.toPlainText()
+    assert "100%" in ptext  # nosec
     rmpath([path, path + ".torrent"])
