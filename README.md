@@ -22,7 +22,16 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ## ScreenShots
 
-![checktorrent.png][./assets/checktorrent.png]
-![createtorrent.png][./assets/createtorrent.png]
-![edittorrent.png][./assets/edittorrent.png]
-![torrentinfo.png][./assets/torrentinfo.png]
+![checktorrent.png](./assets/checktorrent.png)
+
+---------;
+
+![createtorrent.png](./assets/createtorrent.png)
+
+---------;
+
+![edittorrent.png](./assets/edittorrent.png)
+
+---------;
+
+![torrentinfo.png](./assets/torrentinfo.png)
