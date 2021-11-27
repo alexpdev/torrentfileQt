@@ -20,18 +20,9 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 - Check progress or percentage complete for .torrent file
 - Edit torrent files.
 
-### Screenshots
+## ScreenShots
 
-![createTab.png](./assets/createTab.png)
-
--------
-
-![checkTab.png](./assets/checkTab.png)
-
--------
-
-![infoTab.png](./assets/infoTab.png)
-
--------
-
-![infoTab.png](./assets/editorTab.png)
+![checktorrent.png][./assets/checktorrent.png]
+![createtorrent.png][./assets/createtorrent.png]
+![edittorrent.png][./assets/edittorrent.png]
+![torrentinfo.png][./assets/torrentinfo.png]
