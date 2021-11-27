@@ -27,21 +27,10 @@ import shutil
 import subprocess  # nosec
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QFileDialog,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QPushButton,
-    QRadioButton,
-    QSpacerItem,
-    QToolButton,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                             QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+                             QPushButton, QRadioButton, QSpacerItem,
+                             QToolButton, QWidget)
 from torrentfile.utils import path_stat
 
 from torrentfileQt.qss import pushButtonEdit
@@ -239,8 +228,7 @@ class SubmitButton(QPushButton):
         path = self.widget.path_input.text()
         args.append(path)
         result = create_torrent(args)
-        if result:
-            self.window.statusBar().showMessage("Success")
+        return result
 
 
 class OutButton(QToolButton):
@@ -249,7 +237,8 @@ class OutButton(QToolButton):
     def __init__(self, parent=None):
         """Constructor for file picker for outfile button."""
         super().__init__(parent=parent)
-        self.window = parent
+        self.window = parent.window
+        self.widget = parent
         self.setText("...")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.output)
@@ -262,7 +251,7 @@ class OutButton(QToolButton):
                 parent=self, caption=caption
             )
         if outpath:
-            self.window.output_input.clear()
+            self.widget.output_input.clear()
             self.parent().output_input.insert(outpath)
             self.parent().outpath = outpath
 

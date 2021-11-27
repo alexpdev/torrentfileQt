@@ -21,7 +21,7 @@ import os
 
 import pyben
 import pytest
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
+from PyQt6.QtWidgets import QApplication, QMainWindow
 
 from tests.context import Temp, build, mktorrent, pathstruct, rmpath
 from torrentfileQt import qss
@@ -69,16 +69,6 @@ def test_qss():
 def test_window_menubar1():
     """Test window Menubar widget."""
     assert Temp.window.menubar is not None  # nosec
-
-
-def test_window_statusbar1():
-    """Test window Statusbar widget."""
-    assert Temp.window.statusbar is not None  # nosec
-
-
-def test_window_statusbar2():
-    """Test window Statusbar widget again."""
-    assert isinstance(Temp.window.statusbar, QStatusBar)  # nosec
 
 
 def test_tab_widget():

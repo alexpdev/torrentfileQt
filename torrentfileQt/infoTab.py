@@ -20,22 +20,16 @@
 
 import math
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 
 import pyben
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                             QPushButton, QTreeWidget, QTreeWidgetItem,
+                             QWidget)
 
 from torrentfileQt.qss import infoLineEdit
 
@@ -77,7 +71,20 @@ class TreeWidget(QTreeWidget):
             if partial not in tree:
                 item = TreeItem(0)
                 if i + 1 == len(partials):
-                    iconpath = "./assets/file.png"
+                    _, suffix = os.path.splitext(partial)
+                    if suffix in [".mp4", ".mkv"]:
+                        iconpath = "./assets/video.png"
+                    elif suffix in [".rar", ".zip", ".7z", "tar"]:
+                        iconpath = "./assets/archive.png"
+                    elif re.match(r"\.r\d+", suffix):
+                        iconpath = "./assets/archive.png"
+                    elif suffix in [".wav", ".mp3", ".flac"]:
+                        iconpath = "./assets/music.png"
+                    elif suffix in [".exe", ".bin", ".dat", ".sfv"]:
+                        iconpath = "./assets/bytes.png"
+
+                    else:
+                        iconpath = "./assets/file.png"
                     item.setLength(length)
                 else:
                     iconpath = "./assets/folder.png"
