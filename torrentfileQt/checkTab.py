@@ -26,11 +26,22 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QToolButton,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
 
@@ -389,12 +400,14 @@ class TreeWidget(QTreeWidget):
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
                     fileicon = QIcon("./assets/video.png")
-                elif path.suffix in [".rar", ".zip", ".7z"] or re.match(r"\.r\d+$", path.suffix):
+                elif path.suffix in [".rar", ".zip", ".7z"] or re.match(
+                    r"\.r\d+$", path.suffix
+                ):
                     fileicon = QIcon("./assets/archive.png")
                 elif path.suffix in [".exe", ".bin", ".deb", ".rpm"]:
                     fileicon = QIcon("./assets/bin.png")
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = ("./assets/music.png")
+                    fileicon = "./assets/music.png"
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
