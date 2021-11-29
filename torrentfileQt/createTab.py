@@ -26,11 +26,11 @@ import os
 import shutil
 import subprocess  # nosec
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                             QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                             QPushButton, QRadioButton, QSpacerItem,
-                             QToolButton, QWidget)
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+                               QPushButton, QRadioButton, QSpacerItem,
+                               QToolButton, QWidget)
 from torrentfile.utils import path_stat
 
 from torrentfileQt.qss import pushButtonEdit
@@ -183,7 +183,7 @@ class SubmitButton(QPushButton):
         self.window = parent.window
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText(text)
-        self.pressed.connect(self.submit)
+        self.clicked.connect(self.submit)
 
     def submit(self):
         """Submit Action performed when user presses Submit Button."""
@@ -241,7 +241,7 @@ class OutButton(QToolButton):
         self.widget = parent
         self.setText("...")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.pressed.connect(self.output)
+        self.clicked.connect(self.output)
 
     def output(self, outpath=None):
         """Assign output path for created torrent file."""
@@ -266,7 +266,7 @@ class BrowseFileButton(QPushButton):
         self.window = parent
         self.setStyleSheet(pushButtonEdit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.pressed.connect(self.browse)
+        self.clicked.connect(self.browse)
 
     def browse(self, path=None):
         """Browse Action performed when user presses button.
@@ -312,7 +312,7 @@ class BrowseDirButton(QPushButton):
         self.setText("Select Folder")
         self.window = parent
         self.setStyleSheet(pushButtonEdit)
-        self.pressed.connect(self.browse)
+        self.clicked.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def browse(self, filename=None):

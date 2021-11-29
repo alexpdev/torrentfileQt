@@ -25,11 +25,11 @@ from datetime import datetime
 from pathlib import Path
 
 import pyben
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
-                             QPushButton, QTreeWidget, QTreeWidgetItem,
-                             QWidget)
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                               QPushButton, QTreeWidget, QTreeWidgetItem,
+                               QWidget)
 
 from torrentfileQt.qss import infoLineEdit
 
@@ -41,7 +41,7 @@ class TreeWidget(QTreeWidget):
         parent (`widget`, default=`None`): The widget containing this widget.
     """
 
-    itemReady = pyqtSignal([str, int])
+    itemReady = Signal([str, int])
 
     def __init__(self, parent=None):
         """Constructor for tree widget."""

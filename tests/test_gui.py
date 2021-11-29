@@ -21,7 +21,7 @@ import os
 
 import pyben
 import pytest
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow
 
 from tests.context import Temp, build, mktorrent, pathstruct, rmpath
 from torrentfileQt import qss

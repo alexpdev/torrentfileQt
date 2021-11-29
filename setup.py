@@ -40,7 +40,7 @@ setup(
     description=INFO["description"],
     long_description=INFO["long_description"],
     packages=find_packages(exclude=["env", "tests"]),
-    install_requires=["torrentfile", "PyQt6", "pyben"],
+    install_requires=["torrentfile", "PySide6", "pyben"],
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     long_description_content_type="text/markdown",
     entry_points={

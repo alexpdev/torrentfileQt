@@ -20,8 +20,9 @@
 
 import sys
 
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
+                               QVBoxLayout)
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
@@ -35,7 +36,7 @@ class Window(QMainWindow):
     """Window MainWindow of GUI extension interface.
 
     Subclass:
-        QMainWindow (QWidget): PyQt6 QMainWindow
+        QMainWindow (QWidget): PySide6 QMainWindow
     """
 
     def __init__(self, parent=None, app=None):

@@ -47,9 +47,6 @@ upgrade: clean  ## upgrade all dependencies
 	python -m pip install --upgrade pip
 	pip install --upgrade --pre -rrequirements.txt
 
-environment:
-	.\env\Scripts\activate.bat
-
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
@@ -63,7 +60,7 @@ clean-build: ## remove build artifacts
 	rm -rf *.egg-info
 	rm -rfv tests/TESTINGDIR
 
-lint: environment ## run linters on codebase
+lint: ## run linters on codebase
 	isort torrentfileQt tests
 	pyroma .
 	prospector torrentfileQt

@@ -24,4 +24,4 @@
     - GUI front end to TorrentFile CLI
     - Unit testing framework
     - Initial code commits
-    - PyQt6 widgets
+    - PySide6 widgets

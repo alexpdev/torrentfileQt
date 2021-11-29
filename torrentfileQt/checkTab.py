@@ -24,12 +24,13 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon, QTextOption
-from PyQt6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPlainTextEdit, QProgressBar,
-                             QPushButton, QSplitter, QToolButton, QTreeWidget,
-                             QTreeWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon, QTextOption
+from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                               QLineEdit, QPlainTextEdit, QProgressBar,
+                               QPushButton, QSplitter, QToolButton,
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
 from torrentfile.progress import CheckerClass
 
 
@@ -111,7 +112,7 @@ class ReCheckButton(QPushButton):
         super().__init__(text, parent=parent)
         self.widget = parent
         self.window = parent.window
-        self.pressed.connect(self.submit)
+        self.clicked.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def submit(self):
@@ -143,7 +144,7 @@ class BrowseTorrents(QToolButton):
         self.setText("...")
         self.window = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.pressed.connect(self.browse)
+        self.clicked.connect(self.browse)
 
     def browse(self, path=None):
         """Browse action performed when user presses button.
@@ -190,7 +191,7 @@ class BrowseFolders(QToolButton):
         self.window = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mode = None
-        self.pressed.connect(self.browse)
+        self.clicked.connect(self.browse)
 
     @classmethod
     def create(cls, parent=None, text=None, mode=None):
@@ -293,7 +294,7 @@ class TreePieceItem(QTreeWidgetItem):
 class ProgressBar(QProgressBar):
     """Progress Bar Widget."""
 
-    valueChanged = pyqtSignal([int])
+    valueChanged = Signal([int])
 
     def __init__(self, parent=None, size=0):
         """Constructor for the progress bar widget."""
@@ -319,10 +320,10 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
-    addPathChild = pyqtSignal([str, int])
-    reChecking = pyqtSignal([str, str])
-    addValue = pyqtSignal([str, int])
-    addCount = pyqtSignal([str, int])
+    addPathChild = Signal([str, int])
+    reChecking = Signal([str, str])
+    addValue = Signal([str, int])
+    addCount = Signal([str, int])
 
     def __init__(self, parent=None):
         """Constructor for Tree Widget."""

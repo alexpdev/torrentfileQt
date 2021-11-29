@@ -23,8 +23,8 @@ import webbrowser
 from pathlib import Path
 
 import pyben
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QFileDialog, QMenu, QMenuBar
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QFileDialog, QMenu, QMenuBar
 
 
 class Menu(QMenu):

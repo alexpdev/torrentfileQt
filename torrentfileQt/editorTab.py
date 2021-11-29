@@ -22,10 +22,10 @@ import os
 from pathlib import Path
 
 import pyben
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                             QPushButton, QTableWidget, QTableWidgetItem,
-                             QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QTableWidget, QTableWidgetItem,
+                               QToolButton, QVBoxLayout, QWidget)
 
 
 class EditorWidget(QWidget):
@@ -62,7 +62,7 @@ class Button(QPushButton):
         """Constructor for the save button on torrent editor tab."""
         super().__init__(text, parent=parent)
         self.widget = parent
-        self.pressed.connect(self.save)
+        self.clicked.connect(self.save)
 
     def save(self):
         """Save method for writing edit results to .torrent file."""
@@ -91,7 +91,7 @@ class FileButton(QToolButton):
         self.widget = parent
         self.setText("...")
         self.window = parent.window
-        self.pressed.connect(self.browse)
+        self.clicked.connect(self.browse)
 
     def browse(self, path=None):
         """Browse method for finding the .torrent file user wishes to edit."""
@@ -109,7 +109,7 @@ class FileButton(QToolButton):
 class Table(QTableWidget):
     """Table widget for displaying editable information from .torrent file."""
 
-    handleTorrent = pyqtSignal([str])
+    handleTorrent = Signal([str])
 
     def __init__(self, parent=None):
         """Constructor for the Table Widget on torrent editor tab."""
