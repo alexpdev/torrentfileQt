@@ -40,11 +40,11 @@ def test_missing_files_check(hasher, struct):
         for item in dir1.iterdir():
             if item.is_file():
                 os.remove(item)
-        checktab.fileInput.setText(metafile)
-        checktab.searchInput.setText(contents)
-        checktab.checkButton.click()
-        assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
-        rmpath([metafile, contents])
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(contents)
+    checktab.checkButton.click()
+    assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
+    rmpath([metafile, contents])
 
 
 @pytest.mark.parametrize("struct", pathstruct())

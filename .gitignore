@@ -12,6 +12,7 @@ temp/
 temp/
 testdir/
 main.py
+tests/TESTINGDIR/
 
 # Distribution / packaging
 .vscode/

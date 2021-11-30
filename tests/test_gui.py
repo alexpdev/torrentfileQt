@@ -23,7 +23,7 @@ import pyben
 import pytest
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from tests.context import Temp, build, mktorrent, pathstruct, rmpath
+from tests.context import Temp, build, fillfile, mktorrent, pathstruct, rmpath
 from torrentfileQt import qss
 from torrentfileQt.infoTab import denom
 from torrentfileQt.window import TabWidget
@@ -100,6 +100,52 @@ def test_info_tab_select1(struct, hasher):
     Temp.window.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=torrent)
+    assert infotab.nameEdit.text() != ""  # nosec
+
+
+@pytest.mark.parametrize("struct", pathstruct())
+@pytest.mark.parametrize("hasher", Temp.hashers)
+def test_info_tab_select2(struct, hasher):
+    """Test Info tab select2."""
+    path = build(struct)
+    kwargs = {
+        "path": path,
+        "announce": "announce1"
+    }
+    torrent = hasher(**kwargs)
+    del torrent.meta["created by"]
+    del torrent.meta["creation date"]
+    del torrent.meta["announce list"]
+    outfile, _ = torrent.write()
+    infotab = Temp.window.central.infoWidget
+    Temp.app.processEvents()
+    Temp.window.central.setCurrentWidget(infotab)
+    button = infotab.selectButton
+    button.selectTorrent(path=outfile)
+    assert infotab.nameEdit.text() != ""  # nosec
+
+
+@pytest.mark.parametrize("ext", ["mp4", ".mkv", ".rar", ".mp3"])
+@pytest.mark.parametrize("size", list(range(15, 22)))
+@pytest.mark.parametrize("hasher", Temp.hashers)
+def test_info_tab_selectsingle(size, hasher, ext):
+    """Test Info tab select2."""
+    path = os.path.join(Temp.root, "file" + Temp.stamp() + ext)
+    fillfile(path, size=size)
+    kwargs = {
+        "path": path,
+        "announce": "announce1"
+    }
+    torrent = hasher(**kwargs)
+    del torrent.meta["created by"]
+    del torrent.meta["creation date"]
+    del torrent.meta["announce list"]
+    outfile, _ = torrent.write()
+    infotab = Temp.window.central.infoWidget
+    Temp.app.processEvents()
+    Temp.window.central.setCurrentWidget(infotab)
+    button = infotab.selectButton
+    button.selectTorrent(path=outfile)
     assert infotab.nameEdit.text() != ""  # nosec
 
 

@@ -394,7 +394,7 @@ class TreeWidget(QTreeWidget):
                 elif path.suffix in [".exe", ".bin", ".deb", ".rpm"]:
                     fileicon = QIcon("./assets/bin.png")
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = ("./assets/music.png")
+                    fileicon = QIcon("./assets/music.png")
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
