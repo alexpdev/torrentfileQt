@@ -75,9 +75,9 @@ class Button(QPushButton):
             value = table.item(row, 1).text()
             if label in ["piece length", "private", "creation date"]:
                 value = int(value)
-            if label in meta and meta[label] != value:
+            if label in meta:
                 meta[label] = value
-            elif label in info and info[label] != value:
+            elif label in info:
                 info[label] = value
         pyben.dump(meta, text)
 

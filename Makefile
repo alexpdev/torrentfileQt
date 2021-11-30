@@ -72,16 +72,18 @@ test: lint ## run tests quickly with the default Python
 	coverage xml -o coverage.xml
 
 altpush: clean test ## push changes to remote
+	bash codacy.sh report -r coverage.xml
+	rm coverage.xml
 	git add .
 	git commit -m "$m"
 	git push
-	bash codacy.sh report -r coverage.xml
 
 push: clean test ## push changes to remote
+	bash codacy.sh report -r coverage.xml
+	rm coverage.xml
 	git add .
 	git commit -m "$m"
 	git push -u origin dev
-	bash codacy.sh report -r coverage.xml
 
 branch: ## create dev git branch
 	git stash
