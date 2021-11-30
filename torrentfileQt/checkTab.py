@@ -389,10 +389,10 @@ class TreeWidget(QTreeWidget):
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
                     fileicon = QIcon("./assets/video.png")
-                elif path.suffix in [".rar", ".zip", ".7z"] or re.match(r"\.r\d+$", path.suffix):
+                elif path.suffix in [".rar", ".zip", ".7z"
+                                    ] or re.match(
+                                    r"\.r\d+$", path.suffix):
                     fileicon = QIcon("./assets/archive.png")
-                elif path.suffix in [".exe", ".bin", ".deb", ".rpm"]:
-                    fileicon = QIcon("./assets/bin.png")
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
                     fileicon = QIcon("./assets/music.png")
                 else:
