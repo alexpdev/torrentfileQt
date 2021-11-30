@@ -108,10 +108,7 @@ def test_info_tab_select1(struct, hasher):
 def test_info_tab_select2(struct, hasher):
     """Test Info tab select2."""
     path = build(struct)
-    kwargs = {
-        "path": path,
-        "announce": "announce1"
-    }
+    kwargs = {"path": path, "announce": "announce1"}
     torrent = hasher(**kwargs)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
@@ -132,10 +129,7 @@ def test_info_tab_selectsingle(size, hasher, ext):
     """Test Info tab select2."""
     path = os.path.join(Temp.root, "file" + Temp.stamp() + ext)
     fillfile(path, size=size)
-    kwargs = {
-        "path": path,
-        "announce": "announce1"
-    }
+    kwargs = {"path": path, "announce": "announce1"}
     torrent = hasher(**kwargs)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]

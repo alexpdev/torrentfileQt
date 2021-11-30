@@ -287,7 +287,9 @@ class SelectButton(QPushButton):
                     keywords[kw] = ""
 
             if "announce list" in meta:
-                urls = [url for urlist in meta["announce list"] for url in urlist]
+                urls = [
+                    url for urlist in meta["announce list"] for url in urlist
+                ]
                 keywords["announce"] = urls + [meta["announce"]]
             else:
                 keywords["announce"] = [meta["announce"]]
