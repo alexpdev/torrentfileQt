@@ -27,10 +27,21 @@ import shutil
 import subprocess  # nosec
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem,
-                               QToolButton, QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.utils import path_stat
 
 from torrentfileQt.qss import pushButtonEdit
@@ -284,18 +295,14 @@ class BrowseFileButton(QPushButton):
         else:
             path = os.path.normpath(path)
         self.window.path_input.clear()
-        self.window.path_input.insert(path)
         self.window.output_input.clear()
-        outdir = os.path.dirname(str(path))
-        txt = os.path.split(str(path))[-1]
-        outfile = os.path.splitext(txt)[0] + ".torrent"
-        outpath = os.path.realpath(os.path.join(outdir, outfile))
-        self.window.output_input.insert(outpath)
+        self.window.path_input.setText(path)
+        self.window.output_input.insert(path + ".torrent")
         _, size, piece_length = path_stat(path)
         if piece_length < (2 ** 20):
             val = f"{piece_length//(2**10)}KB"
         else:
-            val = f"{piece_length//(2**20)}MB"  # pragma: no cover
+            val = f"{piece_length//(2**20)}MB"
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
                 self.window.piece_length.setCurrentIndex(i)
@@ -315,7 +322,7 @@ class BrowseDirButton(QPushButton):
         self.clicked.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-    def browse(self, filename=None):
+    def browse(self, path=None):
         """Browse action performed when user presses button.
 
         Opens File/Folder Dialog.
@@ -324,29 +331,23 @@ class BrowseDirButton(QPushButton):
             str: Path to file or folder to include in torrent.
         """
         caption = "Choose Root Directory"
-        if not filename:  # pragma: no cover
-            filename = QFileDialog.getExistingDirectory(
+        if not path:  # pragma: no cover
+            path = QFileDialog.getExistingDirectory(
                 parent=self, caption=caption
             )
-        if filename:
-            filename = os.path.realpath(filename)
+        if path:
+            path = os.path.realpath(path)
             self.window.path_input.clear()
-            self.window.path_input.insert(filename)
             self.window.output_input.clear()
-            outdir = os.path.dirname(str(filename))
-            outfile = (
-                os.path.splitext(os.path.split(str(filename))[-1])[0]
-                + ".torrent"
-            )
-            outpath = os.path.realpath(os.path.join(outdir, outfile))
-            self.window.output_input.insert(outpath)
+            self.window.path_input.setText(path)
+            self.window.output_input.insert(path + ".torrent")
             try:
-                _, _, piece_length = path_stat(filename)
+                _, _, piece_length = path_stat(path)
             except PermissionError:  # pragma: no cover
                 return
             if piece_length < (2 ** 20):
                 val = f"{piece_length//(2**10)}KB"
-            else:  # pragma: no cover
+            else:
                 val = f"{piece_length//(2**20)}MB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:

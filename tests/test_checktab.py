@@ -44,7 +44,7 @@ def test_missing_files_check(hasher, struct):
         checktab.searchInput.setText(contents)
         checktab.checkButton.click()
         assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
-        rmpath([metafile, contents])
+        rmpath(metafile, contents)
 
 
 @pytest.mark.parametrize("struct", pathstruct())
@@ -76,7 +76,7 @@ def test_shorter_files_check(hasher, struct):
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
     assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
-    rmpath([metafile, contents])
+    rmpath(metafile, contents)
 
 
 @pytest.mark.parametrize("struct", pathstruct())
@@ -94,7 +94,7 @@ def test_check_tab(hasher, struct):
     checktab.searchInput.setText(contents)
     checktab.checkButton.click()
     assert checktab.textEdit.toPlainText() != ""  # nosec
-    rmpath([path, metafile])
+    rmpath(path, metafile)
 
 
 @pytest.mark.parametrize("struct", pathstruct())
@@ -177,4 +177,4 @@ def test_singlefile(size, ext, index, version):
     checktab.checkButton.click()
     ptext = checktab.textEdit.toPlainText()
     assert "100%" in ptext  # nosec
-    rmpath([path, path + ".torrent"])
+    rmpath(path, path + ".torrent")

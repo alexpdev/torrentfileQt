@@ -23,9 +23,18 @@ from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                               QPushButton, QTableWidget, QTableWidgetItem,
-                               QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class EditorWidget(QWidget):
@@ -52,6 +61,12 @@ class EditorWidget(QWidget):
         self.layout.addLayout(self.hlayout)
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.button)
+        self.layout.setObjectName("Editor_layout")
+        self.line.setObjectName("Editor_line")
+        self.button.setObjectName("Editor_button")
+        self.fileButton.setObjectName("Editor_fileButton")
+        self.label.setObjectName("Editor_label")
+        self.table.setObjectName("Editor_table")
         self.setLayout(self.layout)
 
 
@@ -78,7 +93,7 @@ class Button(QPushButton):
             if label in meta and meta[label] != value:
                 meta[label] = value
             elif label in info and info[label] != value:
-                info[label] = value
+                info[label] = value  # pragma: no cover
         pyben.dump(meta, text)
 
 

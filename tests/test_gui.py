@@ -19,7 +19,6 @@
 """Testing module for most of GUI."""
 import os
 
-import pyben
 import pytest
 from PySide6.QtWidgets import QApplication, QMainWindow
 
@@ -75,89 +74,6 @@ def test_tab_widget():
     """Test window Tab widget."""
     tabwidget = Temp.window.central
     assert isinstance(tabwidget, TabWidget)  # nosec
-
-
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_browse(struct):
-    """Test Info tab select1."""
-    path = build(struct)
-    createtab = Temp.window.central.createWidget
-    createtab.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
-    button = createtab.browse_file_button
-    button.browse(path=path)
-    assert createtab.path_input.text() == path  # nosec
-
-
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_info_tab_select1(struct, hasher):
-    """Test Info tab select1."""
-    path = build(struct)
-    torrent = mktorrent(path, hasher)
-    infotab = Temp.window.central.infoWidget
-    Temp.app.processEvents()
-    Temp.window.central.setCurrentWidget(infotab)
-    button = infotab.selectButton
-    button.selectTorrent(path=torrent)
-    assert infotab.nameEdit.text() != ""  # nosec
-
-
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_dir(struct):
-    """Test create tab with folder."""
-    path = build(struct)
-    root = path
-    createtab = Temp.window.central.createWidget
-    button = createtab.browse_dir_button
-    Temp.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
-    button.browse(root)
-    torfile = root + ".test.torrent"
-    outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
-    createtab.announce_input.setPlainText("announce.com")
-    createtab.comment_input.setText("comment")
-    createtab.private.click()
-    submit = createtab.submit_button
-    submit.click()
-    assert os.path.exists(torfile)  # nosec
-
-
-@pytest.mark.parametrize(
-    "field",
-    [
-        "announce",
-        "announce list",
-        "source",
-        "private",
-        "comment",
-        "piece length",
-    ],
-)
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_fields(struct, field):
-    """Test create tab with folder."""
-    path = build(struct)
-    root = path
-    createtab = Temp.window.central.createWidget
-    button = createtab.browse_dir_button
-    button.browse(root)
-    createtab.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
-    torfile = root + ".test.torrent"
-    outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
-    createtab.announce_input.setPlainText(
-        "https://announce.com\nhttp://announce2.com\nhttp://announce4.com"
-    )
-    createtab.comment_input.setText("some comment")
-    createtab.private.setChecked(True)
-    createtab.source_input.setText("TestSource")
-    submit = createtab.submit_button
-    submit.click()
-    result = pyben.load(torfile)
-    assert field in result or field in result["info"]  # nosec
 
 
 @pytest.mark.parametrize("struct", pathstruct())

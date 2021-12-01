@@ -41,6 +41,9 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+enviornment:  ## Actiate local python environmant
+	env\Scripts\activate.bat
+
 clean: clean-build ## remove all build, test, coverage and Python artifacts
 
 upgrade: clean  ## upgrade all dependencies
@@ -70,18 +73,12 @@ test: lint ## run tests quickly with the default Python
 	pytest tests --cov=torrentfileQt --cov=tests --pylint --maxfail=2
 	coverage report
 	coverage xml -o coverage.xml
-
-altpush: clean test ## push changes to remote
-	git add .
-	git commit -m "$m"
-	git push
 	bash codacy.sh report -r coverage.xml
 
 push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push -u origin dev
-	bash codacy.sh report -r coverage.xml
 
 branch: ## create dev git branch
 	git stash
