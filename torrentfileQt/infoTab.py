@@ -80,7 +80,6 @@ class TreeWidget(QTreeWidget):
                         iconpath = "./assets/archive.png"
                     elif suffix in [".wav", ".mp3", ".flac"]:
                         iconpath = "./assets/music.png"
-
                     else:
                         iconpath = "./assets/file.png"
                     item.setLength(length)
@@ -233,6 +232,7 @@ class InfoWidget(QWidget):
         self.totalPiecesEdit.setText(str(total_pieces))
         for path, size in kws["contents"].items():
             self.contentsTree.itemReady.emit(path, size)
+
         for widg in [
             self.pathEdit,
             self.nameEdit,
