@@ -95,6 +95,9 @@ class CheckWidget(QWidget):
         self.searchLabel.setObjectName("CheckWidget_searchLabel")
         self.fileInput.setObjectName("CheckWidget_fileInput")
         self.searchInput.setObjectName("CheckWidget_searchInput")
+        self.textEdit.setObjectName("CheckWidget_textEdit")
+        self.treeWidget.setObjectName("CheckWidget_treeWidget")
+        self.splitter.setObjectName("CheckWidget_splitter")
 
 
 class ReCheckButton(QPushButton):
@@ -272,7 +275,7 @@ class TreePieceItem(QTreeWidgetItem):
     def addProgress(self, value):
         """Increase progress bar value."""
         if self.counted + value > self.total:
-            consumed = self.total - self.value  # pragma: no cover
+            consumed = self.total - self.value   # pragma: no cover
         else:
             consumed = value
         self.value += consumed
@@ -389,12 +392,12 @@ class TreeWidget(QTreeWidget):
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
                     fileicon = QIcon("./assets/video.png")
-                elif path.suffix in [".rar", ".zip", ".7z"] or re.match(r"\.r\d+$", path.suffix):
+                elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
                     fileicon = QIcon("./assets/archive.png")
-                elif path.suffix in [".exe", ".bin", ".deb", ".rpm"]:
-                    fileicon = QIcon("./assets/bin.png")
+                elif re.match(r"\.r\d+$", path.suffix):
+                    fileicon = QIcon("./assets/archive.png")
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = ("./assets/music.png")
+                    fileicon = "./assets/music.png"
                 else:
                     fileicon = QIcon("./assets/file.png")
                 progressBar = ProgressBar(parent=None, size=size)
@@ -428,7 +431,7 @@ class PieceHasher:
         """Add tree widgets items to tree widget."""
         for path in self.pathlist:
             if path == self.root:
-                relpath = os.path.split(self.root)[-1]  # pragma: no cover
+                relpath = os.path.dirname(self.root)   # pragma: no cover
             else:
                 relpath = os.path.relpath(path, self.root)
             length = self.fileinfo[path]["length"]
@@ -457,7 +460,7 @@ class PieceHasher:
                     size -= amount
             else:
                 if path == self.root:
-                    relpath = os.path.split(self.root)[-1]  # pragma: no cover
+                    relpath = os.path.dirname(self.root)   # pragma: no cover
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:

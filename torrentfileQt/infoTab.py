@@ -74,15 +74,12 @@ class TreeWidget(QTreeWidget):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
                         iconpath = "./assets/video.png"
-                    elif suffix in [".rar", ".zip", ".7z", "tar"]:
+                    elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
                         iconpath = "./assets/archive.png"
                     elif re.match(r"\.r\d+", suffix):
                         iconpath = "./assets/archive.png"
-                    elif suffix in [".wav", ".mp3", ".flac"]:
+                    elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
                         iconpath = "./assets/music.png"
-                    elif suffix in [".exe", ".bin", ".dat", ".sfv"]:
-                        iconpath = "./assets/bytes.png"
-
                     else:
                         iconpath = "./assets/file.png"
                     item.setLength(length)
@@ -233,6 +230,7 @@ class InfoWidget(QWidget):
         self.sizeEdit.setText(size)
         total_pieces = math.ceil(kws["length"] / kws["piece_length"])
         self.totalPiecesEdit.setText(str(total_pieces))
+
         for path, size in kws["contents"].items():
             self.contentsTree.itemReady.emit(path, size)
         for widg in [
@@ -263,62 +261,72 @@ class SelectButton(QPushButton):
             path, _ = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, filter="*.torrent"
             )
-        if not path:  # pragma: no cover
-            return
-        meta = pyben.load(path)
-        info = meta["info"]
-        keywords = {}
-        keywords["path"] = path
-        keywords["piece_length"] = info["piece length"]
-        if "meta version" not in info:
-            keywords["meta version"] = 1
-        elif "pieces" in info:
-            keywords["meta version"] = 3
-        else:
-            keywords["meta version"] = 2
-        if "created by" in meta:
-            keywords["created_by"] = meta["created by"]
-        else:
-            keywords["created_by"] = ""  # pragma: no cover
-        for kw in ["name", "length", "comment", "source"]:
-            if kw in info:
-                keywords[kw] = info[kw]
+        if path:
+            meta = pyben.load(path)
+            info = meta["info"]
+            keywords = {}
+            keywords["path"] = path
+            keywords["piece_length"] = info["piece length"]
+
+            if "meta version" not in info:
+                keywords["meta version"] = 1
+            elif "pieces" in info:
+                keywords["meta version"] = 3
             else:
-                keywords[kw] = ""
-        if "announce list" in info:
-            keywords["announce"] = info["announce list"] + [meta["announce"]]
-        else:  # pragma: no cover
-            keywords["announce"] = [meta["announce"]]
-        size = 0
-        if "files" in info:
-            contents = {}
-            for entry in info["files"]:
-                contents[os.path.join(info["name"], *entry["path"])] = entry[
-                    "length"
-                ]
-                size += entry["length"]
-            keywords["contents"] = contents
-        elif "file tree" in info:
-            contents = {}
-            for k, v in parse_filetree(info["file tree"]).items():
-                contents[os.path.join(info["name"], k)] = v
-                size += v
-            keywords["contents"] = contents
-        else:  # pragma: no cover
-            keywords["contents"] = {info["name"]: info["length"]}
-            size = info["length"]
-        keywords["length"] = size
-        if "creation date" in meta:
-            date = datetime.fromtimestamp(meta["creation date"])
-            text = date.strftime("%B %d, %Y %H:%M")
-            keywords["creation_date"] = text
-        else:
-            keywords["creation_date"] = ""  # pragma: no cover
-        if "private" in info:
-            keywords["private"] = "True"
-        else:  # pragma: no cover
-            keywords["private"] = "False"
-        self.parent().fill(**keywords)
+                keywords["meta version"] = 2
+
+            if "created by" in meta:
+                keywords["created_by"] = meta["created by"]
+            else:
+                keywords["created_by"] = ""
+
+            for kw in ["name", "comment", "source"]:
+                if kw in info:
+                    keywords[kw] = info[kw]
+                else:
+                    keywords[kw] = ""
+
+            if "announce list" in meta:
+                alst = [url for urlst in meta["announce list"] for url in urlst]
+                keywords["announce"] = alst + [meta["announce"]]
+            else:
+                keywords["announce"] = [meta["announce"]]
+
+            size = 0
+            if "files" in info:
+                contents = {}
+                for entry in info["files"]:
+                    contents[
+                        os.path.join(info["name"], *entry["path"])
+                    ] = entry["length"]
+                    size += entry["length"]
+                keywords["contents"] = contents
+
+            elif "file tree" in info:
+                contents = {}
+                for k, v in parse_filetree(info["file tree"]).items():
+                    contents[os.path.join(info["name"], k)] = v
+                    size += v
+                keywords["contents"] = contents
+            else:
+                keywords["contents"] = {info["name"]: info["length"]}
+                size = info["length"]
+
+            keywords["length"] = size
+
+            if "creation date" in meta:
+                date = datetime.fromtimestamp(meta["creation date"])
+                text = date.strftime("%B %d, %Y %H:%M")
+                keywords["creation_date"] = text
+            else:
+                keywords["creation_date"] = ""
+
+            if "private" in info:
+                keywords["private"] = "True"
+            else:
+                keywords["private"] = "False"
+
+            self.parent().fill(**keywords)
 
 
 class Label(QLabel):
@@ -353,9 +361,7 @@ def denom(num):
         return "".join([txt[:-3], ".", txt[-3], "KB"])
     if 1_000_000 <= num < 1_000_000_000:
         return "".join([txt[:-6], ".", txt[-6], "MB"])
-    if num >= 1_000_000_000:
-        return "".join([txt[:-9], ".", txt[-9], "GB"])
-    return str(num)  # pragma: no cover
+    return "".join([txt[:-9], ".", txt[-9], "GB"])
 
 
 def pretty_int(num):

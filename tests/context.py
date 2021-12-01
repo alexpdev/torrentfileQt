@@ -33,14 +33,12 @@ from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfileQt import alt_start
 
 
-def rmpath(paths):
+def rmpath(*paths):
     """Remove File or Folder.
 
     Args:
-        paths (`str` or `list`): File or Folder to delete.
+        paths (`tuple`): collection of paths or lists of paths.
     """
-    if isinstance(paths, (str, os.PathLike)):
-        paths = [paths]
     for path in paths:
         if os.path.exists(path):
             if os.path.isfile(path):

@@ -1,7 +1,7 @@
 {
   "name": "torrentfileqt",
   "displayName": "TorrentfileQt",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "GUI torrentfile creator.",
   "repository": {
     "type": "git",

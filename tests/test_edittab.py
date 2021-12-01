@@ -40,8 +40,7 @@ def test_editor_torrent_loading(struct, hasher, size, field):
     for i in range(editor.table.rowCount()):
         fields.append(editor.table.item(i, 0).text())
     assert field in fields  # nosec
-    rmpath(path)
-    rmpath(torrent)
+    rmpath(path, torrent)
 
 
 @pytest.mark.parametrize("size", list(range(16, 21)))
@@ -67,5 +66,4 @@ def test_editor_torrent_saving(struct, hasher, size):
     editor.button.click()
     meta = pyben.load(torrent)
     assert meta["announce"] == "other"  # nosec
-    rmpath(path)
-    rmpath(torrent)
+    rmpath(path, torrent)
