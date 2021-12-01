@@ -83,7 +83,6 @@ altpush: clean test ## push changes to remote
 
 push: clean test ## push changes to remote
 	bash codacy.sh report -r coverage.xml
-	rm coverage.xml
 	git add .
 	git commit -m "$m"
 	git push -u origin dev

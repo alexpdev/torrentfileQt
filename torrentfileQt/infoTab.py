@@ -27,16 +27,9 @@ from pathlib import Path
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                               QPushButton, QTreeWidget, QTreeWidgetItem,
+                               QWidget)
 
 from torrentfileQt.qss import infoLineEdit
 
