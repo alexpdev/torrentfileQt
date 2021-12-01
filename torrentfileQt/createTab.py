@@ -27,10 +27,21 @@ import shutil
 import subprocess  # nosec
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem,
-                               QToolButton, QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.utils import path_stat
 
 from torrentfileQt.qss import pushButtonEdit

@@ -26,11 +26,22 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QToolButton,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
 
@@ -275,7 +286,7 @@ class TreePieceItem(QTreeWidgetItem):
     def addProgress(self, value):
         """Increase progress bar value."""
         if self.counted + value > self.total:
-            consumed = self.total - self.value   # pragma: no cover
+            consumed = self.total - self.value  # pragma: no cover
         else:
             consumed = value
         self.value += consumed
@@ -431,7 +442,7 @@ class PieceHasher:
         """Add tree widgets items to tree widget."""
         for path in self.pathlist:
             if path == self.root:
-                relpath = os.path.dirname(self.root)   # pragma: no cover
+                relpath = os.path.dirname(self.root)  # pragma: no cover
             else:
                 relpath = os.path.relpath(path, self.root)
             length = self.fileinfo[path]["length"]
@@ -460,7 +471,7 @@ class PieceHasher:
                     size -= amount
             else:
                 if path == self.root:
-                    relpath = os.path.dirname(self.root)   # pragma: no cover
+                    relpath = os.path.dirname(self.root)  # pragma: no cover
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:
