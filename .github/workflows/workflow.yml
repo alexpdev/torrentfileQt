@@ -17,9 +17,10 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install coverage pylint pytest pytest-cov
+          pip install coverage pylint pytest pytest-cov pytest-pylint
           pip install -rrequirements.txt
           pytest cov=torrentfileqt cov=tests
+          pytest tests --cov=torrentfileQt --cov=tests --pylint --maxfail=2
           coverage report
           coverage xml -o coverage.xml
 
