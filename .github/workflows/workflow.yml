@@ -19,7 +19,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install coverage pylint pytest pytest-cov pytest-pylint
           pip install -rrequirements.txt
+          sudo apt update && sudo apt upgrade -y
           sudo apt install libopengl0 -y
+          sudo apt install libgl1-mesa-glx -y
           pytest tests --cov=torrentfileQt --cov=tests --pylint --maxfail=2
           coverage report
           coverage xml -o coverage.xml
