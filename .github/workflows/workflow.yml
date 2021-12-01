@@ -20,7 +20,7 @@ jobs:
           pip install coverage pylint pytest
           pip install -rrequirements.txt
           coverage report
-	        coverage xml -o coverage.xml
+          coverage xml -o coverage.xml
 
       - name: Codacy Coverage Report
         uses: codacy/codacy-coverage-reporter-action@v1.1
