@@ -28,10 +28,21 @@ import subprocess  # nosec
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem,
-                               QToolButton, QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.utils import path_piece_length
 
 from torrentfileQt.qss import pushButtonEdit
@@ -254,7 +265,7 @@ class OutButton(QToolButton):
                 caption="Save as...",
                 dir=str(Path.home()),
                 filter="*.torrent",
-                selectedFilter=""
+                selectedFilter="",
             )
         if outpath:
             self.widget.output_input.clear()
@@ -287,7 +298,7 @@ class BrowseFileButton(QPushButton):
             path, _ = QFileDialog.getOpenFileName(
                 parent=self, caption=caption, dir=str(Path.home())
             )
-        if path != '':
+        if path != "":
             path = os.path.normpath(path)
             self.window.path_input.clear()
             self.window.output_input.clear()

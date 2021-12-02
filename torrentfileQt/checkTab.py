@@ -26,11 +26,22 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QToolButton,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.progress import CheckerClass
 
 
@@ -178,16 +189,16 @@ class BrowseFolders(QToolButton):
             "func": QFileDialog.getExistingDirectory,
             "kwargs": {
                 "dir": str(Path.home()),
-                "caption": "Select Contents Folder..."
-            }
+                "caption": "Select Contents Folder...",
+            },
         },
         1: {
             "func": QFileDialog.getOpenFileName,
             "kwargs": {
                 "dir": str(Path.home()),
-                "caption": "Select Contents File..."
-            }
-        }
+                "caption": "Select Contents File...",
+            },
+        },
     }
 
     def __init__(self, parent=None):
