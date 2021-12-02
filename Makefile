@@ -78,7 +78,7 @@ test: lint ## run tests quickly with the default Python
 push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
-	git push -u origin dev
+	git push -u origin other
 
 branch: ## create dev git branch
 	git stash

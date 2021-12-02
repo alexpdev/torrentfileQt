@@ -80,18 +80,18 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = "./assets/video.png"
+                        iconpath = "./assets/icons/video.png"
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = "./assets/archive.png"
+                        iconpath = "./assets/icons/archive.png"
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = "./assets/archive.png"
+                        iconpath = "./assets/icons/archive.png"
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = "./assets/music.png"
+                        iconpath = "./assets/icons/music.png"
                     else:
-                        iconpath = "./assets/file.png"
+                        iconpath = "./assets/icons/file.png"
                     item.setLength(length)
                 else:
-                    iconpath = "./assets/folder.png"
+                    iconpath = "./assets/icons/folder.png"
                 icon = QIcon(iconpath)
                 item.setIcon(0, icon)
                 item.setText(1, partial)
@@ -113,7 +113,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon("./assets/scale.png")
+        icon = QIcon("./assets/icons/scale.png")
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -263,10 +263,13 @@ class SelectButton(QPushButton):
 
     def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
-        caption = "Select '.torrent' file"
         if not path:  # pragma: no cover
             path, _ = QFileDialog.getOpenFileName(
-                parent=self, caption=caption, filter="*.torrent"
+                parent=self,
+                caption="Select '.torrent' file",
+                dir=str(Path.home()),
+                filter="*.torrent",
+                selectedFilter=None,
             )
         if path:
             meta = pyben.load(path)
@@ -275,6 +278,7 @@ class SelectButton(QPushButton):
             keywords["path"] = path
             keywords["piece_length"] = info["piece length"]
 
+            # get meta version
             if "meta version" not in info:
                 keywords["meta version"] = 1
             elif "pieces" in info:
@@ -282,23 +286,27 @@ class SelectButton(QPushButton):
             else:
                 keywords["meta version"] = 2
 
+            # extract creator
             if "created by" in meta:
                 keywords["created_by"] = meta["created by"]
             else:
                 keywords["created_by"] = ""
 
+            # extract name comment and source
             for kw in ["name", "comment", "source"]:
                 if kw in info:
                     keywords[kw] = info[kw]
                 else:
                     keywords[kw] = ""
 
+            # extract announce list
             if "announce list" in meta:
                 alst = [url for urlst in meta["announce list"] for url in urlst]
                 keywords["announce"] = alst + [meta["announce"]]
             else:
                 keywords["announce"] = [meta["announce"]]
 
+            # iterate through filelist
             size = 0
             if "files" in info:
                 contents = {}

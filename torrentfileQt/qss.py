@@ -284,10 +284,10 @@ stylesheet = """
         background-color: transparent;
         font-size: 12pt;
         border: transparent;
-        padding-top: 3px;
-        margin-top: 3px;
-        margin-bottom: 3px;
-        padding-bottom: 3px;
+        padding-top: 2px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        padding-bottom: 4px;
         color: #fff;
     }
     QRadioButton::indicator::unchecked {
@@ -459,6 +459,8 @@ stylesheet = """
     }
     QLabel {
         padding: 2px;
+        padding-top: 4px;
+        padding-bottom: 4px;
         font-size: 11pt;
         font-weight: bold;
     }
@@ -468,11 +470,27 @@ stylesheet = """
 
     QComboBox {
         border: 2px solid #f73;
-        padding: 1px 18px 1px 3px;
-        min-width: 6em;
+        padding: 1px 1px 1px 3px;
+        font-size: 10pt;
+        min-width: 2em;
+    }
+    QComboBox:on {
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+    QComboBox::drop-down {
+        width: 20px;
+        background: #555;
+        padding: 0px 2px 0px 2px;
+        border-left-width: 2px;
+        border-left-color: #311;
+        border-left-style: outset;
     }
     QComboBox::down-arrow {
-        image: url("assets/down-arrow.png");
+        image: url("assets/icons/down-arrow16.png");
+    }
+    QComboBox::down-arrow:on {
+        top: 1px;
     }
     QComboBox QAbstractItemView {
         border: 1px solid #444;
@@ -480,6 +498,16 @@ stylesheet = """
     }
     """
 
+# QComboBox:!editable, QComboBox::drop-down:editable {
+#     background: qlieargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+#                                 stop: 0 #3d3d3d, stop: 0.4 #383838,
+#                                 stop: 0.5 #333333, stop 1.0 #414141);
+# }
+# QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+#     background: qlieargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+#                                 stop: 0 #535353, stop: 0.4 #585858,
+#                                 stop: 0.5 #555555, stop 1.0 #616161);
+# }
 infoLineEdit = """
     QLineEdit {
         background-color: transparent;

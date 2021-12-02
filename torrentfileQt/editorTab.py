@@ -111,14 +111,15 @@ class FileButton(QToolButton):
     def browse(self, path=None):
         """Browse method for finding the .torrent file user wishes to edit."""
         if not path:  # pragma: no coverage
-            path = QFileDialog.getOpenFileName(
-                directory=str(Path().home),
+            path, _ = QFileDialog.getOpenFileName(
+                dir=str(Path.home()),
                 caption="Select Torrent File",
                 filter="*.torrent",
-            )[0]
-        self.widget.table.clear()
-        self.widget.line.setText(path)
-        self.widget.table.handleTorrent.emit(path)
+            )
+        if path:
+            self.widget.table.clear()
+            self.widget.line.setText(path)
+            self.widget.table.handleTorrent.emit(path)
 
 
 class Table(QTableWidget):
