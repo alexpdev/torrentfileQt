@@ -1,28 +1,18 @@
-recursive-include \
-  assets \
-  tests \
-  torrentfileQt \
+include CHANGELOG.md
+include LICENSE
+include Makefile
+include package.json
+include requirements.txt
 
-include \
-  *.ini \
-  LICENSE \
-  MANIFEST.in \
-  Makefile \
-  README.md \
-  py.typed \
-  pyproject.toml \
-  setup.* \
-  *.yml \
-  *.json \
-  requirements.txt \
+recursive-include assets/icons *.png
+recursive-include assets/screenshots *.png
 
 
-
+graft assets
 graft docs
+graft tests
+graft torrentfileQt
 
-global-exclude \
-  *.py[co] \
-  .DS_Store \
 
+global-exclude *.py[cod]
 prune **/__pycache__
-prune docs/build
