@@ -33,6 +33,8 @@ from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
 
 from torrentfileQt.qss import infoLineEdit
 
+ASSETS = os.environ["ASSETS"]
+
 
 class TreeWidget(QTreeWidget):
     """Tree view of the directory structure cataloged in .torrent file.
@@ -41,7 +43,7 @@ class TreeWidget(QTreeWidget):
         parent (`widget`, default=`None`): The widget containing this widget.
     """
 
-    itemReady = Signal([str, int])
+    itemReady = Signal([str, str])
 
     def __init__(self, parent=None):
         """Constructor for tree widget."""
@@ -65,6 +67,7 @@ class TreeWidget(QTreeWidget):
 
     def apply_value(self, text, length):
         """Add path partials and file lengths to tree branches."""
+        length = int(length)
         partials = Path(text).parts
         tree = self.itemtree
         for i, partial in enumerate(partials):
@@ -73,18 +76,18 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = "./assets/icons/video.png"
+                        iconpath = os.path.join(ASSETS, "icons", "video.png")
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = "./assets/icons/archive.png"
+                        iconpath = os.path.join(ASSETS, "icons", "archive.png")
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = "./assets/icons/archive.png"
+                        iconpath = os.path.join(ASSETS, "icons", "archive.png")
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = "./assets/icons/music.png"
+                        iconpath = os.path.join(ASSETS, "icons", "music.png")
                     else:
-                        iconpath = "./assets/icons/file.png"
+                        iconpath = os.path.join(ASSETS, "icons", "file.png")
                     item.setLength(length)
                 else:
-                    iconpath = "./assets/icons/folder.png"
+                    iconpath = os.path.join(ASSETS, "icons", "folder.png")
                 icon = QIcon(iconpath)
                 item.setIcon(0, icon)
                 item.setText(1, partial)
@@ -106,7 +109,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon("./assets/icons/scale.png")
+        icon = QIcon(os.path.join(ASSETS, "icons", "scale.png"))
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -232,7 +235,7 @@ class InfoWidget(QWidget):
         self.totalPiecesEdit.setText(str(total_pieces))
 
         for path, size in kws["contents"].items():
-            self.contentsTree.itemReady.emit(path, size)
+            self.contentsTree.itemReady.emit(path, str(size))
         for widg in [
             self.pathEdit,
             self.nameEdit,
@@ -262,7 +265,7 @@ class SelectButton(QPushButton):
                 caption="Select '.torrent' file",
                 dir=str(Path.home()),
                 filter="*.torrent",
-                selectedFilter=None
+                selectedFilter=None,
             )
         if path:
             meta = pyben.load(path)

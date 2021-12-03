@@ -22,5 +22,4 @@ from torrentfileQt.version import __version__
 from torrentfileQt.window import Application, Window, alt_start, start
 
 __author__ = "alexpdev"
-
 __all__ = ["Application", "Window", "alt_start", "start", "__version__"]

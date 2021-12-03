@@ -17,12 +17,9 @@
 # limitations under the License.
 ##############################################################################
 """Testing module for most of GUI."""
-import os
-
-import pytest
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from tests.context import Temp, build, mktorrent, pathstruct, rmpath
+from tests.context import Temp
 from torrentfileQt import qss
 from torrentfileQt.infoTab import denom
 from torrentfileQt.window import TabWidget
@@ -74,20 +71,3 @@ def test_tab_widget():
     """Test window Tab widget."""
     tabwidget = Temp.window.central
     assert isinstance(tabwidget, TabWidget)  # nosec
-
-
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_export_menu(struct, hasher):
-    """Test menubar action menu expornt."""
-    path = build(struct)
-    torrent = mktorrent(path, hasher)
-    infotab = Temp.window.central.infoWidget
-    infotab.window.central.setCurrentWidget(infotab)
-    Temp.app.processEvents()
-    button = infotab.selectButton
-    button.selectTorrent(path=torrent)
-    tpath = os.path.abspath(os.path.join(os.path.dirname(path), "torrent.txt"))
-    Temp.window.menubar.export(path=tpath)
-    assert os.path.exists(tpath)  # nosec
-    rmpath(tpath)

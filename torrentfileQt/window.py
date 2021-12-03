@@ -18,6 +18,7 @@
 ##############################################################################
 """Graphical Extension for Users who prefer a GUI over CLI."""
 
+import os
 import sys
 
 from PySide6.QtGui import QIcon
@@ -30,6 +31,8 @@ from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import stylesheet
+
+ASSETS = os.environ["ASSETS"]
 
 
 class Window(QMainWindow):
@@ -51,7 +54,7 @@ class Window(QMainWindow):
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
-        self.icon = QIcon("./assets/torrentfile.png")
+        self.icon = QIcon(os.path.join(ASSETS, "torrentfile.png"))
         self.setObjectName("Mainwindow")
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
