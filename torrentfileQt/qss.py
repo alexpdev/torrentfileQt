@@ -17,8 +17,14 @@
 # limitations under the License.
 ##############################################################################
 """Module for stylesheets."""
+import os
 
-stylesheet = """
+arrow = os.path.join(os.environ["ASSETS"], "icons", "down-arrow16.png").replace(
+    "\\", "/"
+)
+
+stylesheet = (
+    """
     * {
         background-color: #19232D;
         color: #FFFFFF;
@@ -413,9 +419,43 @@ stylesheet = """
         background-color: black;
         color: white;
     }
-    QMenu{
-        background-color:#000000;
+    QMenu {
+        background-color: black;
+        margin: 2px;
     }
+
+    QMenu::item {
+        padding: 2px 25px 2px 20px;
+        border: 1px solid transparent;
+    }
+
+    QMenu::item:selected {
+        border-color: #e57e22;
+        background: #333;
+    }
+
+    QMenu::icon:checked {
+        background: gray;
+        border: 1px inset gray;
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        bottom: 1px;
+        left: 1px;
+    }
+
+    QMenu::separator {
+        height: 2px;
+        background: lightblue;
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+
+    QMenu::indicator {
+        width: 13px;
+        height: 13px;
+    }
+
     QMenuBar {
         font-size: 10pt;
         border-bottom: 3px groove #115;
@@ -486,28 +526,20 @@ stylesheet = """
         border-left-color: #311;
         border-left-style: outset;
     }
-    QComboBox::down-arrow {
-        image: url("assets/icons/down-arrow16.png");
-    }
     QComboBox::down-arrow:on {
         top: 1px;
     }
     QComboBox QAbstractItemView {
         border: 1px solid #444;
         selection-background-color: lightgray;
-    }
+    }"""
+    + f"""
+    QComboBox::down-arrow {{
+        image: url({arrow});
+    }}
     """
+)
 
-# QComboBox:!editable, QComboBox::drop-down:editable {
-#     background: qlieargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-#                                 stop: 0 #3d3d3d, stop: 0.4 #383838,
-#                                 stop: 0.5 #333333, stop 1.0 #414141);
-# }
-# QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-#     background: qlieargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-#                                 stop: 0 #535353, stop: 0.4 #585858,
-#                                 stop: 0.5 #555555, stop 1.0 #616161);
-# }
 infoLineEdit = """
     QLineEdit {
         background-color: transparent;

@@ -18,13 +18,10 @@
 ##############################################################################
 """Module for the menu bar."""
 
-import os
 import webbrowser
-from pathlib import Path
 
-import pyben
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QFileDialog, QMenu, QMenuBar
+from PySide6.QtWidgets import QMenu, QMenuBar
 
 
 class Menu(QMenu):
@@ -52,7 +49,6 @@ class MenuBar(QMenuBar):
         self.help_menu = Menu("Help")
         self.addMenu(self.file_menu)
         self.addMenu(self.help_menu)
-        self.actionExport = QAction(self.window)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
@@ -61,38 +57,17 @@ class MenuBar(QMenuBar):
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
         self.actionDocs.setText("Documentation")
-        self.actionExport.setText("Save to")
         self.file_menu.addAction(self.actionExit)
-        self.file_menu.addAction(self.actionExport)
         self.help_menu.addAction(self.actionAbout)
         self.help_menu.addAction(self.actionDocs)
         self.help_menu.addAction(self.actionRepo)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_qt)
-        self.actionExport.triggered.connect(self.export)
         self.actionDocs.triggered.connect(documentation)
         self.actionRepo.triggered.connect(repository)
         self.actionDocs.setObjectName("actionDocs")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
-        self.actionExport.setObjectName("actionExport")
-
-    def export(self, path=None):
-        """Export data from info widget to file."""
-        home = str(Path.home())
-        if path:
-            filename = path
-        else:  # pragma: no cover
-            filename = QFileDialog.getSaveFileName(
-                caption="Save location:", directory=home
-            )
-        if os.path.exists(os.path.dirname(filename)):
-            widget = self.window.central.infoWidget
-            path = widget.pathEdit.text()
-            if os.path.exists(path):
-                data = pyben.load(path)
-                with open(filename, "wt") as fd:
-                    fd.write(str(data))
 
     def about_qt(self):
         """Open the about qt menu."""

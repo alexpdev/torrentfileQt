@@ -45,6 +45,16 @@ from PySide6.QtWidgets import (
 from torrentfile.progress import CheckerClass
 
 
+def _conf():
+    """Create some enviornment variables."""
+    path = Path(os.path.abspath(os.path.dirname(__file__))).parent
+    os.environ["ASSETS"] = str(path / "assets")
+    return os.environ["ASSETS"]
+
+
+ASSETS = _conf()
+
+
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 
@@ -402,21 +412,25 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon("./assets/icons/video.png")
+                    fileicon = QIcon(os.path.join(ASSETS, "icons", "video.png"))
                 elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                    fileicon = QIcon("./assets/icons/archive.png")
+                    fileicon = QIcon(
+                        os.path.join(ASSETS, "icons", "archive.png")
+                    )
                 elif re.match(r"\.r\d+$", path.suffix):
-                    fileicon = QIcon("./assets/icons/archive.png")
+                    fileicon = QIcon(
+                        os.path.join(ASSETS, "icons", "archive.png")
+                    )
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = "./assets/icons/music.png"
+                    fileicon = QIcon(os.path.join(ASSETS, "icons", "music.png"))
                 else:
-                    fileicon = QIcon("./assets/icons/file.png")
+                    fileicon = QIcon(os.path.join(ASSETS, "icons", "file.png"))
                 progressBar = ProgressBar(parent=None, size=size)
                 self.setItemWidget(item, 2, progressBar)
                 item.progbar = progressBar
                 self.itemWidgets[str(path)] = item
             else:
-                fileicon = QIcon("./assets/icons/folder.png")
+                fileicon = QIcon(os.path.join(ASSETS, "icons", "folder.png"))
             item.setIcon(0, fileicon)
             item.setText(1, partial)
             item_tree = item_tree[partial]

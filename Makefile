@@ -35,6 +35,20 @@ for item in distpath.iterdir():
 endef
 export FIXES
 
+define UNIXES
+import os
+from pathlib import Path
+from torrentfileQt.version import __version__
+
+distpath =  Path(os.getcwd()).resolve() / "dist"
+for item in distpath.iterdir():
+    if item.name == "torrentfileQt.exe":
+        os.rename(item, distpath / f"torrentfileQt-v{__version__}-linux")
+    elif item.name == "torrentfileQt.zip":
+        os.rename(item, distpath / f"torrentfileQt-v{__version__}-linux.zip")
+endef
+export FIXES
+
 
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
@@ -64,6 +78,7 @@ clean-build: ## remove build artifacts
 	rm -rfv tests/TESTINGDIR
 
 lint: ## run linters on codebase
+	pip install --upgrade --force-reinstall --pre torrentfile
 	isort torrentfileQt tests
 	pyroma .
 	prospector torrentfileQt
@@ -94,7 +109,7 @@ release: clean test ## release to pypi
 	twine upload dist/*
 
 install: ## install app in eedit mode
-	pip install --upgrade -rrequirements.txt --force-reinstall --pre
+	pip install --upgrade --force-reinstall --pre torrentfile pyben
 	pip install -e .
 
 build:  clean install
@@ -115,7 +130,6 @@ build:  clean install
 		--specpath ../runner/ ../runner/exe --log-level DEBUG \
 		--add-data "./assets/*;./assets/"
 	cp -rfv ../runner/dist/* ./dist/
-	tar -va -c -f ./dist/torrentfileQt.zip ./dist/torrentfileQt
 	@python -c "$$FIXES"
 
 full: clean environment upgrade test push install release build
