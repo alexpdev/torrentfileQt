@@ -22,8 +22,7 @@ import os
 import sys
 
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
-                               QVBoxLayout)
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
