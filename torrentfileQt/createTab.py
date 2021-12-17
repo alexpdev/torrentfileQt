@@ -28,21 +28,10 @@ import subprocess  # nosec
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QFileDialog,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QPushButton,
-    QRadioButton,
-    QSpacerItem,
-    QToolButton,
-    QWidget,
-)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+                               QPushButton, QRadioButton, QSpacerItem,
+                               QToolButton, QWidget)
 from torrentfile.utils import path_piece_length
 
 from torrentfileQt.qss import pushButtonEdit
@@ -74,8 +63,8 @@ class CreateWidget(QWidget):
         self.hlayout3 = QHBoxLayout()
         self.hlayout0 = QHBoxLayout()
 
-        self.path_label = QLabel("Path: ", parent=self)
-        self.output_label = QLabel("Save Path: ", parent=self)
+        self.path_label = QLabel("Torrent Content: ", parent=self)
+        self.output_label = QLabel("Save Location: ", parent=self)
         self.version_label = QLabel("Meta Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
         self.announce_label = QLabel("Trackers: ", parent=self)
