@@ -19,10 +19,6 @@
 """Module for stylesheets."""
 import os
 
-arrow = os.path.join(os.environ["ASSETS"], "icons", "down-arrow16.png").replace(
-    "\\", "/"
-)
-
 stylesheet = (
     """
     * {
@@ -535,7 +531,8 @@ stylesheet = (
     }"""
     + f"""
     QComboBox::down-arrow {{
-        image: url({arrow});
+        image: url({os.path.join(os.environ["ASSETS"], "icons",
+        "down-arrow16.png")});
     }}
     """
 )

@@ -78,7 +78,7 @@ clean-build: ## remove build artifacts
 	rm -rfv tests/TESTINGDIR
 
 lint: ## run linters on codebase
-	pip install --upgrade --force-reinstall --pre torrentfile
+	pip install --upgrade --force-reinstall --pre --no-cache torrentfile
 	isort torrentfileQt tests
 	pyroma .
 	prospector torrentfileQt

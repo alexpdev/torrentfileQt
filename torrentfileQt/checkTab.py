@@ -21,28 +21,17 @@
 import logging
 import os
 import re
-from collections.abc import Sequence
+# from collections.abc import Sequence
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QSplitter,
-    QToolButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
-from torrentfile.progress import CheckerClass
+from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                               QLineEdit, QPlainTextEdit, QProgressBar,
+                               QPushButton, QSplitter, QToolButton,
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
+from torrentfile.recheck import Checker
 
 
 def _conf():
@@ -150,7 +139,7 @@ class ReCheckButton(QPushButton):
         metafile = fileInput.text()
         content = searchInput.text()
         if os.path.exists(metafile):
-            CheckerClass.register_callback(textEdit.callback)
+            Checker.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
             tree.reChecking.emit(metafile, content)
 
@@ -214,7 +203,8 @@ class BrowseFolders(QToolButton):
     def __init__(self, parent=None):
         """Construct a BrowseFolders Button Widget."""
         super().__init__(parent=parent)
-        self.window = parent
+        self.window = parent.window
+        self.widget = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mode = None
         self.clicked.connect(self.browse)
@@ -236,12 +226,13 @@ class BrowseFolders(QToolButton):
         if not path:  # pragma: no cover
             mode = self.modes[self.mode]
             path = mode["func"](parent=self, **mode["kwargs"])
-            if isinstance(path, Sequence):
+            if not isinstance(path, str):
                 path, _ = path
+
         if path:
             path = os.path.normpath(path)
-            self.parent().searchInput.clear()
-            self.parent().searchInput.setText(path)
+            self.widget.searchInput.clear()
+            self.widget.searchInput.setText(path)
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -354,7 +345,7 @@ class TreeWidget(QTreeWidget):
         super().__init__(parent=parent)
         self.window = parent.window
         self.setColumnCount(3)
-        self.setIndentation(10)
+        self.setIndentation(15)
         self.item = self.invisibleRootItem()
         self.item.setExpanded(True)
         header = self.header()
@@ -446,7 +437,7 @@ class PieceHasher:
         self.metafile = metafile
         self.content = content
         self.tree = tree
-        self.checker = CheckerClass(metafile, content)
+        self.checker = Checker(metafile, content)
         self.root = os.path.dirname(self.checker.root)
         self.fileinfo = self.checker.fileinfo
         self.pathlist = self.checker.paths
@@ -454,12 +445,12 @@ class PieceHasher:
 
     def addTreeWidgets(self):
         """Add tree widgets items to tree widget."""
-        for path in self.pathlist:
-            if path == self.root:
+        for _, val in self.fileinfo.items():
+            if val["path"] == self.root:
                 relpath = os.path.dirname(self.root)  # pragma: no cover
             else:
-                relpath = os.path.relpath(path, self.root)
-            length = self.fileinfo[path]["length"]
+                relpath = os.path.relpath(val["path"], self.root)
+            length = val["length"]
             self.tree.addPathChild.emit(relpath, length)
 
     def iter_hashes(self):
