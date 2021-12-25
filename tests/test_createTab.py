@@ -21,90 +21,63 @@ import os
 import pyben
 import pytest
 
-from tests.context import Temp, build, fillfile, pathstruct, rmpath
+from tests import dir1, dir2, rmpath, tempfile, wind
 
 
-@pytest.mark.parametrize("size", list(range(16, 23)))
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_with_hasher1(size, struct):
+def test_rmpath():
+    """Test the rmpath function."""
+    fake = "./ajdiednvikjdod"
+    rmpath(fake)
+    assert not os.path.exists(fake)
+
+
+def test_fixtures():
+    """Test fixtures."""
+    assert dir1 and dir2 and tempfile and wind
+
+
+def test_create_with_hasher1(dir2, wind):
     """Test the radio buttons on create tab v1 hasher."""
-    path = build(struct, size=size)
-    creator = Temp.window.central.createWidget
+    window, app = wind
+    metafile = dir2 + ".torrent"
+    creator = window.central.createWidget
     creator.window.central.setCurrentWidget(creator)
-    Temp.app.processEvents()
+    app.processEvents()
     creator.path_input.clear()
-    creator.path_input.setText(path)
+    creator.path_input.setText(dir2)
     creator.output_input.clear()
-    creator.output_input.setText(path + ".torrent")
+    creator.output_input.setText(metafile)
     creator.v1button.setChecked(True)
     creator.piece_length.setCurrentIndex(2)
     creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")  # nosec
-    rmpath(path, path + ".torrent")
+    creator.submit_button.join()
+    assert os.path.exists(metafile)
+    rmpath(metafile)
 
 
-@pytest.mark.parametrize("size", list(range(16, 23)))
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_with_hasher2(size, struct):
-    """Test the radio buttons on create tab v2 hasher."""
-    creator = Temp.window.central.createWidget
-    path = build(struct, size=size)
-    creator.window.central.setCurrentWidget(creator)
-    Temp.app.processEvents()
-    creator.path_input.clear()
-    creator.path_input.setText(path)
-    creator.output_input.clear()
-    creator.output_input.setText(path + ".torrent")
-    creator.v2button.setChecked(True)
-    creator.piece_length.setCurrentIndex(2)
-    creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")  # nosec
-    rmpath(path, path + ".torrent")
-
-
-@pytest.mark.parametrize("size", list(range(16, 23)))
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_with_hybridhash(size, struct):
-    """Test the radio buttons on create tab hybrid hasher."""
-    creator = Temp.window.central.createWidget
-    path = build(struct, size=size)
-    creator.path_input.clear()
-    creator.window.central.setCurrentWidget(creator)
-    Temp.app.processEvents()
-    creator.path_input.setText(path)
-    creator.output_input.clear()
-    creator.output_input.setText(path + ".torrent")
-    creator.hybridbutton.setChecked(True)
-    creator.piece_length.setCurrentIndex(2)
-    creator.submit_button.click()
-    assert os.path.exists(path + ".torrent")  # nosec
-    rmpath(path, path + ".torrent")
-
-
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_browse(struct):
+def test_create_tab_browse(dir2, wind):
     """Test Info tab select1."""
-    path = build(struct)
-    createtab = Temp.window.central.createWidget
+    window, app = wind
+    path = dir2
+    createtab = window.central.createWidget
     createtab.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
+    app.processEvents()
     button = createtab.browse_file_button
     button.browse(path=path)
     createtab.comment_input.setText("Some Text")
     createtab.source_input.setText("Some Source")
-    assert createtab.path_input.text() == path  # nosec
-    rmpath(path)
+    assert createtab.path_input.text() == path
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_dir(struct):
+def test_create_tab_dir(dir2, wind):
     """Test create tab with folder."""
-    path = build(struct)
+    window, app = wind
+    path = dir2
     root = path
-    createtab = Temp.window.central.createWidget
+    createtab = window.central.createWidget
     button = createtab.browse_dir_button
-    Temp.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
+    window.central.setCurrentWidget(createtab)
+    app.processEvents()
     button.browse(path=root)
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
@@ -114,8 +87,9 @@ def test_create_tab_dir(struct):
     createtab.private.click()
     submit = createtab.submit_button
     submit.click()
-    assert os.path.exists(torfile)  # nosec
-    rmpath(path, torfile)
+    submit.join()
+    assert os.path.exists(torfile)
+    rmpath(torfile)
 
 
 @pytest.mark.parametrize(
@@ -129,16 +103,16 @@ def test_create_tab_dir(struct):
         "piece length",
     ],
 )
-@pytest.mark.parametrize("struct", pathstruct())
-def test_create_tab_fields(struct, field):
+def test_create_tab_fields(dir2, field, wind):
     """Test create tab with folder."""
-    path = build(struct)
+    window, app = wind
+    path = dir2
     root = path
-    createtab = Temp.window.central.createWidget
+    createtab = window.central.createWidget
     button = createtab.browse_dir_button
     button.browse(path=root)
     createtab.window.central.setCurrentWidget(createtab)
-    Temp.app.processEvents()
+    app.processEvents()
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
     outbutton.output(outpath=torfile)
@@ -150,36 +124,18 @@ def test_create_tab_fields(struct, field):
     createtab.source_input.setText("TestSource")
     submit = createtab.submit_button
     submit.click()
+    submit.join()
     result = pyben.load(torfile)
-    assert field in result or field in result["info"]  # nosec
-    rmpath(path, torfile)
+    assert field in result or field in result["info"]
+    rmpath(torfile)
 
 
-def test_largefile_create():
+def test_sized_create(wind):
     """Test browse file button on create tab."""
-    name = f"file1{Temp.stamp()}"
-    path = os.path.join(Temp.root, name)
-    fillfile(path, 28)
-    createtab = Temp.window.central.createWidget
+    window, app = wind
+    path = str(tempfile(exp=28))
+    createtab = window.central.createWidget
     button = createtab.browse_file_button
     button.browse(path=path)
-    Temp.app.processEvents()
-    assert createtab.path_input.text() == path  # nosec
-
-
-def test_largedir_create():
-    """Test browse folder button on create tab."""
-    name = f"dir{Temp.stamp()}"
-    path = os.path.join(Temp.root, name)
-    struct = [
-        "dir1/file1.mkv",
-        "dir2/file2.wav",
-        "dir1/file3.deb",
-        "file4.png",
-    ]
-    path = build(struct, 28)
-    createtab = Temp.window.central.createWidget
-    button = createtab.browse_dir_button
-    button.browse(path=path)
-    Temp.app.processEvents()
-    assert os.path.exists(path)  # nosec
+    app.processEvents()
+    assert createtab.path_input.text() == path

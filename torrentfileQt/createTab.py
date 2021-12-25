@@ -23,15 +23,15 @@ User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
 import os
-import shutil
-import subprocess  # nosec
 from pathlib import Path
+from threading import Thread
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QRadioButton, QSpacerItem,
                                QToolButton, QWidget)
+from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
 from torrentfileQt.qss import pushButtonEdit
@@ -151,23 +151,27 @@ class CreateWidget(QWidget):
         self.browse_file_button.setObjectName("createWidget_browsefile_button")
 
 
-def torrentfile_create(args, obj):  # pragma: no cover
+def torrentfile_create(args, creator, name):  # pragma: no cover
+    """Create new .torrent file in a seperate thread.
+
+    Parameters
+    ----------
+    args : `dict`
+        keyword arguements for the torrent creator.
+    creator : `type`
+        The procedure class for creating file.
+    name : `list`
+        container to add return values to.
+
+    Returns
+    -------
+    `list`
+        container for path to created torrent file.
     """
-    Create new .torrent file in a seperate thread.
-
-    Args:
-        args ([`dict`]): keyword arguements for the torrent creator.
-        obj ([`torrentfile.MetaBase`]): The procedure class for creating file.
-    """
-    tfile = obj(**args)
-    tfile.write()
-
-
-def create_torrent(args):
-    """Create torrent file in seperate process."""
-    tfexe = shutil.which("torrentfile")
-    result = subprocess.run([tfexe, *args])  # nosec
-    return result
+    torrent = creator(**args)
+    outfile, _ = torrent.write()
+    name.append(outfile)
+    return name
 
 
 class SubmitButton(QPushButton):
@@ -176,11 +180,15 @@ class SubmitButton(QPushButton):
     def __init__(self, text, parent=None):
         """Public Constructor for Submit Button.
 
-        Args:
-            text (str): Text displayed on the button itself.
-            parent (QWidget, optional): This Widget's parent. Defaults None.
+        Parameters
+        ----------
+        text : `str`
+            Text displayed on the button itself.
+        parent : QWidget
+            The tab widget parent.
         """
         super().__init__(text, parent=parent)
+        self.thread = None
         self._text = text
         self.widget = parent
         self.window = parent.window
@@ -191,47 +199,56 @@ class SubmitButton(QPushButton):
     def submit(self):
         """Submit Action performed when user presses Submit Button."""
         # Gather Information from other Widgets.
-        args = []
+        args = {}
         if self.widget.private.isChecked():
-            args.append("--private")
+            args["private"] = 1
 
         # add source to metadata
         sourcetext = self.widget.source_input.text()
         if sourcetext:
-            args.extend(["--source", sourcetext])
+            args["source"] = sourcetext
 
         # add comments to metadata
         commenttext = self.widget.comment_input.text()
         if commenttext:
-            args.extend(["--comment", commenttext])
+            args["comment"] = commenttext
 
         # at least 1 tracker input is required
         announce = self.widget.announce_input.toPlainText()
         announce = [i for i in announce.split("\n") if i]
         if announce:
-            args.append("-a")
-            args.extend(announce)
+            args["announce"] = announce
 
         # Calculates piece length if not specified by user.
         outtext = os.path.realpath(self.widget.output_input.text())
         if outtext:
-            args.extend(["-o", outtext])
+            args["outfile"] = outtext
 
         current = self.widget.piece_length.currentIndex()
         if current:
             piece_length_index = self.widget.piece_length.currentIndex()
             piece_length = self.widget.piece_length.itemData(piece_length_index)
-            args.extend(["--piece-length", str(piece_length)])
+            args["piece_length"] = piece_length
 
         if self.widget.hybridbutton.isChecked():
-            args.extend(["--meta-version", "3"])
+            creator = TorrentFileHybrid
         elif self.widget.v2button.isChecked():
-            args.extend(["--meta-version", "2"])
+            creator = TorrentFileV2
+        else:
+            creator = TorrentFile
 
         path = self.widget.path_input.text()
-        args.append(path)
-        result = create_torrent(args)
-        return result
+        args["path"] = path
+        name = []
+        self.thread = Thread(
+            group=None, target=torrentfile_create, args=(args, creator, name)
+        )
+        self.thread.start()
+        return self
+
+    def join(self):
+        """Join the thread until it completes."""
+        self.thread.join()
 
 
 class OutButton(QToolButton):

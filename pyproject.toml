@@ -1,5 +1,5 @@
 [tool.bandit]
-skips = "B101"
+skips = ["B101"]
 
 
 [tool.black]
@@ -17,6 +17,8 @@ testpaths = [
     "tests",
     "torrentfileQt",
 ]
+console_output_style = "progress"
+addopts = "--maxfail=5"
 
 [build-system]
 requires = ["setuptools>=40.8.0", "wheel"]

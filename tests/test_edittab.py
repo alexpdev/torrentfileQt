@@ -21,49 +21,42 @@
 import pyben
 import pytest
 
-from tests.context import Temp, build, mktorrent, pathstruct, rmpath
+from tests import dir1, dir2, ttorrent, wind
+
+
+def test_fixtures():
+    """Test fixtures."""
+    assert dir1 and dir2 and ttorrent and wind
 
 
 @pytest.mark.parametrize("field", ["announce", "name", "private", "comment"])
-@pytest.mark.parametrize("size", list(range(16, 21)))
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_editor_torrent_loading(struct, hasher, size, field):
+def test_editor_torrent_loading(field, wind, ttorrent):
     """Testing editor widget functionality."""
-    editor = Temp.window.central.editorWidget
-    path = build(struct, size=size)
+    window, app = wind
+    editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    torrent = mktorrent(path, hasher=hasher)
-    editor.fileButton.browse(torrent)
-    Temp.app.processEvents()
+    editor.fileButton.browse(ttorrent)
+    app.processEvents()
     fields = []
     for i in range(editor.table.rowCount()):
         fields.append(editor.table.item(i, 0).text())
-    assert field in fields  # nosec
-    rmpath(path, torrent)
+    assert field in fields
 
 
-@pytest.mark.parametrize("size", list(range(16, 21)))
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_editor_torrent_saving(struct, hasher, size):
+def test_editor_torrent_saving(wind, ttorrent):
     """Testing editor widget saving functionality."""
-    editor = Temp.window.central.editorWidget
+    window, app = wind
+    editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    Temp.app.processEvents()
-    path = build(struct, size=size)
-    editor.window.central.setCurrentWidget(editor)
-    torrent = mktorrent(path, hasher=hasher)
-    editor.fileButton.browse(torrent)
-    print(editor.table.rowCount())
+    app.processEvents()
+    editor.fileButton.browse(ttorrent)
     for i in range(editor.table.rowCount()):
         item1 = editor.table.item(i, 0)
         item2 = editor.table.item(i, 1)
         if item1.text() == "announce":
             item2.setText("other")
             break
-    Temp.app.processEvents()
+    app.processEvents()
     editor.button.click()
-    meta = pyben.load(torrent)
-    assert meta["announce"] == "other"  # nosec
-    rmpath(path, torrent)
+    meta = pyben.load(ttorrent)
+    assert meta["announce"] == "other"

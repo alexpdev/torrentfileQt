@@ -23,39 +23,36 @@ from pathlib import Path
 
 import pytest
 
-from tests.context import Temp, build, fillfile, mktorrent, pathstruct, rmpath
+from tests import dir1, dir2, rmpath, tempfile, ttorrent, wind
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_missing_files_check(hasher, struct):
-    """Test missing files checker proceduire."""
-    contents = build(struct)
-    metafile = mktorrent(contents, hasher)
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    dir1 = Path(contents) / "dir1"
-    if os.path.exists(dir1):
-        for item in dir1.iterdir():
-            if item.is_file():
-                os.remove(item)
-        checktab.fileInput.setText(metafile)
-        checktab.searchInput.setText(contents)
-        checktab.checkButton.click()
-        assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
-        rmpath(metafile, contents)
+def test_fixture():
+    """Test Fixtures."""
+    assert dir1 and dir2 and ttorrent and wind
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_shorter_files_check(hasher, struct):
+def test_missing_files_check(dir2, ttorrent, wind):
     """Test missing files checker proceduire."""
-    contents = build(struct)
-    metafile = mktorrent(contents, hasher)
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    dir1 = Path(contents) / "dir1"
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    dirpath = Path(dir2)
+    for item in dirpath.iterdir():
+        if item.is_file():
+            os.remove(item)
+    checktab.fileInput.setText(ttorrent)
+    checktab.searchInput.setText(dir2)
+    checktab.checkButton.click()
+    assert checktab.treeWidget.topLevelItemCount() > 0
+
+
+def test_shorter_files_check(wind, ttorrent, dir2):
+    """Test missing files checker proceduire."""
+    window, _ = wind
+    checktab = window.central.checkWidget
+    dirpath = Path(dir2)
+    window.central.setCurrentWidget(checktab)
 
     def shortenfile(item):
         """Shave some data off the end of file."""
@@ -65,104 +62,95 @@ def test_shorter_files_check(hasher, struct):
         with open(item, "wb") as fd:
             fd.write(temp)
 
-    if os.path.exists(dir1):
-        for item in dir1.iterdir():
+    if os.path.exists(dirpath):
+        for item in dirpath.iterdir():
             if item.is_file():
                 shortenfile(item)
-    elif len(os.listdir(contents)) == 1:
-        full = os.path.join(contents, os.listdir(contents)[0])
-        shortenfile(full)
-    checktab.fileInput.setText(metafile)
-    checktab.searchInput.setText(contents)
+    checktab.fileInput.setText(ttorrent)
+    checktab.searchInput.setText(dir2)
     checktab.checkButton.click()
-    assert checktab.treeWidget.topLevelItemCount() > 0  # nosec
-    rmpath(metafile, contents)
+    assert checktab.treeWidget.topLevelItemCount() > 0
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_check_tab(hasher, struct):
+def test_check_tab(wind, ttorrent, dir1):
     """Test checker procedure."""
-    path = build(struct)
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    args = {"path": path}
-    torrent = hasher(**args)
-    metafile, _ = torrent.write()
-    contents = path
-    checktab.fileInput.setText(metafile)
-    checktab.searchInput.setText(contents)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    checktab.fileInput.setText(ttorrent)
+    checktab.searchInput.setText(dir1)
     checktab.checkButton.click()
-    assert checktab.textEdit.toPlainText() != ""  # nosec
-    rmpath(path, metafile)
+    assert checktab.textEdit.toPlainText() != ""
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-def test_check_tab_input1(struct):
+def test_check_tab_input1(wind, dir1):
     """Test checker procedure."""
-    path = build(struct)
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    checktab.browseButton2.browse(path)
-    assert checktab.searchInput.text() != ""  # nosec
-    rmpath(path)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    checktab.browseButton2.browse(dir1)
+    assert checktab.searchInput.text() != ""
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-def test_check_tab_input_2(struct):
+def test_check_tab_input_2(wind, dir1):
     """Test checker procedure."""
-    path = build(struct)
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    checktab.browseButton1.browse(path)
-    assert checktab.fileInput.text() != ""  # nosec
-    rmpath(path)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    checktab.browseButton1.browse(dir1)
+    assert checktab.fileInput.text() != ""
 
 
-def test_check_tab4():
+def test_check_tab4(wind):
     """Test checker procedure again."""
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
     tree_widget = checktab.treeWidget
-    assert tree_widget.invisibleRootItem() is not None  # nosec
+    assert tree_widget.invisibleRootItem() is not None
 
 
-def test_clear_logtext():
+def test_clear_logtext(wind):
     """Test checker logTextEdit widget function."""
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
     text_edit = checktab.textEdit
     text_edit.insertPlainText("sometext")
     text_edit.clear_data()
-    assert text_edit.toPlainText() == ""  # nosec
+    assert text_edit.toPlainText() == ""
 
 
-def test_checktab_tree():
+def test_checktab_tree(wind):
     """Check tree item counting functionality."""
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
+    window, _ = wind
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
     tree = TreeWidget(parent=checktab)
     item = TreePieceItem(type=0, tree=tree)
     item.progbar = ProgressBar(parent=tree, size=1000000)
     item.count(100000000)
-    assert item.counted == 1000000  # nosec
+    assert item.counted == 1000000
 
 
-@pytest.mark.parametrize("size", list(range(17, 22)))
-@pytest.mark.parametrize("index", list(range(1, 7)))
+@pytest.mark.parametrize("size", list(range(18, 20)))
+@pytest.mark.parametrize("index", list(range(1, 7, 2)))
 @pytest.mark.parametrize("version", [1, 2, 3])
-@pytest.mark.parametrize("ext", [".mkv", ".rar"])
-def test_singlefile(size, ext, index, version):
+@pytest.mark.parametrize("ext", [".mkv", ".rar", ".r00", ".mp3"])
+def test_singlefile(size, ext, index, version, wind):
     """Test the singlefile for create and check tabs."""
-    createtab = Temp.window.central.createWidget
-    checktab = Temp.window.central.checkWidget
-    Temp.window.central.setCurrentWidget(checktab)
-    path = os.path.join(Temp.root, "file" + Temp.stamp() + ext)
-    fillfile(path, size=size)
+    window, _ = wind
+    createtab = window.central.createWidget
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    testfile = str(tempfile(exp=size))
+    tfile = testfile + ext
+    os.rename(testfile, tfile)
+    metafile = tfile + ".torrent"
     createtab.path_input.clear()
     createtab.output_input.clear()
-    createtab.browse_file_button.browse(path)
-    createtab.output_input.setText(path + ".torrent")
+    createtab.browse_file_button.browse(tfile)
+    createtab.output_input.setText(metafile)
     createtab.piece_length.setCurrentIndex(index)
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
@@ -170,11 +158,12 @@ def test_singlefile(size, ext, index, version):
             btn.click()
             break
     createtab.submit_button.click()
+    createtab.submit_button.join()
     checktab.fileInput.clear()
     checktab.searchInput.clear()
-    checktab.fileInput.setText(path + ".torrent")
-    checktab.searchInput.setText(path)
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(tfile)
     checktab.checkButton.click()
     ptext = checktab.textEdit.toPlainText()
-    assert "100%" in ptext  # nosec
-    rmpath(path, path + ".torrent")
+    assert "100%" in ptext
+    rmpath(tfile, metafile)

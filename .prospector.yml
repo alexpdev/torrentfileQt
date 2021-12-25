@@ -4,6 +4,11 @@ doc-warnings: true
 test-warnings: true
 member-warnings: true
 
+bandit:
+  run: true
+  options:
+    config: pyproject.toml
+
 pep257:
   run: true
   disable:
@@ -34,12 +39,6 @@ pylint:
   disable:
     - R1729
 
-bandit:
-  run: true
-  assert_used:
-    skips: ['*_test.py', 'test_*.py']
-
-
 pyroma:
   run: true
 
@@ -47,7 +46,6 @@ pyflakes:
   run: true
   disable:
     - F401
-
 
 mccabe:
   run: true

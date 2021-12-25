@@ -1,4 +1,4 @@
-name: Workflow for python project
+name: CI
 
 on: [push, pull_request]
 
@@ -13,7 +13,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-
 
       - name: Codacy Coverage Report
         uses: codacy/codacy-coverage-reporter-action@v1.1
