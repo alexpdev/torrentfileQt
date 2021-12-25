@@ -19,55 +19,66 @@
 """Testing module for most of GUI."""
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from tests.context import Temp
+from tests import wind
 from torrentfileQt import qss
 from torrentfileQt.infoTab import denom
 from torrentfileQt.window import TabWidget
 
 
+def test_wind():
+    """Test wind fixture."""
+    assert wind
+
+
 def test_denom():
     """Test denom function."""
     num = denom(50000000000)
-    assert num == "50.0GB"  # nosec
+    assert num == "50.0GB"
 
 
 def test_denom_small():
     """Test denom function for small number."""
     num = denom(357)
-    assert num == "357"  # nosec
+    assert num == "357"
 
 
-def test_window1():
+def test_window1(wind):
     """Test Main Window Functionality."""
-    assert Temp.window is not None  # nosec
+    window, _ = wind
+    assert window is not None
 
 
-def test_window2():
+def test_window2(wind):
     """Test Window Functionality."""
-    assert isinstance(Temp.window, QMainWindow)  # nosec
+    window, _ = wind
+    assert isinstance(window, QMainWindow)
 
 
-def test_app1():
+def test_app1(wind):
     """Test app subclass."""
-    assert isinstance(Temp.app, QApplication)  # nosec
+    _, app = wind
+    assert isinstance(app, QApplication)
 
 
-def test_app2():
+def test_app2(wind):
     """Test app subclass instance attribute."""
-    assert Temp.app is Temp.window.app  # nosec
+    window, app = wind
+    assert app is window.app
 
 
 def test_qss():
     """For coverage reporting."""
-    assert qss is not None  # nosec
+    assert qss is not None
 
 
-def test_window_menubar1():
+def test_window_menubar1(wind):
     """Test window Menubar widget."""
-    assert Temp.window.menubar is not None  # nosec
+    window, _ = wind
+    assert window.menubar is not None
 
 
-def test_tab_widget():
+def test_tab_widget(wind):
     """Test window Tab widget."""
-    tabwidget = Temp.window.central
-    assert isinstance(tabwidget, TabWidget)  # nosec
+    window, _ = wind
+    tabwidget = window.central
+    assert isinstance(tabwidget, TabWidget)

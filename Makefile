@@ -85,7 +85,7 @@ lint: ## run linters on codebase
 	prospector tests
 
 test: lint ## run tests quickly with the default Python
-	pytest tests --cov=torrentfileQt --cov=tests --pylint --maxfail=2
+	pytest tests --cov=torrentfileQt --cov=tests
 	coverage report
 	coverage xml -o coverage.xml
 	bash codacy.sh report -r coverage.xml

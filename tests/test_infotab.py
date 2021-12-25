@@ -17,45 +17,89 @@
 # limitations under the License.
 ##############################################################################
 """Testing module for most of GUI."""
-import os
 
 import pytest
+from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests.context import Temp, build, fillfile, mktorrent, pathstruct, rmpath
+from tests import dir2, dir3, rmpath, tempfile, ttorrent, wind
 
 
-@pytest.mark.parametrize("struct", pathstruct())
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_info_tab_select1(struct, hasher):
+def test_fixture():
+    """Test fixtures."""
+    assert dir2 and tempfile and ttorrent and wind and dir3
+
+
+def test_info_tab_select1(wind, ttorrent):
     """Test Info tab select1."""
-    path = build(struct)
-    torrent = mktorrent(path, hasher)
-    infotab = Temp.window.central.infoWidget
-    Temp.app.processEvents()
-    Temp.window.central.setCurrentWidget(infotab)
+    window, app = wind
+    infotab = window.central.infoWidget
+    app.processEvents()
+    window.central.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(path=torrent)
-    assert infotab.nameEdit.text() != ""  # nosec
-    rmpath(path, torrent)
+    button.selectTorrent(path=ttorrent)
+    assert infotab.nameEdit.text() != ""
 
 
-@pytest.mark.parametrize("size", list(range(16, 23)))
-@pytest.mark.parametrize("ext", [".mp4", ".rar", ".m4a"])
-@pytest.mark.parametrize("hasher", Temp.hashers)
-def test_infotab_select2(size, hasher, ext):
+@pytest.mark.parametrize(
+    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
+def test_infotab_select2(wind, dir2, creator):
     """Test getting info for single file torrent."""
-    name = f"file{Temp.stamp()}{ext}"
-    path = os.path.join(Temp.root, name)
-    fillfile(path, size)
-    torrent = hasher(path=path)
+    window, app = wind
+    torrent = creator(path=dir2)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
     del torrent.meta["announce list"]
     outfile, _ = torrent.write()
-    infotab = Temp.window.central.infoWidget
-    Temp.app.processEvents()
-    Temp.window.central.setCurrentWidget(infotab)
+    infotab = window.central.infoWidget
+    app.processEvents()
+    window.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=outfile)
-    assert infotab.nameEdit.text() == name  # nosec
-    rmpath(path, outfile)
+    name = torrent.meta["info"]["name"]
+    assert infotab.nameEdit.text() == name
+    rmpath(outfile)
+
+
+@pytest.mark.parametrize(
+    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
+@pytest.mark.parametrize("size", list(range(16, 22)))
+def test_infotab_single(wind, creator, size):
+    """Test getting info for single file torrent."""
+    window, app = wind
+    tfile = tempfile(exp=size)
+    torrent = creator(path=tfile)
+    del torrent.meta["created by"]
+    del torrent.meta["creation date"]
+    del torrent.meta["announce list"]
+    outfile, _ = torrent.write()
+    infotab = window.central.infoWidget
+    app.processEvents()
+    window.central.setCurrentWidget(infotab)
+    button = infotab.selectButton
+    button.selectTorrent(path=outfile)
+    name = torrent.meta["info"]["name"]
+    assert infotab.nameEdit.text() == name
+    rmpath(outfile)
+
+
+@pytest.mark.parametrize(
+    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
+)
+def test_infotab_nested(wind, creator, dir3):
+    """Test getting info for single file torrent."""
+    window, app = wind
+    torrent = creator(path=dir3)
+    del torrent.meta["created by"]
+    del torrent.meta["creation date"]
+    del torrent.meta["announce list"]
+    outfile, _ = torrent.write()
+    infotab = window.central.infoWidget
+    app.processEvents()
+    window.central.setCurrentWidget(infotab)
+    button = infotab.selectButton
+    button.selectTorrent(path=outfile)
+    name = torrent.meta["info"]["name"]
+    assert infotab.nameEdit.text() == name
+    rmpath(outfile)
