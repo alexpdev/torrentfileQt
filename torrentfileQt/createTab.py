@@ -22,6 +22,7 @@ Tab Widget containing all controls for creating a new .torrent file.
 User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
+import json
 import os
 from pathlib import Path
 from threading import Thread
@@ -62,27 +63,33 @@ class CreateWidget(QWidget):
         self.hlayout2 = QHBoxLayout()
         self.hlayout3 = QHBoxLayout()
         self.hlayout0 = QHBoxLayout()
+        # self.hlayout4 = QHBoxLayout()
 
-        self.path_label = QLabel("Torrent Content: ", parent=self)
-        self.output_label = QLabel("Save Location: ", parent=self)
+        self.path_label = QLabel("Path: ", parent=self)
+        self.output_label = QLabel("Save To: ", parent=self)
         self.version_label = QLabel("Meta Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
-        self.announce_label = QLabel("Trackers: ", parent=self)
+        self.announce_label = QLabel("Tracker URLs: ", parent=self)
+        # self.profile_label = QLabel("Profile: ", parent=self)
+        self.web_seed_label = QLabel("Web-seed URLs:")
         self.source_label = QLabel("Source: ", parent=self)
-        self.piece_length_label = QLabel("Piece Length: ", parent=self)
+        self.piece_length_label = QLabel("Piece Size: ", parent=self)
 
         self.path_input = QLineEdit(parent=self)
         self.output_input = QLineEdit(parent=self)
         self.source_input = QLineEdit(parent=self)
         self.comment_input = QLineEdit(parent=self)
 
+        # self.profile_input = ComboBox.profiles(parent=self)
         self.announce_input = QPlainTextEdit(parent=self)
-        self.piece_length = ComboBox(parent=self)
+        self.web_seed_input = QPlainTextEdit(parent=self)
+        self.piece_length = ComboBox.piece_length(parent=self)
         self.private = QCheckBox("Private", parent=self)
         self.submit_button = SubmitButton("Create Torrent", parent=self)
         self.browse_dir_button = BrowseDirButton(parent=self)
         self.browse_file_button = BrowseFileButton(parent=self)
         self.output_button = OutButton(parent=self)
+        # self.profile_button = ProfileButton(parent=self)
         self.v1button = QRadioButton("v1 (default)", parent=self)
         self.v1button.setChecked(True)
 
@@ -91,17 +98,17 @@ class CreateWidget(QWidget):
         self.spacer1 = QSpacerItem(150, 0)
         self.spacer2 = QSpacerItem(70, 0)
 
-        self.path_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        # self.profile_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.path_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.output_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.output_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.version_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.source_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.source_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.comment_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.comment_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.hlayout0.addWidget(self.v1button)
         self.hlayout0.addWidget(self.v2button)
@@ -114,23 +121,29 @@ class CreateWidget(QWidget):
         self.hlayout2.addItem(self.spacer2)
         self.hlayout3.addWidget(self.output_input)
         self.hlayout3.addWidget(self.output_button)
+        # self.hlayout4.addWidget(self.profile_input)
+        # self.hlayout4.addWidget(self.profile_button)
 
-        self.layout.addWidget(self.path_label, 0, 0, 2, 1)
-        self.layout.addWidget(self.path_input, 0, 1, 1, 3)
-        self.layout.addLayout(self.hlayout1, 1, 1, 1, 3)
-        self.layout.addWidget(self.version_label, 4, 0, 1, 1)
-        self.layout.addLayout(self.hlayout0, 4, 1, 1, 3)
-        self.layout.addWidget(self.piece_length_label, 3, 0, 1, 1)
-        self.layout.addLayout(self.hlayout2, 3, 1, 1, 3)
-        self.layout.addWidget(self.output_label, 2, 0, 1, 1)
-        self.layout.addLayout(self.hlayout3, 2, 1, 1, 3)
-        self.layout.addWidget(self.source_label, 5, 0, 1, 1)
-        self.layout.addWidget(self.source_input, 5, 1, 1, 3)
-        self.layout.addWidget(self.comment_label, 6, 0, 1, 1)
-        self.layout.addWidget(self.comment_input, 6, 1, 1, 3)
-        self.layout.addWidget(self.announce_label, 7, 0, 1, 1)
-        self.layout.addWidget(self.announce_input, 7, 1, 1, 3)
-        self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
+        # self.layout.addWidget(self.profile_label,0,0,1,1)
+        # self.layout.addLayout(self.hlayout4,0,1,1,1)
+        self.layout.addWidget(self.path_label, 1, 0, 2, 1)
+        self.layout.addWidget(self.path_input, 1, 1, 1, 3)
+        self.layout.addLayout(self.hlayout1, 2, 1, 1, 3)
+        self.layout.addWidget(self.version_label, 5, 0, 1, 1)
+        self.layout.addLayout(self.hlayout0, 5, 1, 1, 3)
+        self.layout.addWidget(self.piece_length_label, 4, 0, 1, 1)
+        self.layout.addLayout(self.hlayout2, 4, 1, 1, 3)
+        self.layout.addWidget(self.output_label, 3, 0, 1, 1)
+        self.layout.addLayout(self.hlayout3, 3, 1, 1, 3)
+        self.layout.addWidget(self.source_label, 9, 0, 1, 1)
+        self.layout.addWidget(self.source_input, 9, 1, 1, 3)
+        self.layout.addWidget(self.comment_label, 8, 0, 1, 1)
+        self.layout.addWidget(self.comment_input, 8, 1, 1, 3)
+        self.layout.addWidget(self.announce_label, 6, 0, 1, 1)
+        self.layout.addWidget(self.announce_input, 6, 1, 1, 3)
+        self.layout.addWidget(self.web_seed_label, 7, 0, 1, 1)
+        self.layout.addWidget(self.web_seed_input, 7, 1, 1, 3)
+        self.layout.addWidget(self.submit_button, 10, 0, 1, 4)
         for i in range(1, self.layout.columnCount()):
             self.layout.setColumnStretch(i, 1)
         self.layout.setObjectName("createWidget_formLayout")
@@ -321,6 +334,16 @@ class BrowseFileButton(QPushButton):
                     break
 
 
+class ProfileButton(QPushButton):
+    """Save the current fields values as a profile."""
+
+    def __init__(self, parent=None):
+        """Save current fields as a profile."""
+        super().__init__(parent=parent)
+        self.setText("Save Profile")
+
+
+
 class BrowseDirButton(QPushButton):
     """Browse filesystem folders for path."""
 
@@ -374,10 +397,29 @@ class ComboBox(QComboBox):
         """Constructor for ComboBox."""
         super().__init__(parent=parent)
         self.addItem("")
-        for exp in range(14, 24):
+        self.setEditable(False)
+        self.profile_data = None
+
+    @classmethod
+    def profiles(cls, parent=None):
+        """Create a profiles combobox."""
+        box = cls(parent=parent)
+        if os.path.exists(os.path.join(os.getcwd(), "profiles.json")):
+            with open("profiles.json", "rt") as js:
+                profs = json.load(js)
+                box.profile_data = profs
+                for name in profs:
+                    box.addItem(name)
+        return box
+
+    @classmethod
+    def piece_length(cls, parent=None):
+        """Create a piece_length combobox."""
+        box = cls(parent=parent)
+        for exp in range(14, 26):
             if exp < 20:
                 item = str((2 ** exp) // (2 ** 10)) + "KB"
             else:
                 item = str((2 ** exp) // (2 ** 20)) + "MB"
-            self.addItem(item, 2 ** exp)
-        self.setEditable(False)
+            box.addItem(item, 2 ** exp)
+        return box

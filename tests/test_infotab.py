@@ -49,7 +49,7 @@ def test_infotab_select2(wind, dir2, creator):
     torrent = creator(path=dir2)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
-    del torrent.meta["announce list"]
+    del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
     infotab = window.central.infoWidget
     app.processEvents()
@@ -72,7 +72,7 @@ def test_infotab_single(wind, creator, size):
     torrent = creator(path=tfile)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
-    del torrent.meta["announce list"]
+    del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
     infotab = window.central.infoWidget
     app.processEvents()
@@ -93,7 +93,7 @@ def test_infotab_nested(wind, creator, dir3):
     torrent = creator(path=dir3)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
-    del torrent.meta["announce list"]
+    del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
     infotab = window.central.infoWidget
     app.processEvents()

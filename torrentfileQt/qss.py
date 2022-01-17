@@ -17,7 +17,6 @@
 # limitations under the License.
 ##############################################################################
 """Module for stylesheets."""
-import os
 
 stylesheet = (
     """
@@ -204,7 +203,7 @@ stylesheet = (
         border-style: outset;
         border-color: #f51;
         border-width: 3px;
-        font-size: 11pt;
+        font-size: 10pt;
         color: #e9e7e6;
         padding-left: 8px;
         padding-right: 8px;
@@ -241,7 +240,7 @@ stylesheet = (
         border-width: 3px;
         padding-top: 4px;
         padding-bottom: 4px;
-        font: 14pt bold;
+        font: 13pt bold;
         color: #dedede;
         background-color: #111;
     }
@@ -266,7 +265,7 @@ stylesheet = (
         background-color: #444;
     }
     QToolButton {
-        font-size: 10pt;
+        font-size: 9pt;
         border-style: outset;
         border-color: #e67e22;
         border-width: 3px;
@@ -284,7 +283,7 @@ stylesheet = (
     }
     QRadioButton {
         background-color: transparent;
-        font-size: 12pt;
+        font-size: 11pt;
         border: transparent;
         padding-top: 2px;
         margin-top: 2px;
@@ -315,7 +314,7 @@ stylesheet = (
     QCheckBox {
         color: #fff;
         padding: 4px;
-        font-size: 12pt;
+        font-size: 11pt;
         border-color: transparent;
     }
     QCheckBox:disabled {
@@ -396,7 +395,7 @@ stylesheet = (
         border-color: #e57e22;
         border-width: 2px;
         border-style: ridge;
-        font-size: 12pt;
+        font-size: 11pt;
         selection-background-color: #3a3a3a;
         selection-color: #FFF;
         gridline-color: #ac4a02;
@@ -407,7 +406,7 @@ stylesheet = (
     }
     QTableWidget QHeaderView {
         border: 1px solid #e57e22;
-        font-size: 12pt;
+        font-size: 11pt;
         background-color: black;
         color: white;
     }
@@ -419,17 +418,14 @@ stylesheet = (
         background-color: black;
         margin: 2px;
     }
-
     QMenu::item {
         padding: 2px 25px 2px 20px;
         border: 1px solid transparent;
     }
-
     QMenu::item:selected {
         border-color: #e57e22;
         background: #333;
     }
-
     QMenu::icon:checked {
         background: gray;
         border: 1px inset gray;
@@ -439,21 +435,18 @@ stylesheet = (
         bottom: 1px;
         left: 1px;
     }
-
     QMenu::separator {
         height: 2px;
         background: lightblue;
         margin-left: 10px;
         margin-right: 5px;
     }
-
     QMenu::indicator {
         width: 13px;
         height: 13px;
     }
-
     QMenuBar {
-        font-size: 10pt;
+        font-size: 9pt;
         border-bottom: 3px groove #115;
         background:rgb(30, 30, 30);
         color: #FFFFFF;
@@ -465,7 +458,7 @@ stylesheet = (
         border-right-color: transparent;
         border-left-color: transparent;
         border-bottom-color: transparent;
-        font-size: 10px;
+        font-size: 9pt;
         padding: 6px;
         padding-top: 2px;
         background: transparent;
@@ -491,19 +484,18 @@ stylesheet = (
         padding: 4px;
         margin-top: 3px;
         margin-bottom: 3px;
-        font: 10pt;
+        font: 9pt;
     }
     QLabel {
         padding: 2px;
         padding-top: 4px;
         padding-bottom: 4px;
-        font-size: 11pt;
+        font-size: 10pt;
         font-weight: bold;
     }
     QStatusBar {
         border: 2px groove black;
     }
-
     QComboBox {
         border: 2px solid #f73;
         padding: 1px 1px 1px 3px;
@@ -528,12 +520,10 @@ stylesheet = (
     QComboBox QAbstractItemView {
         border: 1px solid #444;
         selection-background-color: lightgray;
-    }"""
-    + f"""
-    QComboBox::down-arrow {{
-        image: url({os.path.join(os.environ["ASSETS"], "icons",
-        "down-arrow16.png")});
-    }}
+    }
+    QComboBox::down-arrow {
+        image: url("./assets/icons/down-arrow16.png");
+    }
     """
 )
 
