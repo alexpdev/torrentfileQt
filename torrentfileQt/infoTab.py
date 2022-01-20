@@ -296,8 +296,8 @@ class SelectButton(QPushButton):
                     keywords[kw] = ""
 
             # extract announce list
-            if "announce list" in meta:
-                alst = [url for urlst in meta["announce list"] for url in urlst]
+            if "announce-list" in meta:
+                alst = [url for urlst in meta["announce-list"] for url in urlst]
                 keywords["announce"] = alst + [meta["announce"]]
             else:
                 keywords["announce"] = [meta["announce"]]

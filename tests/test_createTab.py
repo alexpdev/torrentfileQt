@@ -96,7 +96,7 @@ def test_create_tab_dir(dir2, wind):
     "field",
     [
         "announce",
-        "announce list",
+        "announce-list",
         "source",
         "private",
         "comment",

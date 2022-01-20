@@ -65,21 +65,19 @@ upgrade: clean  ## upgrade all dependencies
 	pip install --upgrade --pre -rrequirements.txt
 
 clean-build: ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
-	rm -fr .tox/
-	rm -f .coverage
-	rm -fr htmlcov/
+	rm -frv build/
+	rm -frv dist/
+	rm -frv .eggs/
+	rm -frv .tox/
+	rm -fv .coverage
+	rm -frv htmlcov/
 	rm -rfv */__pycache__
-	rm -f corbertura.xml
-	rm -fr .pytest_cache
-	rm -rf *.egg-info
+	rm -fv corbertura.xml
+	rm -frv .pytest_cache
+	rm -rfv *.egg-info
 	rm -rfv tests/TESTINGDIR
 
 lint: ## run linters on codebase
-	pip install --upgrade --force-reinstall --pre --no-cache torrentfile
-	isort torrentfileQt tests
 	pyroma .
 	prospector torrentfileQt
 	prospector tests
