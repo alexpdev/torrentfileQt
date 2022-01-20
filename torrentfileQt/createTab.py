@@ -22,7 +22,7 @@ Tab Widget containing all controls for creating a new .torrent file.
 User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
-import json
+# import json
 import os
 from pathlib import Path
 from threading import Thread
@@ -334,14 +334,13 @@ class BrowseFileButton(QPushButton):
                     break
 
 
-class ProfileButton(QPushButton):
-    """Save the current fields values as a profile."""
+# class ProfileButton(QPushButton):
+#     """Save the current fields values as a profile."""
 
-    def __init__(self, parent=None):
-        """Save current fields as a profile."""
-        super().__init__(parent=parent)
-        self.setText("Save Profile")
-
+#     def __init__(self, parent=None):
+#         """Save current fields as a profile."""
+#         super().__init__(parent=parent)
+#         self.setText("Save Profile")
 
 
 class BrowseDirButton(QPushButton):
@@ -400,17 +399,17 @@ class ComboBox(QComboBox):
         self.setEditable(False)
         self.profile_data = None
 
-    @classmethod
-    def profiles(cls, parent=None):
-        """Create a profiles combobox."""
-        box = cls(parent=parent)
-        if os.path.exists(os.path.join(os.getcwd(), "profiles.json")):
-            with open("profiles.json", "rt") as js:
-                profs = json.load(js)
-                box.profile_data = profs
-                for name in profs:
-                    box.addItem(name)
-        return box
+    # @classmethod
+    # def profiles(cls, parent=None):
+    #     """Create a profiles combobox."""
+    #     box = cls(parent=parent)
+    #     if os.path.exists(os.path.join(os.getcwd(), "profiles.json")):
+    #         with open("profiles.json", "rt") as js:
+    #             profs = json.load(js)
+    #             box.profile_data = profs
+    #             for name in profs:
+    #                 box.addItem(name)
+    #     return box
 
     @classmethod
     def piece_length(cls, parent=None):
