@@ -129,6 +129,7 @@ def tempdir(ext="1", files=None):
             f"dir{ext}/file2.mp4",
             f"dir{ext}/file3.mp3",
             f"dir{ext}/file4.zip",
+            f"dir{ext}/file5.r01",
         ]
     paths = []
     for path in files:
