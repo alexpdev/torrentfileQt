@@ -270,10 +270,10 @@ class SelectButton(QPushButton):
         if path:
             meta = pyben.load(path)
             info = meta["info"]
-            keywords = {}
-            keywords["path"] = path
-            keywords["piece_length"] = info["piece length"]
-
+            keywords = {
+                "path": path,
+                "piece_length": info["piece length"]
+            }
             # get meta version
             if "meta version" not in info:
                 keywords["meta version"] = 1
