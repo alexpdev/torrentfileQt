@@ -18,6 +18,8 @@
 ##############################################################################
 """Module for the menu bar."""
 
+import os
+import json
 import webbrowser
 
 from PySide6.QtGui import QAction
@@ -34,7 +36,7 @@ class Menu(QMenu):
         self.txt = text
         font = self.font()
         self.setObjectName(text + "MenuObject")
-        font.setPointSize(11)
+        font.setPointSize(10)
         self.setFont(font)
 
 
@@ -47,25 +49,45 @@ class MenuBar(QMenuBar):
         self.window = parent
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
+        self.profile_menu = Menu("Profiles")
         self.addMenu(self.file_menu)
         self.addMenu(self.help_menu)
+        self.addMenu(self.profile_menu)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
         self.actionRepo = QAction(self.window)
+        self.actionAddProfile = QAction(self.window)
         self.actionRepo.setText("Github Repository")
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
         self.actionDocs.setText("Documentation")
+        self.actionAddProfile.setText("Add Profile")
+        self.home = os.path.join(os.path.expanduser("~"), ".torrentfileQt")
+        self.profile_actions = []
+        if os.path.exists(self.home):
+            profiles_path = os.path.join(self.home, "profiles.json")
+            if os.path.exists(profiles_path):
+                with open(profiles_path, "rt") as jsonfile:
+                    profiles = json.load(jsonfile)
+                for profile in profiles:
+                    action = QAction(self.window)
+                    action.setText(profile)
+                    action.name = profile
+                    self.profile_menu.addAction(action)
+                    self.profile_actions.append(action)
         self.file_menu.addAction(self.actionExit)
         self.help_menu.addAction(self.actionAbout)
         self.help_menu.addAction(self.actionDocs)
         self.help_menu.addAction(self.actionRepo)
+        self.profile_menu.addAction(self.actionAddProfile)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_qt)
         self.actionDocs.triggered.connect(documentation)
         self.actionRepo.triggered.connect(repository)
+        self.actionAddProfile.triggered.connect(self.add_profile)
         self.actionDocs.setObjectName("actionDocs")
+        self.actionAddProfile.setObjectName("actionAddProfile")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
 
@@ -76,6 +98,9 @@ class MenuBar(QMenuBar):
     def exit_app(self):
         """Close application."""
         self.parent().app.quit()  # pragma: nocover
+
+    def add_profile(self):
+        """Add a profile."""
 
 
 def documentation():  # pragma: no cover
