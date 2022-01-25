@@ -54,7 +54,7 @@ class Window(QMainWindow):
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
-        self.icon = QIcon(os.path.join(ASSETS, "torrentfile.png"))
+        self.icon = QIcon(os.path.join(ASSETS, "favicon.png"))
         self.setObjectName("Mainwindow")
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)

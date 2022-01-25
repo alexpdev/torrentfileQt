@@ -95,7 +95,7 @@ release: clean test ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
-build:  clean install
+build:  clean
 	python setup.py sdist bdist_wheel bdist_egg
 	rm -rfv ../runner
 	mkdir ../runner
