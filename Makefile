@@ -60,10 +60,6 @@ enviornment:  ## Actiate local python environmant
 
 clean: clean-build ## remove all build, test, coverage and Python artifacts
 
-upgrade: clean  ## upgrade all dependencies
-	python -m pip install --upgrade pip
-	pip install --upgrade --pre -rrequirements.txt
-
 clean-build: ## remove build artifacts
 	rm -frv build/
 	rm -frv dist/
@@ -83,6 +79,8 @@ lint: ## run linters on codebase
 	prospector tests
 
 test: lint ## run tests quickly with the default Python
+	pip install --upgrade --force-reinstall --pre --no-cache torrentfile
+	pip install -e .
 	pytest tests --cov=torrentfileQt --cov=tests
 	coverage report
 	coverage xml -o coverage.xml
@@ -91,24 +89,11 @@ test: lint ## run tests quickly with the default Python
 push: clean test ## push changes to remote
 	git add .
 	git commit -m "$m"
-	git push -u origin other
-
-branch: ## create dev git branch
-	git stash
-	git checkout main
-	git pull
-	git branch -d dev
-	git branch dev
-	git push -u origin dev
-	git stash pop
+	git push
 
 release: clean test ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
-
-install: ## install app in eedit mode
-	pip install --upgrade --force-reinstall --pre torrentfile pyben
-	pip install -e .
 
 build:  clean install
 	python setup.py sdist bdist_wheel bdist_egg
@@ -130,4 +115,4 @@ build:  clean install
 	cp -rfv ../runner/dist/* ./dist/
 	@python -c "$$FIXES"
 
-full: clean environment upgrade test push install release build
+full: clean test push release build
