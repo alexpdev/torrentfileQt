@@ -189,7 +189,7 @@ def dir3():
         "dir3/file2.zip",
         "dir3/subdir/subsubdir/file3.mp3",
         "dir3/file4.txt",
-        "dir3/subdir/file5.epub"
+        "dir3/subdir/file5.epub",
     ]
     root = tempdir(files=files)
     yield root
@@ -232,7 +232,7 @@ def ttorrent(request, dir2):
         "outfile": str(dir2) + "t.torrent",
         "comment": "This is a comment",
         "source": "SomeSource",
-        "private": 1
+        "private": 1,
     }
 
     torrent = request.param(**args)
