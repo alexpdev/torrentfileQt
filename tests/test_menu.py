@@ -99,7 +99,7 @@ def test_add_profile_without_profiles(wind):
     path = window.menubar.home
     alt = Path(__file__).parent / "alt"
     if os.path.exists(window.menubar.home):
-        os.rename(path, alt)
+        os.rename(path, alt)  # pragma: nocover
     tab = window.central.createWidget
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
@@ -107,3 +107,6 @@ def test_add_profile_without_profiles(wind):
     profiles = window.menubar.profiles
     profs = json.load(open(profiles))
     assert "test" in profs
+    rmpath(path)
+    if os.path.exists(alt):
+        os.rename(alt, path)  # pragma: nocover
