@@ -68,8 +68,8 @@ class CreateWidget(QWidget):
         self.output_label = QLabel("Save To: ", parent=self)
         self.version_label = QLabel("Meta Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
-        self.announce_label = QLabel("Tracker URLs: ", parent=self)
-        self.web_seed_label = QLabel("Web-seed URLs:")
+        self.announce_label = QLabel("Trackers: ", parent=self)
+        self.web_seed_label = QLabel("Web-Seeds: ")
         self.source_label = QLabel("Source: ", parent=self)
         self.piece_length_label = QLabel("Piece Size: ", parent=self)
 
@@ -94,10 +94,13 @@ class CreateWidget(QWidget):
         self.spacer1 = QSpacerItem(150, 0)
         self.spacer2 = QSpacerItem(70, 0)
 
-        self.path_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
         sizePolicy = self.path_input.sizePolicy()
         sizePolicy.setHorizontalPolicy(sizePolicy.MinimumExpanding)
+
+        self.announce_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.web_seed_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.path_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.path_input.setSizePolicy(sizePolicy)
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.output_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -392,18 +395,6 @@ class ComboBox(QComboBox):
         self.addItem("")
         self.setEditable(False)
         self.profile_data = None
-
-    # @classmethod
-    # def profiles(cls, parent=None):
-    #     """Create a profiles combobox."""
-    #     box = cls(parent=parent)
-    #     if os.path.exists(os.path.join(os.getcwd(), "profiles.json")):
-    #         with open("profiles.json", "rt") as js:
-    #             profs = json.load(js)
-    #             box.profile_data = profs
-    #             for name in profs:
-    #                 box.addItem(name)
-    #     return box
 
     @classmethod
     def piece_length(cls, parent=None):

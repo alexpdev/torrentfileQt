@@ -79,8 +79,6 @@ lint: ## run linters on codebase
 	prospector tests
 
 test: lint ## run tests quickly with the default Python
-	pip install --upgrade --force-reinstall --pre --no-cache torrentfile
-	pip install -e .
 	pytest tests --cov=torrentfileQt --cov=tests
 	coverage report
 	coverage xml -o coverage.xml

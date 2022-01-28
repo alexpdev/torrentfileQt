@@ -1,5 +1,5 @@
 ##############################################################################
-# Copyright 2020 AlexPDev
+# Copyright 20** AlexPDev
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,4 +15,4 @@
 ##############################################################################
 """Application version id tag."""
 
-__version__ = "0.2.7"
+__version__ = "0.2.9"

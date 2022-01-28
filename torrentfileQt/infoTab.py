@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
                                QPushButton, QTreeWidget, QTreeWidgetItem,
                                QWidget)
 
-from torrentfileQt.qss import infoLineEdit
+from torrentfileQt.qss import infoLineEdit, infoLineEditLight
 
 ASSETS = os.environ["ASSETS"]
 
@@ -355,12 +355,25 @@ class Label(QLabel):
 class InfoLineEdit(QLineEdit):
     """Line Edit Widget."""
 
+    style = {
+        "dark": infoLineEdit,
+        "light": infoLineEditLight
+    }
+
     def __init__(self, parent=None):
         """Constructor for line edit widget."""
         super().__init__(parent=parent)
+        self.window = parent.window
         self.setReadOnly(True)
+        self.theme = "dark"
         self.setStyleSheet(infoLineEdit)
         self.setDragEnabled(True)
+        self.window.ThemeChanged.connect(self.change_stylesheet)
+
+    def change_stylesheet(self):
+        """Change the stylesheet with theme changes."""
+        self.theme = "light" if self.theme == "dark" else "dark"
+        self.setStyleSheet(self.style.get(self.theme))
 
 
 def denom(num):

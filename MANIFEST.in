@@ -4,15 +4,9 @@ include Makefile
 include package.json
 include requirements.txt
 
-recursive-include assets/icons *.png
-recursive-include assets/screenshots *.png
-
-
 graft assets
-graft docs
 graft tests
 graft torrentfileQt
-
 
 global-exclude *.py[cod]
 prune **/__pycache__

@@ -25,6 +25,8 @@ import webbrowser
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog
 
+from torrentfileQt.qss import dark_theme, light_theme
+
 
 class Menu(QMenu):
     """Menu item for MenuBar widget."""
@@ -98,13 +100,17 @@ class MenuBar(QMenuBar):
         self.help_menu = Menu("Help")
         self.profile_menu = Menu("Profiles")
         self.addMenu(self.file_menu)
-        self.addMenu(self.help_menu)
         self.addMenu(self.profile_menu)
+        self.addMenu(self.help_menu)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
         self.actionRepo = QAction(self.window)
+        self.actionDarkTheme = QAction(self.window)
+        self.actionLightTheme = QAction(self.window)
         self.actionAddProfile = QAction(self.window)
+        self.actionDarkTheme.setText("Dark Theme")
+        self.actionLightTheme.setText("Light Theme")
         self.actionRepo.setText("Github Repository")
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
@@ -112,6 +118,8 @@ class MenuBar(QMenuBar):
         self.actionAddProfile.setText("Add Profile")
         self.add_profile_actions()
         self.file_menu.addAction(self.actionExit)
+        self.file_menu.addAction(self.actionLightTheme)
+        self.file_menu.addAction(self.actionDarkTheme)
         self.help_menu.addAction(self.actionAbout)
         self.help_menu.addAction(self.actionDocs)
         self.help_menu.addAction(self.actionRepo)
@@ -121,10 +129,22 @@ class MenuBar(QMenuBar):
         self.actionDocs.triggered.connect(documentation)
         self.actionRepo.triggered.connect(repository)
         self.actionAddProfile.triggered.connect(self.add_profile)
+        self.actionLightTheme.triggered.connect(self.light_theme)
+        self.actionDarkTheme.triggered.connect(self.dark_theme)
+        self.actionLightTheme.setObjectName("actionLightTheme")
+        self.actionDarkTheme.setObjectName("actiondDarkTheme")
         self.actionDocs.setObjectName("actionDocs")
         self.actionAddProfile.setObjectName("actionAddProfile")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
+
+    def light_theme(self):
+        """Change the GUI theme for the application."""
+        self.window.setStyleSheet(light_theme)
+
+    def dark_theme(self):
+        """Change the GUI application to dark theme."""
+        self.window.setStyleSheet(dark_theme)
 
     def add_profile_actions(self):
         """Add action class for each profile found in profiles."""

@@ -24,13 +24,15 @@ import sys
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
                                QVBoxLayout)
+from PySide6.QtCore import Signal
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
+from torrentfileQt.magnetTab import MagnetWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import stylesheet
+from torrentfileQt.qss import dark_theme
 
 ASSETS = os.environ["ASSETS"]
 
@@ -41,6 +43,8 @@ class Window(QMainWindow):
     Subclass:
         QMainWindow (QWidget): PySide6 QMainWindow
     """
+
+    ThemeChanged = Signal()
 
     def __init__(self, parent=None, app=None):
         """Constructor for Window class.
@@ -59,9 +63,12 @@ class Window(QMainWindow):
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
-        self.setStyleSheet(stylesheet)
         self.resize(750, 650)
         self._setupUI()
+        self.settings = {
+            "theme": dark_theme
+        }
+        self.setStyleSheet(self.settings.get('theme'))
 
     def _setupUI(self):
         """Internal function for setting up UI elements."""
@@ -73,6 +80,12 @@ class Window(QMainWindow):
         self.menubar.setObjectName("menubar")
         self.central.setObjectName("centralTabWidget")
         self.centralLayout.setObjectName("centralLayout")
+
+    def change_theme(self, theme):
+        """Change the window theme."""
+        self.settings["theme"] = theme
+        self.setStyleSheet(theme)
+        self.ThemeChanged.emit()
 
 
 class TabWidget(QTabWidget):
@@ -90,10 +103,13 @@ class TabWidget(QTabWidget):
         self.checkWidget = CheckWidget(parent=self)
         self.infoWidget = InfoWidget(parent=self)
         self.editorWidget = EditorWidget(parent=self)
+        self.magnetWidget = MagnetWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.editorWidget, "Torrent Editor")
+        self.addTab(self.magnetWidget, "Magnet URL")
+        self.magnetWidget.setObjectName("magnetWidget")
         self.createWidget.setObjectName("createTab")
         self.checkWidget.setObjectName("checkTab")
         self.infoWidget.setObjectName("infoTab")
