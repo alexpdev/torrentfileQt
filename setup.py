@@ -23,13 +23,16 @@ import json
 from setuptools import find_packages, setup
 from torrentfileQt.version import __version__
 
+
 def get_info():
+    """Gather information from package files."""
     info = json.load(open("package.json"))
     if info["version"] != __version__:
         info["version"] = __version__
-        json.dump(info, open("package.json","wt"), indent=2)
+        json.dump(info, open("package.json", "wt"), indent=2)
     info["long_description"] = open("README.md").read()
     return info
+
 
 INFO = get_info()
 
