@@ -195,7 +195,7 @@ QScrollBar::sub-line:vertical:hover, QScrollBar::sub-line:vertical:on {
     subcontrol-origin: margin;
 }
 QTabWidget::pane {
-    border-top: 2px solid black
+    border-top: 2px solid black;
 }
 QTabWidget::tab-bar {
     left: 5px;
@@ -374,6 +374,7 @@ QTreeWidget QHeaderView::section {
     color: white;
 }
 QTreeWidget QProgressBar {
+    color: black;
     background-color: #7a7a7a;
     border: 1px solid black;
     border-radius: 3px;
@@ -384,9 +385,9 @@ QTreeWidget QProgressBar {
 QTreeWidget QProgressBar::chunk {
     background-color: #3ae1de;
     margin-left: .5px;
-    margin-right: .5px;
-    margin-top: 1px;
-    margin-bottom: 1px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
     border-radius: 3px;
     width: 16px;
 }
@@ -545,6 +546,7 @@ QListWidget,
 QTableWidget,
 QComboBox,
 QTreeWidget {
+    color: black;
     background-color: #cdd;
     border-color: black;
     border-width: 1px;
@@ -582,6 +584,47 @@ QDialog,
 QWidget {
     background-color: #eae7e9;
 }
+QTabWidget::pane {
+    border-top: 0px solid
+}
+QTabWidget::tab-bar {
+    left: 5px;
+}
+QTabBar {
+    border-color: transparent;
+}
+QTabBar::tab {
+    border-style: outset;
+    border-color: black;
+    font-size: 10pt;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-bottom-color: transparent;
+    border-bottom-width: 0px;
+    color: black;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-right: 2px;
+    padding-bottom: 2px;
+    background-color: #d1d0c9;
+}
+QTabBar::tab:hover {
+    color: #00F;
+}
+QTabBar::tab:selected, QTabBar::tab:last:selected {
+    border-color: black;
+    font-style: bold;
+    border-width: 2px;
+    border-bottom-width: 0px;
+    border-style: inset;
+    color: black;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 0px;
+    margin-right: 2px;
+    background-color: #eae7e9;
+}
 """
 
 infoLineEdit = """
@@ -603,6 +646,7 @@ infoLineEditLight = """
 QLineEdit {
     border-radius: 0px;
     border-width: 2px;
+    color: black;
     font-size: 11pt;
     padding: 0px;
     margin: 0px;
