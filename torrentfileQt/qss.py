@@ -539,7 +539,6 @@ light_theme = """
     border-radius: 0px;
     font-size: 10pt;
 }
-QAbstractScrollArea,
 QLineEdit,
 QTextEdit,
 QListWidget,
@@ -547,7 +546,7 @@ QTableWidget,
 QComboBox,
 QTreeWidget {
     color: black;
-    background-color: #cdd;
+    background-color: #000;
     border-color: black;
     border-width: 1px;
     border-radius: 2px;
@@ -624,6 +623,14 @@ QTabBar::tab:selected, QTabBar::tab:last:selected {
     padding-bottom: 0px;
     margin-right: 2px;
     background-color: #eae7e9;
+}
+QAbstractScrollArea,
+QCombobox QAbstractItemView {
+    background-color: #eee;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 2px;
+    color: #000;
 }
 """
 
