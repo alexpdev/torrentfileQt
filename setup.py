@@ -21,15 +21,11 @@
 import json
 
 from setuptools import find_packages, setup
-from torrentfileQt.version import __version__
 
 
 def get_info():
     """Gather information from package files."""
     info = json.load(open("package.json"))
-    if info["version"] != __version__:
-        info["version"] = __version__
-        json.dump(info, open("package.json", "wt"), indent=2)
     info["long_description"] = open("README.md").read()
     return info
 
@@ -49,7 +45,7 @@ setup(
     description=INFO["description"],
     long_description=INFO["long_description"],
     packages=find_packages(exclude=["env", "tests"]),
-    install_requires=["torrentfile", "PySide6", "pyben"],
+    install_requires=["torrentfile", "pyben", "PySide6"],
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     long_description_content_type="text/markdown",
     entry_points={

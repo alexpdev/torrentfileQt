@@ -1,3 +1,5 @@
+wheel
+setuptools
 torrentfile
 PySide6
 pyben
