@@ -22,10 +22,10 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QWidget,
-                               QVBoxLayout, QSpacerItem, QHBoxLayout,
-                               QToolButton, QFileDialog)
-from torrentfile.cli import create_magnet
+from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QSpacerItem, QToolButton,
+                               QVBoxLayout, QWidget)
+from torrentfile import magnet
 
 
 class MagnetWidget(QWidget):
@@ -71,7 +71,7 @@ class SubmitButton(QPushButton):
         """Create a magnet URI from information contained in form."""
         fd = self.widget.metafile_input.text()
         if os.path.exists(fd):
-            uri = create_magnet(fd)
+            uri = magnet(fd)
             self.widget.output.setText(uri)
 
 

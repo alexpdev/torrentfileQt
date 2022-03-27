@@ -74,6 +74,8 @@ clean-build: ## remove build artifacts
 	rm -rfv tests/TESTINGDIR
 
 lint: ## run linters on codebase
+	black torrentfileQt
+	isort torrentfileQt
 	pyroma .
 	prospector torrentfileQt
 	prospector tests

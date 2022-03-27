@@ -20,7 +20,7 @@
 
 import pytest
 from torrentfile import TorrentFile
-from torrentfile.cli import create_magnet
+from torrentfile import magnet
 
 from tests import dir1, rmpath, tempfile, wind
 
@@ -56,4 +56,4 @@ def test_create_magnet(wind, torrent):
     tab.submit_button.click()
     out = tab.output.text()
     app.processEvents()
-    assert out == create_magnet(outfile)
+    assert out == magnet(outfile)
