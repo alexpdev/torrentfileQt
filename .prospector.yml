@@ -24,14 +24,9 @@ pep257:
 pycodestyle:
   disable:
     - E741
-
-pep8:
-  run: true
-  disable:
-    - E741
     - N815
-    - N802
     - N816
+    - N802
     - N806
 
 pylint:
