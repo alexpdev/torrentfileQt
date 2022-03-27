@@ -21,14 +21,15 @@
 import os
 import sys
 
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
                                QVBoxLayout)
-from PySide6.QtCore import Signal
 
+from torrentfileQt.bencodeTab import BencodeWidget
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
-from torrentfileQt.editorTab import EditorWidget
+from torrentfileQt.editTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.magnetTab import MagnetWidget
 from torrentfileQt.menu import MenuBar
@@ -65,10 +66,8 @@ class Window(QMainWindow):
         self.setMenuBar(self.menubar)
         self.resize(750, 650)
         self._setupUI()
-        self.settings = {
-            "theme": dark_theme
-        }
-        self.setStyleSheet(self.settings.get('theme'))
+        self.settings = {"theme": dark_theme}
+        self.setStyleSheet(self.settings.get("theme"))
 
     def _setupUI(self):
         """Internal function for setting up UI elements."""
@@ -104,16 +103,19 @@ class TabWidget(QTabWidget):
         self.infoWidget = InfoWidget(parent=self)
         self.editorWidget = EditorWidget(parent=self)
         self.magnetWidget = MagnetWidget(parent=self)
+        self.bencodeWidget = BencodeWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.editorWidget, "Torrent Editor")
         self.addTab(self.magnetWidget, "Magnet URL")
+        self.addTab(self.bencodeWidget, "(beta)Bencode Editor")
         self.magnetWidget.setObjectName("magnetWidget")
         self.createWidget.setObjectName("createTab")
         self.checkWidget.setObjectName("checkTab")
         self.infoWidget.setObjectName("infoTab")
         self.editorWidget.setObjectName("editorTab")
+        self.bencodeWidget.setObjectName("bencodeTab")
 
 
 class Application(QApplication):

@@ -270,10 +270,7 @@ class SelectButton(QPushButton):
         if path:
             meta = pyben.load(path)
             info = meta["info"]
-            keywords = {
-                "path": path,
-                "piece_length": info["piece length"]
-            }
+            keywords = {"path": path, "piece_length": info["piece length"]}
             # get meta version
             if "meta version" not in info:
                 keywords["meta version"] = 1
@@ -355,10 +352,7 @@ class Label(QLabel):
 class InfoLineEdit(QLineEdit):
     """Line Edit Widget."""
 
-    style = {
-        "dark": infoLineEdit,
-        "light": infoLineEditLight
-    }
+    style = {"dark": infoLineEdit, "light": infoLineEditLight}
 
     def __init__(self, parent=None):
         """Constructor for line edit widget."""

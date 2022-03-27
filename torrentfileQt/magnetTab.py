@@ -22,9 +22,9 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QWidget,
-                               QVBoxLayout, QSpacerItem, QHBoxLayout,
-                               QToolButton, QFileDialog)
+from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QSpacerItem, QToolButton,
+                               QVBoxLayout, QWidget)
 from torrentfile import magnet
 
 

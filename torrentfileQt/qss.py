@@ -21,7 +21,7 @@
 from pathlib import Path
 from urllib.request import pathname2url as path2url
 
-arrow = Path('.') / 'assets' / 'icons' / 'down-arrow16.png'
+arrow = Path(".") / "assets" / "icons" / "down-arrow16.png"
 
 
 dark_theme = """
@@ -529,7 +529,9 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % path2url(str(arrow))
+""" % path2url(
+    str(arrow)
+)
 
 light_theme = """
 * {
@@ -669,5 +671,52 @@ QPushButton {
     padding: 3px;
     margin: 0px;
     font-size: 9pt;
+}
+"""
+
+bencode_editor = """
+QTreeView::item {
+    border: 1px solid #123;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+QTreeView::item:hover {
+    border: 1px dotted white;
+}
+QTreeView::item:selected:active{
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #333, stop: 1 #000);
+}
+QTreeView::branch {
+        color: palette(white);
+}
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(assets/icons/vline.png) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(assets/icons/branch-more.png) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(assets/icons/branch-end.png) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(./assets/icons/branch-closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(./assets/icons/branch-open.png);
+}
+QTreeView QLineEdit {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 11pt;
+    border-radius: 0px;
 }
 """
