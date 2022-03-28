@@ -20,6 +20,7 @@
 
 import os
 from pathlib import Path
+import re
 
 import pyben
 from PySide6.QtCore import Qt, Signal
@@ -59,6 +60,25 @@ class EditorWidget(QWidget):
         self.label.setObjectName("Editor_label")
         self.table.setObjectName("Editor_table")
         self.setLayout(self.layout)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        """Accept drag events for dragging."""
+        self.data = event.mimeData().data('text/plain')
+        event.accept()
+
+    def dropEvent(self, event):
+        """Accept drop event."""
+        pattern = r'^file:/+'
+        txt = event.mimeData().text()
+        match = re.match(pattern, txt)
+        if match:
+            txt = txt[match.end():]
+        else:
+            print(txt)
+        self.line.setText(txt)
+        self.table.clear()
+        self.table.handleTorrent.emit(txt)
 
 
 class Button(QPushButton):
