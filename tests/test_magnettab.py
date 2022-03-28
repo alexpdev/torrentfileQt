@@ -59,6 +59,18 @@ def test_create_magnet(wind, torrent):
     assert out == magnet(outfile)
 
 
+def test_create_magnet_method(wind, torrent):
+    """Test creating Magnet URI from a torrent file path."""
+    window, app = wind
+    outfile, _ = torrent
+    tab = window.central.magnetWidget
+    window.central.setCurrentWidget(tab)
+    tab.file_button.select_metafile(filename=outfile)
+    out = tab.output.text()
+    app.processEvents()
+    assert out == magnet(outfile)
+
+
 def test_magnet_accept_method(wind, ttorrent):
     """Test drag enter event on editor widget."""
     window, app = wind

@@ -270,8 +270,10 @@ class MockEvent:
             """Return dictionary value that belongs to key."""
             return self.dat[key]
 
-    def mimeData(self):
+    def mime_data(self):
         """Return a mock of Qt MimeData class."""
         text = self.prefix + self.path
         mdata = self.MimeData(text)
         return mdata
+
+    mimeData = mime_data
