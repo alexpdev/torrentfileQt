@@ -67,7 +67,7 @@ def test_magnet_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert magnet.dragEnterEvent(event)
-    assert magnet.filename == event.mimeData().data('text/plain')
+    assert magnet.current_path == event.mimeData().data('text/plain')
 
 
 def test_magnet_drop_event(wind, ttorrent):

@@ -57,13 +57,13 @@ class MagnetWidget(QWidget):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
-        """Accept incoming drag events."""
-        self.filename = event.mimeData().data('text/plain')
+        """Accept incoming drag events for magnet tab."""
+        self.current_path = event.mimeData().data('text/plain')
         event.accept()
         return True
 
     def dropEvent(self, event):
-        """Accept drop events."""
+        """Accept drop events for magnet tab."""
         text = event.mimeData().text()
         if text.startswith("file:///"):
             text = text[8:]
