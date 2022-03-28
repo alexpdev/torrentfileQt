@@ -66,6 +66,7 @@ class EditorWidget(QWidget):
         """Accept drag events for dragging."""
         self.data = event.mimeData().data('text/plain')
         event.accept()
+        return True
 
     def dropEvent(self, event):
         """Accept drop event."""
@@ -74,11 +75,11 @@ class EditorWidget(QWidget):
         match = re.match(pattern, txt)
         if match:
             txt = txt[match.end():]
-        else:
-            print(txt)
-        self.line.setText(txt)
-        self.table.clear()
-        self.table.handleTorrent.emit(txt)
+            self.line.setText(txt)
+            self.table.clear()
+            self.table.handleTorrent.emit(txt)
+            return True
+        return False
 
 
 class Button(QPushButton):

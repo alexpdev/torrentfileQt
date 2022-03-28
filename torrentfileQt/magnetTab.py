@@ -58,16 +58,19 @@ class MagnetWidget(QWidget):
 
     def dragEnterEvent(self, event):
         """Accept incoming drag events."""
-        font = self.font()
-        font.setPointSize(12)
+        self.filename = event.mimeData().data('text/plain')
         event.accept()
+        return True
 
     def dropEvent(self, event):
         """Accept drop events."""
         text = event.mimeData().text()
         if text.startswith("file:///"):
             text = text[8:]
-        self.metafile_input.setText(text)
+            self.metafile_input.setText(text)
+            self.submit_button.click()
+            return True
+        return False
 
 
 class SubmitButton(QPushButton):

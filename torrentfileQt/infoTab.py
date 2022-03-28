@@ -223,6 +223,7 @@ class InfoWidget(QWidget):
         """Accept incoming drag events."""
         self.filename = event.mimeData().data('text/plain')
         event.accept()
+        return True
 
     def dropEvent(self, event):
         """Accept drop events."""
@@ -231,6 +232,8 @@ class InfoWidget(QWidget):
             text = text[8:]
             kws = format_data(text)
             self.fill(**kws)
+            return True
+        return False
 
     def fill(self, **kws):
         """Fill all child widgets with collected information.

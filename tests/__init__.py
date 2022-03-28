@@ -239,3 +239,39 @@ def ttorrent(request, dir2):
     outfile, _ = torrent.write()
     yield outfile
     rmpath(outfile)
+
+
+class MockEvent:
+    """Imitate functionality of a QtEvent."""
+
+    def __init__(self, path):
+        """Construct event."""
+        self.prefix = "file:///"
+        self.path = path
+        self.accepted = False
+
+    def accept(self):
+        """Accept function."""
+        self.accepted = True
+
+    class MimeData:
+        """Mock Qt MimeData class."""
+
+        def __init__(self, text):
+            """Construct mimeData class."""
+            self.txt = text
+            self.dat = {'text/plain': text}
+
+        def text(self):
+            """Return the text passed to constructor."""
+            return self.txt
+
+        def data(self, key):
+            """Return dictionary value that belongs to key."""
+            return self.dat[key]
+
+    def mimeData(self):
+        """Return a mock of Qt MimeData class."""
+        text = self.prefix + self.path
+        mdata = self.MimeData(text)
+        return mdata
