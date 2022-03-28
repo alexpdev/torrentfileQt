@@ -21,7 +21,7 @@
 import pyben
 import pytest
 
-from tests import dir1, dir2, ttorrent, wind
+from tests import dir1, dir2, ttorrent, wind, MockEvent
 
 
 def test_fixtures():
@@ -60,3 +60,26 @@ def test_editor_torrent_saving(wind, ttorrent):
     editor.button.click()
     meta = pyben.load(ttorrent)
     assert meta["announce"] == "other"
+
+
+def test_editor_accept_method(wind, ttorrent):
+    """Test drag enter event on editor widget."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert editor.dragEnterEvent(event)
+    assert editor.data == event.mimeData().data('text/plain')
+
+
+def test_editor_drop_event(wind, ttorrent):
+    """Test drop event on editor widget."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    amount = len("file:///")
+    assert editor.dropEvent(event)
+    assert editor.line.text() == event.mimeData().text()[amount:]

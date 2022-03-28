@@ -21,7 +21,7 @@
 import pytest
 from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests import dir2, dir3, rmpath, tempfile, ttorrent, wind
+from tests import dir2, dir3, rmpath, tempfile, ttorrent, wind, MockEvent
 
 
 def test_fixture():
@@ -103,3 +103,26 @@ def test_infotab_nested(wind, creator, dir3):
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile)
+
+
+def test_info_accept_method(wind, ttorrent):
+    """Test drag enter event on editor widget."""
+    window, app = wind
+    info = window.central.infoWidget
+    info.window.central.setCurrentWidget(info)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert info.dragEnterEvent(event)
+    assert info.filename == event.mimeData().data('text/plain')
+
+
+def test_info_drop_event(wind, ttorrent):
+    """Test drop event on editor widget."""
+    window, app = wind
+    info = window.central.infoWidget
+    info.window.central.setCurrentWidget(info)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    amount = len("file:///")
+    assert info.dropEvent(event)
+    assert info.pathEdit.text() == event.mimeData().text()[amount:]

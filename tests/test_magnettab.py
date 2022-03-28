@@ -22,7 +22,7 @@ import pytest
 from torrentfile import TorrentFile
 from torrentfile import magnet
 
-from tests import dir1, rmpath, tempfile, wind
+from tests import dir1, rmpath, tempfile, wind, MockEvent, ttorrent, dir2
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,7 @@ def torrent(dir1):
 
 def test_fixture():
     """Testing pytest fixtures."""
-    assert [dir1, tempfile, wind]
+    assert [dir1, tempfile, wind, ttorrent, dir2]
 
 
 def test_create_magnet(wind, torrent):
@@ -57,3 +57,38 @@ def test_create_magnet(wind, torrent):
     out = tab.output.text()
     app.processEvents()
     assert out == magnet(outfile)
+
+
+def test_create_magnet_method(wind, torrent):
+    """Test creating Magnet URI from a torrent file path."""
+    window, app = wind
+    outfile, _ = torrent
+    tab = window.central.magnetWidget
+    window.central.setCurrentWidget(tab)
+    tab.file_button.select_metafile(filename=outfile)
+    out = tab.output.text()
+    app.processEvents()
+    assert out == magnet(outfile)
+
+
+def test_magnet_accept_method(wind, ttorrent):
+    """Test drag enter event on editor widget."""
+    window, app = wind
+    magnet = window.central.magnetWidget
+    magnet.window.central.setCurrentWidget(magnet)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert magnet.dragEnterEvent(event)
+    assert magnet.current_path == event.mimeData().data('text/plain')
+
+
+def test_magnet_drop_event(wind, ttorrent):
+    """Test drop event on editor widget."""
+    window, app = wind
+    magnet = window.central.magnetWidget
+    magnet.window.central.setCurrentWidget(magnet)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    amount = len("file:///")
+    assert magnet.dropEvent(event)
+    assert magnet.metafile_input.text() == event.mimeData().text()[amount:]
