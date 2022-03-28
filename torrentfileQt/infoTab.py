@@ -207,6 +207,30 @@ class InfoWidget(QWidget):
         self.dateCreatedEdit.setObjectName("dateCreatedEdit")
         self.contentsLabel.setObjectName("contentsLabel")
         self.contentsTree.setObjectName("contentsTree")
+        self.setAcceptDrops(True)
+
+    def clear(self):
+        """Clear widgets of previous input."""
+        widgets = [self.contentsTree, self.sourceEdit, self.metaVersionEdit,
+                   self.pathEdit, self.nameEdit, self.pieceLengthEdit,
+                   self.sizeEdit, self.privateEdit, self.commentEdit,
+                   self.trackerEdit, self.totalPiecesEdit, self.dateCreatedEdit,
+                   self.createdByEdit]
+        for widget in widgets:
+            widget.clear()
+
+    def dragEnterEvent(self, event):
+        """Accept incoming drag events."""
+        self.filename = event.mimeData().data('text/plain')
+        event.accept()
+
+    def dropEvent(self, event):
+        """Accept drop events."""
+        text = event.mimeData().text()
+        if text.startswith("file:///"):
+            text = text[8:]
+            kws = format_data(text)
+            self.fill(**kws)
 
     def fill(self, **kws):
         """Fill all child widgets with collected information.
@@ -214,6 +238,7 @@ class InfoWidget(QWidget):
         Args:
             kws (`dict`): key, value dictionary with keys as field labels.
         """
+        self.clear()
         self.pathEdit.setText(kws["path"])
         self.nameEdit.setText(kws["name"])
         self.commentEdit.setText(kws["comment"])
@@ -268,76 +293,8 @@ class SelectButton(QPushButton):
                 selectedFilter=None,
             )
         if path:
-            meta = pyben.load(path)
-            info = meta["info"]
-            keywords = {
-                "path": path,
-                "piece_length": info["piece length"]
-            }
-            # get meta version
-            if "meta version" not in info:
-                keywords["meta version"] = 1
-            elif "pieces" in info:
-                keywords["meta version"] = 3
-            else:
-                keywords["meta version"] = 2
-
-            # extract creator
-            if "created by" in meta:
-                keywords["created_by"] = meta["created by"]
-            else:
-                keywords["created_by"] = ""
-
-            # extract name comment and source
-            for kw in ["name", "comment", "source"]:
-                if kw in info:
-                    keywords[kw] = info[kw]
-                else:
-                    keywords[kw] = ""
-
-            # extract announce list
-            if "announce-list" in meta:
-                alst = [url for urlst in meta["announce-list"] for url in urlst]
-                keywords["announce"] = alst + [meta["announce"]]
-            else:
-                keywords["announce"] = [meta["announce"]]
-
-            # iterate through filelist
-            size = 0
-            if "files" in info:
-                contents = {}
-                for entry in info["files"]:
-                    contents[
-                        os.path.join(info["name"], *entry["path"])
-                    ] = entry["length"]
-                    size += entry["length"]
-                keywords["contents"] = contents
-
-            elif "file tree" in info:
-                contents = {}
-                for k, v in parse_filetree(info["file tree"]).items():
-                    contents[os.path.join(info["name"], k)] = v
-                    size += v
-                keywords["contents"] = contents
-            else:
-                keywords["contents"] = {info["name"]: info["length"]}
-                size = info["length"]
-
-            keywords["length"] = size
-
-            if "creation date" in meta:
-                date = datetime.fromtimestamp(meta["creation date"])
-                text = date.strftime("%B %d, %Y %H:%M")
-                keywords["creation_date"] = text
-            else:
-                keywords["creation_date"] = ""
-
-            if "private" in info:
-                keywords["private"] = "True"
-            else:
-                keywords["private"] = "False"
-
-            self.parent().fill(**keywords)
+            kws = format_data(path)
+            self.parent().fill(**kws)
 
 
 class Label(QLabel):
@@ -374,6 +331,79 @@ class InfoLineEdit(QLineEdit):
         """Change the stylesheet with theme changes."""
         self.theme = "light" if self.theme == "dark" else "dark"
         self.setStyleSheet(self.style.get(self.theme))
+
+
+def format_data(path):
+    """Format meta data from torrent file after decoding."""
+    meta = pyben.load(path)
+    info = meta["info"]
+    keywords = {
+        "path": path,
+        "piece_length": info["piece length"]
+    }
+    # get meta version
+    if "meta version" not in info:
+        keywords["meta version"] = 1
+    elif "pieces" in info:
+        keywords["meta version"] = 3
+    else:
+        keywords["meta version"] = 2
+
+    # extract creator
+    if "created by" in meta:
+        keywords["created_by"] = meta["created by"]
+    else:
+        keywords["created_by"] = ""
+
+    # extract name comment and source
+    for kw in ["name", "comment", "source"]:
+        if kw in info:
+            keywords[kw] = info[kw]
+        else:
+            keywords[kw] = ""
+
+    # extract announce list
+    if "announce-list" in meta:
+        alst = [url for urlst in meta["announce-list"] for url in urlst]
+        keywords["announce"] = alst + [meta["announce"]]
+    else:
+        keywords["announce"] = [meta["announce"]]
+
+    # iterate through filelist
+    size = 0
+    if "files" in info:
+        contents = {}
+        for entry in info["files"]:
+            contents[
+                os.path.join(info["name"], *entry["path"])
+            ] = entry["length"]
+            size += entry["length"]
+        keywords["contents"] = contents
+
+    elif "file tree" in info:
+        contents = {}
+        for k, v in parse_filetree(info["file tree"]).items():
+            contents[os.path.join(info["name"], k)] = v
+            size += v
+        keywords["contents"] = contents
+    else:
+        keywords["contents"] = {info["name"]: info["length"]}
+        size = info["length"]
+
+    keywords["length"] = size
+
+    if "creation date" in meta:
+        date = datetime.fromtimestamp(meta["creation date"])
+        text = date.strftime("%B %d, %Y %H:%M")
+        keywords["creation_date"] = text
+    else:
+        keywords["creation_date"] = ""
+
+    if "private" in info:
+        keywords["private"] = "True"
+    else:
+        keywords["private"] = "False"
+    return keywords
 
 
 def denom(num):
