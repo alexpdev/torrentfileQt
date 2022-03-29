@@ -321,7 +321,7 @@ class BrowseFileButton(QPushButton):
             self.window.path_input.setText(path)
             self.window.output_input.setText(path + ".torrent")
             piece_length = path_piece_length(path)
-            if piece_length < (2 ** 20):
+            if piece_length < (2**20):
                 val = f"{piece_length//(2**10)}KB"
             else:
                 val = f"{piece_length//(2**20)}MB"
@@ -375,9 +375,9 @@ class BrowseDirButton(QPushButton):
                 piece_length = path_piece_length(path)
             except PermissionError:  # pragma: no cover
                 return
-            if piece_length < (2 ** 20):
+            if piece_length < (2**20):
                 val = f"{piece_length//(2**10)}KB"
-            else:   # pragma: no cover
+            else:  # pragma: no cover
                 val = f"{piece_length//(2**20)}MB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:
@@ -402,8 +402,8 @@ class ComboBox(QComboBox):
         box = cls(parent=parent)
         for exp in range(14, 26):
             if exp < 20:
-                item = str((2 ** exp) // (2 ** 10)) + "KB"
+                item = str((2**exp) // (2**10)) + "KB"
             else:
-                item = str((2 ** exp) // (2 ** 20)) + "MB"
-            box.addItem(item, 2 ** exp)
+                item = str((2**exp) // (2**20)) + "MB"
+            box.addItem(item, 2**exp)
         return box

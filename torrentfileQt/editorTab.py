@@ -19,14 +19,18 @@
 """Widgets and procedures for the "Torrent Editor" tab."""
 
 import os
-from pathlib import Path
 import re
+from copy import deepcopy
+from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                               QPushButton, QTableWidget, QTableWidgetItem,
-                               QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
+                               QLineEdit, QPushButton, QTableWidget,
+                               QTableWidgetItem, QToolButton, QVBoxLayout,
+                               QWidget)
+
+from torrentfileQt.qss import table_styles
 
 
 class EditorWidget(QWidget):
@@ -42,12 +46,15 @@ class EditorWidget(QWidget):
         self.window = parent.window
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
+        self.line.setStyleSheet("QLineEdit{margin-left: 15px;}")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
-        self.label = QLabel("Torrent File:", parent=self)
+        self.fileButton.setStyleSheet("QToolButton{margin-right: 10px;}")
+        self.label = QLabel("Torrent File Editor", parent=self)
+        self.label.setAlignment(Qt.AlignCenter)
         self.table = Table(parent=self)
         self.hlayout = QHBoxLayout()
-        self.hlayout.addWidget(self.label)
+        self.layout.addWidget(self.label)
         self.hlayout.addWidget(self.line)
         self.hlayout.addWidget(self.fileButton)
         self.layout.addLayout(self.hlayout)
@@ -64,17 +71,18 @@ class EditorWidget(QWidget):
 
     def dragEnterEvent(self, event):
         """Accept drag events for dragging."""
-        self.data = event.mimeData().data('text/plain')
+        self.data = event.mimeData().data("text/plain")
         event.accept()
         return True
 
     def dropEvent(self, event):
         """Accept drop event."""
-        pattern = r'^file:/+'
+        pattern = r"^file:/+"
         txt = event.mimeData().text()
         match = re.match(pattern, txt)
         if match:
-            txt = txt[match.end():]
+            end = match.end()
+            txt = txt[end:]
             self.line.setText(txt)
             self.table.clear()
             self.table.handleTorrent.emit(txt)
@@ -99,7 +107,20 @@ class Button(QPushButton):
         info = meta["info"]
         for row in range(table.rowCount()):
             label = table.item(row, 0).text()
-            value = table.item(row, 1).text()
+            if label in ["url-list", "httpseeds", "announce-list"]:
+                widget = table.cellWidget(row, 1)
+                combo = widget.combo
+                value = []
+                for i in range(combo.count()):
+                    txt = combo.itemText(i).strip(" ")
+                    if txt:
+                        value.append(txt)
+                if label == "announce-list":
+                    value = [value]
+            else:
+                value = table.item(row, 1).text().strip(" ")
+            if not value:
+                continue
             if label in ["piece length", "private", "creation date"]:
                 value = int(value)
             if label in meta and meta[label] != value:
@@ -116,7 +137,7 @@ class FileButton(QToolButton):
         """Constructor for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
         self.widget = parent
-        self.setText("...")
+        self.setText("Select File")
         self.window = parent.window
         self.clicked.connect(self.browse)
 
@@ -132,6 +153,46 @@ class FileButton(QToolButton):
             self.widget.table.clear()
             self.widget.line.setText(path)
             self.widget.table.handleTorrent.emit(path)
+
+
+class AddItemButton(QToolButton):
+    """Button for editing adjacent ComboBox."""
+
+    def __init__(self, parent):
+        """Construct the Button."""
+        super().__init__(parent)
+        self.setStyleSheet("QToolButton {margin: 0px;}")
+        self.parent = parent
+        self.setText("add")
+        self.box = None
+        self.clicked.connect(self.add_item)
+
+    def add_item(self):
+        """Take action when button is pressed."""
+        if not self.box:
+            return
+        self.box.insertItem(0, "", 2)
+        self.box.setCurrentIndex(0)
+
+
+class RemoveItemButton(QToolButton):
+    """Button for editing adjacent ComboBox."""
+
+    def __init__(self, parent):
+        """Construct the Button."""
+        super().__init__(parent)
+        self.setStyleSheet("QToolButton {margin: 0px;}")
+        self.parent = parent
+        self.setText("remove")
+        self.box = None
+        self.clicked.connect(self.remove_item)
+
+    def remove_item(self):
+        """Take action when button is pressed."""
+        if not self.box:
+            return
+        index = self.box.currentIndex()
+        self.box.removeItem(index)
 
 
 class Table(QTableWidget):
@@ -151,6 +212,7 @@ class Table(QTableWidget):
         header.setStretchLastSection(True)
         vheader = self.verticalHeader()
         vheader.setSectionResizeMode(vheader.ResizeMode.Stretch)
+        vheader.setHidden(True)
         self.setHorizontalHeaderLabels(["Label", "Value"])
         self.handleTorrent.connect(self.export_data)
 
@@ -164,35 +226,81 @@ class Table(QTableWidget):
         """Slot for the handleTorrent signal."""
         if not os.path.exists(path):  # pragma: no cover
             return
-        self.original = pyben.load(path)
-        self.flatten_data(self.original)
+        data = pyben.load(path)
+        self.original = deepcopy(data)
+        self.flatten_data(data)
         counter = 0
-        for k, v in self.info.items():
+        for k, v in sorted(self.info.items()):
             self.window.app.processEvents()
             self.setRowCount(self.rowCount() + 1)
             item = QTableWidgetItem(0)
             item.setText(str(k))
             item.setFlags(item.flags() ^ Qt.ItemFlag.ItemIsEditable)
             self.setItem(counter, 0, item)
-            item2 = QTableWidgetItem(0)
-            item2.setText(str(v))
-            self.setItem(counter, 1, item2)
+            if k in ["announce-list", "url-list", "httpseeds"]:
+                widget = ComboCell(parent=self)
+                self.setCellWidget(counter, 1, widget)
+                widget.set_values(k, v)
+            else:
+                item2 = QTableWidgetItem(0)
+                item2.setText(str(v))
+                self.setItem(counter, 1, item2)
             counter += 1
 
     def flatten_data(self, data):
         """Flatten the meta dictionary found in the selected .torrent file."""
-        for k, v in data.items():
-            if k in [
-                "source",
-                "private",
-                "announce",
-                "name",
-                "piece length",
-                "comment",
-                "creation date",
-                "created by",
-                "announce list",
-            ]:
-                self.info[k] = v
-            elif k == "info":
-                self.flatten_data(v)
+        fields = [
+            "source",
+            "private",
+            "announce",
+            "name",
+            "comment",
+            "creation date",
+            "created by",
+            "announce-list",
+            "url-list",
+            "httpseeds",
+        ]
+        info = data["info"]
+        del data["info"]
+        data.update(info)
+        for field in fields:
+            if field not in data:
+                self.info[field] = ""
+            else:
+                self.info[field] = data[field]
+
+
+class ComboCell(QWidget):
+    """Widget used inside the cell of a Table Widget."""
+
+    def __init__(self, parent=None):
+        """Construct the widget and it's sub widgets."""
+        super().__init__(parent=parent)
+        self.layout = QHBoxLayout()
+        self.setLayout(self.layout)
+        self.combo = QComboBox()
+        self.combo.setStyleSheet(table_styles["ComboBox"])
+        self.line_edit = QLineEdit(parent=self)
+        self.line_edit.setStyleSheet(table_styles["LineEdit"])
+        self.layout.addWidget(self.combo)
+        self.combo.setLineEdit(self.line_edit)
+        self.combo.setInsertPolicy(self.combo.InsertPolicy.InsertAtCurrent)
+        self.add_button = AddItemButton(self)
+        self.add_button.box = self.combo
+        self.remove_button = RemoveItemButton(self)
+        self.remove_button.box = self.combo
+        self.layout.addWidget(self.add_button)
+        self.layout.addWidget(self.remove_button)
+
+    def set_values(self, key, val):
+        """Fill in the values of pre-set urls for each list."""
+        if val and isinstance(val, list):
+            if key == "announce-list":
+                lst = [k for j in val for k in j]
+            else:
+                lst = val
+            for url in lst:
+                self.combo.addItem(url, 2)
+        for _ in range(2):
+            self.combo.addItem(" ", 2)
