@@ -171,6 +171,10 @@ class AddItemButton(QToolButton):
         """Take action when button is pressed."""
         if not self.box:
             return
+        items = [self.box.itemText(i) for i in range(self.box.count())]
+        current = self.box.currentText().strip(" ")
+        if current and current not in items:
+            self.box.insertItem(0, current, 2)
         self.box.insertItem(0, "", 2)
         self.box.setCurrentIndex(0)
 
@@ -274,18 +278,33 @@ class Table(QTableWidget):
 class ComboCell(QWidget):
     """Widget used inside the cell of a Table Widget."""
 
+    class Combo(QComboBox):
+        """A Combo Box widget for inside table cells."""
+
+        def __init__(self, parent=None):
+            """Construct a combobox for table widget cell."""
+            super().__init__(parent=parent)
+            self.setStyleSheet(table_styles["ComboBox"])
+            self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
+            self.setDuplicatesEnabled(False)
+
+        def focusOutEvent(self, _):
+            """Add item when focus changes."""
+            current = self.currentText().strip()
+            items = [self.itemText(i) for i in range(self.count())]
+            if current and current not in items:
+                self.insertItem(0, current, 2)
+
     def __init__(self, parent=None):
         """Construct the widget and it's sub widgets."""
         super().__init__(parent=parent)
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
-        self.combo = QComboBox()
-        self.combo.setStyleSheet(table_styles["ComboBox"])
+        self.combo = self.Combo()
         self.line_edit = QLineEdit(parent=self)
         self.line_edit.setStyleSheet(table_styles["LineEdit"])
         self.layout.addWidget(self.combo)
         self.combo.setLineEdit(self.line_edit)
-        self.combo.setInsertPolicy(self.combo.InsertPolicy.InsertAtCurrent)
         self.add_button = AddItemButton(self)
         self.add_button.box = self.combo
         self.remove_button = RemoveItemButton(self)
@@ -302,5 +321,3 @@ class ComboCell(QWidget):
                 lst = val
             for url in lst:
                 self.combo.addItem(url, 2)
-        for _ in range(2):
-            self.combo.addItem(" ", 2)

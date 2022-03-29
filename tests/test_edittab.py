@@ -83,3 +83,25 @@ def test_editor_drop_event(wind, ttorrent):
     amount = len("file:///")
     assert editor.dropEvent(event)
     assert editor.line.text() == event.mimeData().text()[amount:]
+
+
+def test_editor_table_fields(wind, ttorrent):
+    """Test the edit fields of table widget."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    table = editor.table
+    editor.line.setText(ttorrent)
+    table.handleTorrent.emit(ttorrent)
+    for i in range(table.rowCount()):
+        if table.item(i, 0).text() in ["httpseeds", "url-list", "announce-list"]:
+            widget = table.cellWidget(i, 1)
+            widget.add_button.click()
+            widget.line_edit.setText("url1")
+            widget.add_button.click()
+            widget.line_edit.setText("url2")
+            widget.combo.focusOutEvent(None)
+            lst = [widget.combo.itemText(j) for j in range(widget.combo.count())]
+            assert "url1" in lst
+            assert "url2" in lst
