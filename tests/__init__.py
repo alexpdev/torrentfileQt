@@ -230,6 +230,8 @@ def ttorrent(request, dir2):
     args = {
         "path": dir2,
         "outfile": str(dir2) + "t.torrent",
+        "url_list": ["url1", "url2"],
+        "announce": ["url4", "url5"],
         "comment": "This is a comment",
         "source": "SomeSource",
         "private": 1,

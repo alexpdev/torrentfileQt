@@ -92,3 +92,14 @@ def test_magnet_drop_event(wind, ttorrent):
     amount = len("file:///")
     assert magnet.dropEvent(event)
     assert magnet.metafile_input.text() == event.mimeData().text()[amount:]
+
+
+def test_magnet_drop_false(wind, ttorrent):
+    """Test drop event on editor widget returns None."""
+    window, app = wind
+    magnet = window.central.magnetWidget
+    magnet.window.central.setCurrentWidget(magnet)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    event.prefix = ""
+    assert not magnet.dropEvent(event)

@@ -113,7 +113,7 @@ class MetafileButton(QToolButton):
 
     def select_metafile(self, filename=None):
         """Find metafile in file browser."""
-        if not filename:
+        if not filename:   # pragma: nocover
             filename, _ = QFileDialog.getOpenFileName(
                 parent=self,
                 caption="Select '.torrent' file",

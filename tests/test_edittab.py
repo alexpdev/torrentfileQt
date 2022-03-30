@@ -85,6 +85,17 @@ def test_editor_drop_event(wind, ttorrent):
     assert editor.line.text() == event.mimeData().text()[amount:]
 
 
+def test_editor_drop_false(wind, ttorrent):
+    """Test drop event on editor widget is false."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    event.prefix = ""
+    assert not editor.dropEvent(event)
+
+
 def test_editor_table_fields(wind, ttorrent):
     """Test the edit fields of table widget."""
     window, app = wind
@@ -97,7 +108,8 @@ def test_editor_table_fields(wind, ttorrent):
     found = 0
     for i in range(table.rowCount()):
         if table.item(i, 0):
-            if table.item(i, 0).text() in ["httpseeds", "url-list", "announce-list"]:
+            txt = table.item(i, 0).text()
+            if txt in ["httpseeds", "url-list", "announce-list"]:
                 found += 1
                 widget = table.cellWidget(i, 1)
                 widget.add_button.click()
@@ -108,7 +120,9 @@ def test_editor_table_fields(wind, ttorrent):
                 lst = [widget.combo.itemText(j) for j in range(widget.combo.count())]
                 assert "url1" in lst
                 assert "url2" in lst
-                for _ in range(widget.combo.count()):
-                    widget.remove_button.click()
-                assert widget.combo.count() == 0
+                if txt != 'announce-list':
+                    for _ in range(widget.combo.count()):
+                        widget.remove_button.click()
+                    assert widget.combo.count() == 0
+    editor.button.click()
     assert found == 3
