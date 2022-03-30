@@ -64,7 +64,8 @@ class ProfileAction:
 
     def trigger(self):
         """Fill the create tab with saved values in profile."""
-        with open(self.parent.profiles, "rt") as jsonfile:
+        filename = os.path.join(self.parent.home, "profiles.json")
+        with open(filename, "rt") as jsonfile:
             profiles = json.load(jsonfile)
         profile = profiles[self.name]
         tab = self.parent.window.central.createWidget
