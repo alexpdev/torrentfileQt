@@ -85,14 +85,15 @@ coverage: ## run coverage on project
 	bash codacy.sh report -r coverage.xml
 
 test: ## run tests quickly with the default Python
+	pip install --upgrade --force-reinstall --no-cache -rrequirements.txt
 	pytest tests --cov=torrentfileQt --cov=tests
 
-push: clean lint coverage ## push changes to remote
+push: clean lint coverage test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push
 
-release: clean test ## release to pypi
+release: clean test lint ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 

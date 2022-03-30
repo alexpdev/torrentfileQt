@@ -111,8 +111,8 @@ def test_editor_table_fields(wind, ttorrent):
             if txt in ["httpseeds", "url-list", "announce-list"]:
                 wig, found = table.cellWidget(i, 1), found + 1
                 for url in ['url8', 'url9']:
-                    wig.line_edit.setText(url)
                     wig.add_button.click()
+                    wig.line_edit.setText(url)
                 wig.combo.focusOutEvent(None)
                 lst = [wig.combo.itemText(j) for j in range(wig.combo.count())]
                 assert len([i for i in ['url8', 'url9'] if i in lst]) == 2
