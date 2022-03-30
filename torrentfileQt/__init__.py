@@ -18,10 +18,16 @@
 ##############################################################################
 """Init module for TorrentfileQt project."""
 
+import ctypes
+
 import torrentfile
 
 from torrentfileQt.version import __version__
 from torrentfileQt.window import Application, Window, alt_start, start
 
+
 __author__ = "alexpdev"
 __all__ = ["Application", "Window", "alt_start", "start", "__version__"]
+
+myappid = f'TorrentfileQt.{__version__}.{__author__}'
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
