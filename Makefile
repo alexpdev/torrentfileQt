@@ -102,18 +102,16 @@ build:  clean
 	rm -rfv ../runner
 	mkdir ../runner
 	touch ../runner/exe
-	cp ./assets/torrentfile.ico ../runner/torrentfile.ico
-	cp -rvf ./assets ../runner/assets
+	cp ./torrentfileQt/assets/torrentfile.ico ../runner/torrentfile.ico
+	cp -rvf ./torrentfileQt ../runner/torrentfileQt
 	@echo "import torrentfileQt" >> ../runner/exe
 	@echo "torrentfileQt.start()" >> ../runner/exe
 	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
 		-F -n torrentfileQt -w -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG \
-		--add-data "./assets;./assets"
+		--specpath ../runner/ ../runner/exe --log-level DEBUG --collect-data torrentfileQt
 	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
 		-D -n torrentfileQt -w -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG \
-		--add-data "./assets/*;./assets/"
+		--specpath ../runner/ ../runner/exe --log-level DEBUG --collect-data torrentfileQt
 	cp -rfv ../runner/dist/* ./dist/
 	@python -c "$$FIXES"
 

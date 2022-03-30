@@ -45,6 +45,13 @@ setup(
     description=INFO["description"],
     long_description=INFO["long_description"],
     packages=find_packages(exclude=["env", "tests"]),
+    package_data={
+        'torrentfileQt': [
+            'assets/icons/*.png',
+            'assets/*.png',
+            'assets/*.ico'
+        ]
+    },
     install_requires=["torrentfile", "pyben", "PySide6"],
     project_urls={"Source Code": "https://github.com/alexpdev/torrentfileQt"},
     long_description_content_type="text/markdown",

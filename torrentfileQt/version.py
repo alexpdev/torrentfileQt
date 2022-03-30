@@ -15,4 +15,19 @@
 ##############################################################################
 """Application version id tag."""
 
-__version__ = "0.3.0"
+import os
+
+
+def _conf():
+    """Create some enviornment variables."""
+    parent = os.path.dirname(__file__)
+    top = os.path.dirname(parent)
+    assets = os.path.join(top, 'assets')
+    path = os.path.relpath(assets, ".")
+    return path
+
+
+ASSETS = str(_conf())
+os.environ['ASSETS'] = ASSETS
+
+__version__ = "0.3.1"
