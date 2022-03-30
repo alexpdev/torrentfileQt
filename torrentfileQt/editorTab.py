@@ -87,7 +87,7 @@ class EditorWidget(QWidget):
             self.table.clear()
             self.table.handleTorrent.emit(txt)
             return True
-        return False
+        return False  # pragma: nocover
 
 
 class Button(QPushButton):
@@ -161,7 +161,7 @@ class AddItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet("QToolButton {margin: 0px;}")
+        self.setStyleSheet(table_styles['button'])
         self.parent = parent
         self.setText("add")
         self.box = None
@@ -169,14 +169,13 @@ class AddItemButton(QToolButton):
 
     def add_item(self):
         """Take action when button is pressed."""
-        if not self.box:
-            return
         items = [self.box.itemText(i) for i in range(self.box.count())]
         current = self.box.currentText().strip(" ")
         if current and current not in items:
             self.box.insertItem(0, current, 2)
         self.box.insertItem(0, "", 2)
         self.box.setCurrentIndex(0)
+        self.box.lineEdit().setFocus()
 
 
 class RemoveItemButton(QToolButton):
@@ -185,7 +184,7 @@ class RemoveItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet("QToolButton {margin: 0px;}")
+        self.setStyleSheet(table_styles['button'])
         self.parent = parent
         self.setText("remove")
         self.box = None
@@ -193,8 +192,6 @@ class RemoveItemButton(QToolButton):
 
     def remove_item(self):
         """Take action when button is pressed."""
-        if not self.box:
-            return
         index = self.box.currentIndex()
         self.box.removeItem(index)
 
@@ -292,6 +289,8 @@ class ComboCell(QWidget):
             """Add item when focus changes."""
             current = self.currentText().strip()
             items = [self.itemText(i) for i in range(self.count())]
+            blanks = [i for i in range(len(items)) if not items[i].strip()]
+            list(map(self.removeItem, blanks[::-1]))
             if current and current not in items:
                 self.insertItem(0, current, 2)
 
@@ -300,6 +299,8 @@ class ComboCell(QWidget):
         super().__init__(parent=parent)
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.combo = self.Combo()
         self.line_edit = QLineEdit(parent=self)
         self.line_edit.setStyleSheet(table_styles["LineEdit"])

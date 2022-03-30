@@ -132,7 +132,6 @@ def start():  # pragma: no cover
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
-    window.central.setCurrentWidget(window.central.editorWidget)
     sys.exit(app.exec())
 
 

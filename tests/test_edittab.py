@@ -94,14 +94,21 @@ def test_editor_table_fields(wind, ttorrent):
     table = editor.table
     editor.line.setText(ttorrent)
     table.handleTorrent.emit(ttorrent)
+    found = 0
     for i in range(table.rowCount()):
-        if table.item(i, 0).text() in ["httpseeds", "url-list", "announce-list"]:
-            widget = table.cellWidget(i, 1)
-            widget.add_button.click()
-            widget.line_edit.setText("url1")
-            widget.add_button.click()
-            widget.line_edit.setText("url2")
-            widget.combo.focusOutEvent(None)
-            lst = [widget.combo.itemText(j) for j in range(widget.combo.count())]
-            assert "url1" in lst
-            assert "url2" in lst
+        if table.item(i, 0):
+            if table.item(i, 0).text() in ["httpseeds", "url-list", "announce-list"]:
+                found += 1
+                widget = table.cellWidget(i, 1)
+                widget.add_button.click()
+                widget.line_edit.setText("url1")
+                widget.add_button.click()
+                widget.line_edit.setText("url2")
+                widget.combo.focusOutEvent(None)
+                lst = [widget.combo.itemText(j) for j in range(widget.combo.count())]
+                assert "url1" in lst
+                assert "url2" in lst
+                for _ in range(widget.combo.count()):
+                    widget.remove_button.click()
+                assert widget.combo.count() == 0
+    assert found == 3

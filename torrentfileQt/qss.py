@@ -93,7 +93,7 @@ QWidget {
 
 QAbstractScrollArea {
     background-color: #19232D;
-    border: 1px solid #e57e22;
+    border: 1px solid #f61;
     border-radius: 4px;
     padding: 2px;
     color: #E0E1E3;
@@ -229,7 +229,7 @@ QTabWidget::tab-bar {
 
 QTabBar::tab {
     border-style: outset;
-    border-color: #f51;
+    border-color: #f61;
     border-width: 3px;
     font-size: 10pt;
     color: #e9e7e6;
@@ -330,7 +330,7 @@ QRadioButton {
 }
 
 QRadioButton::indicator::unchecked {
-    border: 2px inset #f73;
+    border: 1px inset #f73;
     border-radius: 6px;
     background-color:  #323232;
     width: 13px;
@@ -345,7 +345,7 @@ QRadioButton::indicator::unchecked:hover {
 }
 
 QRadioButton::indicator::checked {
-    border: 2px inset #d73;
+    border: 1px inset #d73;
     border-radius: 5px;
     background-color: #ff5;
     width: 13px;
@@ -385,7 +385,7 @@ QCheckBox::indicator:unchecked {
 }
 
 QTreeWidget {
-    border: 1px solid #1a1a6a;
+    border: 1px solid #f61;
     background-color: #5a5a5a;
     font: 8pt;
     color: #eeeeee;
@@ -446,14 +446,14 @@ QTreeWidget QProgressBar::chunk {
 
 QTableWidget {
     background-color: #5a5a5a;
-    color: #ddd;
+    color: #eee;
     border-color: #e57e22;
     border-width: 2px;
     border-style: ridge;
     margin: 10px;
     font-size: 11pt;
     selection-background-color: #3a3a3a;
-    selection-color: #FFF;
+    selection-color: #FF9;
     gridline-color: #ac4a02;
 }
 
@@ -465,21 +465,29 @@ QTableWidget QTableCornerButton::section{
 QTableWidget QHeaderView {
     border-color: transparent;
     border-radius: 0px;
-    padding: 0px;
+    border-width 0px;
+    padding: 3px;
+    margin: 0px;
     font-size: 11pt;
-    background-color: black;
+    font-weight: bold;
+    background-color: #000;
     color: white;
 }
 
 QTableWidget QHeaderView::section {
     background-color: black;
     color: white;
+    border: #f61 solid 1px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
     padding-left: 4px;
+    padding-bottom: 4px;
 }
 
 QMenu {
     background-color: black;
     margin: 2px;
+    padding: 1px;
 }
 
 QMenu::item {
@@ -759,10 +767,17 @@ table_styles = {
     "ComboBox": """
     QComboBox {
         font-size: 12pt;
-        margin: 0px 0px 0px 10px;
+        margin: 0px 0px 0px 0px;
         border-width: 1px;
-        padding: 6px 0px 6px 0px;
-        min-height: 16px;
+        padding: 0px 0px 0px 0px;
+        min-height: 19px;
     }
     """,
+    "button": """
+    QToolButton {
+        margin: 2px;
+        padding: 2px;
+        border-radius: 12px;
+    }
+    """
 }
