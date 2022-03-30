@@ -29,6 +29,10 @@ pycodestyle:
     - N802
     - N806
 
+pep8:
+  disable:
+    - N802
+
 pylint:
   run: true
   disable:

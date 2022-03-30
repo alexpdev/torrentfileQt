@@ -18,12 +18,12 @@
 ##############################################################################
 """Module for the menu bar."""
 
-import os
 import json
+import os
 import webbrowser
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog
+from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar
 
 from torrentfileQt.qss import dark_theme, light_theme
 
@@ -64,7 +64,8 @@ class ProfileAction:
 
     def trigger(self):
         """Fill the create tab with saved values in profile."""
-        with open(self.parent.profiles, "rt") as jsonfile:
+        filename = os.path.join(self.parent.home, "profiles.json")
+        with open(filename, "rt") as jsonfile:
             profiles = json.load(jsonfile)
         profile = profiles[self.name]
         tab = self.parent.window.central.createWidget
@@ -167,7 +168,9 @@ class MenuBar(QMenuBar):
         if not os.path.exists(self.home):
             os.mkdir(self.home)
         if not name:  # pragma: nocover
-            name, result = QInputDialog.getText(self, "Add Profile", "Profile Name")
+            name, result = QInputDialog.getText(
+                self, "Add Profile", "Profile Name"
+            )
             if not result:
                 return
         tab = self.window.central.createWidget
@@ -191,7 +194,7 @@ class MenuBar(QMenuBar):
             "piece_length": piece_length,
             "trackers": trackers,
             "web_seeds": webseeds,
-            "source": source
+            "source": source,
         }
         if not os.path.exists(self.profiles):
             with open(self.profiles, "wt") as jsonfile:

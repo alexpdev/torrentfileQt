@@ -93,6 +93,36 @@ def test_add_profile_with_profiles(menubar_profiles):
     assert "test" in profs
 
 
+def test_add_profile_meta_v2(menubar_profiles):
+    """Test adding a profile with other meta versions."""
+    menubar, window, profiles = menubar_profiles
+    window.menubar.light_theme()
+    tab = window.central.createWidget
+    tab.v2button.click()
+    window.change_theme("light_theme")
+    tab.source_input.setText("SOURCE")
+    tab.private.click()
+    tab.announce_input.setPlainText("https://announce.net")
+    menubar.add_profile(name="test1")
+    _, profile = profiles
+    profs = json.load(open(profile))
+    assert "test1" in profs
+
+
+def test_add_profile_meta_hybrid(menubar_profiles):
+    """Test adding a profile with other meta versions."""
+    menubar, window, profiles = menubar_profiles
+    tab = window.central.createWidget
+    tab.v1button.click()
+    window.menubar.light_theme()
+    tab.source_input.setText("SOURCE")
+    tab.announce_input.setPlainText("https://announce.net")
+    menubar.add_profile(name="test2")
+    _, profile = profiles
+    profs = json.load(open(profile))
+    assert "test2" in profs
+
+
 def test_add_profile_without_profiles(wind):
     """Test adding a profile."""
     window, _ = wind
@@ -104,6 +134,7 @@ def test_add_profile_without_profiles(wind):
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
     window.menubar.add_profile(name="test")
+    window.menubar.dark_theme()
     profiles = window.menubar.profiles
     profs = json.load(open(profiles))
     assert "test" in profs

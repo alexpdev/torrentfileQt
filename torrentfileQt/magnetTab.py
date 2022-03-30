@@ -22,9 +22,9 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QWidget,
-                               QVBoxLayout, QSpacerItem, QHBoxLayout,
-                               QToolButton, QFileDialog)
+from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QSpacerItem, QToolButton,
+                               QVBoxLayout, QWidget)
 from torrentfile import magnet
 
 
@@ -58,7 +58,7 @@ class MagnetWidget(QWidget):
 
     def dragEnterEvent(self, event):
         """Accept incoming drag events for magnet tab."""
-        self.current_path = event.mimeData().data('text/plain')
+        self.current_path = event.mimeData().data("text/plain")
         event.accept()
         return True
 
@@ -113,7 +113,7 @@ class MetafileButton(QToolButton):
 
     def select_metafile(self, filename=None):
         """Find metafile in file browser."""
-        if not filename:
+        if not filename:   # pragma: nocover
             filename, _ = QFileDialog.getOpenFileName(
                 parent=self,
                 caption="Select '.torrent' file",

@@ -83,3 +83,39 @@ def test_editor_drop_event(wind, ttorrent):
     amount = len("file:///")
     assert editor.dropEvent(event)
     assert editor.line.text() == event.mimeData().text()[amount:]
+
+
+def test_editor_drop_false(wind, ttorrent):
+    """Test drop event on editor widget is false."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    event.prefix = ""
+    assert not editor.dropEvent(event)
+
+
+def test_editor_table_fields(wind, ttorrent):
+    """Test the edit fields of table widget."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    table, found = editor.table, 0
+    editor.line.setText(ttorrent)
+    table.handleTorrent.emit(ttorrent)
+    for i in range(table.rowCount()):
+        if table.item(i, 0):
+            txt = table.item(i, 0).text()
+            if txt in ["httpseeds", "url-list", "announce-list"]:
+                wig, found = table.cellWidget(i, 1), found + 1
+                for url in ['url8', 'url9']:
+                    wig.line_edit.setText(url)
+                    wig.add_button.click()
+                wig.combo.focusOutEvent(None)
+                lst = [wig.combo.itemText(j) for j in range(wig.combo.count())]
+                assert len([i for i in ['url8', 'url9'] if i in lst]) == 2
+                wig.remove_button.click()
+    editor.button.click()
+    assert found == 3

@@ -211,17 +211,27 @@ class InfoWidget(QWidget):
 
     def clear(self):
         """Clear widgets of previous input."""
-        widgets = [self.contentsTree, self.sourceEdit, self.metaVersionEdit,
-                   self.pathEdit, self.nameEdit, self.pieceLengthEdit,
-                   self.sizeEdit, self.privateEdit, self.commentEdit,
-                   self.trackerEdit, self.totalPiecesEdit, self.dateCreatedEdit,
-                   self.createdByEdit]
+        widgets = [
+            self.contentsTree,
+            self.sourceEdit,
+            self.metaVersionEdit,
+            self.pathEdit,
+            self.nameEdit,
+            self.pieceLengthEdit,
+            self.sizeEdit,
+            self.privateEdit,
+            self.commentEdit,
+            self.trackerEdit,
+            self.totalPiecesEdit,
+            self.dateCreatedEdit,
+            self.createdByEdit,
+        ]
         for widget in widgets:
             widget.clear()
 
     def dragEnterEvent(self, event):
         """Accept incoming drag events."""
-        self.filename = event.mimeData().data('text/plain')
+        self.filename = event.mimeData().data("text/plain")
         event.accept()
         return True
 
@@ -315,10 +325,7 @@ class Label(QLabel):
 class InfoLineEdit(QLineEdit):
     """Line Edit Widget."""
 
-    style = {
-        "dark": infoLineEdit,
-        "light": infoLineEditLight
-    }
+    style = {"dark": infoLineEdit, "light": infoLineEditLight}
 
     def __init__(self, parent=None):
         """Constructor for line edit widget."""
@@ -340,10 +347,7 @@ def format_data(path):
     """Format meta data from torrent file after decoding."""
     meta = pyben.load(path)
     info = meta["info"]
-    keywords = {
-        "path": path,
-        "piece_length": info["piece length"]
-    }
+    keywords = {"path": path, "piece_length": info["piece length"]}
     # get meta version
     if "meta version" not in info:
         keywords["meta version"] = 1
@@ -377,9 +381,9 @@ def format_data(path):
     if "files" in info:
         contents = {}
         for entry in info["files"]:
-            contents[
-                os.path.join(info["name"], *entry["path"])
-            ] = entry["length"]
+            contents[os.path.join(info["name"], *entry["path"])] = entry[
+                "length"
+            ]
             size += entry["length"]
         keywords["contents"] = contents
 

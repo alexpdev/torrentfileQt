@@ -21,10 +21,10 @@
 import os
 import sys
 
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
                                QVBoxLayout)
-from PySide6.QtCore import Signal
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
@@ -63,17 +63,14 @@ class Window(QMainWindow):
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
-        self.resize(750, 650)
+        self.resize(750, 600)
         self._setupUI()
-        self.settings = {
-            "theme": dark_theme
-        }
-        self.setStyleSheet(self.settings.get('theme'))
+        self.settings = {"theme": dark_theme}
+        self.setStyleSheet(self.settings.get("theme"))
 
     def _setupUI(self):
         """Internal function for setting up UI elements."""
         self.central = TabWidget(parent=self)
-        self.central.setContentsMargins(0, 0, 0, 0)
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
         self.setCentralWidget(self.central)
