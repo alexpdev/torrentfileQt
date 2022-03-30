@@ -21,7 +21,6 @@
 import logging
 import os
 import re
-# from collections.abc import Sequence
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
@@ -33,15 +32,7 @@ from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
                                QWidget)
 from torrentfile.recheck import Checker
 
-
-def _conf():
-    """Create some enviornment variables."""
-    path = Path(os.path.abspath(os.path.dirname(__file__))).parent
-    os.environ["ASSETS"] = str(path / "assets")
-    return os.environ["ASSETS"]
-
-
-ASSETS = _conf()
+ASSETS = os.environ["ASSETS"]
 
 
 class CheckWidget(QWidget):

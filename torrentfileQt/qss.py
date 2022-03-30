@@ -18,10 +18,10 @@
 ##############################################################################
 """Module for stylesheets."""
 
-from pathlib import Path
+import os
 from urllib.request import pathname2url as path2url
 
-arrow = Path(".") / "assets" / "icons" / "arrow-down.png"
+arrow = os.path.join(os.environ['ASSETS'], 'icons', 'arrow-down.png')
 
 
 dark_theme = """
@@ -446,15 +446,24 @@ QTreeWidget QProgressBar::chunk {
 
 QTableWidget {
     background-color: #5a5a5a;
-    color: #eee;
+    color: #ccc;
     border-color: #e57e22;
     border-width: 2px;
     border-style: ridge;
+    border-radius: 4px;
     margin: 10px;
     font-size: 11pt;
     selection-background-color: #3a3a3a;
-    selection-color: #FF9;
+    selection-color: #fff;
     gridline-color: #ac4a02;
+}
+
+QTableWidget::item:selected:hover {
+    background-color: #7c7d7b;
+}
+
+QTableWidget::item:hover {
+    background-color: #225;
 }
 
 QTableWidget QTableCornerButton::section{
@@ -462,99 +471,74 @@ QTableWidget QTableCornerButton::section{
     border: 2px brown solid;
 }
 
-QTableWidget QHeaderView {
-    border-color: transparent;
-    border-radius: 0px;
-    border-width 0px;
-    padding: 3px;
-    margin: 0px;
-    font-size: 11pt;
-    font-weight: bold;
-    background-color: #000;
-    color: white;
+QHeaderView::section {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #54585b, stop:1 #393c3e);
+    color: #bbbbbb;
+    padding: 1px 2px 1px 4px;
+    border: 1px solid #323232;
+    border-top-width: 0;
+    border-left-color: #5e6163;
+    border-right-color: #2a2c2d;
 }
-
-QTableWidget QHeaderView::section {
-    background-color: black;
-    color: white;
-    border: #f61 solid 1px;
-    border-top-width: 0px;
-    border-bottom-width: 0px;
-    padding-left: 4px;
-    padding-bottom: 4px;
+QHeaderView::section:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #64686b, stop:1 #494c4e);
+    border-bottom-color: #424242;
 }
-
+QHeaderView::section:first {
+    border-left-width: 0;
+}
+QHeaderView::section:last {
+    border-right-width: 0;
+}
+QHeaderView::section:checked {
+    background-color: red;
+}
+QMenuBar {
+    background-color: #322;
+    padding: 2px;
+    margin-bottom: 2px;
+    border-bottom: 2px solid #555555;
+}
+QMenuBar::item:pressed {
+    background-color: #4b6eaf;
+}
+QMenuBar::item:selected:!pressed {
+    background-color: #585b5d;
+}
 QMenu {
-    background-color: black;
-    margin: 2px;
-    padding: 1px;
+    border: 1px solid #2d2d2d;
 }
-
-QMenu::item {
-    padding: 2px 25px 2px 20px;
-    border: 1px solid transparent;
+QMenu::item:disabled {
+    color: #999999;
 }
-
 QMenu::item:selected {
-    border-color: #e57e22;
-    background: #333;
+    background-color: #4b6eaf;
 }
-
+QMenu::icon {
+    border: 0px solid transparent;
+    background-color: transparent;
+}
 QMenu::icon:checked {
-    background: gray;
-    border: 1px inset gray;
+    background-color: blue;
+    border: 1px inset red;
     position: absolute;
     top: 1px;
     right: 1px;
     bottom: 1px;
     left: 1px;
 }
-
 QMenu::separator {
     height: 2px;
-    background: lightblue;
-    margin-left: 10px;
-    margin-right: 5px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #282a2b, stop:1 #45484b);
+    margin: 0 1px;
 }
-
 QMenu::indicator {
     width: 13px;
     height: 13px;
-}
-
-QMenuBar {
-    font-size: 10pt;
-    border-bottom: 3px groove #115;
-    background:rgb(30, 30, 30);
-    color: #FFFFFF;
-    margin-bottom: 1px;
-    padding: 3px;
-}
-
-QMenuBar::item {
-    border-top-color: transparent;
-    border-right-color: transparent;
-    border-left-color: transparent;
-    border-bottom-color: transparent;
-    font-size: 10pt;
-    padding: 6px;
-    padding-top: 2px;
-    background: transparent;
-    border-bottom-width: 1px;
-    border-style: solid;
-    color: #a9b7c6;
-}
-
-QMenuBar::item:selected {
-    border-style: ridge;
-    border-top-color: transparent;
-    border-right-color: transparent;
-    border-left-color: transparent;
-    border-bottom-color: #e67e22;
-    border-bottom-width: 1px;
-    color: #FFFFFF;
-    padding-bottom: 3px;
-    background-color: #000000;
+    background-color: blue;
 }
 
 QDialog {
