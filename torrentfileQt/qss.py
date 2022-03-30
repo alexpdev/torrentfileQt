@@ -472,7 +472,8 @@ QTableWidget QTableCornerButton::section{
 }
 
 QHeaderView::section {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #54585b, stop:1 #393c3e);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #54585b, stop:1 #393c3e);
     color: #bbbbbb;
     padding: 1px 2px 1px 4px;
     border: 1px solid #323232;
@@ -481,7 +482,8 @@ QHeaderView::section {
     border-right-color: #2a2c2d;
 }
 QHeaderView::section:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #64686b, stop:1 #494c4e);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #64686b, stop:1 #494c4e);
     border-bottom-color: #424242;
 }
 QHeaderView::section:first {
@@ -529,7 +531,8 @@ QMenu::icon:checked {
 }
 QMenu::separator {
     height: 2px;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #282a2b, stop:1 #45484b);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
+                    y2: 1, stop:0 #282a2b, stop:1 #45484b);
     margin: 0 1px;
 }
 QMenu::indicator {
