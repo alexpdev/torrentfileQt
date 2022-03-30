@@ -102,27 +102,20 @@ def test_editor_table_fields(wind, ttorrent):
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     app.processEvents()
-    table = editor.table
+    table, found = editor.table, 0
     editor.line.setText(ttorrent)
     table.handleTorrent.emit(ttorrent)
-    found = 0
     for i in range(table.rowCount()):
         if table.item(i, 0):
             txt = table.item(i, 0).text()
             if txt in ["httpseeds", "url-list", "announce-list"]:
-                found += 1
-                widget = table.cellWidget(i, 1)
-                widget.add_button.click()
-                widget.line_edit.setText("url1")
-                widget.add_button.click()
-                widget.line_edit.setText("url2")
-                widget.combo.focusOutEvent(None)
-                lst = [widget.combo.itemText(j) for j in range(widget.combo.count())]
-                assert "url1" in lst
-                assert "url2" in lst
-                if txt != 'announce-list':
-                    for _ in range(widget.combo.count()):
-                        widget.remove_button.click()
-                    assert widget.combo.count() == 0
+                wig, found = table.cellWidget(i, 1), found + 1
+                for url in ['url8', 'url9']:
+                    wig.line_edit.setText(url)
+                    wig.add_button.click()
+                wig.combo.focusOutEvent(None)
+                lst = [wig.combo.itemText(j) for j in range(wig.combo.count())]
+                assert len([i for i in ['url8', 'url9'] if i in lst]) == 2
+                wig.remove_button.click()
     editor.button.click()
     assert found == 3
