@@ -330,9 +330,6 @@ class BrowseFileButton(QPushButton):
                     break
 
 
-
-
-
 class BrowseDirButton(QPushButton):
     """Browse filesystem folders for path."""
 

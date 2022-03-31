@@ -113,7 +113,6 @@ def test_info_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert info.dragEnterEvent(event)
-    assert info.filename == event.mimeData().data('text/plain')
 
 
 def test_info_drop_event(wind, ttorrent):
@@ -123,17 +122,14 @@ def test_info_drop_event(wind, ttorrent):
     info.window.central.setCurrentWidget(info)
     app.processEvents()
     event = MockEvent(ttorrent)
-    amount = len("file:///")
     assert info.dropEvent(event)
-    assert info.pathEdit.text() == event.mimeData().text()[amount:]
 
 
-def test_info_drop_false(wind, ttorrent):
+def test_info_drop_false(wind):
     """Test drop event on editor widget is false."""
     window, app = wind
     info = window.central.infoWidget
     info.window.central.setCurrentWidget(info)
     app.processEvents()
-    event = MockEvent(ttorrent)
-    event.prefix = ""
+    event = MockEvent("None")
     assert not info.dropEvent(event)

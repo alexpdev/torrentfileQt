@@ -59,17 +59,27 @@ class MagnetWidget(QWidget):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
-        """Accept incoming drag events for magnet tab."""
-        self.current_path = event.mimeData().data("text/plain")
-        event.accept()
-        return True
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            self.urls = event.mimeData().urls()
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            self.urls = event.mimeData().urls()
+            event.accept()
+            return True
+        return event.ignore()
 
     def dropEvent(self, event):
-        """Accept drop events for magnet tab."""
-        text = event.mimeData().text()
-        if text.startswith("file:///"):
-            text = text[8:]
-            self.metafile_input.setText(text)
+        """Drag drop event for widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            self.metafile_input.setText(path)
             self.submit_button.click()
             return True
         return False

@@ -248,7 +248,6 @@ class MockEvent:
 
     def __init__(self, path):
         """Construct event."""
-        self.prefix = "file:///"
         self.path = path
         self.accepted = False
 
@@ -256,25 +255,36 @@ class MockEvent:
         """Accept function."""
         self.accepted = True
 
+    def ignore(self):
+        """Ignore event."""
+        self.accepted = False
+
     class MimeData:
         """Mock Qt MimeData class."""
 
         def __init__(self, text):
             """Construct mimeData class."""
             self.txt = text
-            self.dat = {'text/plain': text}
+            self.hasUrls = True
 
-        def text(self):
+        class URL:
+            """URL Mock object."""
+
+            def __init__(self, url):
+                """Construct URL Mock object."""
+                self.url = url
+
+            def toLocalFile(self):
+                """Convert URL to local path."""
+                return self.url
+
+        def urls(self):
             """Return the text passed to constructor."""
-            return self.txt
-
-        def data(self, key):
-            """Return dictionary value that belongs to key."""
-            return self.dat[key]
+            return [self.URL(self.txt)]
 
     def mime_data(self):
         """Return a mock of Qt MimeData class."""
-        text = self.prefix + self.path
+        text = self.path
         mdata = self.MimeData(text)
         return mdata
 

@@ -79,7 +79,6 @@ def test_magnet_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert magnet.dragEnterEvent(event)
-    assert magnet.current_path == event.mimeData().data('text/plain')
 
 
 def test_magnet_drop_event(wind, ttorrent):
@@ -89,17 +88,14 @@ def test_magnet_drop_event(wind, ttorrent):
     magnet.window.central.setCurrentWidget(magnet)
     app.processEvents()
     event = MockEvent(ttorrent)
-    amount = len("file:///")
     assert magnet.dropEvent(event)
-    assert magnet.metafile_input.text() == event.mimeData().text()[amount:]
 
 
-def test_magnet_drop_false(wind, ttorrent):
+def test_magnet_drop_false(wind):
     """Test drop event on editor widget returns None."""
     window, app = wind
     magnet = window.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
     app.processEvents()
-    event = MockEvent(ttorrent)
-    event.prefix = ""
+    event = MockEvent("None")
     assert not magnet.dropEvent(event)

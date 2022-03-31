@@ -70,7 +70,6 @@ def test_editor_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert editor.dragEnterEvent(event)
-    assert editor.data == event.mimeData().data('text/plain')
 
 
 def test_editor_drop_event(wind, ttorrent):
@@ -80,19 +79,16 @@ def test_editor_drop_event(wind, ttorrent):
     editor.window.central.setCurrentWidget(editor)
     app.processEvents()
     event = MockEvent(ttorrent)
-    amount = len("file:///")
     assert editor.dropEvent(event)
-    assert editor.line.text() == event.mimeData().text()[amount:]
 
 
-def test_editor_drop_false(wind, ttorrent):
+def test_editor_drop_false(wind):
     """Test drop event on editor widget is false."""
     window, app = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     app.processEvents()
-    event = MockEvent(ttorrent)
-    event.prefix = ""
+    event = MockEvent("None")
     assert not editor.dropEvent(event)
 
 
