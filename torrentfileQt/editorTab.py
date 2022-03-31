@@ -19,7 +19,6 @@
 """Widgets and procedures for the "Torrent Editor" tab."""
 
 import os
-import re
 from copy import deepcopy
 from pathlib import Path
 
@@ -44,6 +43,7 @@ class EditorWidget(QWidget):
         """
         super().__init__(parent=parent)
         self.window = parent.window
+        self.counter = 0
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
         self.line.setStyleSheet("QLineEdit{margin-left: 15px;}")
@@ -70,24 +70,32 @@ class EditorWidget(QWidget):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
-        """Accept drag events for dragging."""
-        self.data = event.mimeData().data("text/plain")
-        event.accept()
-        return True
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            self.counter += 1
+            event.accept()
+            return True
+        self.counter -= 1
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            self.counter -= 1
+            event.accept()
+            return True
+        self.counter += 1
+        return event.ignore()
 
     def dropEvent(self, event):
-        """Accept drop event."""
-        pattern = r"^file:/+"
-        txt = event.mimeData().text()
-        match = re.match(pattern, txt)
-        if match:
-            end = match.end()
-            txt = txt[end:]
-            self.line.setText(txt)
-            self.table.clear()
-            self.table.handleTorrent.emit(txt)
+        """Drag drop event for widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            self.line.setText(path)
+            self.table.handleTorrent.emit(path)
             return True
-        return False  # pragma: nocover
+        return False
 
 
 class Button(QPushButton):

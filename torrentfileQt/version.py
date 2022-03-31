@@ -30,4 +30,4 @@ def _conf():
 ASSETS = str(_conf())
 os.environ['ASSETS'] = ASSETS
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"

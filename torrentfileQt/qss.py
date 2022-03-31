@@ -493,7 +493,8 @@ QHeaderView::section:last {
     border-right-width: 0;
 }
 QHeaderView::section:checked {
-    background-color: red;
+    color: #fff;
+    background-color: #222;
 }
 QMenuBar {
     background-color: #322;

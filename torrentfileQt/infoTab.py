@@ -230,17 +230,27 @@ class InfoWidget(QWidget):
             widget.clear()
 
     def dragEnterEvent(self, event):
-        """Accept incoming drag events."""
-        self.filename = event.mimeData().data("text/plain")
-        event.accept()
-        return True
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            self.data = event.mimeData()
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            self.data = event.mimeData()
+            event.accept()
+            return True
+        return event.ignore()
 
     def dropEvent(self, event):
-        """Accept drop events."""
-        text = event.mimeData().text()
-        if text.startswith("file:///"):
-            text = text[8:]
-            kws = format_data(text)
+        """Accept drop event for info widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            kws = format_data(path)
             self.fill(**kws)
             return True
         return False
