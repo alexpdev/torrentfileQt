@@ -81,7 +81,7 @@ def test_editor_move_event(wind, ttorrent):
     event = MockEvent(ttorrent)
     assert editor.dragMoveEvent(event)
     event = MockEvent(None)
-    assert not editor.dragEnterEvent(event)
+    assert not editor.dragMoveEvent(event)
 
 
 def test_editor_drop_event(wind, ttorrent):

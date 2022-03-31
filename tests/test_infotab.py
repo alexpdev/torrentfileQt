@@ -126,7 +126,7 @@ def test_info_move_event(wind, ttorrent):
     event = MockEvent(ttorrent)
     assert info.dragMoveEvent(event)
     event = MockEvent(None)
-    assert not info.dragEnterEvent(event)
+    assert not info.dragMoveEvent(event)
 
 
 def test_info_drop_event(wind, ttorrent):

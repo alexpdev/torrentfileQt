@@ -92,7 +92,7 @@ def test_magnet_move_event(wind, ttorrent):
     event = MockEvent(ttorrent)
     assert magnet.dragMoveEvent(event)
     event = MockEvent(None)
-    assert not magnet.dragEnterEvent(event)
+    assert not magnet.dragMoveEvent(event)
 
 
 def test_magnet_drop_event(wind, ttorrent):
