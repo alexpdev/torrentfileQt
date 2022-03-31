@@ -445,16 +445,14 @@ QTreeWidget QProgressBar::chunk {
 }
 
 QTableWidget {
-    background-color: #5a5a5a;
-    color: #ccc;
-    border-color: #e57e22;
+    color: #fff;
+    border-color: #f71;
     border-width: 2px;
     border-style: ridge;
     border-radius: 4px;
     margin: 10px;
     font-size: 11pt;
     selection-background-color: #3a3a3a;
-    selection-color: #fff;
     gridline-color: #ac4a02;
 }
 
@@ -463,7 +461,8 @@ QTableWidget::item:selected:hover {
 }
 
 QTableWidget::item:hover {
-    background-color: #225;
+    background-color: #7c7d7b;
+    border: dotted #ded 1px;
 }
 
 QTableWidget QTableCornerButton::section{

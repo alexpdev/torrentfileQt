@@ -35,24 +35,46 @@ class MagnetWidget(QWidget):
         """Initialize the widget form for creating magnet URI's from a metafile."""
         super().__init__(parent=parent)
         self.window = parent.window
+        self.setStyleSheet("""
+        QLabel {
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        QLineEdit {
+            margin: 15px;
+            padding: 5px;
+            font-size: 12pt;
+        }
+        QPushButton {
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+        """)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         self.hlayout = QHBoxLayout()
         self.top_spacer = QSpacerItem(0, 50)
-        self.bottom_spacer = QSpacerItem(0, 400)
-        self.metafile_label = QLabel("Metafile", parent=self)
+        self.bottom_spacer = QSpacerItem(0, 100)
+        self.metafile_label = QLabel("Torrent Meta File", parent=self)
+        font = self.metafile_label.font()
+        font.setPointSize(12)
+        self.metafile_label.setFont(font)
+        self.magnet_label = QLabel("Magnet Link", parent=self)
+        self.magnet_label.setFont(font)
+        self.magnet_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.metafile_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.metafile_input = QLineEdit(parent=self)
-        self.metafile_input.setStyleSheet("QLineEdit {margin: 10px;}")
+        self.metafile_input.setStyleSheet("QLineEdit {margin-right: 4px;}")
         self.output = QLineEdit(parent=self)
-        self.output.setStyleSheet("QLineEdit {margin: 10px;}")
         self.file_button = MetafileButton(parent=self)
         self.submit_button = SubmitButton(parent=self)
+        self.hlayout = QHBoxLayout()
         self.hlayout.addWidget(self.metafile_input)
         self.hlayout.addWidget(self.file_button)
         self.layout.addSpacerItem(self.top_spacer)
         self.layout.addWidget(self.metafile_label)
         self.layout.addLayout(self.hlayout)
+        self.layout.addWidget(self.magnet_label)
         self.layout.addWidget(self.output)
         self.layout.addWidget(self.submit_button)
         self.layout.addSpacerItem(self.bottom_spacer)
@@ -119,7 +141,7 @@ class MetafileButton(QToolButton):
         super().__init__(parent=parent)
         self.window = parent.window
         self.widget = parent
-        self.setText("...")
+        self.setText("Select File")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 

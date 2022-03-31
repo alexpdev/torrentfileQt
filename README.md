@@ -4,10 +4,12 @@
 
 ---------
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=alexpdev/torrentfileQt&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Coverage)
 [![codecov](https://codecov.io/gh/alexpdev/torrentfileQt/branch/main/graph/badge.svg?token=S5Q9CRD6C2)](https://codecov.io/gh/alexpdev/torrentfileQt)
-![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
 ![PyPI - License](https://img.shields.io/pypi/l/torrentfileQt?color=orange&style=plastic)
+![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
+![CI Workflow](https://img.shields.io/github/workflow/status/alexpdev/torrentfileQt/CI)
+![last commit](https://img.shields.io/github/last-commit/alexpdev/torrentfileQt?color=blue)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Coverage)
 
 TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpdev/torrentfile) project.
 
@@ -22,16 +24,16 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ## ScreenShots
 
-![checktorrent.png](./assets/screenshots/checktorrent.png)
+![createtorrent.png](./assets/screenshots/create-tab.png)
 
 ---------
 
-![createtorrent.png](./assets/screenshots/createtorrent.png)
+![checktorrent.png](./assets/screenshots/recheck-tab.png)
 
 ---------
 
-![edittorrent.png](./assets/screenshots/edittorrent.png)
+![edittorrent.png](./assets/screenshots/edit-tab.png)
 
 ---------
 
-![torrentinfo.png](./assets/screenshots/torrentinfo.png)
+![torrentinfo.png](./assets/screenshots/info-tab.png)
