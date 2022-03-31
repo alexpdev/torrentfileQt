@@ -70,6 +70,8 @@ def test_editor_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert editor.dragEnterEvent(event)
+    event = MockEvent(None)
+    assert not editor.dragEnterEvent(event)
 
 
 def test_editor_move_event(wind, ttorrent):
