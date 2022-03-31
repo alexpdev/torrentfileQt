@@ -22,7 +22,6 @@ Tab Widget containing all controls for creating a new .torrent file.
 User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
-# import json
 import os
 from pathlib import Path
 from threading import Thread
@@ -331,13 +330,7 @@ class BrowseFileButton(QPushButton):
                     break
 
 
-# class ProfileButton(QPushButton):
-#     """Save the current fields values as a profile."""
 
-#     def __init__(self, parent=None):
-#         """Save current fields as a profile."""
-#         super().__init__(parent=parent)
-#         self.setText("Save Profile")
 
 
 class BrowseDirButton(QPushButton):
