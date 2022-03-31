@@ -79,6 +79,20 @@ def test_magnet_accept_method(wind, ttorrent):
     app.processEvents()
     event = MockEvent(ttorrent)
     assert magnet.dragEnterEvent(event)
+    event = MockEvent(None)
+    assert not magnet.dragEnterEvent(event)
+
+
+def test_magnet_move_event(wind, ttorrent):
+    """Test move event on magnet widget."""
+    window, app = wind
+    magnet = window.central.magnetWidget
+    magnet.window.central.setCurrentWidget(magnet)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert magnet.dragMoveEvent(event)
+    event = MockEvent(None)
+    assert not magnet.dragEnterEvent(event)
 
 
 def test_magnet_drop_event(wind, ttorrent):
@@ -97,5 +111,5 @@ def test_magnet_drop_false(wind):
     magnet = window.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
     app.processEvents()
-    event = MockEvent("None")
+    event = MockEvent(None)
     assert not magnet.dropEvent(event)

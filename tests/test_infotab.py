@@ -106,13 +106,27 @@ def test_infotab_nested(wind, creator, dir3):
 
 
 def test_info_accept_method(wind, ttorrent):
-    """Test drag enter event on editor widget."""
+    """Test drag enter event on info widget."""
     window, app = wind
     info = window.central.infoWidget
     info.window.central.setCurrentWidget(info)
     app.processEvents()
     event = MockEvent(ttorrent)
     assert info.dragEnterEvent(event)
+    event = MockEvent(None)
+    assert not info.dragEnterEvent(event)
+
+
+def test_info_move_event(wind, ttorrent):
+    """Test move event on info widget."""
+    window, app = wind
+    info = window.central.infoWidget
+    info.window.central.setCurrentWidget(info)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert info.dragMoveEvent(event)
+    event = MockEvent(None)
+    assert not info.dragEnterEvent(event)
 
 
 def test_info_drop_event(wind, ttorrent):
@@ -131,5 +145,5 @@ def test_info_drop_false(wind):
     info = window.central.infoWidget
     info.window.central.setCurrentWidget(info)
     app.processEvents()
-    event = MockEvent("None")
+    event = MockEvent(None)
     assert not info.dropEvent(event)

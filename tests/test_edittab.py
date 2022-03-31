@@ -72,6 +72,18 @@ def test_editor_accept_method(wind, ttorrent):
     assert editor.dragEnterEvent(event)
 
 
+def test_editor_move_event(wind, ttorrent):
+    """Test move event on editor widget."""
+    window, app = wind
+    editor = window.central.editorWidget
+    editor.window.central.setCurrentWidget(editor)
+    app.processEvents()
+    event = MockEvent(ttorrent)
+    assert editor.dragMoveEvent(event)
+    event = MockEvent(None)
+    assert not editor.dragEnterEvent(event)
+
+
 def test_editor_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
     window, app = wind
@@ -88,7 +100,7 @@ def test_editor_drop_false(wind):
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     app.processEvents()
-    event = MockEvent("None")
+    event = MockEvent(None)
     assert not editor.dropEvent(event)
 
 

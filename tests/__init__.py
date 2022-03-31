@@ -265,7 +265,10 @@ class MockEvent:
         def __init__(self, text):
             """Construct mimeData class."""
             self.txt = text
-            self.hasUrls = True
+            if self.txt == "":
+                self.hasUrls = False
+            else:
+                self.hasUrls = True
 
         class URL:
             """URL Mock object."""
@@ -284,8 +287,10 @@ class MockEvent:
 
     def mime_data(self):
         """Return a mock of Qt MimeData class."""
-        text = self.path
-        mdata = self.MimeData(text)
+        if not self.path:
+            mdata = self.MimeData("")
+        else:
+            mdata = self.MimeData(self.path)
         return mdata
 
     mimeData = mime_data
