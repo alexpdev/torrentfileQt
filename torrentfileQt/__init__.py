@@ -20,7 +20,7 @@
 
 import sys
 import ctypes
-
+import importlib.resources
 import torrentfile
 
 from torrentfileQt.version import __version__, ASSETS
