@@ -20,8 +20,6 @@
 
 import sys
 import ctypes
-import importlib.resources
-import torrentfile
 
 from torrentfileQt.version import __version__, ASSETS
 from torrentfileQt.window import Application, Window, alt_start, start
