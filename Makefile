@@ -78,17 +78,13 @@ lint: ## run linters on codebase
 	prospector torrentfileQt
 	prospector tests
 
-coverage: ## run coverage on project
-	pytest tests --cov=torrentfileQt --cov tests
-	coverage report
-	coverage xml -o coverage.xml
-	bash codacy.sh report -r coverage.xml
-
 test: ## run tests quickly with the default Python
 	pip install --upgrade --force-reinstall --no-cache -rrequirements.txt
 	pytest tests --cov=torrentfileQt --cov=tests
+	coverage report
+	coverage xml -o coverage.xml
 
-push: clean lint coverage test ## push changes to remote
+push: clean lint test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push

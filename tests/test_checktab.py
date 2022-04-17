@@ -164,6 +164,6 @@ def test_singlefile(size, ext, index, version, wind):
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(tfile)
     checktab.checkButton.click()
-    ptext = checktab.textEdit.toPlainText()
-    assert "100%" in ptext
+    widges = checktab.treeWidget.itemWidgets
+    assert all([i.total == i.value for i in widges.values()])
     rmpath(tfile, metafile)

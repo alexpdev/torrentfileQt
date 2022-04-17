@@ -28,7 +28,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
+from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
 from torrentfileQt import alt_start
 

@@ -46,6 +46,7 @@ def test_create_with_hasher1(dir2, wind):
     creator.path_input.clear()
     creator.path_input.setText(dir2)
     creator.output_input.clear()
+    creator.web_seed_input.setPlainText("url1")
     creator.output_input.setText(metafile)
     creator.v1button.setChecked(True)
     creator.piece_length.setCurrentIndex(2)

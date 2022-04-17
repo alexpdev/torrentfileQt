@@ -19,7 +19,7 @@
 """Testing module for most of GUI."""
 
 import pytest
-from torrentfile import TorrentFile
+from torrentfile.torrent import TorrentFile
 from torrentfile import magnet
 
 from tests import dir1, rmpath, tempfile, wind, MockEvent, ttorrent, dir2
