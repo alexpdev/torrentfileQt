@@ -165,5 +165,5 @@ def test_singlefile(size, ext, index, version, wind):
     checktab.searchInput.setText(tfile)
     checktab.checkButton.click()
     widges = checktab.treeWidget.itemWidgets
-    assert all([i.total == i.value for i in widges.values()])
+    assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)
