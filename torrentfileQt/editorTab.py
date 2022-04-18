@@ -228,6 +228,8 @@ class Table(QTableWidget):
     def clear(self):
         """Remove any data previously added to table."""
         self.info = {}
+        for row in range(self.rowCount()):
+            self.removeRow(row)
         self.setRowCount(0)
         super().clear()
 

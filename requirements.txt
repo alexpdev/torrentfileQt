@@ -1,5 +1,5 @@
 wheel
 setuptools
-torrentfile==0.7.0
+torrentfile==0.7.6
 PySide6
 pyben

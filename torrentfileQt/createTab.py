@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QRadioButton, QSpacerItem,
                                QToolButton, QWidget)
-from torrentfile import TorrentFile, TorrentFileHybrid, TorrentFileV2
+from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
 from torrentfileQt.qss import pushButtonEdit
@@ -227,6 +227,11 @@ class SubmitButton(QPushButton):
         announce = [i for i in announce.split("\n") if i]
         if announce:
             args["announce"] = announce
+
+        url_list = self.widget.web_seed_input.toPlainText()
+        url_list = [i for i in url_list.split('\n') if i]
+        if url_list:
+            args['url_list'] = url_list
 
         # Calculates piece length if not specified by user.
         outtext = os.path.realpath(self.widget.output_input.text())
