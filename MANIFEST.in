@@ -4,8 +4,7 @@ include Makefile
 include package.json
 include requirements.txt
 
-graft assets
-graft tests
+graft torrentfileQt/assets
 graft torrentfileQt
 
 global-exclude *.py[cod]

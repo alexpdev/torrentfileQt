@@ -35,6 +35,8 @@ pep8:
 
 pylint:
   run: true
+  options:
+    config: pyproject.toml
   disable:
     - R1729
 

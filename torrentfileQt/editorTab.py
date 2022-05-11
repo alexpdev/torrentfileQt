@@ -24,10 +24,19 @@ from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
-                               QLineEdit, QPushButton, QTableWidget,
-                               QTableWidgetItem, QToolButton, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from torrentfileQt.qss import table_styles
 
@@ -87,7 +96,7 @@ class EditorWidget(QWidget):
         self.counter += 1
         return event.ignore()
 
-    def dropEvent(self, event):
+    def dropEvent(self, event) -> bool:
         """Drag drop event for widgit."""
         urls = event.mimeData().urls()
         path = urls[0].toLocalFile()
@@ -101,7 +110,7 @@ class EditorWidget(QWidget):
 class Button(QPushButton):
     """Button Widget for saving results to .torrent file."""
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text: str, parent=None):
         """Constructor for the save button on torrent editor tab."""
         super().__init__(text, parent=parent)
         self.widget = parent
@@ -149,7 +158,7 @@ class FileButton(QToolButton):
         self.window = parent.window
         self.clicked.connect(self.browse)
 
-    def browse(self, path=None):
+    def browse(self, path: str = None):
         """Browse method for finding the .torrent file user wishes to edit."""
         if not path:  # pragma: no coverage
             path, _ = QFileDialog.getOpenFileName(
@@ -169,7 +178,7 @@ class AddItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles['button'])
+        self.setStyleSheet(table_styles["button"])
         self.parent = parent
         self.setText("add")
         self.box = None
@@ -192,7 +201,7 @@ class RemoveItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles['button'])
+        self.setStyleSheet(table_styles["button"])
         self.parent = parent
         self.setText("remove")
         self.box = None

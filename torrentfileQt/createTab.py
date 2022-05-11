@@ -27,10 +27,21 @@ from pathlib import Path
 from threading import Thread
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem,
-                               QToolButton, QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -229,9 +240,9 @@ class SubmitButton(QPushButton):
             args["announce"] = announce
 
         url_list = self.widget.web_seed_input.toPlainText()
-        url_list = [i for i in url_list.split('\n') if i]
+        url_list = [i for i in url_list.split("\n") if i]
         if url_list:
-            args['url_list'] = url_list
+            args["url_list"] = url_list
 
         # Calculates piece length if not specified by user.
         outtext = os.path.realpath(self.widget.output_input.text())

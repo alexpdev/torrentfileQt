@@ -32,7 +32,7 @@ class MagnetWidget(QWidget):
     """Tab for creating magnet URL's and downloading torrentfiles from them."""
 
     def __init__(self, parent=None):
-        """Initialize the widget form for creating magnet URI's from a metafile."""
+        """Initialize the widget for creating magnet URI's from a metafile."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.setStyleSheet("""

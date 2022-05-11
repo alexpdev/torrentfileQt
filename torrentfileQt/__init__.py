@@ -25,9 +25,16 @@ from torrentfileQt.version import __version__, ASSETS
 from torrentfileQt.window import Application, Window, alt_start, start
 
 
-myappid = f'TorrentfileQt.{__version__}'
-if sys.platform == 'win32':
+myappid = f"TorrentfileQt.{__version__}"
+if sys.platform == "win32":
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 __author__ = "alexpdev"
-__all__ = ["Application", "Window", "alt_start", "start", "__version__", "ASSETS"]
+__all__ = [
+    "Application",
+    "Window",
+    "alt_start",
+    "start",
+    "__version__",
+    "ASSETS",
+]

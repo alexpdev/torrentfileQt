@@ -167,3 +167,35 @@ def test_singlefile(size, ext, index, version, wind):
     widges = checktab.treeWidget.itemWidgets
     assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)
+
+
+@pytest.mark.parametrize("version", [1, 2, 3])
+def test_singlefile_large(version, wind):
+    """Test the singlefile with large size for create and check tabs."""
+    window, _ = wind
+    createtab = window.central.createWidget
+    checktab = window.central.checkWidget
+    window.central.setCurrentWidget(checktab)
+    testfile = str(tempfile(exp=28))
+    tfile = testfile + '.dat'
+    os.rename(testfile, tfile)
+    metafile = tfile + ".torrent"
+    createtab.path_input.clear()
+    createtab.output_input.clear()
+    createtab.browse_file_button.browse(tfile)
+    createtab.output_input.setText(metafile)
+    btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
+    for i, btn in enumerate(btns):
+        if i + 1 == version:
+            btn.click()
+            break
+    createtab.submit_button.click()
+    createtab.submit_button.join()
+    checktab.fileInput.clear()
+    checktab.searchInput.clear()
+    checktab.fileInput.setText(metafile)
+    checktab.searchInput.setText(tfile)
+    checktab.checkButton.click()
+    widges = checktab.treeWidget.itemWidgets
+    assert all(i.total == i.value for i in widges.values())
+    rmpath(tfile, metafile)
