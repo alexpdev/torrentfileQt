@@ -13,7 +13,7 @@ temp/
 temp/
 testdir/
 main.py
-
+.runner/
 # Distribution / packaging
 .vscode/
 TESTINGDIR/

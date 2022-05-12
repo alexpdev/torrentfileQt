@@ -76,7 +76,7 @@ class CreateWidget(QWidget):
 
         self.path_label = QLabel("Path: ", parent=self)
         self.output_label = QLabel("Save To: ", parent=self)
-        self.version_label = QLabel("Meta Version: ", parent=self)
+        self.version_label = QLabel("Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
         self.announce_label = QLabel("Trackers: ", parent=self)
         self.web_seed_label = QLabel("Web-Seeds: ")
@@ -406,10 +406,10 @@ class ComboBox(QComboBox):
     def piece_length(cls, parent=None):
         """Create a piece_length combobox."""
         box = cls(parent=parent)
-        for exp in range(14, 26):
+        for exp in range(14, 28):
             if exp < 20:
-                item = str((2**exp) // (2**10)) + "KB"
+                item = str((2**exp) // (2**10)) + " KiB"
             else:
-                item = str((2**exp) // (2**20)) + "MB"
+                item = str((2**exp) // (2**20)) + " MiB"
             box.addItem(item, 2**exp)
         return box

@@ -101,6 +101,7 @@ class EditorWidget(QWidget):
         urls = event.mimeData().urls()
         path = urls[0].toLocalFile()
         if os.path.exists(path):
+            self.table.clear()
             self.line.setText(path)
             self.table.handleTorrent.emit(path)
             return True
@@ -192,7 +193,7 @@ class AddItemButton(QToolButton):
             self.box.insertItem(0, current, 2)
         self.box.insertItem(0, "", 2)
         self.box.setCurrentIndex(0)
-        self.box.lineEdit().setFocus()
+        self.parent.line_edit.setReadOnly(True)
 
 
 class RemoveItemButton(QToolButton):
@@ -211,6 +212,7 @@ class RemoveItemButton(QToolButton):
         """Take action when button is pressed."""
         index = self.box.currentIndex()
         self.box.removeItem(index)
+        self.parent.line_edit.setReadOnly(True)
 
 
 class Table(QTableWidget):
@@ -300,18 +302,27 @@ class ComboCell(QWidget):
         def __init__(self, parent=None):
             """Construct a combobox for table widget cell."""
             super().__init__(parent=parent)
+            self.widget = parent
             self.setStyleSheet(table_styles["ComboBox"])
             self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
             self.setDuplicatesEnabled(False)
+            self.widget.line_edit.setReadOnly(True)
 
         def focusOutEvent(self, _):
             """Add item when focus changes."""
+            super().focusOutEvent(_)
             current = self.currentText().strip()
             items = [self.itemText(i) for i in range(self.count())]
             blanks = [i for i in range(len(items)) if not items[i].strip()]
             list(map(self.removeItem, blanks[::-1]))
             if current and current not in items:
                 self.insertItem(0, current, 2)
+            self.widget.line_edit.setReadOnly(True)
+
+        def focusInEvent(self, _):
+            """Make line edit widget active when clicking in to box."""
+            super().focusInEvent(_)
+            self.widget.line_edit.setReadOnly(False)
 
     def __init__(self, parent=None):
         """Construct the widget and it's sub widgets."""
@@ -320,9 +331,9 @@ class ComboCell(QWidget):
         self.setLayout(self.layout)
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.combo = self.Combo()
         self.line_edit = QLineEdit(parent=self)
         self.line_edit.setStyleSheet(table_styles["LineEdit"])
+        self.combo = self.Combo(parent=self)
         self.layout.addWidget(self.combo)
         self.combo.setLineEdit(self.line_edit)
         self.add_button = AddItemButton(self)

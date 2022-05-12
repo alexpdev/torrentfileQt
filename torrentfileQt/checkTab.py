@@ -356,14 +356,15 @@ class TreeWidget(QTreeWidget):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.setColumnCount(3)
-        self.setIndentation(15)
+        self.setColumnCount(2)
+        self.setIndentation(12)
         self.item = self.invisibleRootItem()
         self.item.setExpanded(True)
         header = self.header()
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
-        self.setHeaderHidden(True)
+        header.setStretchLastSection(True)
+        self.setHeaderHidden(False)
         self.itemWidgets = {}
         self.paths = []
         self.total = 0

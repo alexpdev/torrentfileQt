@@ -21,35 +21,6 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
-define FIXES
-import os
-from pathlib import Path
-from torrentfileQt.version import __version__
-
-distpath =  Path(os.getcwd()).resolve() / "dist"
-for item in distpath.iterdir():
-    if item.name == "torrentfileQt.exe":
-        os.rename(item, distpath / f"torrentfileQt-v{__version__}.exe")
-    elif item.name == "torrentfileQt.zip":
-        os.rename(item, distpath / f"torrentfileQt-v{__version__}-Winx64.zip")
-endef
-export FIXES
-
-define UNIXES
-import os
-from pathlib import Path
-from torrentfileQt.version import __version__
-
-distpath =  Path(os.getcwd()).resolve() / "dist"
-for item in distpath.iterdir():
-    if item.name == "torrentfileQt.exe":
-        os.rename(item, distpath / f"torrentfileQt-v{__version__}-linux")
-    elif item.name == "torrentfileQt.zip":
-        os.rename(item, distpath / f"torrentfileQt-v{__version__}-linux.zip")
-endef
-export FIXES
-
-
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
@@ -79,7 +50,7 @@ lint: ## run linters on codebase
 	prospector tests
 
 test: ## run tests quickly with the default Python
-	pip install --upgrade --force-reinstall --no-cache -rrequirements.txt
+	pip install --upgrade --force-reinstall --no-cache torrentfile pyben
 	pytest tests --cov=torrentfileQt --cov=tests
 	coverage report
 	coverage xml -o coverage.xml
@@ -89,26 +60,19 @@ push: clean lint test ## push changes to remote
 	git commit -m "$m"
 	git push
 
+start: ## start program
+	torrentfileQt
+
 release: clean test lint ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
 build:  clean
+	python -m pip install --upgrade --no-cache --force-reinstall torrentfile pyben pip wheel setuptools
 	python setup.py sdist bdist_wheel bdist_egg
-	rm -rfv ../runner
-	mkdir ../runner
-	touch ../runner/exe
-	cp ./torrentfileQt/assets/torrentfile.ico ../runner/torrentfile.ico
-	cp -rvf ./torrentfileQt ../runner/torrentfileQt
-	@echo "import torrentfileQt" >> ../runner/exe
-	@echo "torrentfileQt.start()" >> ../runner/exe
-	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
-		-F -n torrentfileQt -w -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG --collect-data torrentfileQt
-	pyinstaller --distpath ../runner/dist --workpath ../runner/build \
-		-D -n torrentfileQt -w -i ../runner/torrentfile.ico \
-		--specpath ../runner/ ../runner/exe --log-level DEBUG --collect-data torrentfileQt
-	cp -rfv ../runner/dist/* ./dist/
-	@python -c "$$FIXES"
+	rm -rfv .runner/dist
+	rm -rfv .runner/build
+	cd .runner && pyinstaller ./exec.spec
+	mkdir .runner/dist/torrentfileQt-
 
 full: clean test push release build
