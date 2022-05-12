@@ -67,12 +67,11 @@ release: clean test lint ## release to pypi
 	python setup.py sdist bdist_wheel bdist_egg
 	twine upload dist/*
 
-build:  clean
+build:  clean test lint
 	python -m pip install --upgrade --no-cache --force-reinstall torrentfile pyben pip wheel setuptools
 	python setup.py sdist bdist_wheel bdist_egg
-	rm -rfv .runner/dist
-	rm -rfv .runner/build
-	cd .runner && pyinstaller ./exec.spec
-	mkdir .runner/dist/torrentfileQt-
+	rm -rfv bin/dist
+	rm -rfv bin/build
+	cd bin && pyinstaller ./exec.spec
 
 full: clean test push release build

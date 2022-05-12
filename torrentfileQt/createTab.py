@@ -337,9 +337,9 @@ class BrowseFileButton(QPushButton):
             self.window.output_input.setText(path + ".torrent")
             piece_length = path_piece_length(path)
             if piece_length < (2**20):
-                val = f"{piece_length//(2**10)}KB"
+                val = f"{piece_length//(2**10)} KiB"
             else:
-                val = f"{piece_length//(2**20)}MB"
+                val = f"{piece_length//(2**20)} MiB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:
                     self.window.piece_length.setCurrentIndex(i)
@@ -382,9 +382,9 @@ class BrowseDirButton(QPushButton):
             except PermissionError:  # pragma: no cover
                 return
             if piece_length < (2**20):
-                val = f"{piece_length//(2**10)}KB"
+                val = f"{piece_length//(2**10)} KiB"
             else:  # pragma: no cover
-                val = f"{piece_length//(2**20)}MB"
+                val = f"{piece_length//(2**20)} MiB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:
                     self.window.piece_length.setCurrentIndex(i)

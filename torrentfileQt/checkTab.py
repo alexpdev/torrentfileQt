@@ -364,7 +364,7 @@ class TreeWidget(QTreeWidget):
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
-        self.setHeaderHidden(False)
+        self.setHeaderHidden(True)
         self.itemWidgets = {}
         self.paths = []
         self.total = 0

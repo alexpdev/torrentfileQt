@@ -308,7 +308,7 @@ class ComboCell(QWidget):
             self.setDuplicatesEnabled(False)
             self.widget.line_edit.setReadOnly(True)
 
-        def focusOutEvent(self, _):
+        def focusOutEvent(self, _):  # pragma: nocover
             """Add item when focus changes."""
             super().focusOutEvent(_)
             current = self.currentText().strip()
@@ -319,7 +319,7 @@ class ComboCell(QWidget):
                 self.insertItem(0, current, 2)
             self.widget.line_edit.setReadOnly(True)
 
-        def focusInEvent(self, _):
+        def focusInEvent(self, _):   # pragma: nocover
             """Make line edit widget active when clicking in to box."""
             super().focusInEvent(_)
             self.widget.line_edit.setReadOnly(False)
