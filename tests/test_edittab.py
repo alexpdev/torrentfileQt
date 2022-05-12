@@ -123,7 +123,7 @@ def test_editor_table_fields(wind, ttorrent):
                 for url in ['url8', 'url9']:
                     wig.add_button.click()
                     wig.line_edit.setText(url)
-                wig.combo.focusOutEvent(None)
+                wig.add_button.click()
                 lst = [wig.combo.itemText(j) for j in range(wig.combo.count())]
                 assert len([i for i in ['url8', 'url9'] if i in lst]) == 2
                 wig.remove_button.click()

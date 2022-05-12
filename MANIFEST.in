@@ -4,9 +4,11 @@ include Makefile
 include package.json
 include requirements.txt
 
-graft assets
-graft tests
+
 graft torrentfileQt
 
+
+recursive-include torrentfileQt *
+recursive-include torrentfileQt/assets *
 global-exclude *.py[cod]
 prune **/__pycache__

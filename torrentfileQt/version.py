@@ -18,16 +18,16 @@
 import os
 
 
+__version__ = "0.3.5"
+
+
 def _conf():
     """Create some enviornment variables."""
     parent = os.path.dirname(__file__)
-    top = os.path.dirname(parent)
-    assets = os.path.join(top, 'assets')
+    assets = os.path.join(parent, "assets")
     path = os.path.relpath(assets, ".")
     return path
 
 
 ASSETS = str(_conf())
-os.environ['ASSETS'] = ASSETS
-
-__version__ = "0.3.3"
+os.environ["ASSETS"] = ASSETS

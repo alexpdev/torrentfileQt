@@ -23,8 +23,7 @@ import sys
 
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
-                               QVBoxLayout)
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
@@ -58,7 +57,7 @@ class Window(QMainWindow):
         super().__init__(parent=parent)
         self.app = app
         self.menubar = MenuBar(parent=self)
-        self.icon = QIcon(os.path.join(ASSETS, "favicon.png"))
+        self.icon = QIcon(os.path.join(ASSETS, "torrentfile.png"))
         self.setObjectName("Mainwindow")
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)

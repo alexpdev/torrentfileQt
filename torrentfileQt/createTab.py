@@ -27,10 +27,21 @@ from pathlib import Path
 from threading import Thread
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem,
-                               QToolButton, QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QSpacerItem,
+    QToolButton,
+    QWidget,
+)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -65,7 +76,7 @@ class CreateWidget(QWidget):
 
         self.path_label = QLabel("Path: ", parent=self)
         self.output_label = QLabel("Save To: ", parent=self)
-        self.version_label = QLabel("Meta Version: ", parent=self)
+        self.version_label = QLabel("Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
         self.announce_label = QLabel("Trackers: ", parent=self)
         self.web_seed_label = QLabel("Web-Seeds: ")
@@ -229,9 +240,9 @@ class SubmitButton(QPushButton):
             args["announce"] = announce
 
         url_list = self.widget.web_seed_input.toPlainText()
-        url_list = [i for i in url_list.split('\n') if i]
+        url_list = [i for i in url_list.split("\n") if i]
         if url_list:
-            args['url_list'] = url_list
+            args["url_list"] = url_list
 
         # Calculates piece length if not specified by user.
         outtext = os.path.realpath(self.widget.output_input.text())
@@ -326,9 +337,9 @@ class BrowseFileButton(QPushButton):
             self.window.output_input.setText(path + ".torrent")
             piece_length = path_piece_length(path)
             if piece_length < (2**20):
-                val = f"{piece_length//(2**10)}KB"
+                val = f"{piece_length//(2**10)} KiB"
             else:
-                val = f"{piece_length//(2**20)}MB"
+                val = f"{piece_length//(2**20)} MiB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:
                     self.window.piece_length.setCurrentIndex(i)
@@ -371,9 +382,9 @@ class BrowseDirButton(QPushButton):
             except PermissionError:  # pragma: no cover
                 return
             if piece_length < (2**20):
-                val = f"{piece_length//(2**10)}KB"
+                val = f"{piece_length//(2**10)} KiB"
             else:  # pragma: no cover
-                val = f"{piece_length//(2**20)}MB"
+                val = f"{piece_length//(2**20)} MiB"
             for i in range(self.window.piece_length.count()):
                 if self.window.piece_length.itemText(i) == val:
                     self.window.piece_length.setCurrentIndex(i)
@@ -395,10 +406,10 @@ class ComboBox(QComboBox):
     def piece_length(cls, parent=None):
         """Create a piece_length combobox."""
         box = cls(parent=parent)
-        for exp in range(14, 26):
+        for exp in range(14, 28):
             if exp < 20:
-                item = str((2**exp) // (2**10)) + "KB"
+                item = str((2**exp) // (2**10)) + " KiB"
             else:
-                item = str((2**exp) // (2**20)) + "MB"
+                item = str((2**exp) // (2**20)) + " MiB"
             box.addItem(item, 2**exp)
         return box

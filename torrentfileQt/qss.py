@@ -21,7 +21,7 @@
 import os
 from urllib.request import pathname2url as path2url
 
-arrow = os.path.join(os.environ['ASSETS'], 'icons', 'arrow-down.png')
+arrow = os.path.join(os.environ["ASSETS"], "arrow-down.png")
 
 
 dark_theme = """
@@ -763,5 +763,5 @@ table_styles = {
         padding: 2px;
         border-radius: 12px;
     }
-    """
+    """,
 }

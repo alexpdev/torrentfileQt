@@ -25,11 +25,22 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QToolButton,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.recheck import Checker
 
 ASSETS = os.environ["ASSETS"]
@@ -307,13 +318,23 @@ class ProgressBar(QProgressBar):
         super().__init__(parent=parent)
         self.total = size
         self.setValue(0)
+        size = self.normalize(size)
         self.setRange(0, size)
         self.valueChanged.connect(self.addValue)
+
+    def normalize(self, val):
+        """Convert larger values into smaller increments."""
+        if self.total > 10_000_000:
+            val = val // (2**20)
+        elif self.total > 10_000:
+            val = val // (2**10)
+        return val
 
     def addValue(self, value):
         """Increase value of progressbar."""
         currentvalue = self.value()
-        addedVal = currentvalue + value
+        out = self.normalize(value)
+        addedVal = currentvalue + out
         self.setValue(addedVal)
 
 
@@ -326,7 +347,7 @@ class TreeWidget(QTreeWidget):
         parent(`QWidget`, default=None)
     """
 
-    addPathChild = Signal([str, int])
+    addPathChild = Signal([str, str])
     reChecking = Signal([str, str])
     addValue = Signal([str, int])
     addCount = Signal([str, int])
@@ -335,13 +356,14 @@ class TreeWidget(QTreeWidget):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.setColumnCount(3)
-        self.setIndentation(15)
+        self.setColumnCount(2)
+        self.setIndentation(12)
         self.item = self.invisibleRootItem()
         self.item.setExpanded(True)
         header = self.header()
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
+        header.setStretchLastSection(True)
         self.setHeaderHidden(True)
         self.itemWidgets = {}
         self.paths = []
@@ -381,6 +403,7 @@ class TreeWidget(QTreeWidget):
     def add_path_child(self, path, size):
         """Add branch to tree."""
         path = Path(path)
+        size = int(size)
         partials = path.parts
         item, item_tree = None, self.item_tree
         for i, partial in enumerate(partials):
@@ -394,27 +417,23 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon(os.path.join(ASSETS, "icons", "video.png"))
+                    fileicon = QIcon(os.path.join(ASSETS, "video.png"))
                 elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                    fileicon = QIcon(
-                        os.path.join(ASSETS, "icons", "archive.png")
-                    )
+                    fileicon = QIcon(os.path.join(ASSETS, "archive.png"))
                 elif re.match(r"\.r\d+$", path.suffix):
-                    fileicon = QIcon(
-                        os.path.join(ASSETS, "icons", "archive.png")
-                    )
+                    fileicon = QIcon(os.path.join(ASSETS, "archive.png"))
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = QIcon(os.path.join(ASSETS, "icons", "music.png"))
+                    fileicon = QIcon(os.path.join(ASSETS, "music.png"))
                 else:
-                    fileicon = QIcon(os.path.join(ASSETS, "icons", "file.png"))
+                    fileicon = QIcon(os.path.join(ASSETS, "file.png"))
                 progressBar = ProgressBar(parent=None, size=size)
-                self.setItemWidget(item, 2, progressBar)
+                self.setItemWidget(item, 1, progressBar)
                 item.progbar = progressBar
                 self.itemWidgets[str(path)] = item
             else:
-                fileicon = QIcon(os.path.join(ASSETS, "icons", "folder.png"))
+                fileicon = QIcon(os.path.join(ASSETS, "folder.png"))
             item.setIcon(0, fileicon)
-            item.setText(1, partial)
+            item.setText(0, partial)
             item_tree = item_tree[partial]
             self.window.app.processEvents()
         self.paths.append(path)
@@ -442,7 +461,7 @@ class PieceHasher:
             else:
                 relpath = os.path.relpath(val["path"], self.root)
             length = val["length"]
-            self.tree.addPathChild.emit(relpath, length)
+            self.tree.addPathChild.emit(relpath, str(length))
 
     def iter_hashes(self):
         """Iterate through hashes and compare to torrentfile hashes."""

@@ -22,6 +22,11 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 - Check progress or percentage complete for .torrent file
 - Edit torrent files.
 
+## Requirements
+
+- Pyside6
+- torrentfile
+
 ## ScreenShots
 
 ![createtorrent.png](./assets/screenshots/create-tab.png)
@@ -37,3 +42,26 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 ---------
 
 ![torrentinfo.png](./assets/screenshots/info-tab.png)
+
+---------
+
+## Install
+
+- From git:
+
+```bash
+git clone https://github.com/alexpdev/torrentfileQt.git
+cd torrentfileQt
+pip install -r requirements.txt
+pip install .
+torrentfileQt
+```
+
+- From PyPi
+
+```bash
+pip install torrentfileQt
+torrentfileQt
+```
+
+> Alternatively you can download a precompiled binary from the release page.
