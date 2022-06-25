@@ -23,7 +23,7 @@ import os
 import re
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QObject, QThread
 from PySide6.QtGui import QIcon, QTextOption
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -274,7 +274,26 @@ class TreePieceItem(QTreeWidgetItem):
         self.tree = tree
         self.window = tree.window
         self.counted = self.value = 0
+        self.string = None
         self.progbar = None
+
+    def setText(self, column, text):
+        """
+        Set text of the QLabel and store copy internally
+
+        This method overrides the default setText method and shortens
+        the string if it is larger than a certain number of characters.
+
+        Parameters
+        ----------
+        text : str
+            Text value of the tree widget item.
+        """
+        self.string = text
+        self.setToolTip(column, text)
+        if len(text) > 70:
+            text = text[:70] + "..."
+        super().setText(column, text)
 
     @property
     def total(self):
@@ -295,7 +314,6 @@ class TreePieceItem(QTreeWidgetItem):
         self.value += consumed
         self.counted += consumed
         self.progbar.valueChanged.emit(consumed)
-        self.window.app.processEvents()
         return consumed
 
     def count(self, value):
@@ -343,21 +361,20 @@ class TreeWidget(QTreeWidget):
 
     Displays percentages for matching files and their progress.
 
-    Args:
-        parent(`QWidget`, default=None)
+    Parameters
+    ----------
+    QWidget :
+        This widget's parent.
     """
 
-    addPathChild = Signal([str, str])
     reChecking = Signal([str, str])
-    addValue = Signal([str, int])
-    addCount = Signal([str, int])
 
     def __init__(self, parent=None):
         """Constructor for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.setColumnCount(2)
-        self.setIndentation(12)
+        self.setIndentation(9)
         self.item = self.invisibleRootItem()
         self.item.setExpanded(True)
         header = self.header()
@@ -371,10 +388,7 @@ class TreeWidget(QTreeWidget):
         self.root = None
         self.piece_length = None
         self.item_tree = {"widget": self.item}
-        self.addPathChild.connect(self.add_path_child)
         self.reChecking.connect(self.get_hashes)
-        self.addValue.connect(self.setItemValue)
-        self.addCount.connect(self.setItemCount)
 
     def setItemValue(self, path, val):
         """Set child widgets value to val."""
@@ -388,9 +402,16 @@ class TreeWidget(QTreeWidget):
 
     def get_hashes(self, metafile, contents):
         """Fill tree widget with contents of torrentfile."""
-        phashes = PieceHasher(metafile, contents, self)
-        phashes.addTreeWidgets()
-        phashes.iter_hashes()
+        self.thread = QThread()
+        self.phashes = PieceHasher(metafile, contents, self)
+        self.phashes.moveToThread(self.thread)
+        self.phashes.childReady.connect(self.add_child_row)
+        self.phashes.countReady.connect(self.setItemCount)
+        self.phashes.valueReady.connect(self.setItemValue)
+        self.thread.started.connect(self.phashes.run)
+        self.phashes.finished.connect(self.thread.quit)
+        self.phashes.finished.connect(self.thread.deleteLater)
+        self.thread.start()
 
     def clear(self):
         """Remove any objects from Tree Widget."""
@@ -400,7 +421,7 @@ class TreeWidget(QTreeWidget):
         self.paths = []
         self.root = None
 
-    def add_path_child(self, path, size):
+    def add_child_row(self, path, size):
         """Add branch to tree."""
         path = Path(path)
         size = int(size)
@@ -435,14 +456,20 @@ class TreeWidget(QTreeWidget):
             item.setIcon(0, fileicon)
             item.setText(0, partial)
             item_tree = item_tree[partial]
-            self.window.app.processEvents()
         self.paths.append(path)
 
 
-class PieceHasher:
+class PieceHasher(QObject):
     """Piece Hasher class for iterating through captured torrent pieces."""
 
+    triggered = Signal()
+    finished = Signal()
+    valueReady = Signal([str, int])
+    countReady = Signal([str, int])
+    childReady = Signal([str, str])
+
     def __init__(self, metafile, content, tree):
+        super().__init__()
         """Constructor for PieceHasher class."""
         self.metafile = metafile
         self.content = content
@@ -452,6 +479,14 @@ class PieceHasher:
         self.fileinfo = self.checker.fileinfo
         self.pathlist = self.checker.paths
         self.current = 0
+        self.triggered.connect(self.run)
+
+    def run(self):
+        self.addTreeWidgets()
+        self.iter_hashes()
+        print("finished")
+        self.finished.emit()
+
 
     def addTreeWidgets(self):
         """Add tree widgets items to tree widget."""
@@ -461,7 +496,8 @@ class PieceHasher:
             else:
                 relpath = os.path.relpath(val["path"], self.root)
             length = val["length"]
-            self.tree.addPathChild.emit(relpath, str(length))
+            # self.tree.addPathChild.emit(relpath, str(length))
+            self.childReady.emit(relpath, str(length))
 
     def iter_hashes(self):
         """Iterate through hashes and compare to torrentfile hashes."""
@@ -479,10 +515,12 @@ class PieceHasher:
                     left, amount = widget.left, None
                     if actual == expected:
                         amount = left if left < size else size
-                        self.tree.addValue.emit(relpath, amount)
+                        # self.tree.addValue.emit(relpath, amount)
+                        self.valueReady.emit(relpath, amount)
                     else:
                         amount = left if left < size else size
-                        self.tree.addCount.emit(relpath, amount)
+                        # self.tree.addCount.emit(relpath, amount)
+                        self.countReady.emit(relpath, amount)
                     size -= amount
             else:
                 if path == self.root:
@@ -490,6 +528,8 @@ class PieceHasher:
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:
-                    self.tree.addValue.emit(relpath, size)
+                    # self.tree.addValue.emit(relpath, size)
+                    self.valueReady.emit(relpath, size)
                 else:
-                    self.tree.addCount.emit(relpath, size)
+                    # self.tree.addCount.emit(relpath, size)
+                    self.countReady.emit(relpath, size)

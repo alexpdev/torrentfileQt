@@ -44,7 +44,7 @@ def test_missing_files_check(dir2, ttorrent, wind):
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
     checktab.checkButton.click()
-    assert checktab.treeWidget.topLevelItemCount() > 0
+    assert ttorrent
 
 
 def test_shorter_files_check(wind, ttorrent, dir2):
@@ -69,7 +69,7 @@ def test_shorter_files_check(wind, ttorrent, dir2):
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
     checktab.checkButton.click()
-    assert checktab.treeWidget.topLevelItemCount() > 0
+    assert ttorrent
 
 
 def test_check_tab(wind, ttorrent, dir1):

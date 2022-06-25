@@ -428,7 +428,7 @@ QTreeWidget QProgressBar {
     color: black;
     background-color: #7a7a7a;
     border: 1px solid black;
-    border-radius: 3px;
+    border-radius: 10px;
     margin-left: 2px;
     margin-right: 2px;
     text-align: center;
@@ -440,7 +440,7 @@ QTreeWidget QProgressBar::chunk {
     margin-right: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 16px;
 }
 
