@@ -24,7 +24,9 @@ from pathlib import Path
 import pytest
 
 from tests import dir1, dir2, rmpath, tempfile, ttorrent, wind
-from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
+from torrentfileQt.checkTab import (
+    ProgressBar, TreePieceItem, TreeWidget, PieceHasher
+)
 
 
 def test_fixture():
@@ -43,7 +45,6 @@ def test_missing_files_check(dir2, ttorrent, wind):
             os.remove(item)
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
-    checktab.checkButton.click()
     assert ttorrent
 
 
@@ -68,7 +69,12 @@ def test_shorter_files_check(wind, ttorrent, dir2):
                 shortenfile(item)
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
-    checktab.checkButton.click()
+    tree = checktab.treeWidget
+    piecehasher = PieceHasher(ttorrent, dir2, tree)
+    piecehasher.childReady.connect(tree.add_child_row)
+    piecehasher.countReady.connect(tree.setItemCount)
+    piecehasher.valueReady.connect(tree.setItemValue)
+    piecehasher.run()
     assert ttorrent
 
 
@@ -163,7 +169,12 @@ def test_singlefile(size, ext, index, version, wind):
     checktab.searchInput.clear()
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(tfile)
-    checktab.checkButton.click()
+    tree = checktab.treeWidget
+    piecehasher = PieceHasher(metafile, tfile, tree)
+    piecehasher.childReady.connect(tree.add_child_row)
+    piecehasher.countReady.connect(tree.setItemCount)
+    piecehasher.valueReady.connect(tree.setItemValue)
+    piecehasher.run()
     widges = checktab.treeWidget.itemWidgets
     assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)
@@ -195,7 +206,12 @@ def test_singlefile_large(version, wind):
     checktab.searchInput.clear()
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(tfile)
-    checktab.checkButton.click()
+    tree = checktab.treeWidget
+    piecehasher = PieceHasher(metafile, tfile, tree)
+    piecehasher.childReady.connect(tree.add_child_row)
+    piecehasher.countReady.connect(tree.setItemCount)
+    piecehasher.valueReady.connect(tree.setItemValue)
+    piecehasher.run()
     widges = checktab.treeWidget.itemWidgets
     assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)

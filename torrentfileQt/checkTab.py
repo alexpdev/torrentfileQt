@@ -279,13 +279,15 @@ class TreePieceItem(QTreeWidgetItem):
 
     def setText(self, column, text):
         """
-        Set text of the QLabel and store copy internally
+        Set text of the QLabel and store copy internally.
 
         This method overrides the default setText method and shortens
         the string if it is larger than a certain number of characters.
 
         Parameters
         ----------
+        column : int
+            The column number for the text.
         text : str
             Text value of the tree widget item.
         """
@@ -469,8 +471,8 @@ class PieceHasher(QObject):
     childReady = Signal([str, str])
 
     def __init__(self, metafile, content, tree):
-        super().__init__()
         """Constructor for PieceHasher class."""
+        super().__init__()
         self.metafile = metafile
         self.content = content
         self.tree = tree
@@ -482,11 +484,11 @@ class PieceHasher(QObject):
         self.triggered.connect(self.run)
 
     def run(self):
+        """Entry point for thread execution."""
         self.addTreeWidgets()
         self.iter_hashes()
         print("finished")
         self.finished.emit()
-
 
     def addTreeWidgets(self):
         """Add tree widgets items to tree widget."""
@@ -496,7 +498,6 @@ class PieceHasher(QObject):
             else:
                 relpath = os.path.relpath(val["path"], self.root)
             length = val["length"]
-            # self.tree.addPathChild.emit(relpath, str(length))
             self.childReady.emit(relpath, str(length))
 
     def iter_hashes(self):
@@ -515,11 +516,9 @@ class PieceHasher(QObject):
                     left, amount = widget.left, None
                     if actual == expected:
                         amount = left if left < size else size
-                        # self.tree.addValue.emit(relpath, amount)
                         self.valueReady.emit(relpath, amount)
                     else:
                         amount = left if left < size else size
-                        # self.tree.addCount.emit(relpath, amount)
                         self.countReady.emit(relpath, amount)
                     size -= amount
             else:
@@ -528,8 +527,6 @@ class PieceHasher(QObject):
                 else:
                     relpath = os.path.relpath(path, self.root)
                 if actual == expected:
-                    # self.tree.addValue.emit(relpath, size)
                     self.valueReady.emit(relpath, size)
                 else:
-                    # self.tree.addCount.emit(relpath, size)
                     self.countReady.emit(relpath, size)
