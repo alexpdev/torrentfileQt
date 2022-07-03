@@ -21,9 +21,10 @@
 import json
 import os
 import webbrowser
+from typing import Callable
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar
+from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar, QWidget
 
 from torrentfileQt.qss import dark_theme, light_theme
 
@@ -100,24 +101,32 @@ class MenuBar(QMenuBar):
         self.file_menu = Menu("File")
         self.help_menu = Menu("Help")
         self.profile_menu = Menu("Profiles")
+        self.edit_menu = Menu("Edit")
         self.addMenu(self.file_menu)
         self.addMenu(self.profile_menu)
         self.addMenu(self.help_menu)
+        self.addMenu(self.edit_menu)
         self.actionExit = QAction(self.window)
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
         self.actionRepo = QAction(self.window)
+        self.increaseFont = QAction(self.window)
+        self.decreaseFont = QAction(self.window)
         self.actionDarkTheme = QAction(self.window)
         self.actionLightTheme = QAction(self.window)
         self.actionAddProfile = QAction(self.window)
         self.actionDarkTheme.setText("Dark Theme")
         self.actionLightTheme.setText("Light Theme")
+        self.increaseFont.setText("Font Size +")
+        self.decreaseFont.setText("Font Size -")
         self.actionRepo.setText("Github Repository")
         self.actionExit.setText("Exit")
         self.actionAbout.setText("About")
         self.actionDocs.setText("Documentation")
         self.actionAddProfile.setText("Add Profile")
         self.add_profile_actions()
+        self.edit_menu.addAction(self.increaseFont)
+        self.edit_menu.addAction(self.decreaseFont)
         self.file_menu.addAction(self.actionExit)
         self.file_menu.addAction(self.actionLightTheme)
         self.file_menu.addAction(self.actionDarkTheme)
@@ -129,6 +138,8 @@ class MenuBar(QMenuBar):
         self.actionAbout.triggered.connect(self.about_qt)
         self.actionDocs.triggered.connect(documentation)
         self.actionRepo.triggered.connect(repository)
+        self.increaseFont.triggered.connect(self.increaseFontSize)
+        self.decreaseFont.triggered.connect(self.decreaseFontSize)
         self.actionAddProfile.triggered.connect(self.add_profile)
         self.actionLightTheme.triggered.connect(self.light_theme)
         self.actionDarkTheme.triggered.connect(self.dark_theme)
@@ -138,6 +149,32 @@ class MenuBar(QMenuBar):
         self.actionAddProfile.setObjectName("actionAddProfile")
         self.actionExit.setObjectName("actionExit")
         self.actionAbout.setObjectName("actionAbout")
+
+    def recurse_children(self, widget: QWidget, func: Callable):
+        """
+        Recusively move through all child widgets applying function to each.
+
+        Parameters
+        ----------
+        widget : QWidget
+            The current widget that needs to be altered.
+        func : Callable
+            The actions taken on each child widget
+        """
+        func(widget)
+        for child in widget.children():
+            self.recurse_children(child, func)
+
+    def decreaseFontSize(self):
+        self.window.setStyleSheet("*{font-size: 2em;}")
+
+    def increaseFontSize(self):
+        self.window.setStyleSheet("*{font-size: .5em;}")
+
+
+
+
+
 
     def light_theme(self):
         """Change the GUI theme for the application."""
