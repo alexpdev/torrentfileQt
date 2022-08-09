@@ -361,10 +361,12 @@ class TreeWidget(QTreeWidget):
         self.item = self.invisibleRootItem()
         self.item.setExpanded(True)
         header = self.header()
+        header.setSizeAdjustPolicy(header.SizeAdjustPolicy.AdjustToContents)
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
-        self.setHeaderHidden(True)
+        self.setHeaderLabels(["Path", "Progress"])
+        self.setHeaderHidden(False)
         self.itemWidgets = {}
         self.paths = []
         self.total = 0
