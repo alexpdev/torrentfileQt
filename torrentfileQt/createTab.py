@@ -24,9 +24,9 @@ User must provide the path to the directory containing the what the
 """
 import os
 from pathlib import Path
-from threading import Thread
+from copy import deepcopy
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -42,6 +42,7 @@ from PySide6.QtWidgets import (
     QToolButton,
     QWidget,
 )
+
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -171,27 +172,37 @@ class CreateWidget(QWidget):
         self.browse_file_button.setObjectName("createWidget_browsefile_button")
 
 
-def torrentfile_create(args, creator, name):  # pragma: no cover
-    """Create new .torrent file in a seperate thread.
+class TorrentFileCreator(QThread):
+    """
+    Torrentfile creation class.
+
+    Takes arguments provided by the GUI, and uses the internal
+    torrentfile cli to create the torrent.
 
     Parameters
     ----------
-    args : `dict`
-        keyword arguements for the torrent creator.
-    creator : `type`
-        The procedure class for creating file.
-    name : `list`
-        container to add return values to.
-
-    Returns
-    -------
-    `list`
-        container for path to created torrent file.
+    args : dict
+        keyword arguments from the GUI fields
+    creator : type
+        Which version of torrent file creator
+    name : list
+        container to add return values to
     """
-    torrent = creator(**args)
-    outfile, _ = torrent.write()
-    name.append(outfile)
-    return name
+
+    created = Signal([str])
+
+    def __init__(self, args, creator):
+        """Construct the new thread."""
+        super().__init__()
+        self.args = args
+        self.creator = creator
+
+    def run(self):
+        """Create a torrent file and emit it's path."""
+        args = deepcopy(self.args)
+        torrent = self.creator(**args)
+        outfile, _ = torrent.write()
+        self.created.emit(outfile)
 
 
 class SubmitButton(QPushButton):
@@ -264,17 +275,19 @@ class SubmitButton(QPushButton):
 
         path = self.widget.path_input.text()
         args["path"] = path
-        name = []
-        self.thread = Thread(
-            group=None, target=torrentfile_create, args=(args, creator, name)
-        )
+        self.thread = TorrentFileCreator(args, creator)
+        self.thread.created.connect(self.updateStatusBarEnd)
+        self.thread.started.connect(self.updateStatusBarBegin)
         self.thread.start()
-        return self
 
-    def join(self):
-        """Join the thread until it completes."""
-        self.thread.join()
+    def updateStatusBarBegin(self):
+        """Update the status bar when torrent creation is complete."""
+        self.window.statusBar().showMessage("Processing", 100000)
 
+    def updateStatusBarEnd(self, string):
+        """Update the status bar when torrent creation is complete."""
+        message = f"Finished creating torrent file: {string}"
+        self.window.statusBar().showMessage(message, 100000)
 
 class OutButton(QToolButton):
     """Button widget."""

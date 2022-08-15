@@ -62,6 +62,7 @@ class Window(QMainWindow):
         self.setWindowTitle("TorrentfileQt")
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
+        self.statusbar = self.statusBar()
         self.resize(700, 600)
         self._setupUI()
         self.settings = {"theme": dark_theme}
