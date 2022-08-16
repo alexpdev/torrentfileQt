@@ -46,8 +46,6 @@ from PySide6.QtWidgets import (
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
-from torrentfileQt.qss import pushButtonEdit
-
 
 class CreateWidget(QWidget):
     """CreateWidget contains all controls for creating a new .torrent file.
@@ -325,7 +323,7 @@ class BrowseFileButton(QPushButton):
         super().__init__(parent=parent)
         self.setText("Select File")
         self.window = parent
-        self.setStyleSheet(pushButtonEdit)
+        self.setProperty("createButton", "true")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
 
@@ -367,7 +365,7 @@ class BrowseDirButton(QPushButton):
         super().__init__(parent=parent)
         self.setText("Select Folder")
         self.window = parent
-        self.setStyleSheet(pushButtonEdit)
+        self.setProperty("createButton", "true")
         self.clicked.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -419,7 +417,7 @@ class ComboBox(QComboBox):
     def piece_length(cls, parent=None):
         """Create a piece_length combobox."""
         box = cls(parent=parent)
-        for exp in range(14, 28):
+        for exp in range(14, 25):
             if exp < 20:
                 item = str((2**exp) // (2**10)) + " KiB"
             else:

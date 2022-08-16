@@ -23,7 +23,6 @@ from urllib.request import pathname2url as path2url
 
 arrow = os.path.join(os.environ["ASSETS"], "arrow-down.png")
 
-
 dark_theme = """
 * {
     background-color: #19232D;
@@ -33,7 +32,6 @@ dark_theme = """
     border-width: 0px;
     border-style: solid;
 }
-
 QMenu,
 QTreeWidget,
 QTreeWidget::item,
@@ -588,6 +586,40 @@ QComboBox::drop-down {
 QComboBox::down-arrow:on {
     top: 1px;
 }
+*[createButton="true"] {
+    padding: 3px;
+    margin: 0px;
+    font-size: 9pt;
+}
+*[editLine="true"] {
+    padding: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+*[editCombo="true"] {
+    font-size: 12pt;
+    margin: 0px 0px 0px 0px;
+    border-width: 1px;
+    padding: 0px 0px 0px 0px;
+    min-height: 19px;
+}
+*[editButton="true"] {
+    margin: 2px;
+    padding: 2px;
+    border-radius: 12px;
+}
+*[infoLine="true"] {
+    background-color: transparent;
+    color: #FFF;
+    border-radius: 0px;
+    border-width: 2px;
+    font-size: 11pt;
+    padding: 0px;
+    margin: 0px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+}
 QComboBox QAbstractItemView {
     border: 1px solid #444;
     selection-background-color: lightgray;
@@ -700,25 +732,7 @@ QCombobox QAbstractItemView {
     padding: 2px;
     color: #000;
 }
-"""
-
-infoLineEdit = """
-QLineEdit {
-    background-color: transparent;
-    color: #FFF;
-    border-radius: 0px;
-    border-width: 2px;
-    font-size: 11pt;
-    padding: 0px;
-    margin: 0px;
-    border-left-color: transparent;
-    border-right-color: transparent;
-    border-top-color: transparent;
-}
-"""
-
-infoLineEditLight = """
-QLineEdit {
+*[infoLine="true"] {
     border-radius: 0px;
     border-width: 2px;
     color: black;
@@ -731,37 +745,3 @@ QLineEdit {
     border-bottom-color: black;
 }
 """
-
-pushButtonEdit = """
-QPushButton {
-    padding: 3px;
-    margin: 0px;
-    font-size: 9pt;
-}
-"""
-
-table_styles = {
-    "LineEdit": """
-    QLineEdit {
-        padding: 0px;
-        margin: 0px;
-        padding: 0px;
-    }
-    """,
-    "ComboBox": """
-    QComboBox {
-        font-size: 12pt;
-        margin: 0px 0px 0px 0px;
-        border-width: 1px;
-        padding: 0px 0px 0px 0px;
-        min-height: 19px;
-    }
-    """,
-    "button": """
-    QToolButton {
-        margin: 2px;
-        padding: 2px;
-        border-radius: 12px;
-    }
-    """,
-}

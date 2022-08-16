@@ -31,7 +31,8 @@ from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.magnetTab import MagnetWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import dark_theme
+from torrentfileQt.qss import light_theme, dark_theme
+from torrentfileQt.style import StyleManager
 
 ASSETS = os.environ["ASSETS"]
 
@@ -63,7 +64,7 @@ class Window(QMainWindow):
         self.setWindowIcon(self.icon)
         self.setMenuBar(self.menubar)
         self.statusbar = self.statusBar()
-        self.resize(700, 600)
+        self.resize(750, 650)
         self._setupUI()
         self.settings = {"theme": dark_theme}
         self.setStyleSheet(self.settings.get("theme"))
@@ -125,6 +126,8 @@ class Application(QApplication):
         """
         self.args = args if args else sys.argv
         super().__init__(self.args)
+        self.themes = {"light": light_theme, "dark": dark_theme}
+        self.styleManager = StyleManager(self.themes, dark_theme, self)
 
 
 def start():  # pragma: no cover

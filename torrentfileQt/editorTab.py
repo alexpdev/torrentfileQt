@@ -38,8 +38,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from torrentfileQt.qss import table_styles
-
 
 class EditorWidget(QWidget):
     """Main widget for the torrent editor tab."""
@@ -55,6 +53,7 @@ class EditorWidget(QWidget):
         self.counter = 0
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
+        self.setProperty("editWidget", "true")
         self.line.setStyleSheet("QLineEdit{margin-left: 15px;}")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
@@ -179,7 +178,7 @@ class AddItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles["button"])
+        self.setProperty("editButton", "true")
         self.parent = parent
         self.setText("add")
         self.box = None
@@ -202,7 +201,7 @@ class RemoveItemButton(QToolButton):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles["button"])
+        self.setProperty("editButton", "true")
         self.parent = parent
         self.setText("remove")
         self.box = None
@@ -303,7 +302,7 @@ class ComboCell(QWidget):
             """Construct a combobox for table widget cell."""
             super().__init__(parent=parent)
             self.widget = parent
-            self.setStyleSheet(table_styles["ComboBox"])
+            self.setProperty("editCombo", "true")
             self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
             self.setDuplicatesEnabled(False)
             self.widget.line_edit.setReadOnly(True)
@@ -332,7 +331,7 @@ class ComboCell(QWidget):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.line_edit = QLineEdit(parent=self)
-        self.line_edit.setStyleSheet(table_styles["LineEdit"])
+        self.setProperty("editLine", "true")
         self.combo = self.Combo(parent=self)
         self.layout.addWidget(self.combo)
         self.combo.setLineEdit(self.line_edit)
