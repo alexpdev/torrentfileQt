@@ -95,19 +95,23 @@ class FileMenu(QMenu):
         """Close application."""
         self.parent().app.quit()  # pragma: nocover
 
-    def light_theme(self):
+    @staticmethod
+    def light_theme():
         """Change the GUI theme for the application."""
         QApplication.instance().styleManager.setTheme("light")
 
-    def dark_theme(self):
+    @staticmethod
+    def dark_theme():
         """Change the GUI application to dark theme."""
         QApplication.instance().styleManager.setTheme("dark")
 
-    def increaseFont(self):
+    @staticmethod
+    def increaseFont():
         """Increase Font Size for all widgets with text."""
         QApplication.instance().styleManager.increase_font_size()
 
-    def decreaseFont(self):
+    @staticmethod
+    def decreaseFont():
         """Decrease font size for all widgets with text."""
         QApplication.instance().styleManager.decrease_font_size()
 
