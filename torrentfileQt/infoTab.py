@@ -38,8 +38,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-ASSETS = os.environ["ASSETS"]
-
+from torrentfileQt.utils import get_icon
 
 class TreeWidget(QTreeWidget):
     """Tree view of the directory structure cataloged in .torrent file.
@@ -81,18 +80,18 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = os.path.join(ASSETS, "video.png")
+                        iconpath = QIcon(get_icon("video.png"))
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = os.path.join(ASSETS, "archive.png")
+                        iconpath = QIcon(get_icon("archive.png"))
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = os.path.join(ASSETS, "archive.png")
+                        iconpath = QIcon(get_icon("archive.png"))
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = os.path.join(ASSETS, "music.png")
+                        iconpath = QIcon(get_icon("music.png"))
                     else:
-                        iconpath = os.path.join(ASSETS, "file.png")
+                        iconpath = QIcon(get_icon("file.png"))
                     item.setLength(length)
                 else:
-                    iconpath = os.path.join(ASSETS, "folder.png")
+                    iconpath = QIcon(get_icon("folder.png"))
                 icon = QIcon(iconpath)
                 item.setIcon(0, icon)
                 item.setText(1, partial)
@@ -114,7 +113,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon(os.path.join(ASSETS, "scale.png"))
+        icon = QIcon(QIcon(get_icon("scale.png")))
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -216,23 +215,18 @@ class InfoWidget(QWidget):
 
     def clear(self):
         """Clear widgets of previous input."""
-        widgets = [
-            self.contentsTree,
-            self.sourceEdit,
-            self.metaVersionEdit,
-            self.pathEdit,
-            self.nameEdit,
-            self.pieceLengthEdit,
-            self.sizeEdit,
-            self.privateEdit,
-            self.commentEdit,
-            self.trackerEdit,
-            self.totalPiecesEdit,
-            self.dateCreatedEdit,
-            self.createdByEdit,
-        ]
+        widgets = [self.contentsTree, self.sourceEdit, self.metaVersionEdit,
+                   self.pathEdit, self.nameEdit, self.pieceLengthEdit,
+                   self.sizeEdit, self.privateEdit, self.commentEdit,
+                   self.trackerEdit, self.totalPiecesEdit, self.dateCreatedEdit,
+                   self.createdByEdit]
+        labels = [self.sourceLabel, self.createdByLabel,
+                  self.commentLabel, self.dateCreatedLabel]
         for widget in widgets:
             widget.clear()
+            widget.setVisible(True)
+        for label in labels:
+            label.setVisible(True)
 
     def dragEnterEvent(self, event):
         """Drag enter event for widget."""
@@ -269,11 +263,27 @@ class InfoWidget(QWidget):
         self.clear()
         self.pathEdit.setText(kws["path"])
         self.nameEdit.setText(kws["name"])
-        self.commentEdit.setText(kws["comment"])
+        if kws["comment"]:
+            self.commentEdit.setText(kws["comment"])
+        else:
+            self.commentEdit.hide()
+            self.commentLabel.hide()
         self.trackerEdit.setText("; ".join(kws["announce"]))
-        self.sourceEdit.setText(kws["source"])
-        self.dateCreatedEdit.setText(str(kws["creation_date"]))
-        self.createdByEdit.setText(kws["created_by"])
+        if kws["source"]:
+            self.sourceEdit.setText(kws["source"])
+        else:
+            self.sourceEdit.hide()
+            self.sourceLabel.hide()
+        if kws["creation_date"]:
+            self.dateCreatedEdit.setText(str(kws["creation_date"]))
+        else:
+            self.dateCreatedEdit.hide()
+            self.dateCreatedLabel.hide()
+        if kws["created_by"]:
+            self.createdByEdit.setText(kws["created_by"])
+        else:
+            self.createdByEdit.hide()
+            self.createdByLabel.hide()
         self.privateEdit.setText(kws["private"])
         self.metaVersionEdit.setText(str(kws["meta version"]))
 
@@ -331,10 +341,6 @@ class Label(QLabel):
     def __init__(self, text, parent=None):
         """Constructor for Label Widget."""
         super().__init__(text, parent=parent)
-        font = self.font()
-        font.setBold(True)
-        font.setPointSize(11)
-        self.setFont(font)
 
 
 class InfoLineEdit(QLineEdit):

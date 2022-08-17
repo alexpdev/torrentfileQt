@@ -18,11 +18,8 @@
 ##############################################################################
 """Module for style manager."""
 
-import re
+import os
 from copy import deepcopy
-
-from PySide6.QtWidgets import QApplication
-
 
 
 class StyleManager:
@@ -34,7 +31,11 @@ class StyleManager:
         self.current = current
         self.app = parent
         self.parser = QssParser()
-        self.app.setStyleSheet(self.current)
+        self.setTheme("light")
+
+    def setTheme(self, title):
+        """Set the current QStyleSheet theme."""
+        self.app.apply_theme(self.themes[title])
 
     def _create_ssheet(self, sheets=None) -> dict:
         """
@@ -77,11 +78,15 @@ class StyleManager:
         """
         widgets = self.parser.parse(self.current)
         for row in widgets:
-            for key, value in row.items():
+            for _, value in row.items():
                 if "font-size" in value:
                     val = value["font-size"]
                     number = int(''.join([i for i in val if i.isdigit()]))
-                    key["font-size"] = f"{number + amount}pt"
+                    if 24 > number + amount > 0:
+                        value["font-size"] = f"{number + amount}pt"
+        theme = self._create_ssheet(widgets)
+        self.app.apply_theme(theme)
+
 
 
 class QssParser:
@@ -110,7 +115,7 @@ class QssParser:
         return self.collection
 
     @property
-    def _current(self):
+    def current(self):
         """
         Return the current line.
 
@@ -224,3 +229,18 @@ class QssParser:
         """
         for row in self.collection:
             self.result.update(row)
+
+
+def get_icon(name):
+    """
+    Return the path to the icon referenced by name.
+
+    Parameters
+    ----------
+    name : str
+        filename without extension for the icon.
+    """
+    parent = os.path.dirname(__file__)
+    assets = os.path.join(parent, "assets")
+    path = os.path.join(assets, name + ".png")
+    return path

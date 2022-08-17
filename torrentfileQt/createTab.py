@@ -27,6 +27,7 @@ from pathlib import Path
 from copy import deepcopy
 
 from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -39,9 +40,10 @@ from PySide6.QtWidgets import (
     QPushButton,
     QRadioButton,
     QSpacerItem,
-    QToolButton,
     QWidget,
 )
+
+from torrentfileQt.utils import get_icon
 
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
@@ -287,7 +289,7 @@ class SubmitButton(QPushButton):
         message = f"Finished creating torrent file: {string}"
         self.window.statusBar().showMessage(message, 100000)
 
-class OutButton(QToolButton):
+class OutButton(QPushButton):
     """Button widget."""
 
     def __init__(self, parent=None):
@@ -295,7 +297,9 @@ class OutButton(QToolButton):
         super().__init__(parent=parent)
         self.window = parent.window
         self.widget = parent
-        self.setText("...")
+        self.setText("File")
+        self.setProperty("createButton", "true")
+        self.setIcon(QIcon(get_icon("browse_file")))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
@@ -321,7 +325,8 @@ class BrowseFileButton(QPushButton):
     def __init__(self, parent=None):
         """Public constructor for browsebutton class."""
         super().__init__(parent=parent)
-        self.setText("Select File")
+        self.setText("File")
+        self.setIcon(QIcon(get_icon("browse_file")))
         self.window = parent
         self.setProperty("createButton", "true")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -363,7 +368,8 @@ class BrowseDirButton(QPushButton):
     def __init__(self, parent=None):
         """Constructor for folder browser button."""
         super().__init__(parent=parent)
-        self.setText("Select Folder")
+        self.setText("Folder")
+        self.setIcon(QIcon(get_icon("browse_folder")))
         self.window = parent
         self.setProperty("createButton", "true")
         self.clicked.connect(self.browse)

@@ -35,36 +35,16 @@ class MagnetWidget(QWidget):
         """Initialize the widget for creating magnet URI's from a metafile."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.setStyleSheet("""
-        QLabel {
-            font-size: 14pt;
-            font-weight: bold;
-        }
-        QLineEdit {
-            margin: 15px;
-            padding: 5px;
-            font-size: 12pt;
-        }
-        QPushButton {
-            margin-left: 30px;
-            margin-right: 30px;
-        }
-        """)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         self.hlayout = QHBoxLayout()
         self.top_spacer = QSpacerItem(0, 50)
         self.bottom_spacer = QSpacerItem(0, 100)
         self.metafile_label = QLabel("Torrent Meta File", parent=self)
-        font = self.metafile_label.font()
-        font.setPointSize(12)
-        self.metafile_label.setFont(font)
         self.magnet_label = QLabel("Magnet Link", parent=self)
-        self.magnet_label.setFont(font)
         self.magnet_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.metafile_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.metafile_input = QLineEdit(parent=self)
-        self.metafile_input.setStyleSheet("QLineEdit {margin-right: 4px;}")
         self.output = QLineEdit(parent=self)
         self.file_button = MetafileButton(parent=self)
         self.submit_button = SubmitButton(parent=self)

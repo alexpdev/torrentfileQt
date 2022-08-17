@@ -35,15 +35,15 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QSplitter,
-    QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
+    QSizePolicy
 )
 from torrentfile.recheck import Checker
 
-ASSETS = os.environ["ASSETS"]
+from torrentfileQt.utils import get_icon
 
 
 class CheckWidget(QWidget):
@@ -71,12 +71,8 @@ class CheckWidget(QWidget):
         self.searchLabel = QLabel("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.searchInput = QLineEdit(parent=self)
-        self.browseButton2 = BrowseFolders.create(
-            parent=self, text="Folder", mode=0
-        )
-        self.browseButton3 = BrowseFolders.create(
-            parent=self, text="File", mode=1
-        )
+        self.browseButton2 = BrowseFolders(parent=self)
+        self.browseButton3 = BrowseFiles(parent=self)
         self.checkButton = ReCheckButton("Check", parent=self)
 
         self.hlayout1.addWidget(self.fileInput)
@@ -146,7 +142,7 @@ class ReCheckButton(QPushButton):
             tree.reChecking.emit(metafile, content)
 
 
-class BrowseTorrents(QToolButton):
+class BrowseTorrents(QPushButton):
     """BrowseButton ToolButton for activating filebrowser.
 
     Args:
@@ -156,16 +152,20 @@ class BrowseTorrents(QToolButton):
     def __init__(self, parent=None):
         """Construct Toolbar Button for selecting .torrentfile to check."""
         super().__init__(parent=parent)
-        self.setText("...")
+        self.setText("File")
+        self.setIcon(QIcon(get_icon("browse_file")))
         self.window = parent
+        self.setProperty("createButton", "true")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
 
     def browse(self, path=None):
         """Browse action performed when user presses button.
 
-        Returns:
-            path (`str`): Path to file or folder to include in torrent.
+        Returns
+        -------
+        path : str
+            Path to file or folder to include in torrent.
         """
         caption = "Choose .torrent file."
         if not path:  # pragma: no cover
@@ -178,29 +178,51 @@ class BrowseTorrents(QToolButton):
             self.parent().fileInput.setText(path)
 
 
-class BrowseFolders(QToolButton):
-    """Browse Folders ToolButton for activating filedialog.
+class BrowseFolders(QPushButton):
+    """
+    Browse Folders ToolButton for activating filedialog.
 
-    Args:
-        parent (`QWidget`, default=None): Widget this widget is the child of.
+    Parameters
+    ----------
+    parent : QWidget
+        Widget this widget is the child of.
     """
 
-    modes = {
-        0: {
-            "func": QFileDialog.getExistingDirectory,
-            "kwargs": {
-                "dir": str(Path.home()),
-                "caption": "Select Contents Folder...",
-            },
-        },
-        1: {
-            "func": QFileDialog.getOpenFileName,
-            "kwargs": {
-                "dir": str(Path.home()),
-                "caption": "Select Contents File...",
-            },
-        },
-    }
+    def __init__(self, parent=None):
+        """Construct a BrowseFolders Button Widget."""
+        super().__init__(parent=parent)
+        self.window = parent.window
+        self.widget = parent
+        self.setText("Folder")
+        self.setProperty("createButton", "true")
+        self.setIcon(QIcon(get_icon("browse_folder")))
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.clicked.connect(self.browse_folders)
+
+    def browse_folders(self):
+        """
+        Browse Action performed when user presses button.
+
+        Returns
+        -------
+        str :
+            Path to file or folder to include in torrent.
+        """
+        path = QFileDialog.getExistingDirectory(
+            parent=self,
+            dir=str(Path.home()),
+            caption="Select Contents Folder...")
+        print(path)
+        if not isinstance(path, str):
+            path, _ = path
+        if path:
+            path = os.path.normpath(path)
+            self.widget.searchInput.clear()
+            self.widget.searchInput.setText(path)
+
+
+class BrowseFiles(QPushButton):
+    """Browse file system to find the correct file."""
 
     def __init__(self, parent=None):
         """Construct a BrowseFolders Button Widget."""
@@ -208,29 +230,27 @@ class BrowseFolders(QToolButton):
         self.window = parent.window
         self.widget = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.mode = None
-        self.clicked.connect(self.browse)
+        self.setText("File")
+        self.setProperty("createButton", "true")
+        self.setIcon(QIcon(get_icon("browse_file")))
+        self.clicked.connect(self.browse_files)
 
-    @classmethod
-    def create(cls, parent=None, text=None, mode=None):
-        """Create new instance of button with mode."""
-        btn = cls(parent=parent)
-        btn.setText(text)
-        btn.mode = mode
-        return btn
-
-    def browse(self, path=None):
-        """Browse Action performed when user presses button.
-
-        Returns:
-            `str`: Path to file or folder to include in torrent.
+    def browse_files(self, path=None):
         """
-        if not path:  # pragma: no cover
-            mode = self.modes[self.mode]
-            path = mode["func"](parent=self, **mode["kwargs"])
-            if not isinstance(path, str):
-                path, _ = path
+        Browse Action performed when user presses button.
 
+        Returns
+        -------
+        str :
+            Path to file or folder to include in torrent.
+        """
+        path = QFileDialog.getOpenFileName(
+            parent=self,
+            dir=str(Path.home()),
+            caption="Select Contents File...")
+        print(path)
+        if not isinstance(path, str):
+            path, _ = path
         if path:
             path = os.path.normpath(path)
             self.widget.searchInput.clear()
@@ -261,6 +281,11 @@ class LogTextEdit(QPlainTextEdit):
         self.insertPlainText("\n")
         vertscroll = self.verticalScrollBar()
         vertscroll.triggerAction(vertscroll.SliderAction.SliderToMaximum)
+
+    def sizeHint(self):
+        hint = super().sizeHint()
+        hint.setHeight(hint.height()//4)
+        return hint
 
 
 class TreePieceItem(QTreeWidgetItem):
@@ -419,21 +444,21 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon(os.path.join(ASSETS, "video.png"))
+                    fileicon = QIcon(get_icon("video"))
                 elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                    fileicon = QIcon(os.path.join(ASSETS, "archive.png"))
+                    fileicon = QIcon(get_icon("archive"))
                 elif re.match(r"\.r\d+$", path.suffix):
-                    fileicon = QIcon(os.path.join(ASSETS, "archive.png"))
+                    fileicon = QIcon(get_icon("archive"))
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = QIcon(os.path.join(ASSETS, "music.png"))
+                    fileicon = QIcon(get_icon("music"))
                 else:
-                    fileicon = QIcon(os.path.join(ASSETS, "file.png"))
+                    fileicon = QIcon(get_icon("file"))
                 progressBar = ProgressBar(parent=None, size=size)
                 self.setItemWidget(item, 1, progressBar)
                 item.progbar = progressBar
                 self.itemWidgets[str(path)] = item
             else:
-                fileicon = QIcon(os.path.join(ASSETS, "folder.png"))
+                fileicon = QIcon(get_icon("folder"))
             item.setIcon(0, fileicon)
             item.setText(0, partial)
             item_tree = item_tree[partial]
