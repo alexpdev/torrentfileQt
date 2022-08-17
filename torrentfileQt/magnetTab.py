@@ -76,12 +76,12 @@ class MagnetWidget(QWidget):
             return True
         return event.ignore()
 
-    def dropEvent(self, event):
+    def dropEvent(self, evt):
         """Drag drop event for widgit."""
-        urls = event.mimeData().urls()
-        path = urls[0].toLocalFile()
-        if os.path.exists(path):
-            self.metafile_input.setText(path)
+        urls = evt.mimeData().urls()
+        loc = urls[0].toLocalFile()
+        if os.path.exists(loc):
+            self.metafile_input.setText(loc)
             self.submit_button.click()
             return True
         return False
@@ -125,14 +125,14 @@ class MetafileButton(QToolButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 
-    def select_metafile(self, filename=None):
+    def select_metafile(self, name=None):
         """Find metafile in file browser."""
-        if not filename:   # pragma: nocover
-            filename, _ = QFileDialog.getOpenFileName(
+        if not name:  # pragma: nocover
+            name, _ = QFileDialog.getOpenFileName(
                 parent=self,
                 caption="Select '.torrent' file",
                 dir=str(Path.home()),
                 filter="*.torrent",
                 selectedFilter=None,
             )
-        self.widget.metafile_input.setText(filename)
+        self.widget.metafile_input.setText(name)

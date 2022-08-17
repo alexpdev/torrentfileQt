@@ -1,11 +1,39 @@
 [build-system]
 requires = ["setuptools>=40.8.0", "wheel", "PySide6", "torrentfile"]
 
+[project]
+name = "torrentfileQt"
+authors = [{name = "alexpdev", email = "alexpdev@pm.me"}]
+description = "GUI based tool for creating Bittorrent files."
+license = {file = "LICENSE"}
+version = "0.3.6"
+keywords = ["GUI", "Bittorrent", "metafile"]
+readme = "./README.md"
+requires-python = ">=3.6"
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = ["torrentfile", "PySide6", "pyben"]
+
+[project.scripts]
+torrentfileqt = "torrentfileQt.window:start"
+
+[tools.setuptools]
+packages = ["torrentfileQt"]
+include-package-data = true
+
 [tool.bandit]
 skips = ["B101"]
 
 [tool.black]
-line-length = 80
+line-length = 79
 
 [tool.autopep8]
 max_line_length = 80
@@ -20,7 +48,7 @@ testpaths = [
     "torrentfileQt",
 ]
 console_output_style = "progress"
-addopts = "--maxfail=5"
+addopts = "--maxfail=1"
 
 [tool.pylint.messages_control]
 disable= [
@@ -37,13 +65,14 @@ disable= [
     'redefined-builtin',
     'subprocess-run-check',
     'no-member',
-    'consider-using-f-string'
+    'consider-using-f-string',
+    'too-few-public-methods',
+    'too-many-lines'
 ]
 
 [tool.pylint.format]
 max-line-length=80
 max-module-lines=1000
-no-space-check=['trailing-comma','dict-separator']
 single-line-if-stmt='yes'
 
 [tool.pylint.basic]

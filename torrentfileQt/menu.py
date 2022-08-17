@@ -23,7 +23,7 @@ import os
 import webbrowser
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar, QApplication
+from PySide6.QtWidgets import QApplication, QInputDialog, QMenu, QMenuBar
 
 
 class MenuBar(QMenuBar):
@@ -31,7 +31,7 @@ class MenuBar(QMenuBar):
 
     def __init__(self, parent=None):
         """
-        Constructor for top level widgets.
+        Construct for top level widgets.
 
         Parameters
         ----------
@@ -53,7 +53,7 @@ class FileMenu(QMenu):
 
     def __init__(self, title, parent):
         """
-        Constructor for top level widgets.
+        Construct for top level widgets.
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class HelpMenu(QMenu):
 
     def __init__(self, title, parent):
         """
-        Constructor for top level widgets.
+        Construct for top level widgets.
 
         Parameters
         ----------
@@ -164,7 +164,7 @@ class ProfileMenu(QMenu):
 
     def __init__(self, title, parent):
         """
-        Constructor for top level widgets.
+        Construct for top level widgets.
 
         Parameters
         ----------
@@ -199,7 +199,7 @@ class ProfileMenu(QMenu):
                     action = QAction(self.window)
                     action.setText(profile)
                     profile_action = ProfileAction(profile, action, self)
-                    self.profile_menu.addAction(action)
+                    self.addAction(action)
                     self.profile_actions.append(profile_action)
 
     def add_profile(self, name=None):
@@ -207,9 +207,8 @@ class ProfileMenu(QMenu):
         if not os.path.exists(self.home):
             os.mkdir(self.home)
         if not name:  # pragma: nocover
-            name, result = QInputDialog.getText(
-                self, "Add Profile", "Profile Name"
-            )
+            name, result = QInputDialog.getText(self, "Add Profile",
+                                                "Profile Name")
             if not result:
                 return
         tab = self.window.central.createWidget
@@ -250,7 +249,8 @@ class ProfileMenu(QMenu):
 
 
 class ProfileAction:
-    """Store the name and action taken when this menu button is triggered.
+    """
+    Store the name and action taken when this menu button is triggered.
 
     Parameters
     ----------

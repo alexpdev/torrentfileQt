@@ -81,12 +81,11 @@ class StyleManager:
             for _, value in row.items():
                 if "font-size" in value:
                     val = value["font-size"]
-                    number = int(''.join([i for i in val if i.isdigit()]))
+                    number = int("".join([i for i in val if i.isdigit()]))
                     if 24 > number + amount > 0:
                         value["font-size"] = f"{number + amount}pt"
         theme = self._create_ssheet(widgets)
         self.app.apply_theme(theme)
-
 
 
 class QssParser:
@@ -105,7 +104,7 @@ class QssParser:
 
         Parameters
         ----------
-        path : str
+        sheet : str
             Style sheet to parse.
         """
         self.lines = sheet.split("\n")

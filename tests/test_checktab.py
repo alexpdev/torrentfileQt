@@ -23,7 +23,9 @@ from pathlib import Path
 
 import pytest
 
-from tests import dir1, dir2, rmpath, tempfile, ttorrent, wind
+from tests import (MockQFileDialog, dir1, dir2, proc_time, rmpath, tempfile,
+                   ttorrent, wind)
+from torrentfileQt import checkTab
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
 
@@ -44,6 +46,7 @@ def test_missing_files_check(dir2, ttorrent, wind):
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
     checktab.checkButton.click()
+    proc_time()
     assert checktab.treeWidget.topLevelItemCount() > 0
 
 
@@ -56,7 +59,7 @@ def test_shorter_files_check(wind, ttorrent, dir2):
 
     def shortenfile(item):
         """Shave some data off the end of file."""
-        temp = bytearray(2 ** 19)
+        temp = bytearray(2**19)
         with open(item, "rb") as fd:
             fd.readinto(temp)
         with open(item, "wb") as fd:
@@ -69,6 +72,7 @@ def test_shorter_files_check(wind, ttorrent, dir2):
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir2)
     checktab.checkButton.click()
+    proc_time()
     assert checktab.treeWidget.topLevelItemCount() > 0
 
 
@@ -80,6 +84,7 @@ def test_check_tab(wind, ttorrent, dir1):
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir1)
     checktab.checkButton.click()
+    proc_time()
     assert checktab.textEdit.toPlainText() != ""
 
 
@@ -87,8 +92,10 @@ def test_check_tab_input1(wind, dir1):
     """Test checker procedure."""
     window, _ = wind
     checktab = window.central.checkWidget
+    MockQFileDialog.Out = dir1
+    checkTab.QFileDialog = MockQFileDialog
     window.central.setCurrentWidget(checktab)
-    checktab.browseButton2.browse(dir1)
+    checktab.browseButton2.browse_folders()
     assert checktab.searchInput.text() != ""
 
 
@@ -96,6 +103,8 @@ def test_check_tab_input_2(wind, dir1):
     """Test checker procedure."""
     window, _ = wind
     checktab = window.central.checkWidget
+    MockQFileDialog.Out = dir1
+    checkTab.QFileDialog = MockQFileDialog
     window.central.setCurrentWidget(checktab)
     checktab.browseButton1.browse(dir1)
     assert checktab.fileInput.text() != ""
@@ -146,24 +155,29 @@ def test_singlefile(size, ext, index, version, wind):
     testfile = str(tempfile(exp=size))
     tfile = testfile + ext
     os.rename(testfile, tfile)
+    checkTab.QFileDialog = MockQFileDialog
     metafile = tfile + ".torrent"
     createtab.path_input.clear()
     createtab.output_input.clear()
     createtab.browse_file_button.browse(tfile)
     createtab.output_input.setText(metafile)
     createtab.piece_length.setCurrentIndex(index)
+    proc_time()
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
         if i + 1 == version:
             btn.click()
             break
     createtab.submit_button.click()
-    createtab.submit_button.join()
+    while proc_time(0.3):
+        if window.statusBar().currentMessage() != "Processing":
+            break
     checktab.fileInput.clear()
     checktab.searchInput.clear()
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(tfile)
     checktab.checkButton.click()
+    proc_time()
     widges = checktab.treeWidget.itemWidgets
     assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)
@@ -177,7 +191,7 @@ def test_singlefile_large(version, wind):
     checktab = window.central.checkWidget
     window.central.setCurrentWidget(checktab)
     testfile = str(tempfile(exp=28))
-    tfile = testfile + '.dat'
+    tfile = testfile + ".dat"
     os.rename(testfile, tfile)
     metafile = tfile + ".torrent"
     createtab.path_input.clear()
@@ -190,12 +204,15 @@ def test_singlefile_large(version, wind):
             btn.click()
             break
     createtab.submit_button.click()
-    createtab.submit_button.join()
+    while proc_time(0.3):
+        if window.statusBar().currentMessage() != "Processing":
+            break
     checktab.fileInput.clear()
     checktab.searchInput.clear()
     checktab.fileInput.setText(metafile)
     checktab.searchInput.setText(tfile)
     checktab.checkButton.click()
     widges = checktab.treeWidget.itemWidgets
+    proc_time(0.3)
     assert all(i.total == i.value for i in widges.values())
     rmpath(tfile, metafile)

@@ -18,12 +18,11 @@
 ##############################################################################
 """Graphical Extension for Users who prefer a GUI over CLI."""
 
-import os
 import sys
 
-from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
+                               QVBoxLayout)
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
@@ -31,10 +30,8 @@ from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.magnetTab import MagnetWidget
 from torrentfileQt.menu import MenuBar
-from torrentfileQt.qss import light_theme, dark_theme
+from torrentfileQt.qss import dark_theme, light_theme
 from torrentfileQt.utils import StyleManager, get_icon
-
-ASSETS = os.environ["ASSETS"]
 
 
 class Window(QMainWindow):
@@ -43,19 +40,20 @@ class Window(QMainWindow):
 
     Subclass
     --------
-        QMainWindow (QWidget): PySide6 QMainWindow
+    QMainWindow : QWidget
+        PySide6 QMainWindow
     """
 
     def __init__(self, parent=None, app=None):
         """
-        Constructor for Window class.
+        Construct for Window class.
 
         Parameters
         ----------
-        parent (QWidget, optional): The current Widget's parent.
-            Defaults to None.
-        app (QApplication, optional): Controls the GUI application.
-            Defaults to None.
+        parent : QWidget
+            The current Widget's parent.
+        app : QApplication
+            Controls the GUI application.
         """
         super().__init__(parent=parent)
         self.app = app
@@ -71,7 +69,7 @@ class Window(QMainWindow):
         self._setupUI()
 
     def _setupUI(self):
-        """Internal function for setting up UI elements."""
+        """Initialize UI widgits function for setting up UI elements."""
         self.central = TabWidget(parent=self)
         self.centralLayout = QVBoxLayout()
         self.central.setLayout(self.centralLayout)
@@ -118,7 +116,7 @@ class Application(QApplication):
 
     def __init__(self, args=None):
         """
-        Constructor for main application backend.
+        Construct for main application backend.
 
         Parameters
         ----------
@@ -136,7 +134,7 @@ class Application(QApplication):
 
 
 def start():  # pragma: no cover
-    """Entrypoint for program."""
+    """Start the program entrypoint."""
     app = Application()
     window = Window(parent=None, app=app)
     window.show()
@@ -144,7 +142,7 @@ def start():  # pragma: no cover
 
 
 def alt_start():
-    """Entrypoint for testing scripts."""
+    """Start the program entrypoint alternate."""
     app = Application()
     window = Window(parent=None, app=app)
     window.show()

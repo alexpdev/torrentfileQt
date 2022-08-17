@@ -25,22 +25,10 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (
-    QFileDialog,
-    QFormLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QSplitter,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QVBoxLayout,
-    QWidget,
-    QSizePolicy
-)
+from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+                               QLineEdit, QPlainTextEdit, QProgressBar,
+                               QPushButton, QSplitter, QTreeWidget,
+                               QTreeWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.recheck import Checker
 
 from torrentfileQt.utils import get_icon
@@ -50,7 +38,7 @@ class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
 
     def __init__(self, parent=None):
-        """Constructor for check tab."""
+        """Construct for check tab."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.vlayout = QVBoxLayout()
@@ -109,11 +97,15 @@ class CheckWidget(QWidget):
 
 
 class ReCheckButton(QPushButton):
-    """Button Widget for validating torrent files against downloaded contents.
+    """
+    Button Widget for validating torrent files against downloaded contents.
 
-    Args:
-        text (`str`): The text displayed on the button itself.
-        parent (`QWidget`, default=None): This widgets parent widget.
+    Parameters
+    ----------
+    text : str
+        The text displayed on the button itself.
+    parent : QWidget
+        This widgets parent widget.
     """
 
     process = None
@@ -143,10 +135,13 @@ class ReCheckButton(QPushButton):
 
 
 class BrowseTorrents(QPushButton):
-    """BrowseButton ToolButton for activating filebrowser.
+    """
+    BrowseButton ToolButton for activating filebrowser.
 
-    Args:
-        parent (`widget`): Parent widget.
+    Parameters
+    ----------
+    parent : widget
+        Parent widget.
     """
 
     def __init__(self, parent=None):
@@ -160,7 +155,8 @@ class BrowseTorrents(QPushButton):
         self.clicked.connect(self.browse)
 
     def browse(self, path=None):
-        """Browse action performed when user presses button.
+        """
+        Browse action performed when user presses button.
 
         Returns
         -------
@@ -169,9 +165,9 @@ class BrowseTorrents(QPushButton):
         """
         caption = "Choose .torrent file."
         if not path:  # pragma: no cover
-            path, _ = QFileDialog.getOpenFileName(
-                parent=self, caption=caption, filter="*.torrent"
-            )
+            path, _ = QFileDialog.getOpenFileName(parent=self,
+                                                  caption=caption,
+                                                  filter="*.torrent")
         if path:
             path = os.path.normpath(path)
             self.parent().fileInput.clear()
@@ -211,10 +207,8 @@ class BrowseFolders(QPushButton):
         path = QFileDialog.getExistingDirectory(
             parent=self,
             dir=str(Path.home()),
-            caption="Select Contents Folder...")
-        print(path)
-        if not isinstance(path, str):
-            path, _ = path
+            caption="Select Contents Folder...",
+        )
         if path:
             path = os.path.normpath(path)
             self.widget.searchInput.clear()
@@ -244,15 +238,13 @@ class BrowseFiles(QPushButton):
         str :
             Path to file or folder to include in torrent.
         """
-        path = QFileDialog.getOpenFileName(
+        out = QFileDialog.getOpenFileName(
             parent=self,
             dir=str(Path.home()),
-            caption="Select Contents File...")
-        print(path)
-        if not isinstance(path, str):
-            path, _ = path
-        if path:
-            path = os.path.normpath(path)
+            caption="Select Contents File...",
+        )
+        if out and out[0]:
+            path = os.path.normpath(out[0])
             self.widget.searchInput.clear()
             self.widget.searchInput.setText(path)
 
@@ -261,7 +253,7 @@ class LogTextEdit(QPlainTextEdit):
     """Text Edit widget for check tab."""
 
     def __init__(self, parent=None):
-        """Constructor for LogTextEdit."""
+        """Construct for LogTextEdit."""
         super().__init__(parent=parent)
         self._parent = parent
         self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
@@ -276,15 +268,16 @@ class LogTextEdit(QPlainTextEdit):
         self.clear()
 
     def callback(self, msg):
-        """Callback function for CheckerClass."""
+        """Invoke function for CheckerClass."""
         self.insertPlainText(msg)
         self.insertPlainText("\n")
         vertscroll = self.verticalScrollBar()
         vertscroll.triggerAction(vertscroll.SliderAction.SliderToMaximum)
 
     def sizeHint(self):
+        """Return the widget's size hint."""
         hint = super().sizeHint()
-        hint.setHeight(hint.height()//4)
+        hint.setHeight(hint.height() // 4)
         return hint
 
 
@@ -292,7 +285,7 @@ class TreePieceItem(QTreeWidgetItem):
     """Item Widgets that are leafs to Tree Widget branches."""
 
     def __init__(self, type=0, tree=None):
-        """Constructor for tree widget items."""
+        """Construct for tree widget items."""
         super().__init__(type=type)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
@@ -303,12 +296,12 @@ class TreePieceItem(QTreeWidgetItem):
 
     @property
     def total(self):
-        """Returns current value of progress bar."""
+        """Return current value of progress bar."""
         return self.progbar.total
 
     @property
     def left(self):
-        """Remaining amount of data left to check."""
+        """Discard amount of data left to check."""
         return self.progbar.total - self.counted
 
     def addProgress(self, value):
@@ -339,7 +332,7 @@ class ProgressBar(QProgressBar):
     valueChanged = Signal([int])
 
     def __init__(self, parent=None, size=0):
-        """Constructor for the progress bar widget."""
+        """Construct for the progress bar widget."""
         super().__init__(parent=parent)
         self.total = size
         self.setValue(0)
@@ -364,12 +357,15 @@ class ProgressBar(QProgressBar):
 
 
 class TreeWidget(QTreeWidget):
-    """Tree Widget for the `Check` tab.
+    """
+    Tree Widget for the `Check` tab.
 
     Displays percentages for matching files and their progress.
 
-    Args:
-        parent(`QWidget`, default=None)
+    Parameters
+    ----------
+    parent : QWidget
+        this widgets parent.
     """
 
     addPathChild = Signal([str, str])
@@ -378,7 +374,7 @@ class TreeWidget(QTreeWidget):
     addCount = Signal([str, int])
 
     def __init__(self, parent=None):
-        """Constructor for Tree Widget."""
+        """Construct for Tree Widget."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.setColumnCount(2)
@@ -470,7 +466,7 @@ class PieceHasher:
     """Piece Hasher class for iterating through captured torrent pieces."""
 
     def __init__(self, metafile, content, tree):
-        """Constructor for PieceHasher class."""
+        """Construct for PieceHasher class."""
         self.metafile = metafile
         self.content = content
         self.tree = tree

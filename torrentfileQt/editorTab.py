@@ -25,32 +25,23 @@ from pathlib import Path
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (
-    QComboBox,
-    QFileDialog,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTableWidget,
-    QTableWidgetItem,
-    QToolBar,
-    QToolButton,
-    QVBoxLayout,
-    QWidget,
-    QSizePolicy
-)
+from PySide6.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
+                               QLineEdit, QPushButton, QSizePolicy,
+                               QTableWidget, QTableWidgetItem, QToolBar,
+                               QToolButton, QVBoxLayout, QWidget)
 
-from torrentfileQt.utils import get_icon
 
 class EditorWidget(QWidget):
     """Main widget for the torrent editor tab."""
 
     def __init__(self, parent=None):
-        """Construct editor tab widget.
+        """
+        Construct editor tab widget.
 
-        Args:
-            parent (`QWidget`): parent widget of this widge.
+        Parameters
+        ----------
+        parent : QWidget
+            parent widget of this widge.
         """
         super().__init__(parent=parent)
         self.window = parent.window
@@ -113,7 +104,7 @@ class Button(QPushButton):
     """Button Widget for saving results to .torrent file."""
 
     def __init__(self, text: str, parent=None):
-        """Constructor for the save button on torrent editor tab."""
+        """Construct for the save button on torrent editor tab."""
         super().__init__(text, parent=parent)
         self.widget = parent
         self.clicked.connect(self.save)
@@ -153,7 +144,7 @@ class FileButton(QToolButton):
     """Tool Button for selecting a .torrent file to edit."""
 
     def __init__(self, parent=None):
-        """Constructor for the FileDialog button on Torrent Editor tab."""
+        """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
         self.widget = parent
         self.setText("Select File")
@@ -222,7 +213,7 @@ class Table(QTableWidget):
     handleTorrent = Signal([str])
 
     def __init__(self, parent=None):
-        """Constructor for the Table Widget on torrent editor tab."""
+        """Construct for the Table Widget on torrent editor tab."""
         super().__init__(parent=parent)
         self.info = {}
         self.window = parent.window
@@ -246,7 +237,7 @@ class Table(QTableWidget):
         super().clear()
 
     def export_data(self, path):
-        """Slot for the handleTorrent signal."""
+        """Export slot for the handleTorrent signal."""
         if not os.path.exists(path):  # pragma: no cover
             return
         data = pyben.load(path)
@@ -320,17 +311,17 @@ class Combo(QComboBox):
             self.insertItem(0, current, 2)
         self.widget.line_edit.setReadOnly(True)
 
-    def focusInEvent(self, _):   # pragma: nocover
+    def focusInEvent(self, _):  # pragma: nocover
         """Make line edit widget active when clicking in to box."""
         super().focusInEvent(_)
         self.widget.line_edit.setReadOnly(False)
 
 
 class ToolBar(QToolBar):
-    """Toolbar for the combobox and buttons"""
+    """Toolbar for the combobox and buttons."""
 
     def __init__(self, parent=None):
-        """Construct the toolbar instance"""
+        """Construct the toolbar instance."""
         super().__init__(parent=parent)
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
         self.setMinimumWidth(800)

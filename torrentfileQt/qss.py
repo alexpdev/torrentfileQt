@@ -18,11 +18,11 @@
 """Module for stylesheets."""
 
 import os
-
 from urllib.request import pathname2url as path2url
 
+from torrentfileQt.utils import get_icon
 
-arrow = os.path.join(os.environ["ASSETS"], "arrow-down.png")
+arrow = os.path.join(get_icon("arrow-down.png"))
 dark_theme = """
 * {
     background-color: #19232D;
@@ -578,10 +578,7 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % path2url(
-    str(arrow)
-)
-
+""" % path2url(str(arrow))
 
 light_theme = """
 * {
@@ -645,14 +642,14 @@ QWidget {
     border-width: 0px;
 }
 QAbstractScrollArea {
-    background-color: #E3E6F1;
+    background-color: #CFC;
     border: 1px solid #0CF;
     border-radius: 4px;
     padding: 2px;
     color: #000;
 }
 QAbstractScrollArea:disabled {
-    color: #E2CFE5;
+    color: #E3E6F1;
 }
 QScrollArea QWidget QWidget:disabled {
     background-color: #E3E6F1;
@@ -672,13 +669,13 @@ QScrollBar:vertical {
     border-radius: 4px;
 }
 QScrollBar::handle:horizontal {
-    background-color: #f9eefd;
+    background-color: #888;
     border: 1px solid #836727;
     border-radius: 4px;
     min-width: 8px;
 }
 QScrollBar::handle:horizontal:hover {
-    background-color: #ffffff;
+    background-color: #665997;
     border: #f9f046;
     border-radius: 4px;
     min-width: 8px;
@@ -687,7 +684,7 @@ QScrollBar::handle:horizontal:focus {
     border: 1px solid #1A72BB;
 }
 QScrollBar::handle:vertical {
-    background-color: #f1f3f5;
+    background-color: #336;
     border: 1px solid #eaf74a;
     min-height: 8px;
     border-radius: 4px;
@@ -758,7 +755,12 @@ QScrollBar::sub-line:vertical:on {
     subcontrol-origin: margin;
 }
 QTabWidget::pane {
-    border-top: 2px solid black;
+    border-top-color: #667;
+    border-top-width: 2px;
+    border-top-style: outset;
+    border-bottom-color: #444;
+    border-bottom-width: 1px;
+
     font-size: 10pt;
 }
 QTabWidget::tab-bar {
@@ -766,10 +768,11 @@ QTabWidget::tab-bar {
 }
 QTabBar::tab {
     border-style: outset;
-    border-color: #442459;
+    border-color: #84378a;
     border-width: 3px;
     color: #000000;
     font-size: 10pt;
+    font-weight: bold;
     padding-left: 8px;
     padding-right: 8px;
     margin-right: 2px;
@@ -777,10 +780,11 @@ QTabBar::tab {
     background-color: #faf7e7;
 }
 QTabBar::tab:hover {
-    color: #cddff3;
+    color: #002288;
 }
 QTabBar::tab:selected, QTabBar::tab:last:selected {
-    border-color: #220f00;
+    border-color: #883e00;
+    border-bottom-color: transparent;
     font-style: bold;
     border-width: 2px;
     border-style: inset;
@@ -790,7 +794,8 @@ QTabBar::tab:selected, QTabBar::tab:last:selected {
     font-size: 10pt;
     padding-bottom: 0px;
     margin-right: 2px;
-    background-color: #f7c49d;
+    margin-bottom: -3px;
+    background-color: #E3E6F1;
 }
 QPushButton{
     margin-top: 3px;
@@ -798,11 +803,11 @@ QPushButton{
     margin-left: 8px;
     margin-right: 8px;
     border-style: outset;
-    border-top-color: #4a270b;
+    border-top-color: #9b5317;
     border-right-color: #572c0b;
-    border-left-color: #74390e;
+    border-left-color: #9f4f13;
     border-bottom-color: #5b310b;
-    border-radius: 8px;
+    border-radius: 6px;
     border-width: 3px;
     padding-top: 4px;
     font-size: 12pt;
@@ -856,25 +861,25 @@ QRadioButton {
     margin-top: 2px;
     margin-bottom: 2px;
     padding-bottom: 4px;
-    color: #DFF;
+    color: #005;
 }
 QRadioButton::indicator::unchecked {
-    border: 1px inset #333;
+    border: 2px inset #333;
     border-radius: 6px;
-    background-color:  #ff5;
+    background-color:  #ffe006;
     width: 13px;
     height: 13px;
 }
 QRadioButton::indicator::unchecked:hover {
     border-radius: 5px;
-    background-color: #ff5;
+    background-color: #fdfd00;
     width: 13px;
     height: 13px;
 }
 QRadioButton::indicator::checked {
-    border: 1px inset #d73;
-    border-radius: 5px;
-    background-color: #ff5;
+    border: 2px inset #8e5740;
+    border-radius: 4px;
+    background-color: #f00;
     width: 13px;
     height: 13px;
 }
@@ -981,17 +986,18 @@ QTableWidget QTableCornerButton::section{
     border: 2px brown solid;
 }
 QHeaderView::section {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #54585b, stop:1 #393c3e);
-    color: #011;
-    padding: 1px 2px 1px 4px;
+    background-color: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #719bfd:1 #88d9ff);
+    color: #001111;
     font-size: 12pt;
-    border: 1px solid #ff5;
+    border: 1px solid #67fe56;
     border-top-width: 0;
     border-left-color: #5e6163;
     border-right-color: #2a2c2d;
 }
 QHeaderView::section:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #64686b, stop:1 #494c4e);
+    background-color: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #64686b, stop:1 #494c4e);
     border-bottom-color: #424242;
 }
 QHeaderView::section:first {
@@ -1042,7 +1048,8 @@ QMenu::icon:checked {
 }
 QMenu::separator {
     height: 2px;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #282a2b, stop:1 #45484b);
+    background-color: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #282a2b, stop:1 #45484b);
     margin: 0 1px;
 }
 QMenu::indicator {
@@ -1062,6 +1069,9 @@ QLineEdit {
     font-size: 9pt;
     background-color: #CFC;
 }
+QLineEdit::read-only {
+    background-color: #CFC;
+}
 QLabel {
     padding: 2px;
     padding-top: 4px;
@@ -1070,12 +1080,17 @@ QLabel {
     font-weight: bold;
 }
 QStatusBar {
-    border: 2px groove #0FF;
+    border: 1px groove #6f3375;
+    background-color: #222;
+    color: #F00;
     font-size: 8pt;
+    border-radius: 3px;
     padding: 3px;
 }
+
 QComboBox {
-    border: 2px solid #561;
+    border: 2px solid #645a3c;
+    background-color: #0EE;
     font-size: 10pt;
     padding: 1px 1px 1px 3px;
     min-width: 2em;
@@ -1086,7 +1101,7 @@ QComboBox:on {
 }
 QComboBox::drop-down {
     width: 20px;
-    background: #Fee;
+    background: #0EE;
     padding: 0px 2px 0px 2px;
     border-left-width: 2px;
     border-left-color: #449;
@@ -1094,6 +1109,7 @@ QComboBox::drop-down {
 }
 QComboBox::down-arrow:on {
     top: 1px;
+    background-color: #555;
 }
 *[createButton="true"] {
     padding: 3px;
@@ -1138,6 +1154,4 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % path2url(
-    str(arrow)
-)
+""" % path2url(str(arrow))

@@ -23,12 +23,12 @@ from pathlib import Path
 
 import pytest
 
-from tests import wind, rmpath
+from tests import rmpath, wind
 
 
 @pytest.fixture(params=[1, 2, 3])
 def profiles(request):
-    """Pytest fixture for profiles."""
+    """Test fixture for profiles."""
     root = Path(__file__).parent / "PROFILEDIR"
     profile_file = root / "profiles.json"
     if not os.path.exists(root):
@@ -54,9 +54,10 @@ def menubar_profiles(wind, profiles):
     """Pytest fixture for menubar profiles."""
     window, _ = wind
     menubar = window.menubar
-    menubar.home, menubar.profiles = profiles
-    menubar.add_profile_actions()
-    return menubar, window, profiles
+    menu = menubar.profile_menu
+    menu.home, menu.profiles = profiles
+    menu.add_profile_actions()
+    return menu, window, profiles
 
 
 def test_wind():
@@ -72,10 +73,10 @@ def test_menubar_profiles(menubar_profiles):
 
 def test_menubar_profiles_actions(menubar_profiles):
     """Test menubar profiles actions."""
-    menubar, window, profiles = menubar_profiles
+    menu, window, profiles = menubar_profiles
     _, profile = profiles
     profs = json.load(open(profile))
-    action = [i for i in menubar.profile_actions if i.name == "example"][0]
+    action = [i for i in menu.profile_actions if i.name == "example"][0]
     action.action.trigger()
     tab = window.central.createWidget
     assert tab.source_input.text() == profs["example"]["source"]
@@ -83,11 +84,11 @@ def test_menubar_profiles_actions(menubar_profiles):
 
 def test_add_profile_with_profiles(menubar_profiles):
     """Test adding a profile."""
-    menubar, window, profiles = menubar_profiles
+    menu, window, profiles = menubar_profiles
     tab = window.central.createWidget
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
-    menubar.add_profile(name="test")
+    menu.add_profile(name="test")
     _, profile = profiles
     profs = json.load(open(profile))
     assert "test" in profs
@@ -95,15 +96,14 @@ def test_add_profile_with_profiles(menubar_profiles):
 
 def test_add_profile_meta_v2(menubar_profiles):
     """Test adding a profile with other meta versions."""
-    menubar, window, profiles = menubar_profiles
-    window.menubar.light_theme()
+    menu, window, profiles = menubar_profiles
+    window.menubar.file_menu.light_theme()
     tab = window.central.createWidget
     tab.v2button.click()
-    window.change_theme("light_theme")
     tab.source_input.setText("SOURCE")
     tab.private.click()
     tab.announce_input.setPlainText("https://announce.net")
-    menubar.add_profile(name="test1")
+    menu.add_profile(name="test1")
     _, profile = profiles
     profs = json.load(open(profile))
     assert "test1" in profs
@@ -111,13 +111,13 @@ def test_add_profile_meta_v2(menubar_profiles):
 
 def test_add_profile_meta_hybrid(menubar_profiles):
     """Test adding a profile with other meta versions."""
-    menubar, window, profiles = menubar_profiles
+    menu, window, profiles = menubar_profiles
     tab = window.central.createWidget
     tab.v1button.click()
-    window.menubar.light_theme()
+    window.menubar.file_menu.light_theme()
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
-    menubar.add_profile(name="test2")
+    menu.add_profile(name="test2")
     _, profile = profiles
     profs = json.load(open(profile))
     assert "test2" in profs
@@ -126,16 +126,16 @@ def test_add_profile_meta_hybrid(menubar_profiles):
 def test_add_profile_without_profiles(wind):
     """Test adding a profile."""
     window, _ = wind
-    path = window.menubar.home
+    path = window.menubar.profile_menu.home
     alt = Path(__file__).parent / "alt"
-    if os.path.exists(window.menubar.home):
+    if os.path.exists(window.menubar.profile_menu.home):
         os.rename(path, alt)  # pragma: nocover
     tab = window.central.createWidget
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
-    window.menubar.add_profile(name="test")
-    window.menubar.dark_theme()
-    profiles = window.menubar.profiles
+    window.menubar.profile_menu.add_profile(name="test")
+    window.menubar.file_menu.dark_theme()
+    profiles = window.menubar.profile_menu.profiles
     profs = json.load(open(profiles))
     assert "test" in profs
     rmpath(path)

@@ -19,10 +19,11 @@
 """Testing module for most of GUI."""
 
 import pytest
-from torrentfile.torrent import TorrentFile
 from torrentfile import magnet
+from torrentfile.torrent import TorrentFile
 
-from tests import dir1, rmpath, tempfile, wind, MockEvent, ttorrent, dir2
+from tests import (MockEvent, dir1, dir2, proc_time, rmpath, tempfile,
+                   ttorrent, wind)
 
 
 @pytest.fixture(scope="module")
@@ -48,26 +49,27 @@ def test_fixture():
 
 def test_create_magnet(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
-    window, app = wind
+    window, _ = wind
     outfile, _ = torrent
     tab = window.central.magnetWidget
     window.central.setCurrentWidget(tab)
     tab.metafile_input.setText(str(outfile))
     tab.submit_button.click()
     out = tab.output.text()
-    app.processEvents()
+    proc_time()
     assert out == magnet(outfile)
 
 
 def test_create_magnet_method(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
-    window, app = wind
+    window, _ = wind
     outfile, _ = torrent
     tab = window.central.magnetWidget
     window.central.setCurrentWidget(tab)
-    tab.file_button.select_metafile(filename=outfile)
+    tab.file_button.select_metafile(name=outfile)
+    tab.submit_button.magnet()
     out = tab.output.text()
-    app.processEvents()
+    proc_time()
     assert out == magnet(outfile)
 
 

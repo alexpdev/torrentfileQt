@@ -1,2 +1,2 @@
-torrentfile==0.7.9
+torrentfile
 PySide6
