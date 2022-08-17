@@ -18,12 +18,11 @@
 ##############################################################################
 """Init module for TorrentfileQt project."""
 
-import sys
 import ctypes
+import sys
 
-from torrentfileQt.version import __version__, ASSETS
+from torrentfileQt.version import __version__
 from torrentfileQt.window import Application, Window, alt_start, start
-
 
 myappid = f"TorrentfileQt.{__version__}"
 if sys.platform == "win32":
@@ -36,5 +35,4 @@ __all__ = [
     "alt_start",
     "start",
     "__version__",
-    "ASSETS",
 ]

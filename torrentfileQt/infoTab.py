@@ -27,33 +27,27 @@ from pathlib import Path
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QFileDialog,
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
+                               QPushButton, QTreeWidget, QTreeWidgetItem,
+                               QWidget)
 
-from torrentfileQt.qss import infoLineEdit, infoLineEditLight
-
-ASSETS = os.environ["ASSETS"]
+from torrentfileQt.utils import get_icon
 
 
 class TreeWidget(QTreeWidget):
-    """Tree view of the directory structure cataloged in .torrent file.
+    """
+    Tree view of the directory structure cataloged in .torrent file.
 
-    Args:
-        parent (`widget`, default=`None`): The widget containing this widget.
+    Parameters
+    ----------
+    parent : widget
+        The widget containing this widget.
     """
 
     itemReady = Signal([str, str])
 
     def __init__(self, parent=None):
-        """Constructor for tree widget."""
+        """Construct for tree widget."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.widget = parent
@@ -62,8 +56,7 @@ class TreeWidget(QTreeWidget):
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         self.root.setChildIndicatorPolicy(
-            self.root.ChildIndicatorPolicy.ShowIndicator
-        )
+            self.root.ChildIndicatorPolicy.ShowIndicator)
         self.setIndentation(8)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setHeaderHidden(True)
@@ -83,18 +76,18 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = os.path.join(ASSETS, "video.png")
+                        iconpath = QIcon(get_icon("video.png"))
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = os.path.join(ASSETS, "archive.png")
+                        iconpath = QIcon(get_icon("archive.png"))
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = os.path.join(ASSETS, "archive.png")
+                        iconpath = QIcon(get_icon("archive.png"))
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = os.path.join(ASSETS, "music.png")
+                        iconpath = QIcon(get_icon("music.png"))
                     else:
-                        iconpath = os.path.join(ASSETS, "file.png")
+                        iconpath = QIcon(get_icon("file.png"))
                     item.setLength(length)
                 else:
-                    iconpath = os.path.join(ASSETS, "folder.png")
+                    iconpath = QIcon(get_icon("folder.png"))
                 icon = QIcon(iconpath)
                 item.setIcon(0, icon)
                 item.setText(1, partial)
@@ -108,7 +101,7 @@ class TreeItem(QTreeWidgetItem):
     """Item widget for tree leaves and branches."""
 
     def __init__(self, group):
-        """Constructor for tree item widget."""
+        """Construct for tree item widget."""
         super().__init__(group)
         policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
         self.setChildIndicatorPolicy(policy)
@@ -116,7 +109,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon(os.path.join(ASSETS, "scale.png"))
+        icon = QIcon(QIcon(get_icon("scale.png")))
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -233,8 +226,17 @@ class InfoWidget(QWidget):
             self.dateCreatedEdit,
             self.createdByEdit,
         ]
+        labels = [
+            self.sourceLabel,
+            self.createdByLabel,
+            self.commentLabel,
+            self.dateCreatedLabel,
+        ]
         for widget in widgets:
             widget.clear()
+            widget.setVisible(True)
+        for label in labels:
+            label.setVisible(True)
 
     def dragEnterEvent(self, event):
         """Drag enter event for widget."""
@@ -265,24 +267,40 @@ class InfoWidget(QWidget):
     def fill(self, **kws):
         """Fill all child widgets with collected information.
 
-        Args:
-            kws (`dict`): key, value dictionary with keys as field labels.
+        Parameters
+        ----------
+        kws : dict
+            key, value dictionary with keys as field labels.
         """
         self.clear()
         self.pathEdit.setText(kws["path"])
         self.nameEdit.setText(kws["name"])
-        self.commentEdit.setText(kws["comment"])
+        if kws["comment"]:
+            self.commentEdit.setText(kws["comment"])
+        else:
+            self.commentEdit.hide()
+            self.commentLabel.hide()
         self.trackerEdit.setText("; ".join(kws["announce"]))
-        self.sourceEdit.setText(kws["source"])
-        self.dateCreatedEdit.setText(str(kws["creation_date"]))
-        self.createdByEdit.setText(kws["created_by"])
+        if kws["source"]:
+            self.sourceEdit.setText(kws["source"])
+        else:
+            self.sourceEdit.hide()
+            self.sourceLabel.hide()
+        if kws["creation_date"]:
+            self.dateCreatedEdit.setText(str(kws["creation_date"]))
+        else:
+            self.dateCreatedEdit.hide()
+            self.dateCreatedLabel.hide()
+        if kws["created_by"]:
+            self.createdByEdit.setText(kws["created_by"])
+        else:
+            self.createdByEdit.hide()
+            self.createdByLabel.hide()
         self.privateEdit.setText(kws["private"])
         self.metaVersionEdit.setText(str(kws["meta version"]))
 
-        piece_length = kws["piece_length"]
-        plength_str = (
-            denom(piece_length) + " / (" + pretty_int(piece_length) + ")"
-        )
+        piecelen = kws["piece_length"]
+        plength_str = denom(piecelen) + " / (" + pretty_int(piecelen) + ")"
         self.pieceLengthEdit.setText(plength_str)
         size = denom(kws["length"]) + " / (" + pretty_int(kws["length"]) + ")"
         self.sizeEdit.setText(size)
@@ -292,13 +310,13 @@ class InfoWidget(QWidget):
         for path, size in kws["contents"].items():
             self.contentsTree.itemReady.emit(path, str(size))
         for widg in [
-            self.pathEdit,
-            self.nameEdit,
-            self.trackerEdit,
-            self.privateEdit,
-            self.pieceLengthEdit,
-            self.sizeEdit,
-            self.totalPiecesEdit,
+                self.pathEdit,
+                self.nameEdit,
+                self.trackerEdit,
+                self.privateEdit,
+                self.pieceLengthEdit,
+                self.sizeEdit,
+                self.totalPiecesEdit,
         ]:
             widg.setCursorPosition(0)
 
@@ -307,23 +325,23 @@ class SelectButton(QPushButton):
     """Button for choosing the torrent file."""
 
     def __init__(self, text, parent=None):
-        """Constructor for select button."""
+        """Construct for select button."""
         super().__init__(text, parent=parent)
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
-        if not path:  # pragma: no cover
-            path, _ = QFileDialog.getOpenFileName(
+        fullpath = path
+        if not fullpath:  # pragma: no cover
+            fullpath, _ = QFileDialog.getOpenFileName(
                 parent=self,
-                caption="Select '.torrent' file",
+                caption="Please Select '.torrent' File",
                 dir=str(Path.home()),
                 filter="*.torrent",
-                selectedFilter=None,
             )
-        if path:
-            kws = format_data(path)
+        if fullpath:
+            kws = format_data(fullpath)
             self.parent().fill(**kws)
 
 
@@ -331,33 +349,21 @@ class Label(QLabel):
     """Label Identifier for Window Widgets."""
 
     def __init__(self, text, parent=None):
-        """Constructor for Label Widget."""
+        """Construct for Label Widget."""
         super().__init__(text, parent=parent)
-        font = self.font()
-        font.setBold(True)
-        font.setPointSize(11)
-        self.setFont(font)
 
 
 class InfoLineEdit(QLineEdit):
     """Line Edit Widget."""
 
-    style = {"dark": infoLineEdit, "light": infoLineEditLight}
-
     def __init__(self, parent=None):
-        """Constructor for line edit widget."""
+        """Construct for line edit widget."""
         super().__init__(parent=parent)
+        self.setProperty("infoLine", "true")
         self.window = parent.window
         self.setReadOnly(True)
         self.theme = "dark"
-        self.setStyleSheet(infoLineEdit)
         self.setDragEnabled(True)
-        self.window.ThemeChanged.connect(self.change_stylesheet)
-
-    def change_stylesheet(self):
-        """Change the stylesheet with theme changes."""
-        self.theme = "light" if self.theme == "dark" else "dark"
-        self.setStyleSheet(self.style.get(self.theme))
 
 
 def format_data(path):
@@ -398,9 +404,8 @@ def format_data(path):
     if "files" in info:
         contents = {}
         for entry in info["files"]:
-            contents[os.path.join(info["name"], *entry["path"])] = entry[
-                "length"
-            ]
+            contents[os.path.join(info["name"],
+                                  *entry["path"])] = entry["length"]
             size += entry["length"]
         keywords["contents"] = contents
 

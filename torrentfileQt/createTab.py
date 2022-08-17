@@ -23,44 +23,38 @@ User must provide the path to the directory containing the what the
 .torrent file will be created from.
 """
 import os
+from copy import deepcopy
 from pathlib import Path
-from threading import Thread
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QFileDialog,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPlainTextEdit,
-    QPushButton,
-    QRadioButton,
-    QSpacerItem,
-    QToolButton,
-    QWidget,
-)
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+                               QPushButton, QRadioButton, QSpacerItem, QWidget)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
-from torrentfileQt.qss import pushButtonEdit
+from torrentfileQt.utils import get_icon
 
 
 class CreateWidget(QWidget):
-    """CreateWidget contains all controls for creating a new .torrent file.
+    """
+    CreateWidget contains all controls for creating a new .torrent file.
 
-    Args:
-        QWidget (`QObject`): Parent class to CreateWidget.
+    Parameters
+    ----------
+    parent : QWidget
+        Parent class to CreateWidget.
     """
 
     def __init__(self, parent=None):
         """
-        Constructor for Create Widget.
+        Construct for Create Widget.
 
-        Args:
-            parent ([`QWidget`], optional): Parent Widget. Defaults to None.
+        Parameters
+        ----------
+        parent : QWidget
+            Parent Widget. Defaults to None.
         """
         super().__init__(parent=parent)
         self.content_dir = None
@@ -171,34 +165,45 @@ class CreateWidget(QWidget):
         self.browse_file_button.setObjectName("createWidget_browsefile_button")
 
 
-def torrentfile_create(args, creator, name):  # pragma: no cover
-    """Create new .torrent file in a seperate thread.
+class TorrentFileCreator(QThread):
+    """
+    Torrentfile creation class.
+
+    Takes arguments provided by the GUI, and uses the internal
+    torrentfile cli to create the torrent.
 
     Parameters
     ----------
-    args : `dict`
-        keyword arguements for the torrent creator.
-    creator : `type`
-        The procedure class for creating file.
-    name : `list`
-        container to add return values to.
-
-    Returns
-    -------
-    `list`
-        container for path to created torrent file.
+    args : dict
+        keyword arguments from the GUI fields
+    creator : type
+        Which version of torrent file creator
+    name : list
+        container to add return values to
     """
-    torrent = creator(**args)
-    outfile, _ = torrent.write()
-    name.append(outfile)
-    return name
+
+    created = Signal([str])
+
+    def __init__(self, args, creator):
+        """Construct the new thread."""
+        super().__init__()
+        self.args = args
+        self.creator = creator
+
+    def run(self):
+        """Create a torrent file and emit it's path."""
+        args = deepcopy(self.args)
+        torrent = self.creator(**args)
+        outfile, _ = torrent.write()
+        self.created.emit(outfile)
 
 
 class SubmitButton(QPushButton):
     """Button widget."""
 
     def __init__(self, text, parent=None):
-        """Public Constructor for Submit Button.
+        """
+        Construct the submit button.
 
         Parameters
         ----------
@@ -252,7 +257,8 @@ class SubmitButton(QPushButton):
         current = self.widget.piece_length.currentIndex()
         if current:
             piece_length_index = self.widget.piece_length.currentIndex()
-            piece_length = self.widget.piece_length.itemData(piece_length_index)
+            piece_length = self.widget.piece_length.itemData(
+                piece_length_index)
             args["piece_length"] = piece_length
 
         if self.widget.hybridbutton.isChecked():
@@ -264,27 +270,32 @@ class SubmitButton(QPushButton):
 
         path = self.widget.path_input.text()
         args["path"] = path
-        name = []
-        self.thread = Thread(
-            group=None, target=torrentfile_create, args=(args, creator, name)
-        )
+        self.thread = TorrentFileCreator(args, creator)
+        self.thread.created.connect(self.updateStatusBarEnd)
+        self.thread.started.connect(self.updateStatusBarBegin)
         self.thread.start()
-        return self
 
-    def join(self):
-        """Join the thread until it completes."""
-        self.thread.join()
+    def updateStatusBarBegin(self):
+        """Update the status bar when torrent creation is complete."""
+        self.window.statusBar().showMessage("Processing", 3000)
+
+    def updateStatusBarEnd(self, string):
+        """Update the status bar when torrent creation is complete."""
+        message = f"Finished creating torrent file: {string}"
+        self.window.statusBar().showMessage(message, 3000)
 
 
-class OutButton(QToolButton):
+class OutButton(QPushButton):
     """Button widget."""
 
     def __init__(self, parent=None):
-        """Constructor for file picker for outfile button."""
+        """Construct for file picker for outfile button."""
         super().__init__(parent=parent)
         self.window = parent.window
         self.widget = parent
-        self.setText("...")
+        self.setText("File")
+        self.setProperty("createButton", "true")
+        self.setIcon(QIcon(get_icon("browse_file")))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
@@ -309,26 +320,30 @@ class BrowseFileButton(QPushButton):
 
     def __init__(self, parent=None):
         """Public constructor for browsebutton class."""
-        super().__init__(parent=parent)
-        self.setText("Select File")
-        self.window = parent
-        self.setStyleSheet(pushButtonEdit)
+        super().__init__(parent)
+        self.setProperty("createButton", "true")
+        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setText("File")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
+        self.window = parent
 
     def browse(self, path=None):
-        """Browse Action performed when user presses button.
+        """
+        Browse performed when user presses button.
 
         Opens File/Folder Dialog.
 
-        Returns:
-            str: Path to file or folder to include in torrent.
+        Returns
+        -------
+        str :
+            Path to file or folder to include in torrent.
         """
         caption = "Select file..."
         if not path:  # pragma: no cover
-            path, _ = QFileDialog.getOpenFileName(
-                parent=self, caption=caption, dir=str(Path.home())
-            )
+            path, _ = QFileDialog.getOpenFileName(parent=self,
+                                                  caption=caption,
+                                                  dir=str(Path.home()))
         if path != "":
             path = os.path.normpath(path)
             self.window.path_input.clear()
@@ -350,27 +365,31 @@ class BrowseDirButton(QPushButton):
     """Browse filesystem folders for path."""
 
     def __init__(self, parent=None):
-        """Constructor for folder browser button."""
+        """Construct for folder browser button."""
         super().__init__(parent=parent)
-        self.setText("Select Folder")
+        self.setText("Folder")
+        self.setIcon(QIcon(get_icon("browse_folder")))
         self.window = parent
-        self.setStyleSheet(pushButtonEdit)
+        self.setProperty("createButton", "true")
         self.clicked.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def browse(self, path=None):
-        """Browse action performed when user presses button.
+        """
+        Browse action performed when user presses button.
 
         Opens File/Folder Dialog.
 
-        Returns:
-            str: Path to file or folder to include in torrent.
+        Returns
+        -------
+        str :
+            Path to file or folder to include in torrent.
         """
         caption = "Select contents folder..."
         if not path:  # pragma: no cover
-            path = QFileDialog.getExistingDirectory(
-                parent=self, caption=caption, dir=str(Path.home())
-            )
+            path = QFileDialog.getExistingDirectory(parent=self,
+                                                    caption=caption,
+                                                    dir=str(Path.home()))
         if path:
             path = os.path.realpath(path)
             self.window.path_input.clear()
@@ -396,7 +415,7 @@ class ComboBox(QComboBox):
     """Combo box options for selecting piece length."""
 
     def __init__(self, parent=None):
-        """Constructor for ComboBox."""
+        """Construct for ComboBox."""
         super().__init__(parent=parent)
         self.addItem("")
         self.setEditable(False)
@@ -406,7 +425,7 @@ class ComboBox(QComboBox):
     def piece_length(cls, parent=None):
         """Create a piece_length combobox."""
         box = cls(parent=parent)
-        for exp in range(14, 28):
+        for exp in range(14, 25):
             if exp < 20:
                 item = str((2**exp) // (2**10)) + " KiB"
             else:

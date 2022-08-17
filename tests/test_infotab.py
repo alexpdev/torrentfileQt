@@ -21,7 +21,7 @@
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests import dir2, dir3, rmpath, tempfile, ttorrent, wind, MockEvent
+from tests import MockEvent, dir2, dir3, rmpath, tempfile, ttorrent, wind
 
 
 def test_fixture():
@@ -40,9 +40,8 @@ def test_info_tab_select1(wind, ttorrent):
     assert infotab.nameEdit.text() != ""
 
 
-@pytest.mark.parametrize(
-    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
+@pytest.mark.parametrize("creator",
+                         [TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def test_infotab_select2(wind, dir2, creator):
     """Test getting info for single file torrent."""
     window, app = wind
@@ -61,9 +60,8 @@ def test_infotab_select2(wind, dir2, creator):
     rmpath(outfile)
 
 
-@pytest.mark.parametrize(
-    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
+@pytest.mark.parametrize("creator",
+                         [TorrentFile, TorrentFileV2, TorrentFileHybrid])
 @pytest.mark.parametrize("size", list(range(16, 22)))
 def test_infotab_single(wind, creator, size):
     """Test getting info for single file torrent."""
@@ -84,9 +82,8 @@ def test_infotab_single(wind, creator, size):
     rmpath(outfile)
 
 
-@pytest.mark.parametrize(
-    "creator", [TorrentFile, TorrentFileV2, TorrentFileHybrid]
-)
+@pytest.mark.parametrize("creator",
+                         [TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def test_infotab_nested(wind, creator, dir3):
     """Test getting info for single file torrent."""
     window, app = wind

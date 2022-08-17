@@ -21,7 +21,7 @@
 import pyben
 import pytest
 
-from tests import dir1, dir2, ttorrent, wind, MockEvent
+from tests import MockEvent, dir1, dir2, proc_time, ttorrent, wind
 
 
 def test_fixtures():
@@ -32,11 +32,11 @@ def test_fixtures():
 @pytest.mark.parametrize("field", ["announce", "name", "private", "comment"])
 def test_editor_torrent_loading(field, wind, ttorrent):
     """Testing editor widget functionality."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     editor.fileButton.browse(ttorrent)
-    app.processEvents()
+    proc_time()
     fields = []
     for i in range(editor.table.rowCount()):
         fields.append(editor.table.item(i, 0).text())
@@ -45,10 +45,10 @@ def test_editor_torrent_loading(field, wind, ttorrent):
 
 def test_editor_torrent_saving(wind, ttorrent):
     """Testing editor widget saving functionality."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     editor.fileButton.browse(ttorrent)
     for i in range(editor.table.rowCount()):
         item1 = editor.table.item(i, 0)
@@ -56,7 +56,7 @@ def test_editor_torrent_saving(wind, ttorrent):
         if item1.text() == "announce":
             item2.setText("other")
             break
-    app.processEvents()
+    proc_time()
     editor.button.click()
     meta = pyben.load(ttorrent)
     assert meta["announce"] == "other"
@@ -64,10 +64,10 @@ def test_editor_torrent_saving(wind, ttorrent):
 
 def test_editor_accept_method(wind, ttorrent):
     """Test drag enter event on editor widget."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert editor.dragEnterEvent(event)
     event = MockEvent(None)
@@ -76,10 +76,10 @@ def test_editor_accept_method(wind, ttorrent):
 
 def test_editor_move_event(wind, ttorrent):
     """Test move event on editor widget."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert editor.dragMoveEvent(event)
     event = MockEvent(None)
@@ -88,30 +88,30 @@ def test_editor_move_event(wind, ttorrent):
 
 def test_editor_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert editor.dropEvent(event)
 
 
 def test_editor_drop_false(wind):
     """Test drop event on editor widget is false."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     event = MockEvent(None)
     assert not editor.dropEvent(event)
 
 
 def test_editor_table_fields(wind, ttorrent):
     """Test the edit fields of table widget."""
-    window, app = wind
+    window, _ = wind
     editor = window.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    app.processEvents()
+    proc_time()
     table, found = editor.table, 0
     editor.line.setText(ttorrent)
     table.handleTorrent.emit(ttorrent)
@@ -120,12 +120,13 @@ def test_editor_table_fields(wind, ttorrent):
             txt = table.item(i, 0).text()
             if txt in ["httpseeds", "url-list", "announce-list"]:
                 wig, found = table.cellWidget(i, 1), found + 1
-                for url in ['url8', 'url9']:
-                    wig.add_button.click()
+                for url in ["url8", "url9"]:
+                    wig.add_button.trigger()
                     wig.line_edit.setText(url)
-                wig.add_button.click()
+                wig.add_button.trigger()
                 lst = [wig.combo.itemText(j) for j in range(wig.combo.count())]
-                assert len([i for i in ['url8', 'url9'] if i in lst]) == 2
-                wig.remove_button.click()
+                assert len([i for i in ["url8", "url9"] if i in lst]) == 2
+                wig.remove_button.trigger()
+    proc_time()
     editor.button.click()
     assert found == 3

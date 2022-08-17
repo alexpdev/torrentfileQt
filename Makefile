@@ -44,18 +44,12 @@ clean-build: ## remove build artifacts
 	rm -rfv *.egg-info
 	rm -rfv tests/TESTINGDIR
 
-lint: ## run linters on codebase
-	pyroma .
-	prospector torrentfileQt
-	prospector tests
-
-test: ## run tests quickly with the default Python
-	pip install --upgrade --force-reinstall --no-cache torrentfile pyben
-	pytest tests --cov=torrentfileQt --cov=tests
+test: clean ## run tests quickly with the default Python
+	tox
 	coverage report
 	coverage xml -o coverage.xml
 
-push: clean lint test ## push changes to remote
+push: test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push

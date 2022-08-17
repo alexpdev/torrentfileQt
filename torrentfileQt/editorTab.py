@@ -24,41 +24,33 @@ from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (
-    QComboBox,
-    QFileDialog,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTableWidget,
-    QTableWidgetItem,
-    QToolButton,
-    QVBoxLayout,
-    QWidget,
-)
-
-from torrentfileQt.qss import table_styles
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
+                               QLineEdit, QPushButton, QSizePolicy,
+                               QTableWidget, QTableWidgetItem, QToolBar,
+                               QToolButton, QVBoxLayout, QWidget)
 
 
 class EditorWidget(QWidget):
     """Main widget for the torrent editor tab."""
 
     def __init__(self, parent=None):
-        """Construct editor tab widget.
+        """
+        Construct editor tab widget.
 
-        Args:
-            parent (`QWidget`): parent widget of this widge.
+        Parameters
+        ----------
+        parent : QWidget
+            parent widget of this widge.
         """
         super().__init__(parent=parent)
         self.window = parent.window
         self.counter = 0
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
-        self.line.setStyleSheet("QLineEdit{margin-left: 15px;}")
+        self.setProperty("editWidget", "true")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
-        self.fileButton.setStyleSheet("QToolButton{margin-right: 10px;}")
         self.label = QLabel("Torrent File Editor", parent=self)
         self.label.setAlignment(Qt.AlignCenter)
         self.table = Table(parent=self)
@@ -112,7 +104,7 @@ class Button(QPushButton):
     """Button Widget for saving results to .torrent file."""
 
     def __init__(self, text: str, parent=None):
-        """Constructor for the save button on torrent editor tab."""
+        """Construct for the save button on torrent editor tab."""
         super().__init__(text, parent=parent)
         self.widget = parent
         self.clicked.connect(self.save)
@@ -152,7 +144,7 @@ class FileButton(QToolButton):
     """Tool Button for selecting a .torrent file to edit."""
 
     def __init__(self, parent=None):
-        """Constructor for the FileDialog button on Torrent Editor tab."""
+        """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
         self.widget = parent
         self.setText("Select File")
@@ -173,17 +165,17 @@ class FileButton(QToolButton):
             self.widget.table.handleTorrent.emit(path)
 
 
-class AddItemButton(QToolButton):
+class AddItemButton(QAction):
     """Button for editing adjacent ComboBox."""
 
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles["button"])
+        self.setProperty("editButton", "true")
         self.parent = parent
         self.setText("add")
         self.box = None
-        self.clicked.connect(self.add_item)
+        self.triggered.connect(self.add_item)
 
     def add_item(self):
         """Take action when button is pressed."""
@@ -196,17 +188,17 @@ class AddItemButton(QToolButton):
         self.parent.line_edit.setReadOnly(True)
 
 
-class RemoveItemButton(QToolButton):
+class RemoveItemButton(QAction):
     """Button for editing adjacent ComboBox."""
 
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setStyleSheet(table_styles["button"])
+        self.setProperty("editButton", "true")
         self.parent = parent
         self.setText("remove")
         self.box = None
-        self.clicked.connect(self.remove_item)
+        self.triggered.connect(self.remove_item)
 
     def remove_item(self):
         """Take action when button is pressed."""
@@ -221,7 +213,7 @@ class Table(QTableWidget):
     handleTorrent = Signal([str])
 
     def __init__(self, parent=None):
-        """Constructor for the Table Widget on torrent editor tab."""
+        """Construct for the Table Widget on torrent editor tab."""
         super().__init__(parent=parent)
         self.info = {}
         self.window = parent.window
@@ -245,7 +237,7 @@ class Table(QTableWidget):
         super().clear()
 
     def export_data(self, path):
-        """Slot for the handleTorrent signal."""
+        """Export slot for the handleTorrent signal."""
         if not os.path.exists(path):  # pragma: no cover
             return
         data = pyben.load(path)
@@ -260,7 +252,7 @@ class Table(QTableWidget):
             item.setFlags(item.flags() ^ Qt.ItemFlag.ItemIsEditable)
             self.setItem(counter, 0, item)
             if k in ["announce-list", "url-list", "httpseeds"]:
-                widget = ComboCell(parent=self)
+                widget = ToolBar(parent=self)
                 self.setCellWidget(counter, 1, widget)
                 widget.set_values(k, v)
             else:
@@ -293,55 +285,56 @@ class Table(QTableWidget):
                 self.info[field] = data[field]
 
 
-class ComboCell(QWidget):
-    """Widget used inside the cell of a Table Widget."""
-
-    class Combo(QComboBox):
-        """A Combo Box widget for inside table cells."""
-
-        def __init__(self, parent=None):
-            """Construct a combobox for table widget cell."""
-            super().__init__(parent=parent)
-            self.widget = parent
-            self.setStyleSheet(table_styles["ComboBox"])
-            self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
-            self.setDuplicatesEnabled(False)
-            self.widget.line_edit.setReadOnly(True)
-
-        def focusOutEvent(self, _):  # pragma: nocover
-            """Add item when focus changes."""
-            super().focusOutEvent(_)
-            current = self.currentText().strip()
-            items = [self.itemText(i) for i in range(self.count())]
-            blanks = [i for i in range(len(items)) if not items[i].strip()]
-            list(map(self.removeItem, blanks[::-1]))
-            if current and current not in items:
-                self.insertItem(0, current, 2)
-            self.widget.line_edit.setReadOnly(True)
-
-        def focusInEvent(self, _):   # pragma: nocover
-            """Make line edit widget active when clicking in to box."""
-            super().focusInEvent(_)
-            self.widget.line_edit.setReadOnly(False)
+class Combo(QComboBox):
+    """A Combo Box widget for inside table cells."""
 
     def __init__(self, parent=None):
-        """Construct the widget and it's sub widgets."""
+        """Construct a combobox for table widget cell."""
         super().__init__(parent=parent)
-        self.layout = QHBoxLayout()
-        self.setLayout(self.layout)
-        self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.widget = parent
+        self.setProperty("editCombo", "true")
+        self.sizePolicy().setVerticalPolicy(QSizePolicy.Minimum)
+        self.setMinimumContentsLength(48)
+        self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
+        self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
+        self.setDuplicatesEnabled(False)
+        self.widget.line_edit.setReadOnly(True)
+
+    def focusOutEvent(self, _):  # pragma: nocover
+        """Add item when focus changes."""
+        super().focusOutEvent(_)
+        current = self.currentText().strip()
+        items = [self.itemText(i) for i in range(self.count())]
+        blanks = [i for i in range(len(items)) if not items[i].strip()]
+        list(map(self.removeItem, blanks[::-1]))
+        if current and current not in items:
+            self.insertItem(0, current, 2)
+        self.widget.line_edit.setReadOnly(True)
+
+    def focusInEvent(self, _):  # pragma: nocover
+        """Make line edit widget active when clicking in to box."""
+        super().focusInEvent(_)
+        self.widget.line_edit.setReadOnly(False)
+
+
+class ToolBar(QToolBar):
+    """Toolbar for the combobox and buttons."""
+
+    def __init__(self, parent=None):
+        """Construct the toolbar instance."""
+        super().__init__(parent=parent)
+        self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
+        self.setMinimumWidth(800)
         self.line_edit = QLineEdit(parent=self)
-        self.line_edit.setStyleSheet(table_styles["LineEdit"])
-        self.combo = self.Combo(parent=self)
-        self.layout.addWidget(self.combo)
+        self.combo = Combo(self)
         self.combo.setLineEdit(self.line_edit)
+        self.setProperty("editLine", "true")
         self.add_button = AddItemButton(self)
         self.add_button.box = self.combo
         self.remove_button = RemoveItemButton(self)
         self.remove_button.box = self.combo
-        self.layout.addWidget(self.add_button)
-        self.layout.addWidget(self.remove_button)
+        self.addWidget(self.combo)
+        self.addActions([self.add_button, self.remove_button])
 
     def set_values(self, key, val):
         """Fill in the values of pre-set urls for each list."""
