@@ -17,7 +17,7 @@
     - updated packaging information and switched to pyproject.toml
     - other minor bug fixes
 
-----------
+* * *
 
 ## Version 0.3.0
 
