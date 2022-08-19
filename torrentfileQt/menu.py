@@ -96,22 +96,26 @@ class FileMenu(QMenu):
         app = self.parent().window.app
         app.quit()  # pragma: nocover
 
-    def light_theme(self):
+    @staticmethod
+    def light_theme():
         """Change the GUI theme for the application."""
         app = self.parent().window.app
         app.styleManager.set_theme_from_title("light_theme")
 
-    def dark_theme(self):
+    @staticmethod
+    def dark_theme():
         """Change the GUI application to dark theme."""
         app = self.parent().window.app
         app.styleManager.set_theme_from_title("dark_theme")
 
-    def increaseFont(self):
+    @staticmethod
+    def increaseFont():
         """Increase Font Size for all widgets with text."""
         app = self.parent().window.app
         app.styleManager.increase_font_size()
 
-    def decreaseFont(self):
+    @staticmethod
+    def decreaseFont():
         """Decrease font size for all widgets with text."""
         app = self.parent().window.app
         app.styleManager.decrease_font_size()

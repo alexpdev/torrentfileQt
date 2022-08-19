@@ -153,9 +153,7 @@ class QssParser:
         return self.lines[self.line_num]
 
     def _skipcomment(self):
-        """
-        Skip all lines until parser reaches the end comment token.
-        """
+        """Skip all lines until parser reaches the end comment token."""
         while "*/" not in self.current:
             self.line_num += 1
         self.line_num += 1
@@ -201,9 +199,7 @@ class QssParser:
             return None
 
     def _parse_qss(self):
-        """
-        Parse the content of the qss file one line at a time.
-        """
+        """Parse the content of the qss file one line at a time."""
         inblock = False
         widgets, props = [], {}
         while self.line_num < self.total:
@@ -250,9 +246,7 @@ class QssParser:
             self.line_num += 1
 
     def _compile(self):
-        """
-        Gather and group all results into one dictionary.
-        """
+        """Gather and group all results into one dictionary."""
         for row in self.collection:
             self.result.update(row)
 
