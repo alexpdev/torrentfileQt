@@ -2,8 +2,9 @@
 
 ![torrentfileQt.png](./assets/torrentfileQt.png)
 
----------
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=alexpdev/torrentfileQt&amp;utm_campaign=Badge_Grade)
+* * *
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/alexpdev/torrentfileQt/branch/main/graph/badge.svg?token=S5Q9CRD6C2)](https://codecov.io/gh/alexpdev/torrentfileQt)
 ![PyPI - License](https://img.shields.io/pypi/l/torrentfileQt?color=orange&style=plastic)
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
@@ -15,39 +16,39 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ## Features
 
-- Create .torrent files
-- Display detailed information for a .torrent file
-- Bittorrent v1, v2 and hybrid .torrent files supported
-- Check if a .torrent file contents are in filesystem
-- Check progress or percentage complete for .torrent file
-- Edit torrent files.
+-   Create .torrent files
+-   Display detailed information for a .torrent file
+-   Bittorrent v1, v2 and hybrid .torrent files supported
+-   Check if a .torrent file contents are in filesystem
+-   Check progress or percentage complete for .torrent file
+-   Edit torrent files.
 
 ## Requirements
 
-- Pyside6
-- torrentfile
+-   Pyside6
+-   torrentfile
 
 ## ScreenShots
 
 ![createtorrent.png](./assets/screenshots/create-tab.png)
 
----------
+* * *
 
 ![checktorrent.png](./assets/screenshots/recheck-tab.png)
 
----------
+* * *
 
 ![edittorrent.png](./assets/screenshots/edit-tab.png)
 
----------
+* * *
 
 ![torrentinfo.png](./assets/screenshots/info-tab.png)
 
----------
+* * *
 
 ## Install
 
-- From git:
+-   From git:
 
 ```bash
 git clone https://github.com/alexpdev/torrentfileQt.git
@@ -57,7 +58,7 @@ pip install .
 torrentfileQt
 ```
 
-- From PyPi
+-   From PyPi
 
 ```bash
 pip install torrentfileQt

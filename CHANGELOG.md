@@ -30,7 +30,7 @@
     - improved updated Icons and readme information.
     - other bug fixes.
 
-----------
+* * *
 
 ## Version 0.2.0
 
@@ -42,7 +42,7 @@
     - docstrings
     - screenshots for reame
 
-----------
+* * *
 
 ## Version 0.1.0
 
