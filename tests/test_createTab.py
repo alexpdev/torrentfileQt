@@ -38,9 +38,8 @@ def test_fixtures():
 
 def test_create_with_hasher1(dir2, wind):
     """Test the radio buttons on create tab v1 hasher."""
-    window, _ = wind
     metafile = dir2 + ".torrent"
-    creator = window.central.createWidget
+    creator = wind.central.createWidget
     creator.window.central.setCurrentWidget(creator)
     creator.path_input.clear()
     creator.path_input.setText(dir2)
@@ -52,7 +51,7 @@ def test_create_with_hasher1(dir2, wind):
     creator.piece_length.setCurrentIndex(2)
     creator.submit_button.click()
     while proc_time(0.4):
-        if window.statusBar().currentMessage() != "Processing":
+        if wind.statusBar().currentMessage() != "Processing":
             break
     assert os.path.exists(metafile)
     rmpath(metafile)
@@ -60,11 +59,10 @@ def test_create_with_hasher1(dir2, wind):
 
 def test_create_tab_browse(dir2, wind):
     """Test Info tab select1."""
-    window, app = wind
     path = dir2
-    createtab = window.central.createWidget
+    createtab = wind.central.createWidget
     createtab.window.central.setCurrentWidget(createtab)
-    app.processEvents()
+    proc_time()
     button = createtab.browse_file_button
     button.browse(path=path)
     createtab.comment_input.setText("Some Text")
@@ -74,12 +72,11 @@ def test_create_tab_browse(dir2, wind):
 
 def test_create_tab_dir(dir2, wind):
     """Test create tab with folder."""
-    window, _ = wind
     path = dir2
     root = path
-    createtab = window.central.createWidget
+    createtab = wind.central.createWidget
     button = createtab.browse_dir_button
-    window.central.setCurrentWidget(createtab)
+    wind.central.setCurrentWidget(createtab)
     proc_time()
     button.browse(path=root)
     torfile = root + ".test.torrent"
@@ -91,7 +88,7 @@ def test_create_tab_dir(dir2, wind):
     submit = createtab.submit_button
     submit.click()
     while proc_time(0.4):
-        if window.statusBar().currentMessage() != "Processing":
+        if wind.statusBar().currentMessage() != "Processing":
             break
     assert os.path.exists(torfile)
     rmpath(torfile)
@@ -110,10 +107,9 @@ def test_create_tab_dir(dir2, wind):
 )
 def test_create_tab_fields(dir2, field, wind):
     """Test create tab with folder."""
-    window, _ = wind
     path = dir2
     root = path
-    createtab = window.central.createWidget
+    createtab = wind.central.createWidget
     button = createtab.browse_dir_button
     button.browse(path=root)
     createtab.window.central.setCurrentWidget(createtab)
@@ -131,7 +127,7 @@ def test_create_tab_fields(dir2, field, wind):
     submit.click()
     proc_time(0.5)
     while proc_time(0.3):
-        if window.statusBar().currentMessage() != "Processing":
+        if wind.statusBar().currentMessage() != "Processing":
             break
     result = pyben.load(torfile)
     assert field in result or field in result["info"]
@@ -140,10 +136,10 @@ def test_create_tab_fields(dir2, field, wind):
 
 def test_sized_create(wind):
     """Test browse file button on create tab."""
-    window, _ = wind
     path = str(tempfile(exp=28))
-    createtab = window.central.createWidget
+    createtab = wind.central.createWidget
     button = createtab.browse_file_button
-    button.browse(path=path)
+    param = (path, None)
+    button.browse(param)
     proc_time()
     assert createtab.path_input.text() == path

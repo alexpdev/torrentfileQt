@@ -27,11 +27,10 @@ from pathlib import Path
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QFileDialog, QGridLayout, QLabel, QLineEdit,
-                               QPushButton, QTreeWidget, QTreeWidgetItem,
-                               QWidget)
+from PySide6.QtWidgets import (QGridLayout, QLabel, QLineEdit, QPushButton,
+                               QTreeWidget, QTreeWidgetItem, QWidget)
 
-from torrentfileQt.utils import get_icon
+from torrentfileQt.utils import browse_torrent, get_icon
 
 
 class TreeWidget(QTreeWidget):
@@ -332,17 +331,9 @@ class SelectButton(QPushButton):
 
     def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
-        fullpath = path
-        if not fullpath:  # pragma: no cover
-            fullpath, _ = QFileDialog.getOpenFileName(
-                parent=self,
-                caption="Please Select '.torrent' File",
-                dir=str(Path.home()),
-                filter="*.torrent",
-            )
-        if fullpath:
-            kws = format_data(fullpath)
-            self.parent().fill(**kws)
+        path = browse_torrent(self, path)
+        kws = format_data(path)
+        self.parent().fill(**kws)
 
 
 class Label(QLabel):

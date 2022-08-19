@@ -20,15 +20,16 @@
 
 import os
 from copy import deepcopy
-from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
-                               QLineEdit, QPushButton, QSizePolicy,
-                               QTableWidget, QTableWidgetItem, QToolBar,
-                               QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QSizePolicy, QTableWidget,
+                               QTableWidgetItem, QToolBar, QToolButton,
+                               QVBoxLayout, QWidget)
+
+from torrentfileQt.utils import browse_torrent
 
 
 class EditorWidget(QWidget):
@@ -153,16 +154,10 @@ class FileButton(QToolButton):
 
     def browse(self, path: str = None):
         """Browse method for finding the .torrent file user wishes to edit."""
-        if not path:  # pragma: no coverage
-            path, _ = QFileDialog.getOpenFileName(
-                dir=str(Path.home()),
-                caption="Select Torrent File",
-                filter="*.torrent",
-            )
-        if path:
-            self.widget.table.clear()
-            self.widget.line.setText(path)
-            self.widget.table.handleTorrent.emit(path)
+        path = browse_torrent(self, path)
+        self.widget.table.clear()
+        self.widget.line.setText(path)
+        self.widget.table.handleTorrent.emit(path)
 
 
 class AddItemButton(QAction):

@@ -23,7 +23,7 @@ import os
 import webbrowser
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QApplication, QInputDialog, QMenu, QMenuBar
+from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar
 
 
 class MenuBar(QMenuBar):
@@ -31,7 +31,7 @@ class MenuBar(QMenuBar):
 
     def __init__(self, parent=None):
         """
-        Construct for top level widgets.
+        Construct top level widgets.
 
         Parameters
         ----------
@@ -53,7 +53,7 @@ class FileMenu(QMenu):
 
     def __init__(self, title, parent):
         """
-        Construct for top level widgets.
+        Construct top level widgets.
 
         Parameters
         ----------
@@ -75,8 +75,8 @@ class FileMenu(QMenu):
         self.addAction(self.actionFontMinus)
         self.addAction(self.actionLightTheme)
         self.addAction(self.actionDarkTheme)
-        self.actionFontPlus.setText("Font +")
-        self.actionFontMinus.setText("Font -")
+        self.actionFontPlus.setText("Font Size +")
+        self.actionFontMinus.setText("Font Size -")
         self.actionDarkTheme.setText("Dark Theme")
         self.actionLightTheme.setText("Light Theme")
         self.actionExit.setText("Exit")
@@ -93,27 +93,28 @@ class FileMenu(QMenu):
 
     def exit_app(self):
         """Close application."""
-        self.parent().app.quit()  # pragma: nocover
+        app = self.parent().window.app
+        app.quit()  # pragma: nocover
 
-    @staticmethod
-    def light_theme():
+    def light_theme(self):
         """Change the GUI theme for the application."""
-        QApplication.instance().styleManager.setTheme("light")
+        app = self.parent().window.app
+        app.styleManager.set_theme_from_title("light_theme")
 
-    @staticmethod
-    def dark_theme():
+    def dark_theme(self):
         """Change the GUI application to dark theme."""
-        QApplication.instance().styleManager.setTheme("dark")
+        app = self.parent().window.app
+        app.styleManager.set_theme_from_title("dark_theme")
 
-    @staticmethod
-    def increaseFont():
+    def increaseFont(self):
         """Increase Font Size for all widgets with text."""
-        QApplication.instance().styleManager.increase_font_size()
+        app = self.parent().window.app
+        app.styleManager.increase_font_size()
 
-    @staticmethod
-    def decreaseFont():
+    def decreaseFont(self):
         """Decrease font size for all widgets with text."""
-        QApplication.instance().styleManager.decrease_font_size()
+        app = self.parent().window.app
+        app.styleManager.decrease_font_size()
 
 
 class HelpMenu(QMenu):

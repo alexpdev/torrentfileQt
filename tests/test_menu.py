@@ -52,12 +52,11 @@ def profiles(request):
 @pytest.fixture
 def menubar_profiles(wind, profiles):
     """Pytest fixture for menubar profiles."""
-    window, _ = wind
-    menubar = window.menubar
+    menubar = wind.menubar
     menu = menubar.profile_menu
     menu.home, menu.profiles = profiles
     menu.add_profile_actions()
-    return menu, window, profiles
+    return menu, wind, profiles
 
 
 def test_wind():
@@ -73,19 +72,19 @@ def test_menubar_profiles(menubar_profiles):
 
 def test_menubar_profiles_actions(menubar_profiles):
     """Test menubar profiles actions."""
-    menu, window, profiles = menubar_profiles
+    menu, wind, profiles = menubar_profiles
     _, profile = profiles
     profs = json.load(open(profile))
     action = [i for i in menu.profile_actions if i.name == "example"][0]
     action.action.trigger()
-    tab = window.central.createWidget
+    tab = wind.central.createWidget
     assert tab.source_input.text() == profs["example"]["source"]
 
 
 def test_add_profile_with_profiles(menubar_profiles):
     """Test adding a profile."""
-    menu, window, profiles = menubar_profiles
-    tab = window.central.createWidget
+    menu, wind, profiles = menubar_profiles
+    tab = wind.central.createWidget
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
     menu.add_profile(name="test")
@@ -96,9 +95,9 @@ def test_add_profile_with_profiles(menubar_profiles):
 
 def test_add_profile_meta_v2(menubar_profiles):
     """Test adding a profile with other meta versions."""
-    menu, window, profiles = menubar_profiles
-    window.menubar.file_menu.light_theme()
-    tab = window.central.createWidget
+    menu, wind, profiles = menubar_profiles
+    wind.menubar.file_menu.light_theme()
+    tab = wind.central.createWidget
     tab.v2button.click()
     tab.source_input.setText("SOURCE")
     tab.private.click()
@@ -111,10 +110,10 @@ def test_add_profile_meta_v2(menubar_profiles):
 
 def test_add_profile_meta_hybrid(menubar_profiles):
     """Test adding a profile with other meta versions."""
-    menu, window, profiles = menubar_profiles
-    tab = window.central.createWidget
+    menu, wind, profiles = menubar_profiles
+    tab = wind.central.createWidget
     tab.v1button.click()
-    window.menubar.file_menu.light_theme()
+    wind.menubar.file_menu.light_theme()
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
     menu.add_profile(name="test2")
@@ -125,17 +124,16 @@ def test_add_profile_meta_hybrid(menubar_profiles):
 
 def test_add_profile_without_profiles(wind):
     """Test adding a profile."""
-    window, _ = wind
-    path = window.menubar.profile_menu.home
+    path = wind.menubar.profile_menu.home
     alt = Path(__file__).parent / "alt"
-    if os.path.exists(window.menubar.profile_menu.home):
+    if os.path.exists(wind.menubar.profile_menu.home):
         os.rename(path, alt)  # pragma: nocover
-    tab = window.central.createWidget
+    tab = wind.central.createWidget
     tab.source_input.setText("SOURCE")
     tab.announce_input.setPlainText("https://announce.net")
-    window.menubar.profile_menu.add_profile(name="test")
-    window.menubar.file_menu.dark_theme()
-    profiles = window.menubar.profile_menu.profiles
+    wind.menubar.profile_menu.add_profile(name="test")
+    wind.menubar.file_menu.dark_theme()
+    profiles = wind.menubar.profile_menu.profiles
     profs = json.load(open(profiles))
     assert "test" in profs
     rmpath(path)

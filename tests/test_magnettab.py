@@ -49,10 +49,9 @@ def test_fixture():
 
 def test_create_magnet(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
-    window, _ = wind
     outfile, _ = torrent
-    tab = window.central.magnetWidget
-    window.central.setCurrentWidget(tab)
+    tab = wind.central.magnetWidget
+    wind.central.setCurrentWidget(tab)
     tab.metafile_input.setText(str(outfile))
     tab.submit_button.click()
     out = tab.output.text()
@@ -62,11 +61,10 @@ def test_create_magnet(wind, torrent):
 
 def test_create_magnet_method(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
-    window, _ = wind
     outfile, _ = torrent
-    tab = window.central.magnetWidget
-    window.central.setCurrentWidget(tab)
-    tab.file_button.select_metafile(name=outfile)
+    tab = wind.central.magnetWidget
+    wind.central.setCurrentWidget(tab)
+    tab.file_button.select_metafile(outfile)
     tab.submit_button.magnet()
     out = tab.output.text()
     proc_time()
@@ -75,10 +73,9 @@ def test_create_magnet_method(wind, torrent):
 
 def test_magnet_accept_method(wind, ttorrent):
     """Test drag enter event on editor widget."""
-    window, app = wind
-    magnet = window.central.magnetWidget
+    magnet = wind.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert magnet.dragEnterEvent(event)
     event = MockEvent(None)
@@ -87,10 +84,9 @@ def test_magnet_accept_method(wind, ttorrent):
 
 def test_magnet_move_event(wind, ttorrent):
     """Test move event on magnet widget."""
-    window, app = wind
-    magnet = window.central.magnetWidget
+    magnet = wind.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert magnet.dragMoveEvent(event)
     event = MockEvent(None)
@@ -99,19 +95,17 @@ def test_magnet_move_event(wind, ttorrent):
 
 def test_magnet_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    window, app = wind
-    magnet = window.central.magnetWidget
+    magnet = wind.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert magnet.dropEvent(event)
 
 
 def test_magnet_drop_false(wind):
     """Test drop event on editor widget returns None."""
-    window, app = wind
-    magnet = window.central.magnetWidget
+    magnet = wind.central.magnetWidget
     magnet.window.central.setCurrentWidget(magnet)
-    app.processEvents()
+    proc_time()
     event = MockEvent(None)
     assert not magnet.dropEvent(event)

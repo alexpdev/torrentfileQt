@@ -1,5 +1,24 @@
 # TorrentFileQt
 
+## Version 0.3.6
+
+    - Edits throughout the full source code.
+    - Added the style manager class for qss
+    - included two menu options that control font size
+    - made changing themes and adding new themese easier
+    - changed the torrent file creator to run in a Qthread.
+    - added a status bar to show runtime messages
+    - adjusted the widget sizes on the recheck tab
+    - changed the table widgets to be QToolBars in the editor tab
+    - fixed all of the issues with unit tests
+    - switched from prospector to tox for CI and DevOps
+    - added `__main__.py` and the entry point.
+    - updated manifest
+    - updated packaging information and switched to pyproject.toml
+    - other minor bug fixes
+
+* * *
+
 ## Version 0.3.0
 
     - Added more fields the to "Edit" tab.
@@ -11,7 +30,7 @@
     - improved updated Icons and readme information.
     - other bug fixes.
 
-----------
+* * *
 
 ## Version 0.2.0
 
@@ -23,7 +42,7 @@
     - docstrings
     - screenshots for reame
 
-----------
+* * *
 
 ## Version 0.1.0
 

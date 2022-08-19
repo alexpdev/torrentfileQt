@@ -20,26 +20,56 @@
 
 import os
 from copy import deepcopy
+from pathlib import Path
+
+from PySide6.QtCore import QObject, Signal
+from PySide6.QtWidgets import QFileDialog
 
 
-class StyleManager:
+class StyleManager(QObject):
     """Manage QStyleSheets for the app."""
 
-    def __init__(self, themes, current, parent):
+    themeRequest = Signal([str])
+
+    def __init__(self, themes):
         """Initialize styleManager class."""
+        super().__init__()
         self.themes = themes
-        self.current = current
-        self.app = parent
         self.parser = QssParser()
-        self.setTheme("light")
+        self.current = None
 
-    def setTheme(self, title):
-        """Set the current QStyleSheet theme."""
-        self.app.apply_theme(self.themes[title])
+    def setTheme(self, theme):
+        """
+        Set the current QStyleSheet theme.
 
-    def _create_ssheet(self, sheets=None) -> dict:
+        Parameters
+        ----------
+        theme : str
+            the qss formating string to apply as the theme.
+        """
+        self.themeRequest.emit(theme)
+
+    def set_theme_from_title(self, title):
+        """
+        Set the theme from it's key in the theme dict.
+
+        Parameters
+        ----------
+        title : str
+            The key corresponding the the theme in the dict.
+        """
+        theme = self.themes[title]
+        self.setTheme(theme)
+
+    @staticmethod
+    def _create_ssheet(sheets: list) -> str:
         """
         Update the sheet with data from table.
+
+        Parameters
+        ----------
+        sheets : list
+            list of all of the styles for a theme
 
         Returns
         -------
@@ -47,8 +77,6 @@ class StyleManager:
             the changed sheet
         """
         ssheet = ""
-        if not sheets:
-            sheets = self.sheets
         for row in sheets:
             for k, v in row.items():
                 if not k or not v:
@@ -85,7 +113,7 @@ class StyleManager:
                     if 24 > number + amount > 0:
                         value["font-size"] = f"{number + amount}pt"
         theme = self._create_ssheet(widgets)
-        self.app.apply_theme(theme)
+        self.themeRequest.emit(theme)
 
 
 class QssParser:
@@ -237,3 +265,73 @@ def get_icon(name):
     assets = os.path.join(parent, "assets")
     path = os.path.join(assets, name + ".png")
     return path
+
+
+def browse_folder(widget, folder=None):
+    """
+    Browse for folder performed when user presses button.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget making the call.
+    folder : str
+        Optional testing path
+    """
+    if not folder:
+        folder = QFileDialog.getExistingDirectory(  # pragma: nocover
+            parent=widget,
+            dir=str(Path.home()),
+            caption="Select Contents Folder...",
+        )
+    if folder:
+        folder = os.path.normpath(folder)
+    return folder
+
+
+def browse_files(widget, path=None):
+    """
+    Browse for files action performed when user presses button.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget making the call.
+    path : str
+        Optional testing path
+    """
+    if not path:
+        path = QFileDialog.getOpenFileName(  # pragma: nocover
+            parent=widget,
+            dir=str(Path.home()),
+            caption="Select Contents File...",
+        )
+    if isinstance(path, str):
+        path = (path, None)
+    if path and path[0]:
+        path = os.path.normpath(path[0])
+    return path
+
+
+def browse_torrent(widget, torrent=None):
+    """
+    Browse for torrent file performed when user presses button.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget making the call.
+    torrent : str
+        Optional testing path.
+    """
+    if not torrent:
+        torrent = QFileDialog.getOpenFileName(  # pragma: nocover
+            parent=widget,
+            dir=str(Path.home()),
+            caption="Select *.torrent File...",
+        )
+    if isinstance(torrent, str):
+        torrent = torrent, None
+    if torrent and torrent[0]:
+        torrent = os.path.normpath(torrent[0])
+    return torrent

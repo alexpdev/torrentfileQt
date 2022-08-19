@@ -19,13 +19,13 @@
 """Magnet Widget containing Testing creation of Magnet URIs."""
 
 import os
-from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                               QPushButton, QSpacerItem, QToolButton,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPushButton,
+                               QSpacerItem, QToolButton, QVBoxLayout, QWidget)
 from torrentfile import magnet
+
+from torrentfileQt.utils import browse_torrent
 
 
 class MagnetWidget(QWidget):
@@ -125,14 +125,7 @@ class MetafileButton(QToolButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 
-    def select_metafile(self, name=None):
+    def select_metafile(self, path=None):
         """Find metafile in file browser."""
-        if not name:  # pragma: nocover
-            name, _ = QFileDialog.getOpenFileName(
-                parent=self,
-                caption="Select '.torrent' file",
-                dir=str(Path.home()),
-                filter="*.torrent",
-                selectedFilter=None,
-            )
-        self.widget.metafile_input.setText(name)
+        path = browse_torrent(self, path)
+        self.widget.metafile_input.setText(path)

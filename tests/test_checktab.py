@@ -21,6 +21,7 @@
 import os
 from pathlib import Path
 
+import PySide6
 import pytest
 
 from tests import (MockQFileDialog, dir1, dir2, proc_time, rmpath, tempfile,
@@ -36,9 +37,8 @@ def test_fixture():
 
 def test_missing_files_check(dir2, ttorrent, wind):
     """Test missing files checker proceduire."""
-    window, _ = wind
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     dirpath = Path(dir2)
     for item in dirpath.iterdir():
         if item.is_file():
@@ -52,10 +52,9 @@ def test_missing_files_check(dir2, ttorrent, wind):
 
 def test_shorter_files_check(wind, ttorrent, dir2):
     """Test missing files checker proceduire."""
-    window, _ = wind
-    checktab = window.central.checkWidget
+    checktab = wind.central.checkWidget
     dirpath = Path(dir2)
-    window.central.setCurrentWidget(checktab)
+    wind.central.setCurrentWidget(checktab)
 
     def shortenfile(item):
         """Shave some data off the end of file."""
@@ -78,9 +77,8 @@ def test_shorter_files_check(wind, ttorrent, dir2):
 
 def test_check_tab(wind, ttorrent, dir1):
     """Test checker procedure."""
-    window, _ = wind
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     checktab.fileInput.setText(ttorrent)
     checktab.searchInput.setText(dir1)
     checktab.checkButton.click()
@@ -90,40 +88,36 @@ def test_check_tab(wind, ttorrent, dir1):
 
 def test_check_tab_input1(wind, dir1):
     """Test checker procedure."""
-    window, _ = wind
-    checktab = window.central.checkWidget
+    checktab = wind.central.checkWidget
     MockQFileDialog.Out = dir1
-    checkTab.QFileDialog = MockQFileDialog
-    window.central.setCurrentWidget(checktab)
-    checktab.browseButton2.browse_folders()
+    PySide6.QtWidgets.QFileDialog = MockQFileDialog
+    wind.central.setCurrentWidget(checktab)
+    checktab.browseButton2.browse_folders(dir1)
     assert checktab.searchInput.text() != ""
 
 
 def test_check_tab_input_2(wind, dir1):
     """Test checker procedure."""
-    window, _ = wind
-    checktab = window.central.checkWidget
+    checktab = wind.central.checkWidget
     MockQFileDialog.Out = dir1
-    checkTab.QFileDialog = MockQFileDialog
-    window.central.setCurrentWidget(checktab)
-    checktab.browseButton1.browse(dir1)
+    PySide6.QtWidgets.QFileDialog = MockQFileDialog
+    wind.central.setCurrentWidget(checktab)
+    checktab.browseButton1.browse((dir1, None))
     assert checktab.fileInput.text() != ""
 
 
 def test_check_tab4(wind):
     """Test checker procedure again."""
-    window, _ = wind
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None
 
 
 def test_clear_logtext(wind):
     """Test checker logTextEdit widget function."""
-    window, _ = wind
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     text_edit = checktab.textEdit
     text_edit.insertPlainText("sometext")
     text_edit.clear_data()
@@ -132,9 +126,8 @@ def test_clear_logtext(wind):
 
 def test_checktab_tree(wind):
     """Check tree item counting functionality."""
-    window, _ = wind
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     tree = TreeWidget(parent=checktab)
     item = TreePieceItem(type=0, tree=tree)
     item.progbar = ProgressBar(parent=tree, size=1000000)
@@ -148,10 +141,9 @@ def test_checktab_tree(wind):
 @pytest.mark.parametrize("ext", [".mkv", ".rar", ".r00", ".mp3"])
 def test_singlefile(size, ext, index, version, wind):
     """Test the singlefile for create and check tabs."""
-    window, _ = wind
-    createtab = window.central.createWidget
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    createtab = wind.central.createWidget
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     testfile = str(tempfile(exp=size))
     tfile = testfile + ext
     os.rename(testfile, tfile)
@@ -159,7 +151,7 @@ def test_singlefile(size, ext, index, version, wind):
     metafile = tfile + ".torrent"
     createtab.path_input.clear()
     createtab.output_input.clear()
-    createtab.browse_file_button.browse(tfile)
+    createtab.browse_file_button.browse((tfile, None))
     createtab.output_input.setText(metafile)
     createtab.piece_length.setCurrentIndex(index)
     proc_time()
@@ -170,7 +162,7 @@ def test_singlefile(size, ext, index, version, wind):
             break
     createtab.submit_button.click()
     while proc_time(0.3):
-        if window.statusBar().currentMessage() != "Processing":
+        if wind.statusBar().currentMessage() != "Processing":
             break
     checktab.fileInput.clear()
     checktab.searchInput.clear()
@@ -186,17 +178,16 @@ def test_singlefile(size, ext, index, version, wind):
 @pytest.mark.parametrize("version", [1, 2, 3])
 def test_singlefile_large(version, wind):
     """Test the singlefile with large size for create and check tabs."""
-    window, _ = wind
-    createtab = window.central.createWidget
-    checktab = window.central.checkWidget
-    window.central.setCurrentWidget(checktab)
+    createtab = wind.central.createWidget
+    checktab = wind.central.checkWidget
+    wind.central.setCurrentWidget(checktab)
     testfile = str(tempfile(exp=28))
     tfile = testfile + ".dat"
     os.rename(testfile, tfile)
     metafile = tfile + ".torrent"
     createtab.path_input.clear()
     createtab.output_input.clear()
-    createtab.browse_file_button.browse(tfile)
+    createtab.browse_file_button.browse((tfile, None))
     createtab.output_input.setText(metafile)
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
@@ -205,7 +196,7 @@ def test_singlefile_large(version, wind):
             break
     createtab.submit_button.click()
     while proc_time(0.3):
-        if window.statusBar().currentMessage() != "Processing":
+        if wind.statusBar().currentMessage() != "Processing":
             break
     checktab.fileInput.clear()
     checktab.searchInput.clear()
