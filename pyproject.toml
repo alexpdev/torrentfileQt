@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=40.8.0", "wheel", "PySide6", "torrentfile"]
+requires = ["setuptools>=40.8.0", "wheel"]
 
 [project]
 name = "torrentfileQt"
@@ -20,10 +20,10 @@ classifiers=[
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: Apache Software License",
 ]
-dependencies = ["torrentfile", "PySide6", "pyben"]
+dependencies = ["torrentfile", "PySide6"]
 
 [project.scripts]
-torrentfileqt = "torrentfileQt.window:start"
+torrentfileqt = "torrentfileQt.__main__:main"
 
 [tools.setuptools]
 packages = ["torrentfileQt"]

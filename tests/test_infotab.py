@@ -21,7 +21,8 @@
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from tests import MockEvent, dir2, dir3, rmpath, tempfile, ttorrent, wind
+from tests import (MockEvent, dir2, dir3, proc_time, rmpath, tempfile,
+                   ttorrent, wind)
 
 
 def test_fixture():
@@ -31,10 +32,9 @@ def test_fixture():
 
 def test_info_tab_select1(wind, ttorrent):
     """Test Info tab select1."""
-    window, app = wind
-    infotab = window.central.infoWidget
-    app.processEvents()
-    window.central.setCurrentWidget(infotab)
+    infotab = wind.central.infoWidget
+    proc_time()
+    wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=ttorrent)
     assert infotab.nameEdit.text() != ""
@@ -44,20 +44,19 @@ def test_info_tab_select1(wind, ttorrent):
                          [TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def test_infotab_select2(wind, dir2, creator):
     """Test getting info for single file torrent."""
-    window, app = wind
     torrent = creator(path=dir2)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = window.central.infoWidget
-    app.processEvents()
-    window.central.setCurrentWidget(infotab)
+    infotab = wind.central.infoWidget
+    proc_time()
+    wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=outfile)
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
-    rmpath(outfile)
+    rmpath(outfile, dir2)
 
 
 @pytest.mark.parametrize("creator",
@@ -65,36 +64,34 @@ def test_infotab_select2(wind, dir2, creator):
 @pytest.mark.parametrize("size", list(range(16, 22)))
 def test_infotab_single(wind, creator, size):
     """Test getting info for single file torrent."""
-    window, app = wind
     tfile = tempfile(exp=size)
     torrent = creator(path=tfile)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = window.central.infoWidget
-    app.processEvents()
-    window.central.setCurrentWidget(infotab)
+    infotab = wind.central.infoWidget
+    proc_time()
+    wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=outfile)
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
-    rmpath(outfile)
+    rmpath(outfile, tfile)
 
 
 @pytest.mark.parametrize("creator",
                          [TorrentFile, TorrentFileV2, TorrentFileHybrid])
 def test_infotab_nested(wind, creator, dir3):
     """Test getting info for single file torrent."""
-    window, app = wind
     torrent = creator(path=dir3)
     del torrent.meta["created by"]
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = window.central.infoWidget
-    app.processEvents()
-    window.central.setCurrentWidget(infotab)
+    infotab = wind.central.infoWidget
+    proc_time()
+    wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
     button.selectTorrent(path=outfile)
     name = torrent.meta["info"]["name"]
@@ -104,10 +101,9 @@ def test_infotab_nested(wind, creator, dir3):
 
 def test_info_accept_method(wind, ttorrent):
     """Test drag enter event on info widget."""
-    window, app = wind
-    info = window.central.infoWidget
+    info = wind.central.infoWidget
     info.window.central.setCurrentWidget(info)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert info.dragEnterEvent(event)
     event = MockEvent(None)
@@ -116,10 +112,9 @@ def test_info_accept_method(wind, ttorrent):
 
 def test_info_move_event(wind, ttorrent):
     """Test move event on info widget."""
-    window, app = wind
-    info = window.central.infoWidget
+    info = wind.central.infoWidget
     info.window.central.setCurrentWidget(info)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert info.dragMoveEvent(event)
     event = MockEvent(None)
@@ -128,19 +123,17 @@ def test_info_move_event(wind, ttorrent):
 
 def test_info_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    window, app = wind
-    info = window.central.infoWidget
+    info = wind.central.infoWidget
     info.window.central.setCurrentWidget(info)
-    app.processEvents()
+    proc_time()
     event = MockEvent(ttorrent)
     assert info.dropEvent(event)
 
 
 def test_info_drop_false(wind):
     """Test drop event on editor widget is false."""
-    window, app = wind
-    info = window.central.infoWidget
+    info = wind.central.infoWidget
     info.window.central.setCurrentWidget(info)
-    app.processEvents()
+    proc_time()
     event = MockEvent(None)
     assert not info.dropEvent(event)

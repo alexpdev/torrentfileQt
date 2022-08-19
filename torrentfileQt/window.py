@@ -33,6 +33,9 @@ from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import dark_theme, light_theme
 from torrentfileQt.utils import StyleManager, get_icon
 
+THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
+DEFAULT_THEME = "dark_theme"
+
 
 class Window(QMainWindow):
     """
@@ -114,7 +117,7 @@ class TabWidget(QTabWidget):
 class Application(QApplication):
     """QApplication Widget."""
 
-    def __init__(self, args=None):
+    def __init__(self, args):
         """
         Construct for main application backend.
 
@@ -123,31 +126,25 @@ class Application(QApplication):
         args : list
             argument list passed to window.
         """
-        self.args = args if args else sys.argv
-        self.themes = {"light": light_theme, "dark": dark_theme}
-        super().__init__(self.args)
-        self.styleManager = StyleManager(self.themes, dark_theme, self)
+        super().__init__(args)
+        self.styleManager = StyleManager(THEMES)
+        self.styleManager.themeRequest.connect(self.apply_theme)
+        self.window = Window(parent=None, app=self)
+        self.styleManager.set_theme_from_title(DEFAULT_THEME)
 
     def apply_theme(self, theme):
         """Apply the given stylesheet."""
+        self.styleManager.current = theme
         self.setStyleSheet(theme)
 
-
-def start():  # pragma: no cover
-    """Start the program entrypoint."""
-    app = Application()
-    window = Window(parent=None, app=app)
-    window.show()
-    sys.exit(app.exec())
-
-
-def alt_start():
-    """Start the program entrypoint alternate."""
-    app = Application()
-    window = Window(parent=None, app=app)
-    window.show()
-    return window, app
+    @classmethod
+    def start(cls, args=None):  # pragma: no cover
+        """Start the program entrypoint."""
+        app = cls(args if args else sys.argv)
+        app.window.show()
+        sys.exit(app.exec())
 
 
-if __name__ == "__main__":
-    start()  # pragma: no cover
+def execute():
+    """Run application."""
+    Application.start()

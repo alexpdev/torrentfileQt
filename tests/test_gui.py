@@ -17,17 +17,14 @@
 # limitations under the License.
 ##############################################################################
 """Testing module for most of GUI."""
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QMainWindow
 
 from tests import wind
 from torrentfileQt import qss
+from torrentfileQt.__main__ import main
 from torrentfileQt.infoTab import denom
+from torrentfileQt.utils import StyleManager
 from torrentfileQt.window import TabWidget
-
-
-def test_wind():
-    """Test wind fixture."""
-    assert wind
 
 
 def test_denom():
@@ -40,30 +37,13 @@ def test_denom_small():
     """Test denom function for small number."""
     num = denom(357)
     assert num == "357"
+    assert wind
+    assert main
 
 
-def test_window1(wind):
-    """Test Main Window Functionality."""
-    window, _ = wind
-    assert window is not None
-
-
-def test_window2(wind):
-    """Test Window Functionality."""
-    window, _ = wind
-    assert isinstance(window, QMainWindow)
-
-
-def test_app1(wind):
+def test_wind(wind):
     """Test app subclass."""
-    _, app = wind
-    assert isinstance(app, QApplication)
-
-
-def test_app2(wind):
-    """Test app subclass instance attribute."""
-    window, app = wind
-    assert app is window.app
+    assert isinstance(wind, QMainWindow)
 
 
 def test_qss():
@@ -73,12 +53,86 @@ def test_qss():
 
 def test_window_menubar1(wind):
     """Test window Menubar widget."""
-    window, _ = wind
-    assert window.menubar is not None
+    assert wind.menubar is not None
 
 
 def test_tab_widget(wind):
     """Test window Tab widget."""
-    window, _ = wind
-    tabwidget = window.central
+    tabwidget = wind.central
     assert isinstance(tabwidget, TabWidget)
+
+
+def test_change_theme(wind):
+    """Test changing the theme from the menubar."""
+    wind.menubar.file_menu.actionLightTheme.trigger()
+    wind.menubar.file_menu.actionDarkTheme.trigger()
+    assert wind.menubar.file_menu.actionLightTheme.text() == "Light Theme"
+    assert wind.menubar.file_menu.actionDarkTheme.text() == "Dark Theme"
+
+
+def test_increase_font(wind):
+    """Test font size plus menu option."""
+    fontsize = wind.central.createWidget.path_label.font().pointSize()
+    wind.menubar.file_menu.actionFontPlus.trigger()
+    wind.menubar.file_menu.actionFontPlus.trigger()
+    assert wind.central.createWidget.path_label.font().pointSize() > fontsize
+
+
+def test_decrease_font(wind):
+    """Test font size minus menu option."""
+    fontsize = wind.central.createWidget.path_label.font().pointSize()
+    wind.menubar.file_menu.actionFontMinus.trigger()
+    wind.menubar.file_menu.actionFontMinus.trigger()
+    assert wind.central.createWidget.path_label.font().pointSize() < fontsize
+
+
+def test_styleManager():
+    """Test style manager from utils module."""
+    themes = {
+        "test":
+        """
+QWidget {
+    background-color: #000;
+    color: #0AF;
+    border-color: #F71;
+    border-width: 3px;
+    border-style: outset;
+    border-radius: 8px;
+}
+QLineEdit,
+QLabel {
+    font-size: 15pt;
+
+
+}
+/* this is a comment*/
+
+
+QCheckBox::indicator {
+    background-color: red;
+    margin: ;
+}
+
+/* this is a longer
+comment that spans two lines */
+
+QPushButton:pressed {
+    border-width:
+    3px;
+    border-style:
+    solid;
+    border-color:
+    #F71;
+}
+
+QPushButton:hover {color: #080;}
+/* some comment
+*/
+QComboBox {
+    border: 12px solid pink;
+}"""
+    }
+    manager = StyleManager(themes)
+    manager.current = themes["test"]
+    collection = manager.parser.parse(themes["test"])
+    assert len(collection) > 1

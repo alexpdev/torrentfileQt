@@ -32,10 +32,10 @@ def test_fixtures():
 @pytest.mark.parametrize("field", ["announce", "name", "private", "comment"])
 def test_editor_torrent_loading(field, wind, ttorrent):
     """Testing editor widget functionality."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
-    editor.fileButton.browse(ttorrent)
+    param = (ttorrent, None)
+    editor.fileButton.browse(param)
     proc_time()
     fields = []
     for i in range(editor.table.rowCount()):
@@ -45,11 +45,11 @@ def test_editor_torrent_loading(field, wind, ttorrent):
 
 def test_editor_torrent_saving(wind, ttorrent):
     """Testing editor widget saving functionality."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
-    editor.fileButton.browse(ttorrent)
+    param = ttorrent, None
+    editor.fileButton.browse(param)
     for i in range(editor.table.rowCount()):
         item1 = editor.table.item(i, 0)
         item2 = editor.table.item(i, 1)
@@ -64,8 +64,7 @@ def test_editor_torrent_saving(wind, ttorrent):
 
 def test_editor_accept_method(wind, ttorrent):
     """Test drag enter event on editor widget."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
     event = MockEvent(ttorrent)
@@ -76,8 +75,7 @@ def test_editor_accept_method(wind, ttorrent):
 
 def test_editor_move_event(wind, ttorrent):
     """Test move event on editor widget."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
     event = MockEvent(ttorrent)
@@ -88,8 +86,7 @@ def test_editor_move_event(wind, ttorrent):
 
 def test_editor_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
     event = MockEvent(ttorrent)
@@ -98,8 +95,7 @@ def test_editor_drop_event(wind, ttorrent):
 
 def test_editor_drop_false(wind):
     """Test drop event on editor widget is false."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
     event = MockEvent(None)
@@ -108,8 +104,7 @@ def test_editor_drop_false(wind):
 
 def test_editor_table_fields(wind, ttorrent):
     """Test the edit fields of table widget."""
-    window, _ = wind
-    editor = window.central.editorWidget
+    editor = wind.central.editorWidget
     editor.window.central.setCurrentWidget(editor)
     proc_time()
     table, found = editor.table, 0

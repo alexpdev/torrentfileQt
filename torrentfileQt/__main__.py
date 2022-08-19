@@ -16,22 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##############################################################################
-"""Init module for TorrentfileQt project."""
+"""Entry point for torrentfileQt."""
 
-import ctypes
-import sys
+from torrentfileQt import execute
 
-from torrentfileQt.version import __version__
-from torrentfileQt.window import Application, Window, execute
 
-myappid = f"TorrentfileQt.{__version__}"
-if sys.platform == "win32":
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+def main():
+    """Execute main program."""
+    execute()  # pragma: nocover
 
-__author__ = "alexpdev"
-__all__ = [
-    "Application",
-    "Window",
-    "execute",
-    "__version__",
-]
+
+if __name__ == "__main__":
+    main()  # pragma: nocover

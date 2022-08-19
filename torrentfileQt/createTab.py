@@ -34,7 +34,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
-from torrentfileQt.utils import get_icon
+from torrentfileQt.utils import browse_files, browse_folder, get_icon
 
 
 class CreateWidget(QWidget):
@@ -333,32 +333,21 @@ class BrowseFileButton(QPushButton):
         Browse performed when user presses button.
 
         Opens File/Folder Dialog.
-
-        Returns
-        -------
-        str :
-            Path to file or folder to include in torrent.
         """
-        caption = "Select file..."
-        if not path:  # pragma: no cover
-            path, _ = QFileDialog.getOpenFileName(parent=self,
-                                                  caption=caption,
-                                                  dir=str(Path.home()))
-        if path != "":
-            path = os.path.normpath(path)
-            self.window.path_input.clear()
-            self.window.output_input.clear()
-            self.window.path_input.setText(path)
-            self.window.output_input.setText(path + ".torrent")
-            piece_length = path_piece_length(path)
-            if piece_length < (2**20):
-                val = f"{piece_length//(2**10)} KiB"
-            else:
-                val = f"{piece_length//(2**20)} MiB"
-            for i in range(self.window.piece_length.count()):
-                if self.window.piece_length.itemText(i) == val:
-                    self.window.piece_length.setCurrentIndex(i)
-                    break
+        path = browse_files(self, path)
+        self.window.path_input.clear()
+        self.window.output_input.clear()
+        self.window.path_input.setText(path)
+        self.window.output_input.setText(path + ".torrent")
+        piece_length = path_piece_length(path)
+        if piece_length < (2**20):
+            val = f"{piece_length//(2**10)} KiB"
+        else:
+            val = f"{piece_length//(2**20)} MiB"
+        for i in range(self.window.piece_length.count()):
+            if self.window.piece_length.itemText(i) == val:
+                self.window.piece_length.setCurrentIndex(i)
+                break
 
 
 class BrowseDirButton(QPushButton):
@@ -379,36 +368,21 @@ class BrowseDirButton(QPushButton):
         Browse action performed when user presses button.
 
         Opens File/Folder Dialog.
-
-        Returns
-        -------
-        str :
-            Path to file or folder to include in torrent.
         """
-        caption = "Select contents folder..."
-        if not path:  # pragma: no cover
-            path = QFileDialog.getExistingDirectory(parent=self,
-                                                    caption=caption,
-                                                    dir=str(Path.home()))
-        if path:
-            path = os.path.realpath(path)
-            self.window.path_input.clear()
-            self.window.output_input.clear()
-            self.window.path_input.setText(path)
-            self.window.output_input.insert(path + ".torrent")
-            try:
-                piece_length = path_piece_length(path)
-            except PermissionError:  # pragma: no cover
-                return
-            if piece_length < (2**20):
-                val = f"{piece_length//(2**10)} KiB"
-            else:  # pragma: no cover
-                val = f"{piece_length//(2**20)} MiB"
-            for i in range(self.window.piece_length.count()):
-                if self.window.piece_length.itemText(i) == val:
-                    self.window.piece_length.setCurrentIndex(i)
-                    break
-        return
+        path = browse_folder(self, path)
+        self.window.path_input.clear()
+        self.window.output_input.clear()
+        self.window.path_input.setText(path)
+        self.window.output_input.insert(path + ".torrent")
+        piece_length = path_piece_length(path)
+        if piece_length < (2**20):
+            val = f"{piece_length//(2**10)} KiB"
+        else:  # pragma: no cover
+            val = f"{piece_length//(2**20)} MiB"
+        for i in range(self.window.piece_length.count()):
+            if self.window.piece_length.itemText(i) == val:
+                self.window.piece_length.setCurrentIndex(i)
+                break
 
 
 class ComboBox(QComboBox):

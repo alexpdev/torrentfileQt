@@ -30,9 +30,9 @@ from pathlib import Path
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
-from torrentfileQt import alt_start
+from torrentfileQt import Application
 
-WINDOW, APP = alt_start()
+APP = Application([])
 
 
 def exception_hook(exctype, value, traceback):  # pragma:  no cover
@@ -206,8 +206,7 @@ def wind():
     `tuple`
         information to pass to test function.
     """
-    window, app = WINDOW, APP
-    return window, app
+    return APP.window
 
 
 @pytest.fixture(params=[TorrentFile, TorrentFileHybrid, TorrentFileV2])

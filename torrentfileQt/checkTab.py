@@ -25,13 +25,14 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtWidgets import (QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QTreeWidget,
-                               QTreeWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+                               QPlainTextEdit, QProgressBar, QPushButton,
+                               QSplitter, QTreeWidget, QTreeWidgetItem,
+                               QVBoxLayout, QWidget)
 from torrentfile.recheck import Checker
 
-from torrentfileQt.utils import get_icon
+from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
+                                 get_icon)
 
 
 class CheckWidget(QWidget):
@@ -163,15 +164,9 @@ class BrowseTorrents(QPushButton):
         path : str
             Path to file or folder to include in torrent.
         """
-        caption = "Choose .torrent file."
-        if not path:  # pragma: no cover
-            path, _ = QFileDialog.getOpenFileName(parent=self,
-                                                  caption=caption,
-                                                  filter="*.torrent")
-        if path:
-            path = os.path.normpath(path)
-            self.parent().fileInput.clear()
-            self.parent().fileInput.setText(path)
+        path = browse_torrent(self, path)
+        self.parent().fileInput.clear()
+        self.parent().fileInput.setText(path)
 
 
 class BrowseFolders(QPushButton):
@@ -195,24 +190,13 @@ class BrowseFolders(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse_folders)
 
-    def browse_folders(self):
+    def browse_folders(self, path=None):
         """
         Browse Action performed when user presses button.
-
-        Returns
-        -------
-        str :
-            Path to file or folder to include in torrent.
         """
-        path = QFileDialog.getExistingDirectory(
-            parent=self,
-            dir=str(Path.home()),
-            caption="Select Contents Folder...",
-        )
-        if path:
-            path = os.path.normpath(path)
-            self.widget.searchInput.clear()
-            self.widget.searchInput.setText(path)
+        path = browse_folder(self, path)
+        self.widget.searchInput.clear()
+        self.widget.searchInput.setText(path)
 
 
 class BrowseFiles(QPushButton):
@@ -232,21 +216,10 @@ class BrowseFiles(QPushButton):
     def browse_files(self, path=None):
         """
         Browse Action performed when user presses button.
-
-        Returns
-        -------
-        str :
-            Path to file or folder to include in torrent.
         """
-        out = QFileDialog.getOpenFileName(
-            parent=self,
-            dir=str(Path.home()),
-            caption="Select Contents File...",
-        )
-        if out and out[0]:
-            path = os.path.normpath(out[0])
-            self.widget.searchInput.clear()
-            self.widget.searchInput.setText(path)
+        path = browse_files(self, path)
+        self.widget.searchInput.clear()
+        self.widget.searchInput.setText(path)
 
 
 class LogTextEdit(QPlainTextEdit):
