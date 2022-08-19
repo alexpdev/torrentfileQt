@@ -61,7 +61,8 @@ class StyleManager(QObject):
         theme = self.themes[title]
         self.setTheme(theme)
 
-    def _create_ssheet(self, sheets) -> dict:
+    @staticmethod
+    def _create_ssheet(sheets: list) -> str:
         """
         Update the sheet with data from table.
 
