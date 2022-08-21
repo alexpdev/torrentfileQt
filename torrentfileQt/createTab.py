@@ -182,7 +182,7 @@ class TorrentFileCreator(QThread):
         container to add return values to
     """
 
-    created = Signal([str])
+    created = Signal()
 
     def __init__(self, args, creator):
         """Construct the new thread."""
@@ -195,7 +195,7 @@ class TorrentFileCreator(QThread):
         args = deepcopy(self.args)
         torrent = self.creator(**args)
         outfile, _ = torrent.write()
-        self.created.emit(outfile)
+        self.created.emit()
 
 
 class SubmitButton(QPushButton):
@@ -279,9 +279,9 @@ class SubmitButton(QPushButton):
         """Update the status bar when torrent creation is complete."""
         self.window.statusBar().showMessage("Processing", 3000)
 
-    def updateStatusBarEnd(self, string):
+    def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
-        message = f"Finished creating torrent file: {string}"
+        message = f"Finished"
         self.window.statusBar().showMessage(message, 3000)
 
 

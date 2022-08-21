@@ -23,7 +23,6 @@ from urllib.request import pathname2url as path2url
 from torrentfileQt.utils import get_icon
 
 arrow = path2url(os.path.relpath(get_icon("arrow-down"), os.getcwd()))
-print(arrow)
 
 dark_theme = """
 * {
@@ -150,7 +149,8 @@ QScrollBar::add-line:horizontal {
     subcontrol-position: right;
     subcontrol-origin: margin;
 }
-QScrollBar::add-line:horizontal:hover, QScrollBar::add-line:horizontal:on {
+QScrollBar::add-line:horizontal:hover,
+QScrollBar::add-line:horizontal:on {
     height: 12px;
     width: 12px;
     subcontrol-position: right;
@@ -163,7 +163,8 @@ QScrollBar::add-line:vertical {
     subcontrol-position: bottom;
     subcontrol-origin: margin;
 }
-QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on {
+QScrollBar::add-line:vertical:hover,
+QScrollBar::add-line:vertical:on {
     height: 12px;
     width: 12px;
     subcontrol-position: bottom;
@@ -241,8 +242,7 @@ QPushButton{
     border-bottom-color: #e67e22;
     border-radius: 8px;
     border-width: 3px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 3px 4px 3px 4px;
     font-size: 12pt;
     font-weight: bold;
     color: #dedede;
@@ -267,23 +267,6 @@ QPushButton:disabled{
     color: #bbb;
     padding-bottom: 1px;
     background-color: #444;
-}
-QToolButton {
-    font-size: 10pt;
-    border-style: outset;
-    border-color: #e67e22;
-    border-width: 3px;
-    border-radius: 8px;
-    color: #FFF;
-    padding: 5px;
-    padding-top: 3px;
-    background-color: #112;
-}
-QToolButton:hover {
-    border-style: inset;
-    margin-bottom: 1px;
-    padding: 4px;
-    background-color: #000;
 }
 QRadioButton {
     background-color: transparent;
@@ -351,11 +334,10 @@ QTreeWidget {
 }
 QTreeWidget::item::selected {
     color: #FFFFFF;
-    font-size: 10pt;
+    font-size: 9pt;
     border-color: transparent;
 }
 QTreeWidget::item::hover {
-    font-size: 9pt;
     color: #CFF8DC;
     border-color: transparent;
 }
@@ -367,7 +349,7 @@ QTreeWidget::indicator::unchecked {
     background-color: #ffffff;
     border: 1px solid #536D79;
 }
-QTreeWidget QHeaderView::section {
+/* QTreeWidget QHeaderView::section {
     background-color: black;
     color: white;
 }
@@ -375,7 +357,7 @@ QTreeWidget QHeaderView::section {
     border: 1px solid #e57e22;
     background-color: black;
     color: white;
-}
+}*/
 QTreeWidget QProgressBar {
     color: black;
     background-color: #7a7a7a;
@@ -412,7 +394,7 @@ QTableWidget::item:selected:hover {
 }
 QTableWidget::item:hover {
     background-color: #7c7d7b;
-    border: dotted #ded 1px;
+    border: dotted #ded 2px;
 }
 QTableWidget QTableCornerButton::section{
     background-color: black;
@@ -421,7 +403,7 @@ QTableWidget QTableCornerButton::section{
 QHeaderView::section {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0,
                     y2: 1, stop:0 #54585b, stop:1 #393c3e);
-    color: #bbbbbb;
+    color: #CFF;
     padding: 1px 2px 1px 4px;
     border: 1px solid #323232;
     border-top-width: 0;
@@ -537,11 +519,33 @@ QComboBox::drop-down {
 QComboBox::down-arrow:on {
     top: 1px;
 }
+QToolBar {
+    spacing: 8px;
+}
+QToolButton {
+    font-size: 8pt;
+    border-style: outset;
+    border-color: #e67e22;
+    border-width: 2px;
+    border-radius: 8px;
+    color: #FFF;
+    padding: 2px;
+    margin: 2px;
+    background-color: #112;
+}
+QToolButton:hover {
+    border-style: inset;
+    margin-bottom: 1px;
+    padding: 2px;
+    background-color: #000;
+}
 *[editToolBar="true"] {
     background-color: #3a3a3a;
+    spacing: 3px;
 }
 *[editToolBar="true"] QComboBox {
     background-color: #000;
+    margin-left: 6px;
     border: 1px inset #f71;
     border-radius: 4px;
     font-size: 9pt;
@@ -556,12 +560,6 @@ QComboBox::down-arrow:on {
     margin: 0px;
     font-size: 9pt;
 }
-*[editLine="true"] {
-    padding: 0px;
-    margin: 0px;
-    padding: 0px;
-    font-size: 9pt;
-}
 *[editCombo="true"] {
     font-size: 12pt;
     margin: 0px 0px 0px 0px;
@@ -570,9 +568,9 @@ QComboBox::down-arrow:on {
     min-height: 19px;
 }
 *[editButton="true"] {
-    margin: 2px;
-    padding: 2px;
-    font-size: 11pt;
+    margin-left: 2px;
+    margin-right: 2px;
+    font-size: 10pt;
     border-radius: 12px;
 }
 *[infoLine="true"] {
@@ -706,7 +704,7 @@ QScrollBar::handle:vertical {
     border-radius: 4px;
 }
 QScrollBar::handle:vertical:hover {
-    background-color: #ffffff;
+    background-color: #E00F0F;
     border: #eae41a;
     border-radius: 4px;
     min-height: 8px;
@@ -830,7 +828,7 @@ QPushButton{
     padding-bottom: 4px;
     font-weight: bold;
     color: #000000;
-    background-color: #8ea2fd;
+    background-color: #8eC2fd;
 }
 QPushButton:hover{
     border-style: inset;
@@ -850,24 +848,7 @@ QPushButton:disabled {
     border-style: solid;
     color: #011;
     padding-bottom: 1px;
-    background-color: #DFF;
-}
-QToolButton {
-    border-style: outset;
-    font-size: 10pt;
-    border-color: #111;
-    border-width: 3px;
-    border-radius: 8px;
-    color: #000;
-    padding: 5px;
-    padding-top: 3px;
-    background-color: #8ea2fd;
-}
-QToolButton:hover {
-    border-style: inset;
-    margin-bottom: 1px;
-    padding: 4px;
-    background-color: #5bc6f9;
+    background-color: #CCC;
 }
 QRadioButton {
     background-color: transparent;
@@ -940,7 +921,7 @@ QTreeWidget::item::selected {
     border-color: transparent;
 }
 QTreeWidget::item::hover {
-    color: #CFF8DC;
+    color: #3F3833;
     border-color: transparent;
 }
 QTreeWidget::indicator::checked {
@@ -951,7 +932,7 @@ QTreeWidget::indicator::unchecked {
     background-color: #000000;
     border: 1px solid #536D79;
 }
-QTreeWidget QHeaderView::section {
+/*QTreeWidget QHeaderView::section {
     background-color: #ffffff;
     color: #000;
 }
@@ -959,7 +940,7 @@ QTreeWidget QHeaderView::section {
     border: 1px solid #027740;
     background-color: #fff;
     color: #000;
-}
+}*/
 QTreeWidget QProgressBar {
     color: black;
     background-color: #323;
@@ -987,15 +968,15 @@ QTableWidget {
     border-style: ridge;
     border-radius: 4px;
     margin: 10px;
-    selection-background-color: #3a3a3a;
+    selection-background-color: #E07FE3;
     gridline-color: #ac4a02;
 }
 QTableWidget::item:selected:hover {
-    background-color: #7c7d7b;
+    background-color: #E66;
 }
 QTableWidget::item:hover {
-    background-color: #7c7d7b;
-    border: dotted #ded 1px;
+    background-color: #CFF;
+    border: dotted #ded 2px;
 }
 QTableWidget QTableCornerButton::section{
     background-color: black;
@@ -1006,14 +987,14 @@ QHeaderView::section {
         x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #719bfd:1 #88d9ff);
     color: #001111;
     font-size: 12pt;
-    border: 1px solid #67fe56;
+    border: 1px solid #287743;
     border-top-width: 0;
     border-left-color: #5e6163;
     border-right-color: #2a2c2d;
 }
 QHeaderView::section:hover {
     background-color: qlineargradient(
-        x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #64686b, stop:1 #494c4e);
+        x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #77AFFF, stop:1 #99dcee);
     border-bottom-color: #424242;
 }
 QHeaderView::section:first {
@@ -1127,16 +1108,27 @@ QComboBox::down-arrow:on {
     top: 1px;
     background-color: #555;
 }
+QToolButton {
+    border-style: outset;
+    font-size: 10pt;
+    border-color: #111;
+    border-width: 3px;
+    border-radius: 8px;
+    color: #000;
+    padding: 5px;
+    padding-top: 3px;
+    background-color: #8ea2fd;
+}
+QToolButton:hover {
+    border-style: inset;
+    margin-bottom: 1px;
+    padding: 4px;
+    background-color: #5bc6f9;
+}
 *[createButton="true"] {
     padding: 3px;
     font-size: 9pt;
     margin: 0px;
-    }
-*[editLine="true"] {
-    padding: 0px;
-    font-size: 9pt;
-    margin: 0px;
-    padding: 0px;
 }
 *[editCombo="true"] {
     margin: 0px 0px 0px 0px;

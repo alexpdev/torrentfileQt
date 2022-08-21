@@ -22,7 +22,7 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPushButton,
-                               QSpacerItem, QToolButton, QVBoxLayout, QWidget)
+                               QSpacerItem, QVBoxLayout, QWidget)
 from torrentfile import magnet
 
 from torrentfileQt.utils import browse_torrent
@@ -106,7 +106,7 @@ class SubmitButton(QPushButton):
             self.widget.output.setText(uri)
 
 
-class MetafileButton(QToolButton):
+class MetafileButton(QPushButton):
     """
     Find a .torrent file in native file browser button actions.
 
