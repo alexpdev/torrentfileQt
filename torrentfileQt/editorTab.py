@@ -318,6 +318,7 @@ class ToolBar(QToolBar):
     def __init__(self, parent=None):
         """Construct the toolbar instance."""
         super().__init__(parent=parent)
+        self.setProperty("editToolBar", "true")
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
         self.setMinimumWidth(800)
         self.line_edit = QLineEdit(parent=self)

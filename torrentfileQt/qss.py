@@ -22,7 +22,9 @@ from urllib.request import pathname2url as path2url
 
 from torrentfileQt.utils import get_icon
 
-arrow = os.path.join(get_icon("arrow-down.png"))
+arrow = path2url(os.path.relpath(get_icon("arrow-down"), os.getcwd()))
+print(arrow)
+
 dark_theme = """
 * {
     background-color: #19232D;
@@ -516,7 +518,7 @@ QStatusBar {
 }
 QComboBox {
     border: 2px solid #f73;
-    padding: 1px 1px 1px 3px;
+    padding: 1px 1px 1px 1px;
     font-size: 10pt;
     min-width: 2em;
 }
@@ -534,6 +536,20 @@ QComboBox::drop-down {
 }
 QComboBox::down-arrow:on {
     top: 1px;
+}
+*[editToolBar="true"] {
+    background-color: #3a3a3a;
+}
+*[editToolBar="true"] QComboBox {
+    background-color: #000;
+    border: 1px inset #f71;
+    border-radius: 4px;
+    font-size: 9pt;
+    padding: 3px;
+}
+*[editToolBar="true"] QComboBox QLineEdit {
+    margin: 0px;
+    padding: 0px;
 }
 *[createButton="true"] {
     padding: 3px;
@@ -578,7 +594,7 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % path2url(str(arrow))
+""" % arrow
 
 light_theme = """
 * {
@@ -1147,6 +1163,9 @@ QComboBox::down-arrow:on {
     border-right-color: transparent;
     border-top-color: transparent;
 }
+*[editToolBar="true"] {
+    background-color:
+}
 QComboBox QAbstractItemView {
     border: 1px solid #DFF;
     selection-background-color: lightgray;
@@ -1154,4 +1173,4 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % path2url(str(arrow))
+""" % arrow
