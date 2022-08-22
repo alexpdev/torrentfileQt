@@ -194,7 +194,7 @@ class TorrentFileCreator(QThread):
         """Create a torrent file and emit it's path."""
         args = deepcopy(self.args)
         torrent = self.creator(**args)
-        outfile, _ = torrent.write()
+        _, _ = torrent.write()
         self.created.emit()
 
 
@@ -281,8 +281,7 @@ class SubmitButton(QPushButton):
 
     def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
-        message = f"Finished"
-        self.window.statusBar().showMessage(message, 3000)
+        self.window.statusBar().showMessage("Completed", 3000)
 
 
 class OutButton(QPushButton):

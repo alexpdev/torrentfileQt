@@ -33,7 +33,7 @@ from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfileQt import Application
 
 APP = Application([])
-APP.window.show()
+# APP.window.show()
 
 
 def exception_hook(exctype, value, traceback):  # pragma:  no cover
@@ -312,7 +312,7 @@ class MockQFileDialog:
     getExistingDirectory = getOpenFileName
 
 
-def proc_time(amount=0.1):
+def proc_time(amount=0.01):
     """Process time span with updating GUI."""
     then = time.time()
     APP.processEvents()

@@ -28,9 +28,9 @@ from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
-from torrentfileQt.magnetTab import MagnetWidget
 from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import dark_theme, light_theme
+from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
 
 THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
@@ -101,13 +101,13 @@ class TabWidget(QTabWidget):
         self.checkWidget = CheckWidget(parent=self)
         self.infoWidget = InfoWidget(parent=self)
         self.editorWidget = EditorWidget(parent=self)
-        self.magnetWidget = MagnetWidget(parent=self)
+        self.toolWidget = ToolWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.editorWidget, "Torrent Editor")
-        self.addTab(self.magnetWidget, "Magnet URL")
-        self.magnetWidget.setObjectName("magnetWidget")
+        self.addTab(self.toolWidget, "Tools")
+        self.toolWidget.setObjectName("toolWidget")
         self.createWidget.setObjectName("createTab")
         self.checkWidget.setObjectName("checkTab")
         self.infoWidget.setObjectName("infoTab")

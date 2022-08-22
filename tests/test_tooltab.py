@@ -44,17 +44,18 @@ def torrent(dir1):
 
 def test_fixture():
     """Testing pytest fixtures."""
-    assert [dir1, tempfile, wind, ttorrent, dir2]
+    assert [dir1, dir2, tempfile, wind, ttorrent]
 
 
 def test_create_magnet(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
     outfile, _ = torrent
-    tab = wind.central.magnetWidget
+    tab = wind.central.toolWidget
     wind.central.setCurrentWidget(tab)
-    tab.metafile_input.setText(str(outfile))
-    tab.submit_button.click()
-    out = tab.output.text()
+    widget = tab.magnetgroup
+    widget.pathEdit.setText(str(outfile))
+    widget.submit_button.click()
+    out = widget.magnetEdit.text()
     proc_time()
     assert out == magnet(outfile)
 
@@ -62,50 +63,73 @@ def test_create_magnet(wind, torrent):
 def test_create_magnet_method(wind, torrent):
     """Test creating Magnet URI from a torrent file path."""
     outfile, _ = torrent
-    tab = wind.central.magnetWidget
+    tab = wind.central.toolWidget
     wind.central.setCurrentWidget(tab)
-    tab.file_button.select_metafile(outfile)
+    tab = tab.magnetgroup
+    tab.metafilebutton.select_metafile(outfile)
     tab.submit_button.magnet()
-    out = tab.output.text()
+    out = tab.magnetEdit.text()
     proc_time()
     assert out == magnet(outfile)
 
 
 def test_magnet_accept_method(wind, ttorrent):
     """Test drag enter event on editor widget."""
-    magnet = wind.central.magnetWidget
-    magnet.window.central.setCurrentWidget(magnet)
+    tab = wind.central.toolWidget
+    tab.window.central.setCurrentWidget(tab)
     proc_time()
     event = MockEvent(ttorrent)
-    assert magnet.dragEnterEvent(event)
+    assert tab.magnetgroup.dragEnterEvent(event)
     event = MockEvent(None)
-    assert not magnet.dragEnterEvent(event)
+    assert not tab.magnetgroup.dragEnterEvent(event)
 
 
 def test_magnet_move_event(wind, ttorrent):
     """Test move event on magnet widget."""
-    magnet = wind.central.magnetWidget
-    magnet.window.central.setCurrentWidget(magnet)
+    tools = wind.central.toolWidget
+    tools.window.central.setCurrentWidget(tools)
     proc_time()
     event = MockEvent(ttorrent)
-    assert magnet.dragMoveEvent(event)
+    assert tools.magnetgroup.dragMoveEvent(event)
     event = MockEvent(None)
-    assert not magnet.dragMoveEvent(event)
+    assert not tools.magnetgroup.dragMoveEvent(event)
 
 
 def test_magnet_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    magnet = wind.central.magnetWidget
-    magnet.window.central.setCurrentWidget(magnet)
+    tools = wind.central.toolWidget
+    tools.window.central.setCurrentWidget(tools)
     proc_time()
     event = MockEvent(ttorrent)
-    assert magnet.dropEvent(event)
+    assert tools.magnetgroup.dropEvent(event)
 
 
 def test_magnet_drop_false(wind):
     """Test drop event on editor widget returns None."""
-    magnet = wind.central.magnetWidget
-    magnet.window.central.setCurrentWidget(magnet)
+    tools = wind.central.toolWidget
+    tools.window.central.setCurrentWidget(tools)
     proc_time()
     event = MockEvent(None)
-    assert not magnet.dropEvent(event)
+    assert not tools.magnetgroup.dropEvent(event)
+
+
+def test_piecelengthcalculator(wind, dir1):
+    """Test the piece length calculator."""
+    tools = wind.central.toolWidget
+    tools.window.central.setCurrentWidget(tools)
+    proc_time()
+    calculator = tools.piece_length_calculator
+    calculator.browse_folders(dir1)
+    assert calculator.path_line.text() == dir1
+
+
+def test_piecelengthcalculator_file(wind):
+    """Test the piece length calculator with a single file."""
+    widget = wind.central.toolWidget
+    widget.window.central.setCurrentWidget(widget)
+    proc_time()
+    calculator = widget.piece_length_calculator
+    temp = str(tempfile())
+    calculator.browse_files(temp)
+    assert calculator.path_line.text() == temp
+    rmpath(temp)

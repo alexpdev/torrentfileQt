@@ -24,7 +24,7 @@ from torrentfileQt.utils import get_icon
 
 arrow = path2url(os.path.relpath(get_icon("arrow-down"), os.getcwd()))
 
-dark_theme = """
+dark_theme = ("""
 * {
     background-color: #19232D;
     color: #FFFFFF;
@@ -97,6 +97,16 @@ QAbstractScrollArea:disabled {
 }
 QScrollArea QWidget QWidget:disabled {
     background-color: #19232D;
+}
+QGroupBox {
+    border-style: dashed;
+    border-width: 2px;
+    border-color: #841;
+    margin: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
 }
 QScrollBar:horizontal {
     height: 16px;
@@ -494,13 +504,16 @@ QLabel {
     font-weight: bold;
 }
 QStatusBar {
-    border: 2px groove black;
+    border-top-color: black;
+    border-top-width: 1px;
+    padding: 3px;
     font-size: 8pt;
     color: #F00;
+
 }
 QComboBox {
     border: 2px solid #f73;
-    padding: 1px 1px 1px 1px;
+    padding: 1px;
     font-size: 10pt;
     min-width: 2em;
 }
@@ -511,7 +524,7 @@ QComboBox:on {
 QComboBox::drop-down {
     width: 20px;
     background: #555;
-    padding: 0px 2px 0px 2px;
+    padding: 1px 1px 1px 1px;
     border-left-width: 2px;
     border-left-color: #311;
     border-left-style: outset;
@@ -592,9 +605,9 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % arrow
+""" % arrow)
 
-light_theme = """
+light_theme = ("""
 * {
     background-color: #E3E6F1;
     color: #000000;
@@ -1077,19 +1090,17 @@ QLabel {
     font-weight: bold;
 }
 QStatusBar {
-    border: 1px groove #6f3375;
-    background-color: #222;
-    color: #F00;
+    border-top-color: black;
+    border-top-width: 1px;
     font-size: 8pt;
-    border-radius: 3px;
     padding: 3px;
+    color: #700;
 }
-
 QComboBox {
     border: 2px solid #645a3c;
-    background-color: #0EE;
+    background-color: #3EC;
     font-size: 10pt;
-    padding: 1px 1px 1px 3px;
+    padding: 1px;
     min-width: 2em;
 }
 QComboBox:on {
@@ -1099,7 +1110,7 @@ QComboBox:on {
 QComboBox::drop-down {
     width: 20px;
     background: #0EE;
-    padding: 0px 2px 0px 2px;
+    padding: 1px;
     border-left-width: 2px;
     border-left-color: #449;
     border-left-style: outset;
@@ -1110,20 +1121,36 @@ QComboBox::down-arrow:on {
 }
 QToolButton {
     border-style: outset;
-    font-size: 10pt;
+    font-size: 8pt;
     border-color: #111;
     border-width: 3px;
     border-radius: 8px;
     color: #000;
-    padding: 5px;
-    padding-top: 3px;
+    padding: 2px;
+    margin: 2px;
     background-color: #8ea2fd;
 }
 QToolButton:hover {
     border-style: inset;
     margin-bottom: 1px;
-    padding: 4px;
+    padding: 2px;
     background-color: #5bc6f9;
+}
+*[editToolBar="true"] {
+    background-color: #3a3a3a;
+    spacing: 3px;
+}
+*[editToolBar="true"] QComboBox {
+    background-color: #3cc;
+    margin-left: 6px;
+    border: 1px inset #5b310b;
+    border-radius: 4px;
+    font-size: 9pt;
+    padding: 3px;
+}
+*[editToolBar="true"] QComboBox QLineEdit {
+    margin: 0px;
+    padding: 0px;
 }
 *[createButton="true"] {
     padding: 3px;
@@ -1140,7 +1167,7 @@ QToolButton:hover {
 *[editButton="true"] {
     margin: 2px;
     padding: 2px;
-    font-size: 11pt;
+    font-size: 10pt;
     border-radius: 12px;
 }
 *[infoLine="true"] {
@@ -1155,9 +1182,6 @@ QToolButton:hover {
     border-right-color: transparent;
     border-top-color: transparent;
 }
-*[editToolBar="true"] {
-    background-color:
-}
 QComboBox QAbstractItemView {
     border: 1px solid #DFF;
     selection-background-color: lightgray;
@@ -1165,4 +1189,4 @@ QComboBox QAbstractItemView {
 QComboBox::down-arrow {
     image: url(%s);
 }
-""" % arrow
+""" % arrow)

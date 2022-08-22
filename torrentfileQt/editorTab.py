@@ -26,8 +26,8 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit,
                                QPushButton, QSizePolicy, QTableWidget,
-                               QTableWidgetItem, QToolBar,
-                               QVBoxLayout, QWidget)
+                               QTableWidgetItem, QToolBar, QVBoxLayout,
+                               QWidget)
 
 from torrentfileQt.utils import browse_torrent, get_icon
 
