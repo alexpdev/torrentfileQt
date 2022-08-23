@@ -23,13 +23,13 @@ from copy import deepcopy
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit,
                                QPushButton, QSizePolicy, QTableWidget,
-                               QTableWidgetItem, QToolBar, QToolButton,
-                               QVBoxLayout, QWidget)
+                               QTableWidgetItem, QToolBar, QVBoxLayout,
+                               QWidget)
 
-from torrentfileQt.utils import browse_torrent
+from torrentfileQt.utils import browse_torrent, get_icon
 
 
 class EditorWidget(QWidget):
@@ -141,14 +141,15 @@ class Button(QPushButton):
         pyben.dump(meta, text)
 
 
-class FileButton(QToolButton):
+class FileButton(QPushButton):
     """Tool Button for selecting a .torrent file to edit."""
 
     def __init__(self, parent=None):
         """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
         self.widget = parent
-        self.setText("Select File")
+        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setText("File")
         self.window = parent.window
         self.clicked.connect(self.browse)
 
@@ -168,7 +169,6 @@ class AddItemButton(QAction):
         super().__init__(parent)
         self.setProperty("editButton", "true")
         self.parent = parent
-        self.setText("add")
         self.box = None
         self.triggered.connect(self.add_item)
 
@@ -191,7 +191,6 @@ class RemoveItemButton(QAction):
         super().__init__(parent)
         self.setProperty("editButton", "true")
         self.parent = parent
-        self.setText("remove")
         self.box = None
         self.triggered.connect(self.remove_item)
 
@@ -220,7 +219,6 @@ class Table(QTableWidget):
         vheader = self.verticalHeader()
         vheader.setSectionResizeMode(vheader.ResizeMode.Stretch)
         vheader.setHidden(True)
-        self.setHorizontalHeaderLabels(["Label", "Value"])
         self.handleTorrent.connect(self.export_data)
 
     def clear(self):
@@ -230,6 +228,7 @@ class Table(QTableWidget):
             self.removeRow(row)
         self.setRowCount(0)
         super().clear()
+        self.setHorizontalHeaderLabels(["Label", "Value"])
 
     def export_data(self, path):
         """Export slot for the handleTorrent signal."""
@@ -287,7 +286,6 @@ class Combo(QComboBox):
         """Construct a combobox for table widget cell."""
         super().__init__(parent=parent)
         self.widget = parent
-        self.setProperty("editCombo", "true")
         self.sizePolicy().setVerticalPolicy(QSizePolicy.Minimum)
         self.setMinimumContentsLength(48)
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
@@ -318,15 +316,19 @@ class ToolBar(QToolBar):
     def __init__(self, parent=None):
         """Construct the toolbar instance."""
         super().__init__(parent=parent)
+        self.setProperty("editToolBar", "true")
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
         self.setMinimumWidth(800)
         self.line_edit = QLineEdit(parent=self)
         self.combo = Combo(self)
         self.combo.setLineEdit(self.line_edit)
-        self.setProperty("editLine", "true")
         self.add_button = AddItemButton(self)
+        addIcon = QIcon(get_icon("plus"))
+        self.add_button.setIcon(addIcon)
         self.add_button.box = self.combo
         self.remove_button = RemoveItemButton(self)
+        removeIcon = QIcon(get_icon("minus"))
+        self.remove_button.setIcon(removeIcon)
         self.remove_button.box = self.combo
         self.addWidget(self.combo)
         self.addActions([self.add_button, self.remove_button])

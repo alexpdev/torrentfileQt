@@ -213,7 +213,7 @@ class BrowseFiles(QPushButton):
         self.setIcon(QIcon(get_icon("browse_file")))
         self.clicked.connect(self.browse_files)
 
-    def browse_files(self, path=None):
+    def browse_files(self, path=None):  # pragma: nocover
         """
         Browse Action performed when user presses button.
         """

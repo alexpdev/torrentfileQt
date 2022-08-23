@@ -135,4 +135,5 @@ QComboBox {
     manager = StyleManager(themes)
     manager.current = themes["test"]
     collection = manager.parser.parse(themes["test"])
+    manager.parser._compile()
     assert len(collection) > 1
