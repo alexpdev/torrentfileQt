@@ -65,6 +65,10 @@ QScrollBar {
     border-color: #f61;
     selection-background-color: #2f4f4f;
 }
+QWidget {
+    background-color: #39434d;
+    border-width: 0px;
+}
 *[editToolBar="true"] {
     background-color: #3a3a3a;
     spacing: 3px;
@@ -591,10 +595,6 @@ QToolButton:hover {
     padding: 2px;
     background-color: #000;
 }
-QWidget {
-    background-color: #39434d;
-    border-width: 0px;
-}
 """ % arrow)
 
 light_theme = ("""
@@ -637,6 +637,10 @@ QProgressBar,
 QScrollBar {
     border-color: #0CF;
     selection-background-color: #a6595b;
+}
+QWidget {
+    background-color: #E3E6F1;
+    border-width: 0px;
 }
 *[editToolBar="true"] {
     background-color: #3a3a3a;
@@ -1178,9 +1182,5 @@ QTreeWidget QProgressBar::chunk {
     margin-bottom: 0px;
     border-radius: 3px;
     width: 16px;
-}
-QWidget {
-    background-color: #E3E6F1;
-    border-width: 0px;
 }
 """ % arrow)
