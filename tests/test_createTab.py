@@ -20,8 +20,10 @@ import os
 
 import pyben
 import pytest
+from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, rmpath, tempfile, wind
+from torrentfileQt.createTab import TorrentFileCreator
 
 
 def test_rmpath():
@@ -143,3 +145,12 @@ def test_sized_create(wind):
     button.browse(param)
     proc_time()
     assert createtab.path_input.text() == path
+
+
+def test_torrentfile_creator(dir1):
+    """Test the QThread torrent file creator."""
+    args = {"path": dir1, "outfile": dir1 + ".torrent"}
+    creator = TorrentFileCreator(args, TorrentFileHybrid)
+    creator.run()
+    assert os.path.exists(dir1 + ".torrent")
+    rmpath(dir1 + ".torrent")

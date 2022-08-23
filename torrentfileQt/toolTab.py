@@ -89,7 +89,7 @@ class MetafileButton(QPushButton):
     def select_metafile(self, path=None):
         """Find metafile in file browser."""
         if not path:
-            path = browse_torrent(self, path)
+            path = browse_torrent(self, path)  # pragma: nocover
         self.widget.pathEdit.setText(path if path else "")
 
 
@@ -279,7 +279,7 @@ class PieceLengthCalculator(QGroupBox):
             val = size / plength
             if int(val) == val:
                 self.piece_count_line.setText(str(int(val)))
-            else:
+            else:  # pragma: nocover
                 self.piece_count_line.setText(str(int(val + 1)))
 
     def calculate(self, path):
@@ -299,7 +299,7 @@ class PieceLengthCalculator(QGroupBox):
             total_pieces = size / piece_length
             if total_pieces == size // piece_length:
                 self.piece_count_line.setText(str(int(total_pieces)))
-            else:
+            else:  # pragma: nocover
                 self.piece_count_line.setText(str(int(total_pieces + 1)))
             self.file_count_line.setText(str(len(file_list)))
 

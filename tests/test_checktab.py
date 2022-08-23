@@ -21,12 +21,9 @@
 import os
 from pathlib import Path
 
-import PySide6
 import pytest
 
-from tests import (MockQFileDialog, dir1, dir2, proc_time, rmpath, tempfile,
-                   ttorrent, wind)
-from torrentfileQt import checkTab
+from tests import dir1, dir2, proc_time, rmpath, tempfile, ttorrent, wind
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
 
@@ -89,8 +86,6 @@ def test_check_tab(wind, ttorrent, dir1):
 def test_check_tab_input1(wind, dir1):
     """Test checker procedure."""
     checktab = wind.central.checkWidget
-    MockQFileDialog.Out = dir1
-    PySide6.QtWidgets.QFileDialog = MockQFileDialog
     wind.central.setCurrentWidget(checktab)
     checktab.browseButton2.browse_folders(dir1)
     assert checktab.searchInput.text() != ""
@@ -99,8 +94,6 @@ def test_check_tab_input1(wind, dir1):
 def test_check_tab_input_2(wind, dir1):
     """Test checker procedure."""
     checktab = wind.central.checkWidget
-    MockQFileDialog.Out = dir1
-    PySide6.QtWidgets.QFileDialog = MockQFileDialog
     wind.central.setCurrentWidget(checktab)
     checktab.browseButton1.browse((dir1, None))
     assert checktab.fileInput.text() != ""
@@ -147,7 +140,6 @@ def test_singlefile(size, ext, index, version, wind):
     testfile = str(tempfile(exp=size))
     tfile = testfile + ext
     os.rename(testfile, tfile)
-    checkTab.QFileDialog = MockQFileDialog
     metafile = tfile + ".torrent"
     createtab.path_input.clear()
     createtab.output_input.clear()

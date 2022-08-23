@@ -124,6 +124,7 @@ class QssParser:
         self.collection = []
         self.line_num = 0
         self.lines = []
+        self.result = {}
         self.total = len(self.lines)
 
     def parse(self, sheet):

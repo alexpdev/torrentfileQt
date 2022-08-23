@@ -93,8 +93,7 @@ class FileMenu(QMenu):
 
     def exit_app(self):
         """Close application."""
-        app = self.parent().window.app
-        app.quit()  # pragma: nocover
+        self.parent().window.app.quit()  # pragma: nocover
 
     def light_theme(self):
         """Change the GUI theme for the application."""
@@ -223,7 +222,7 @@ class ProfileMenu(QMenu):
         piece_length_index = tab.piece_length.currentIndex()
         piece_length = tab.piece_length.itemData(piece_length_index)
         if tab.hybridbutton.isChecked():
-            version = 3
+            version = 3  # pragma: nocover
         elif tab.v2button.isChecked():
             version = 2
         else:

@@ -147,4 +147,4 @@ class Application(QApplication):
 
 def execute():
     """Run application."""
-    Application.start()
+    Application.start()  # pragma: nocover

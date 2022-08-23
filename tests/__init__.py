@@ -296,22 +296,6 @@ class MockEvent:
     mimeData = mime_data
 
 
-class MockQFileDialog:
-    """Mock object for the QFileDialog."""
-
-    Out = None
-
-    @classmethod
-    def getOpenFileName(cls, parent=None, dir=None, caption=None):
-        """Mock class method for returning file path from file dialog."""
-        assert isinstance(caption, str)
-        assert dir
-        cls.parent = parent
-        return cls.Out
-
-    getExistingDirectory = getOpenFileName
-
-
 def proc_time(amount=0.01):
     """Process time span with updating GUI."""
     then = time.time()

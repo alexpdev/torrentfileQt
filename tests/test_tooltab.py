@@ -132,4 +132,6 @@ def test_piecelengthcalculator_file(wind):
     temp = str(tempfile())
     calculator.browse_files(temp)
     assert calculator.path_line.text() == temp
+    calculator.piece_length_combo.setCurrentIndex(3)
+    calculator.calculate_piece_length()
     rmpath(temp)
