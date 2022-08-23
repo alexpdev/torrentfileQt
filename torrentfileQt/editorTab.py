@@ -169,7 +169,6 @@ class AddItemButton(QAction):
         super().__init__(parent)
         self.setProperty("editButton", "true")
         self.parent = parent
-        # self.setText("add")
         self.box = None
         self.triggered.connect(self.add_item)
 
@@ -192,7 +191,6 @@ class RemoveItemButton(QAction):
         super().__init__(parent)
         self.setProperty("editButton", "true")
         self.parent = parent
-        # self.setText("remove")
         self.box = None
         self.triggered.connect(self.remove_item)
 
