@@ -77,8 +77,8 @@ torrentfileQt
 
 ## Issues
 
-To report a bug or ask for a new feature please open an issue on the GitHub repo.
+To report a bug or ask for a new feature please [open an issue](https://github.com/alexpdev/torrentfileQt/issues) on github.
 
 ## License
 
-[Apache 2.0 Software License](./assets/screenshots/createWidget.png)
+[Apache 2.0 Software License](./LICENSE)
