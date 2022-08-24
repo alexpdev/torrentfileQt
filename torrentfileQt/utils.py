@@ -264,8 +264,8 @@ def get_icon(name):
     """
     parent = os.path.dirname(__file__)
     assets = os.path.join(parent, "assets")
-    path = os.path.join(assets, name + ".png")
-    return path
+    path = os.path.join(assets, name)
+    return path if path.endswith(".png") else path + ".png"
 
 
 def browse_folder(widget, folder=None):

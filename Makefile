@@ -21,13 +21,20 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+define CHANGE_NAME
+import os
+from zipfile import ZipFile
+from torrentfileQt.version import __version__
+zfile = ZipFile(f"./bin/torrentfileQt-v{__version__}-WIN.zip", mode="w")
+zfile.write("./bin/dist/torrentfileQt.exe", "torrentfileQt.exe")
+zfile.close()
+endef
+export CHANGE_NAME
+
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
-
-enviornment:  ## Actiate local python environmant
-	env\Scripts\activate.bat
 
 clean: clean-build ## remove all build, test, coverage and Python artifacts
 
@@ -57,15 +64,11 @@ push: test ## push changes to remote
 start: ## start program
 	torrentfileQt
 
-release: clean test lint ## release to pypi
-	python setup.py sdist bdist_wheel bdist_egg
+release: clean test ## release to pypi
+	py -m build .
 	twine upload dist/*
 
-build:  clean test lint
-	python -m pip install --upgrade --no-cache --force-reinstall torrentfile pyben pip wheel setuptools
-	python setup.py sdist bdist_wheel bdist_egg
-	rm -rfv bin/dist
-	rm -rfv bin/build
-	cd bin && pyinstaller ./exec.spec
-
-full: clean test push release build
+build: clean test ## build executable file
+	py -m build .
+	cd bin && pyinstaller exec.spec
+	python -c "$$CHANGE_NAME"

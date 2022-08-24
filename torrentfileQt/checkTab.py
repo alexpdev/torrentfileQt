@@ -323,10 +323,12 @@ class ProgressBar(QProgressBar):
 
     def addValue(self, value):
         """Increase value of progressbar."""
+        self.blockSignals(True)
         currentvalue = self.value()
         out = self.normalize(value)
         addedVal = currentvalue + out
         self.setValue(addedVal)
+        self.blockSignals(False)
 
 
 class TreeWidget(QTreeWidget):

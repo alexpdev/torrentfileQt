@@ -21,28 +21,36 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 -   Bittorrent v1, v2 and hybrid .torrent files supported
 -   Check if a .torrent file contents are in filesystem
 -   Check progress or percentage complete for .torrent file
--   Edit torrent files.
+-   Edit torrent files
+-   Drag and drop files onto any tab
+-   Create magnet link URIs
+-   Analyze piece lengths for torrent files
 
 ## Requirements
 
+-   Python 3.6+
 -   Pyside6
 -   torrentfile
 
 ## ScreenShots
 
-![createtorrent.png](./assets/screenshots/create-tab.png)
+![createtorrent.png](./assets/screenshots/createWidget.png)
 
 * * *
 
-![checktorrent.png](./assets/screenshots/recheck-tab.png)
+![checktorrent.png](./assets/screenshots/recheckWidget.png)
 
 * * *
 
-![edittorrent.png](./assets/screenshots/edit-tab.png)
+![edittorrent.png](./assets/screenshots/editWidget.png)
 
 * * *
 
-![torrentinfo.png](./assets/screenshots/info-tab.png)
+![torrentinfo.png](./assets/screenshots/infoWidget.png)
+
+* * *
+
+![torrentinfo.png](./assets/screenshots/toolsWidget.png)
 
 * * *
 
@@ -66,3 +74,11 @@ torrentfileQt
 ```
 
 > Alternatively you can download a precompiled binary from the release page.
+
+## Issues
+
+To report a bug or ask for a new feature please open an issue on the GitHub repo.
+
+## License
+
+[Apache 2.0 Software License](./assets/screenshots/createWidget.png)
