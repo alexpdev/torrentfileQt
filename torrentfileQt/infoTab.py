@@ -75,18 +75,18 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = QIcon(get_icon("video.png"))
+                        iconpath = QIcon(get_icon("video"))
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = QIcon(get_icon("archive.png"))
+                        iconpath = QIcon(get_icon("archive"))
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = QIcon(get_icon("archive.png"))
+                        iconpath = QIcon(get_icon("archive"))
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = QIcon(get_icon("music.png"))
+                        iconpath = QIcon(get_icon("music"))
                     else:
-                        iconpath = QIcon(get_icon("file.png"))
+                        iconpath = QIcon(get_icon("file"))
                     item.setLength(length)
                 else:
-                    iconpath = QIcon(get_icon("folder.png"))
+                    iconpath = QIcon(get_icon("folder"))
                 icon = QIcon(iconpath)
                 item.setIcon(0, icon)
                 item.setText(1, partial)
@@ -108,7 +108,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon(QIcon(get_icon("scale.png")))
+        icon = QIcon(QIcon(get_icon("scale")))
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -126,19 +126,19 @@ class InfoWidget(QWidget):
         self.setLayout(self.layout)
 
         # Labels
-        self.pathLabel = Label("Path: ", parent=self)
-        self.nameLabel = Label("Name: ", parent=self)
-        self.pieceLengthLabel = Label("Piece Length: ", parent=self)
-        self.sizeLabel = Label("Total Size: ", parent=self)
-        self.totalPiecesLabel = Label("Total Pieces: ", parent=self)
-        self.trackerLabel = Label("Tracker: ", parent=self)
-        self.privateLabel = Label("Private: ", parent=self)
-        self.sourceLabel = Label("Source: ", parent=self)
-        self.commentLabel = Label("Comment: ", parent=self)
-        self.metaVersionLabel = Label("Meta-Version:", parent=self)
-        self.dateCreatedLabel = Label("Creation Date: ", parent=self)
-        self.createdByLabel = Label("Created By: ", parent=self)
-        self.contentsLabel = Label("Contents: ", parent=self)
+        self.pathLabel = QLabel("Path: ", parent=self)
+        self.nameLabel = QLabel("Name: ", parent=self)
+        self.pieceLengthLabel = QLabel("Piece Length: ", parent=self)
+        self.sizeLabel = QLabel("Total Size: ", parent=self)
+        self.totalPiecesLabel = QLabel("Total Pieces: ", parent=self)
+        self.trackerLabel = QLabel("Tracker: ", parent=self)
+        self.privateLabel = QLabel("Private: ", parent=self)
+        self.sourceLabel = QLabel("Source: ", parent=self)
+        self.commentLabel = QLabel("Comment: ", parent=self)
+        self.metaVersionLabel = QLabel("Meta-Version:", parent=self)
+        self.dateCreatedLabel = QLabel("Creation Date: ", parent=self)
+        self.createdByLabel = QLabel("Created By: ", parent=self)
+        self.contentsLabel = QLabel("Contents: ", parent=self)
         self.contentsTree = TreeWidget(parent=self)
         self.sourceEdit = InfoLineEdit(parent=self)
         self.metaVersionEdit = InfoLineEdit(parent=self)
@@ -336,14 +336,6 @@ class SelectButton(QPushButton):
         self.parent().fill(**kws)
 
 
-class Label(QLabel):
-    """Label Identifier for Window Widgets."""
-
-    def __init__(self, text, parent=None):
-        """Construct for Label Widget."""
-        super().__init__(text, parent=parent)
-
-
 class InfoLineEdit(QLineEdit):
     """Line Edit Widget."""
 
@@ -353,7 +345,6 @@ class InfoLineEdit(QLineEdit):
         self.setProperty("infoLine", "true")
         self.window = parent.window
         self.setReadOnly(True)
-        self.theme = "dark"
         self.setDragEnabled(True)
 
 
