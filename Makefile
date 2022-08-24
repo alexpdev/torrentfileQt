@@ -56,7 +56,7 @@ test: clean ## run tests quickly with the default Python
 	coverage report
 	coverage xml -o coverage.xml
 
-push: test ## push changes to remote
+push: install test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push
@@ -68,7 +68,11 @@ release: clean test ## release to pypi
 	py -m build .
 	twine upload dist/*
 
-build: clean test ## build executable file
+build: install clean test ## build executable file
 	py -m build .
+	pip install -e .
 	cd bin && pyinstaller exec.spec
 	python -c "$$CHANGE_NAME"
+
+install: ## Fresh install from PyPi
+	python -m pip install --upgrade --force-reinstall --no-cache torrentfileQt

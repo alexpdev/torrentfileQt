@@ -137,13 +137,13 @@ class MagnetGroup(QGroupBox):
             return True
         return event.ignore()
 
-    def dragMoveEvent(self, event):
+    def dragMoveEvent(self, evnt):
         """Drag Move Event for widgit."""
-        if event.mimeData().hasUrls:
-            self.urls = event.mimeData().urls()
-            event.accept()
+        if evnt.mimeData().hasUrls:
+            self.urls = evnt.mimeData().urls()
+            evnt.accept()
             return True
-        return event.ignore()
+        return evnt.ignore()
 
     def dropEvent(self, evt):
         """Drag drop event for widgit."""
