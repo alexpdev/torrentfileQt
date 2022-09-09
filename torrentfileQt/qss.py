@@ -185,8 +185,8 @@ QDialog {
     background-color:#000000;
 }
 QGroupBox {
-    border-style: dashed;
-    border-width: 2px;
+    border-style: solid;
+    border-width: 1px;
     border-color: #841;
     margin: 8px;
     padding: 8px;
@@ -761,8 +761,8 @@ QDialog {
     background-color: #CFE;
 }
 QGroupBox {
-    border-style: dashed;
-    border-width: 2px;
+    border-style: solid;
+    border-width: 1px;
     border-color: #CCF;
     margin: 8px;
     padding: 8px;
