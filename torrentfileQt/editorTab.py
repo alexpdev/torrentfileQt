@@ -155,10 +155,10 @@ class FileButton(QPushButton):
 
     def browse(self, path: str = None):
         """Browse method for finding the .torrent file user wishes to edit."""
-        path = browse_torrent(self, path)
+        paths = browse_torrent(self, path)
         self.widget.table.clear()
-        self.widget.line.setText(path)
-        self.widget.table.handleTorrent.emit(path)
+        self.widget.line.setText(paths[0])
+        self.widget.table.handleTorrent.emit(paths[0])
 
 
 class AddItemButton(QAction):

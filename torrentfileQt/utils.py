@@ -310,8 +310,8 @@ def browse_files(widget, path=None):
     if isinstance(path, str):
         path = (path, None)
     if path and path[0]:
-        path = os.path.normpath(path[0])
-    return path
+        paths = [os.path.normpath(i) for i in path]
+    return paths
 
 
 def browse_torrent(widget, torrent=None):
@@ -334,5 +334,5 @@ def browse_torrent(widget, torrent=None):
     if isinstance(torrent, str):
         torrent = torrent, None
     if torrent and torrent[0]:
-        torrent = os.path.normpath(torrent[0])
-    return torrent
+        torrents = [os.path.normpath(i) for i in torrent]
+    return torrents

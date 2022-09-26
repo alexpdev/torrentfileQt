@@ -76,7 +76,7 @@ QWidget {
 *[editToolBar="true"] QComboBox {
     background-color: #000;
     margin-left: 6px;
-    border: 1px inset #f71;
+    border-width: 1px inset #f71;
     border-radius: 4px;
     font-size: 9pt;
     padding: 3px;
@@ -114,6 +114,55 @@ QWidget {
     border-left-color: transparent;
     border-right-color: transparent;
     border-top-color: transparent;
+}
+*[InfoTree="true"]{
+    background-color: #19232D;
+    font-size: 10pt;
+    show-decoration-selected: 1;
+}
+*[InfoTree="true"]::item {
+    border: 1px solid #d9d9d9;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+*[InfoTree="true"]::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #211, stop: 1 #312);
+    border: 1px solid #f71;
+}
+*[InfoTree="true"]::item:selected {
+    border: 1px solid #567dbc;
+}
+*[InfoTree="true"]::branch {
+        background: palette(transparent);
+}
+*[InfoTree="true"]::branch:has-siblings:!adjoins-item {
+    border-image: url(torrentfileQt/assets/vline.png) 0;
+}
+*[InfoTree="true"]::branch:has-siblings:adjoins-item {
+    border-image: url(torrentfileQt/assets/branch-more.png) 0;
+}
+*[InfoTree="true"]::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(torrentfileQt/assets/branch-end.png) 0;
+}
+
+*[InfoTree="true"]::branch:has-children:!has-siblings:closed,
+*[InfoTree="true"]::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(torrentfileQt/assets/branch-closed.png);
+}
+*[InfoTree="true"]::branch:open:has-children:!has-siblings,
+*[InfoTree="true"]::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(torrentfileQt/assets/branch-open.png);
+}
+*[InfoTree="true"] QLineEdit {
+    border-width: 0px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 9pt;
+
 }
 QAbstractScrollArea {
     background-color: #19232D;

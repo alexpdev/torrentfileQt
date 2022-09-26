@@ -331,8 +331,8 @@ class SelectButton(QPushButton):
 
     def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
-        path = browse_torrent(self, path)
-        kws = format_data(path)
+        paths = browse_torrent(self, path)
+        kws = format_data(paths[0])
         self.parent().fill(**kws)
 
 

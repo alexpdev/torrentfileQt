@@ -164,9 +164,9 @@ class BrowseTorrents(QPushButton):
         path : str
             Path to file or folder to include in torrent.
         """
-        path = browse_torrent(self, path)
+        paths = browse_torrent(self, path)
         self.parent().fileInput.clear()
-        self.parent().fileInput.setText(path)
+        self.parent().fileInput.setText(paths[0])
 
 
 class BrowseFolders(QPushButton):
@@ -217,9 +217,9 @@ class BrowseFiles(QPushButton):
         """
         Browse Action performed when user presses button.
         """
-        path = browse_files(self, path)
+        paths = browse_files(self, path)
         self.widget.searchInput.clear()
-        self.widget.searchInput.setText(path)
+        self.widget.searchInput.setText(path[0])
 
 
 class LogTextEdit(QPlainTextEdit):

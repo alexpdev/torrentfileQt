@@ -333,12 +333,12 @@ class BrowseFileButton(QPushButton):
 
         Opens File/Folder Dialog.
         """
-        path = browse_files(self, path)
+        paths = browse_files(self, path)
         self.window.path_input.clear()
         self.window.output_input.clear()
-        self.window.path_input.setText(path)
-        self.window.output_input.setText(path + ".torrent")
-        piece_length = path_piece_length(path)
+        self.window.path_input.setText(paths[0])
+        self.window.output_input.setText(paths[0] + ".torrent")
+        piece_length = path_piece_length(paths[0])
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)} KiB"
         else:
