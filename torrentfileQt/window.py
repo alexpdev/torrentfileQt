@@ -26,13 +26,13 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
 
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
-# from torrentfileQt.editorTab import EditorWidget
-# from torrentfileQt.infoTab import InfoWidget
+from torrentfileQt.editorTab import EditorWidget
+from torrentfileQt.infoTab import InfoWidget
+from torrentfileQt.bencodeTab import BencodeEditWidget
+from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import dark_theme, light_theme
-from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
-from torrentfileQt.treetab import EditInfoWidget
 
 THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
 DEFAULT_THEME = "dark_theme"
@@ -100,21 +100,22 @@ class TabWidget(QTabWidget):
         self.window = parent
         self.createWidget = CreateWidget(parent=self)
         self.checkWidget = CheckWidget(parent=self)
-        # self.infoWidget = InfoWidget(parent=self)
-        # self.editorWidget = EditorWidget(parent=self)
+        self.infoWidget = InfoWidget(parent=self)
+        self.editorWidget = EditorWidget(parent=self)
         self.toolWidget = ToolWidget(parent=self)
-        self.editInfoWidget = EditInfoWidget(parent=self)
+        self.bencodeEditWidget = BencodeEditWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
-        # self.addTab(self.infoWidget, "Torrent Info")
-        self.addTab(self.editInfoWidget, "Torrent Info/Editor")
-        self.addTab(self.toolWidget, "Tools")
-        # self.addTab(self.treeWidget, "Info Tree")
+        self.addTab(self.editorWidget, "Edit Torrent")
+        self.addTab(self.infoWidget, "Torrent Details")
+        self.addTab(self.toolWidget, "Torrent Tools")
+        self.addTab(self.bencodeEditWidget, "Bencode Editor")
         self.toolWidget.setObjectName("toolWidget")
         self.createWidget.setObjectName("createTab")
+        self.infoWidget.setObjectName("infoTab")
         self.checkWidget.setObjectName("checkTab")
-        self.editInfoWidget.setObjectName("editInfoTab")
-        # self.editorWidget.setObjectName("editorTab")
+        self.bencodeEditWidget.setObjectName("bencodeTab")
+        self.editorWidget.setObjectName("editorTab")
 
 
 class Application(QApplication):

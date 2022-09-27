@@ -49,6 +49,7 @@ class EditorWidget(QWidget):
         self.counter = 0
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
+        self.line.setProperty("editLine", "true")
         self.setProperty("editWidget", "true")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
@@ -147,6 +148,7 @@ class FileButton(QPushButton):
     def __init__(self, parent=None):
         """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
+        self.setProperty("editFileButton", "true")
         self.widget = parent
         self.setIcon(QIcon(get_icon("browse_file")))
         self.setText("File")
