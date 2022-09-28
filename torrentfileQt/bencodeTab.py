@@ -2,6 +2,7 @@ import os
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from typing import Any
 from torrentfileQt.utils import browse_torrent, browse_folder, get_icon
 import pyben
 
@@ -14,14 +15,42 @@ class BencodeEditWidget(QWidget):
         self.file_button.setIcon(QIcon(get_icon("browse_file")))
         self.folder_button = QPushButton("Select Folder", self)
         self.folder_button.setIcon(QIcon(get_icon("browse_folder")))
+        self.save_button = QPushButton("Save Data", self)
+        self.save_button.setIcon(QIcon(get_icon("save-as")))
+        self.clear_button = QPushButton("Clear Contents", self)
+        self.clear_button.setIcon(QIcon(get_icon("erase")))
         self.hlayout1 = QHBoxLayout()
         self.hlayout1.addWidget(self.file_button)
         self.hlayout1.addWidget(self.folder_button)
+        self.hlayout1.addWidget(self.save_button)
+        self.hlayout1.addWidget(self.clear_button)
         self.layout.addLayout(self.hlayout1)
         self.treeview = BencodeView(self)
         self.layout.addWidget(self.treeview)
         self.file_button.clicked.connect(self.load_file)
         self.folder_button.clicked.connect(self.load_folder)
+        self.save_button.clicked.connect(self.save_changes)
+        self.clear_button.clicked.connect(self.clear_contents)
+
+    def load_v(self):
+        self.load_folder("V:\\.torrents")
+
+    def save_changes(self):
+        """
+        Trigger when Save button is clicked.
+
+        Traverses contents of bencode editor and saving their contents if any
+        entry has been marked as edited.
+        """
+        rows = self.treeview.rowCount()
+        for i in range(rows):
+            item = self.treeview.item(i, 0)
+            if item.is_edited():
+                self.treeview.save_item(item)
+
+
+    def clear_contents(self):
+        self.treeview.clear()
 
     def torrent_filter(self, paths):
         torrents = []
@@ -41,7 +70,8 @@ class BencodeEditWidget(QWidget):
 
 
     def load_folder(self, path=None):
-        path = browse_folder(self, path)
+        if not path:
+            path = browse_folder(self, path)
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 
@@ -60,32 +90,63 @@ class BencodeView(QTreeView):
         self.addChildInfo.connect(self.add_data)
         self.data_items = {}
 
+    def clear(self):
+        rows = self.model().rowCount()
+        self.model().removeRows(0, rows)
+
     def add_data(self, path, meta):
         self.data_items[path] = meta
         self.bencode_model.add_row(path, meta)
 
+    def rowCount(self):
+        return self.model().rowCount()
+
+    def item(self, row, column):
+        return self.model().index(row, column).internalPointer()
+
+    def save_item(self, item):
+        path = item.key
+        self.model().to_bencode(item)
+        pyben.dump(item.data, path)
 
 class Item:
     """A Json item corresponding to a line in QTreeView"""
 
     model = None
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, key=None, root=False, _type=None,
+                       index=None, data=None, value=None, icon=None):
         self._parent = parent
-        self._key = ""
-        self._value = ""
-        self._value_type = ""
+        self._key = key
+        self._value = value
+        self._root = root
+        self._data = data
+        self._type = _type
         self._children = []
-        self._icon = None
+        self._index = index
+        self._icon = icon
         self._edited = False
+        self._edit = None
 
     def set_edited(self):
         self._edited = True
-        if self._parent:
+        if self._parent is not None:
             self._parent.set_edited()
+
+    def is_edited(self):
+        return self._edited
 
     def setIcon(self, icon):
         self._icon = icon
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, other):
+        self._data = other
+
 
     def icon(self):
         if not self._icon:
@@ -118,6 +179,9 @@ class Item:
     def has_children(self):
         return len(self._children) != 0
 
+    def index(self):
+        return self._index
+
     @property
     def key(self) -> str:
         """Return the key name"""
@@ -141,46 +205,34 @@ class Item:
         cls.model = model
 
     @classmethod
-    def build(cls, meta, root=None):
-        """
-        Create a 'root' TreeItem from a nested list or a nested dictonary.
-
-        Returns
-        -------
-        TreeItem
-            TreeItem
-        """
-        rootItem = Item(root)
-        rootItem.key = "root"
-        if isinstance(meta, dict):
-            for key, value in meta.items():
-                child = cls.build(value, rootItem)
-                child.key = key
-                child.value_type = dict
-                child.setIcon(cls.model.brackets_icon)
-                rootItem.add_child(child)
-                rootItem.value_type = dict
-                rootItem.setIcon(cls.model.brackets_icon)
+    def build(cls, meta, root):
+        if isinstance(meta, (int, float, str, bytes)):
+            item = cls(key=meta, icon=cls.model.data_icon, data=meta, parent=root)
+            root.add_child(item)
+            return item
         elif isinstance(meta, (list, tuple, set)):
-            for index, value in enumerate(meta):
-                child = cls.build(value, rootItem)
-                child.key = index
-                child.value_type = type(meta)
-                child.setIcon(cls.model.list_icon)
-                rootItem.add_child(child)
-                rootItem.value_type = list
-                rootItem.setIcon(cls.model.list_icon)
-        else:
-            child = cls(rootItem)
-            child.key = meta
-            child.value_type = type(meta)
-            child.setIcon(cls.model.data_icon)
-            rootItem.add_child(child)
-        return rootItem
+            for i, val in enumerate(meta):
+                item = cls(index=i, key=i, parent=root,
+                           icon=cls.model.list_icon, data=val)
+                root.add_child(item)
+                cls.build(val, item)
+        elif isinstance(meta, dict):
+            for key, val in meta.items():
+                item = cls(
+                    key=key, data=val, icon=cls.model.brackets_icon, parent=root
+                )
+                root.add_child(item)
+                cls.build(val, item)
+        return root
 
+    def __str__(self):
+        return str(self.data)
+    __repr__ = __str__
 
 class BencodeModel(QAbstractItemModel):
     """ An editable model of Json data """
+
+    itemValueChanged = Signal([object, object, QModelIndex])
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -190,7 +242,20 @@ class BencodeModel(QAbstractItemModel):
         self.list_icon = QIcon(get_icon("list"))
         self.torrent_icon = QIcon(get_icon("torrentfile"))
         self.brackets_icon = QIcon(get_icon("brackets"))
+        self.itemValueChanged.connect(self.setEdited)
         Item.set_model(self)
+
+    def removeRows(self, start, stop, index=QModelIndex()):
+        self.beginRemoveRows(index, start, stop)
+        root = index.internalPointer()
+        for i in range(start, stop):
+            del root._children[0]
+
+    def setEdited(self, old, new, index):
+        if old != new:
+            item = index.internalPointer()
+            item._edit = new
+            item.set_edited()
 
     def clear(self):
         """ Clear data from the model """
@@ -213,11 +278,10 @@ class BencodeModel(QAbstractItemModel):
     def add_row(self, path, meta):
         start = stop = self._rootItem.count()
         self.beginInsertRows(QModelIndex(), start, stop)
-        child_item = Item.build(meta)
-        child_item.key = path
-        child_item.value_type = "torrent"
-        child_item.setIcon(self.torrent_icon)
-        self._rootItem.add_child(child_item)
+        top = Item(parent=self._rootItem, root=True, key=path,
+                   data=meta, icon=self.torrent_icon)
+        self._rootItem.add_child(top)
+        Item.build(meta, top)
         self.endInsertRows()
 
     def data(self, index, role):
@@ -253,8 +317,10 @@ class BencodeModel(QAbstractItemModel):
         """
         if role == Qt.EditRole:
             item = index.internalPointer()
+            old = item.key
             if not item.has_children():
-                item.key = str(value)
+                item.key = value
+                self.itemValueChanged.emit(old, value, index)
                 self.dataChanged.emit(index, index, [Qt.EditRole])
                 return True
         return False
@@ -322,24 +388,23 @@ class BencodeModel(QAbstractItemModel):
                 flags |= Qt.ItemIsEditable
         return flags
 
-    def to_bencode(self, item=None):
-        if item is None:
-            item = self._rootItem
-        nchild = item.count()
-        if item.value_type is dict:
-            meta = {}
-            for i in range(nchild):
-                ch = item.child(i)
-                meta[ch.key] = self.to_bencode(ch)
-            return meta
-        elif item.value_type == list:
-            meta = []
-            for i in range(nchild):
-                ch = item.child(i)
-                meta.append(self.to_json(ch))
-            return meta
-        else:
-            return item.key
+    def to_bencode(self, item):
+        if not item.has_children():
+            if item._edit is not None:
+                return item._edit
+            return None
+        total = item.count()
+        for i in range(total):
+            child = item.child(i)
+            change = self.to_bencode(child)
+            if change is not None:
+                data = item.parent().data
+                data[item.key] = change
+        if item._edit:
+            return item._edit
+
+
+
 
 
 class Thread(QThread):
