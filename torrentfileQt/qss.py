@@ -134,7 +134,8 @@ QWidget {
     margin-bottom: 1px;
 }
 *[InfoTree="true"]::item:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #211, stop: 1 #312);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #211, stop: 1 #312);
     border: 1px solid #f71;
 }
 *[InfoTree="true"]::item:selected {
@@ -754,7 +755,8 @@ QWidget {
     margin-bottom: 1px;
 }
 *[InfoTree="true"]::item:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e4cbcb, stop: 1 #edcbdc);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #e4cbcb, stop: 1 #edcbdc);
     border: 1px solid #f71;
 }
 *[InfoTree="true"]::item:selected {

@@ -24,14 +24,14 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
                                QVBoxLayout)
 
+from torrentfileQt.bencodeTab import BencodeEditWidget
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
-from torrentfileQt.bencodeTab import BencodeEditWidget
-from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import dark_theme, light_theme
+from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
 
 THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
@@ -131,14 +131,16 @@ class Application(QApplication):
             argument list passed to window.
         """
         super().__init__(args)
-        self.styleManager = StyleManager(THEMES)
-        self.styleManager.themeRequest.connect(self.apply_theme)
+        self._setup_stylesheets()
         self.window = Window(parent=None, app=self)
-        self.styleManager.set_theme_from_title(DEFAULT_THEME)
 
-    def apply_theme(self, theme):
+    def _setup_stylesheets(self):
+        self.qstyles = StyleManager(THEMES)
+        self.qstyles.set_theme_from_title(DEFAULT_THEME)
+
+    def set_new_theme(self, theme):
         """Apply the given stylesheet."""
-        self.styleManager.current = theme
+        self.qstyles.current = theme
         self.setStyleSheet(theme)
 
     @classmethod

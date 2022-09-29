@@ -43,7 +43,7 @@ class TreeWidget(QTreeWidget):
         The widget containing this widget.
     """
 
-    itemReady = Signal([str, str])
+    itemReady = Signal(str, str)
 
     def __init__(self, parent=None):
         """Construct for tree widget."""

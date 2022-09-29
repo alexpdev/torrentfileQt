@@ -32,7 +32,7 @@ from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
 from torrentfileQt import Application
 
-APP = Application([])
+APP = Application(sys.argv)
 # APP.window.show()
 
 

@@ -206,7 +206,7 @@ class RemoveItemButton(QAction):
 class Table(QTableWidget):
     """Table widget for displaying editable information from .torrent file."""
 
-    handleTorrent = Signal([str])
+    handleTorrent = Signal(str)
 
     def __init__(self, parent=None):
         """Construct for the Table Widget on torrent editor tab."""

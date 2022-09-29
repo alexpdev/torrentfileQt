@@ -98,22 +98,22 @@ class FileMenu(QMenu):
     def light_theme(self):
         """Change the GUI theme for the application."""
         app = self.parent().window.app
-        app.styleManager.set_theme_from_title("light_theme")
+        app.qstyles.set_theme_from_title("light_theme")
 
     def dark_theme(self):
         """Change the GUI application to dark theme."""
         app = self.parent().window.app
-        app.styleManager.set_theme_from_title("dark_theme")
+        app.qstyles.set_theme_from_title("dark_theme")
 
     def increaseFont(self):
         """Increase Font Size for all widgets with text."""
         app = self.parent().window.app
-        app.styleManager.increase_font_size()
+        app.qstyles.increase_font_size()
 
     def decreaseFont(self):
         """Decrease font size for all widgets with text."""
         app = self.parent().window.app
-        app.styleManager.decrease_font_size()
+        app.qstyles.decrease_font_size()
 
 
 class HelpMenu(QMenu):
