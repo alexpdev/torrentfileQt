@@ -242,7 +242,7 @@ class Item:
         """Return parent item."""
         return self.parentItem
 
-    def isIndex(self) -> bool:  # pragma: nocover
+    def isIndex(self) -> bool:  
         """Return index state."""
         return self._index is not None
 
@@ -268,7 +268,7 @@ class Item:
         """Return the data as a string."""
         return str(self.itemData)
 
-    def edited(self, state: bool = None, other: Any = None):  # pragma: nocover
+    def edited(self, state: bool = None, other: Any = None):
         """Set the edited state."""
         if state is None and other is None:
             return self._edited
@@ -355,7 +355,7 @@ class Item:
         """Add child to list of children."""
         self.childItems.append(child)
 
-    def setData(self, value: Any) -> bool:  # pragma: nocover
+    def setData(self, value: Any) -> bool:
         """
         Edit the column's contents to reflect new value.
 

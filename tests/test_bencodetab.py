@@ -71,7 +71,6 @@ def test_bencode_model(wind, ttorrent, size):
         torrent = TorrentFileHybrid(**args)
         torrent.write()
         paths.append(args["outfile"])
-    print(paths)
     widget = wind.central.bencodeEditWidget
     wind.central.setCurrentWidget(widget)
     proc_time()
@@ -87,16 +86,17 @@ def test_bencode_model(wind, ttorrent, size):
         ritem = item
         while ritem.hasChildren():
             ritem = ritem.child(0)
-            print(ritem.text())
-        index = treeview.model().index(0, 0, ritem.index())
-        treeview.model().setData(index, "marshmallow", 0)
+        treeview.model().index(0, 0, ritem.index())
+        treeview.model().setData(ritem.index(), "marshmallow", 0)
         assert ritem.text() is not None
         proc_time()
-        print(ritem.text())
         treeview.save_item(item)
-    widget.clear_contents()
-    proc_time(1)
     widget.save_changes()
+    proc_time()
+    widget.clear_contents()
+    proc_time()
+    treeview.clear()
+    proc_time()
     assert treeview.rowCount() == 0
 
 
