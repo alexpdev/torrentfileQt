@@ -20,10 +20,12 @@
 
 import os
 
+import pyben
 import pytest
 from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, tempfile, ttorrent, wind
+from torrentfileQt.bencodeTab import Item
 
 
 def test_fix():
@@ -36,7 +38,7 @@ def test_bencode_load_file(ttorrent, wind):
     widget = wind.central.bencodeEditWidget
     widget.load_file([ttorrent])
     wind.central.setCurrentWidget(widget)
-    proc_time()
+    proc_time(1)
     assert widget.treeview.rowCount() > 0
 
 
@@ -46,7 +48,7 @@ def test_bencode_load_folder(ttorrent, wind):
     dirname = os.path.dirname(ttorrent)
     widget.load_folder(dirname)
     wind.central.setCurrentWidget(widget)
-    proc_time()
+    proc_time(1)
     assert widget.treeview.rowCount() > 0
 
 
@@ -69,6 +71,7 @@ def test_bencode_model(wind, ttorrent, size):
         torrent = TorrentFileHybrid(**args)
         torrent.write()
         paths.append(args["outfile"])
+    print(paths)
     widget = wind.central.bencodeEditWidget
     wind.central.setCurrentWidget(widget)
     proc_time()
@@ -80,14 +83,27 @@ def test_bencode_model(wind, ttorrent, size):
     total = treeview.rowCount()
     for i in range(total):
         item = treeview.item(i, 0)
-        assert str(item.key) == item.text()
+        assert str(item.itemData) == item.text()
         ritem = item
-        while ritem.has_children():
+        while ritem.hasChildren():
             ritem = ritem.child(0)
             print(ritem.text())
-        index = treeview.index_from_item(ritem)
+        index = treeview.model().index(0, 0, ritem.index())
         treeview.model().setData(index, "marshmallow", 0)
         assert ritem.text() is not None
+        proc_time()
         print(ritem.text())
         treeview.save_item(item)
-    treeview.clear()
+    widget.clear_contents()
+    proc_time(1)
+    widget.save_changes()
+    assert treeview.rowCount() == 0
+
+
+def test_bencode_item(wind, ttorrent):
+    """Test the bencode tab item object."""
+    _ = wind
+    meta = pyben.load(ttorrent)
+    item = Item(value=ttorrent, data=meta)
+    item.buildItem(meta, item)
+    assert len(item.childItems) > 0

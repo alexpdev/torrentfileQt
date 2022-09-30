@@ -76,9 +76,9 @@ class BencodeEditWidget(QWidget):
         entry has been marked as edited.
         """
         rows = self.treeview.rowCount()
-        for i in range(rows):
+        for i in range(rows):  # pragma: nocover
             item = self.treeview.item(i, 0)
-            if item.is_edited():
+            if item.edited():
                 self.treeview.save_item(item)
 
     def clear_contents(self):
@@ -141,7 +141,7 @@ class BencodeEditWidget(QWidget):
             folder path, by default None
         """
         if not path:
-            path = browse_folder(self, path)
+            path = browse_folder(self, path)  # pragma: nocover
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 
@@ -151,7 +151,7 @@ class BencodeView(QTreeView):
     TreeView subclass for holding the bencode data for each processed file.
     """
 
-    addChildInfo = Signal(str, dict)
+    addChildInfo = Signal(object)
 
     def __init__(self, parent: QWidget = None):
         """
@@ -167,27 +167,23 @@ class BencodeView(QTreeView):
         self.bencode_model = BencodeModel()
         self.setModel(self.bencode_model)
         self.setHeaderHidden(True)
-        self.addChildInfo.connect(self.add_data)
-        self.data_items = {}
+        self.addChildInfo.connect(self.addItem)
 
     def clear(self):
         """Clear the contents of the widget."""
         rows = self.model().rowCount()
         self.model().removeRows(0, rows)
 
-    def add_data(self, path: str, meta: dict):
+    def addItem(self, item: "Item"):
         """
         Add a row to the tree view with the torrent information from the path.
 
         Parameters
         ----------
-        path : str
-            torrent file path
-        meta : dict
-            torrent metadata
+        item : Item
+            the item
         """
-        self.data_items[path] = meta
-        self.bencode_model.add_row(path, meta)
+        self.model().addItem(item)
 
     def rowCount(self) -> int:
         """Return number of rows in the tree view."""
@@ -195,9 +191,9 @@ class BencodeView(QTreeView):
 
     def item(self, row: int, column: int):
         """Return the item associated with the given index values."""
-        return self.model().index(row, column).internalPointer()
+        return self.model().getItem(self.model().index(row, column))
 
-    def save_item(self, item: dict):  # pragma: nocover
+    def save_item(self, item: dict):
         """
         Save edited data from the bencode editor.
 
@@ -206,16 +202,9 @@ class BencodeView(QTreeView):
         item : dict
             torrent file metadata
         """
-        path = item.key
+        path = item.itemData
         self.model().to_bencode(item)
-        pyben.dump(item.data, path)
-
-    def index_from_item(self, item: "Item") -> QModelIndex:
-        """Get the index from the given item."""
-        if not item._root:
-            row = item.row()
-            return self.model().createIndex(row, 0, item)
-        return QModelIndex()
+        pyben.dump(item.data(), path)
 
 
 class Item:
@@ -223,15 +212,10 @@ class Item:
 
     model = None
 
-    def __init__(
-        self,
-        parent: "Item" = None,
-        key: Any = None,
-        root: bool = False,
-        index: int = None,
-        data: Any = None,
-        icon: QIcon = None,
-    ):
+    def __init__(self,
+                 parent: "Item" = None,
+                 value: Any = None,
+                 data: Any = None):
         """
         Return a Item instance for the bencode tree view editor.
 
@@ -239,104 +223,166 @@ class Item:
         ----------
         parent : Item, optional
             parent, by default None
-        key : Any, optional
+        value : Any, optional
             displayed value, by default None
-        root : bool, optional
-            True if this is the root item, by default False
-        index : int, optional
-            position in a list, by default None
         data : Any, optional
             data for this item and children, by default None
-        icon : QIcon, optional
-            icon, by default None
         """
-        self._parent = parent
-        self._key = key
-        self._root = root
+        self.parentItem = parent
+        self.itemData = value
+        self.childItems = []
         self._data = data
-        self._children = []
-        self._index = index
-        self._icon = icon
+        self._index = None
+        self._icon = None
+        self._isroot = False
         self._edited = False
-        self._edit = None
+        self.edit = None
 
-    def set_edited(self):
-        """Set edit state to True."""
-        self._edited = True
-        if self._parent is not None:
-            self._parent.set_edited()
+    def parent(self) -> "Item":
+        """Return parent item."""
+        return self.parentItem
 
-    def is_edited(self) -> bool:
-        """Return edit state."""
-        return self._edited
+    def isIndex(self) -> bool:  # pragma: nocover
+        """Return index state."""
+        return self._index is not None
 
-    def setIcon(self, icon: QIcon):
-        """Set the item icon."""
-        self._icon = icon
+    def setIndex(self, index: int):
+        """Set index state."""
+        self._index = index
 
-    @property
-    def data(self) -> Any:
-        """Return the items data."""
-        return self._data
-
-    @data.setter
-    def data(self, other: Any):
-        """Set the data property to other."""
-        self._data = other
+    def isRoot(self, state: bool = None):
+        """Set the root state."""
+        if state is not None:
+            self._isroot = state
+        return self._isroot
 
     def icon(self) -> QIcon:
-        """Return the icon."""
-        if not self._icon:
-            return self.model.torrent_icon
+        """Return this item's icon."""
         return self._icon
 
-    def add_child(self, item: "Item"):
-        """Add item as a child."""
-        self._children.append(item)
+    def setIcon(self, icon):
+        """Set this item's display icon."""
+        self._icon = icon
+
+    def text(self):
+        """Return the data as a string."""
+        return str(self.itemData)
+
+    def edited(self, state: bool = None, other: Any = None):  # pragma: nocover
+        """Set the edited state."""
+        if state is None and other is None:
+            return self._edited
+        if state and other is not None:
+            self.edit = other
+            if not self._isroot:
+                self.parentItem.edited(True)
+        self._edited = state
+        return None
 
     def child(self, row: int) -> "Item":
         """Return the child of the current item from the given row."""
-        return self._children[row]
+        return self.childItems[row]
 
-    def parent(self) -> "Item":
-        """Return the parent of the current item."""
-        return self._parent
-
-    def count(self) -> int:
-        """Return the number of children of the current item."""
-        return len(self._children)
-
-    def row(self) -> int:
-        """Return the row where the current item occupies in the parent."""
-        return self._parent._children.index(self) if self._parent else 0
-
-    def text(self) -> str:
-        """Return the string representation of the item."""
-        return str(self._key)
-
-    def has_children(self) -> bool:
+    def hasChildren(self) -> bool:
         """Return if the item has children."""
-        return len(self._children) != 0
+        return self.childCount() != 0
 
-    def index(self) -> int:
-        """Return the index value if there is one."""
-        return self._index
+    def childCount(self):
+        """Return the number of children."""
+        return len(self.childItems)
 
-    @property
-    def key(self) -> str:
-        """Return the key name."""
-        return self._key
+    def childNumber(self):
+        """Return the row number."""
+        if self.parentItem is not None:
+            return self.parentItem.childItems.index(self)
+        return 0
 
-    @key.setter
-    def key(self, key: str):
-        """Set key name of the current item."""
-        self._key = key
+    def columnCount(self):  # pragma: nocover
+        """Return number of columns."""
+        return 0
 
-    def remove_child(self, row):
-        """Remove child from list of children."""
-        value = self._children[row]
-        self._children.remove(value)
-        return True
+    def data(self):
+        """Return the data for the specified column."""
+        return self._data
+
+    def insertChildren(self, position: int,
+                       count: int) -> bool:  # pragma: nocover
+        """
+        Insert child items into list of children.
+
+        Parameters
+        ----------
+        position : int
+            start position
+        count : int
+            number of children
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        if position >= 0 and position + count <= len(self.childItems):
+            for _ in range(count):
+                item = Item(parent=self, value=None, data=None)
+                self.childItems.insert(position, item)
+            return True
+        return False
+
+    def removeChildren(self, position: int, count: int) -> bool:
+        """
+        Remove child items from list of children.
+
+        Parameters
+        ----------
+        position : int
+            start position
+        count : int
+            number of children
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        if position >= 0 and position + count <= len(self.childItems):
+            for _ in range(count):
+                self.childItems.pop(position)
+            return True
+        return False  # pragma: nocover
+
+    def addChild(self, child: "Item"):
+        """Add child to list of children."""
+        self.childItems.append(child)
+
+    def setData(self, value: Any) -> bool:  # pragma: nocover
+        """
+        Edit the column's contents to reflect new value.
+
+        Parameters
+        ----------
+        value : Any
+            value
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        if not self.hasChildren():
+            old = self.itemData
+            self.itemData = value
+            self.edited(True, old)
+            return True
+        return False
+
+    def index(self):
+        """Get the index for the item."""
+        row = self.childNumber()
+        if self.isRoot():
+            index = self.model.index(row, 0, QModelIndex())
+            return index
+        return self.model.index(row, 0, self.parent().index())
 
     @classmethod
     def set_model(cls, model: QAbstractItemModel):
@@ -344,7 +390,7 @@ class Item:
         cls.model = model
 
     @classmethod
-    def build(cls, meta: Any, root: "Item") -> "Item":
+    def buildItem(cls, meta: Any, root: "Item") -> "Item":
         """
         Build the bencode value tree.
 
@@ -361,40 +407,28 @@ class Item:
             Bencode Tree Nodes
         """
         if isinstance(meta, (int, float, str, bytes)):
-            item = cls(key=meta,
-                       icon=cls.model.data_icon,
-                       data=meta,
-                       parent=root)
-            root.add_child(item)
+            item = cls(value=meta, data=meta, parent=root)
+            item.setIcon(cls.model.data_icon)
+            root.addChild(item)
             return item
         if isinstance(meta, (list, tuple, set)):
             for i, val in enumerate(meta):
-                item = cls(
-                    index=i,
-                    key=i,
-                    parent=root,
-                    icon=cls.model.list_icon,
-                    data=val,
-                )
-                root.add_child(item)
-                cls.build(val, item)
+                item = cls(value=i, parent=root, data=val)
+                item.setIcon(cls.model.list_icon)
+                item.setIndex(i)
+                root.addChild(item)
+                cls.buildItem(val, item)
         elif isinstance(meta, dict):
             for key, val in meta.items():
-                item = cls(
-                    key=key,
-                    data=val,
-                    icon=cls.model.brackets_icon,
-                    parent=root,
-                )
-                root.add_child(item)
-                cls.build(val, item)
+                item = cls(value=key, data=val, parent=root)
+                item.setIcon(cls.model.brackets_icon)
+                root.addChild(item)
+                cls.buildItem(val, item)
         return root
 
 
 class BencodeModel(QAbstractItemModel):
     """An editable model of Bencode data."""
-
-    itemValueChanged = Signal(object, object, QModelIndex)
 
     def __init__(self, parent: QWidget = None):
         """
@@ -406,103 +440,20 @@ class BencodeModel(QAbstractItemModel):
             parent widget, by default None
         """
         super().__init__(parent=parent)
-        self._rootItem = Item()
-        self._rootItem.value_type = list
+        self.rootItem = Item()
         self.data_icon = QIcon(get_icon("data"))
         self.list_icon = QIcon(get_icon("list"))
         self.torrent_icon = QIcon(get_icon("torrentfile"))
         self.brackets_icon = QIcon(get_icon("brackets"))
-        self.itemValueChanged.connect(self.setEdited)
         Item.set_model(self)
 
-    def removeRow(self, row, parentIndex):
-        """Remove row from treeview."""
-        return self.removeRows(row, 1, parentIndex)
-
-    def removeRows(self, row: int, count: int, index=QModelIndex()):
+    def columnCount(self, _=QModelIndex()):
         """
-        Remove rows from the model and view.
+        Override from QAbstractItemModel.
 
-        Parameters
-        ----------
-        start : int
-            start index
-        stop : int
-            end index
-        index : QModelIndex, optional
-            item index, by default QModelIndex()
+        Return column number. For the model, it always return 2 columns
         """
-        if index and index.isValid():
-            self.beginRemoveRows(index, row, count)
-            root = index.internalPointer()
-            root.removeChild(row)
-            self.endRemoveRows()
-            return True
-        return False
-
-    def setEdited(self, old: Any, new: Any, index: QModelIndex):
-        """
-        Set the edit state for an item.
-
-        Parameters
-        ----------
-        old : Any
-            old value
-        new : Any
-            edited value
-        index : QModelIndex
-            item model index
-        """
-        if old != new:
-            item = index.internalPointer()
-            item._edit = new
-            item.set_edited()
-
-    def clear(self):
-        """Clear data from the model."""
-        self.load({})
-
-    def load(self, data: dict):  # pragma: nocover
-        """
-        Load model from a nested dictionary returned by pyben.
-
-        Parameters
-        ----------
-        data: dict
-            dictionary data
-        """
-        self.beginResetModel()
-        root = Item(parent=self._rootItem,
-                    root=True,
-                    data=data,
-                    icon=self.torrent_icon)
-        self._rootItem = Item.build(data, root)
-        self.endResetModel()
-        return True
-
-    def add_row(self, path: str, meta: Any):
-        """
-        Add item row and tree to the model and view.
-
-        Parameters
-        ----------
-        path : str
-            path to torrent file
-        meta : Any
-            decoded bencode data
-        """
-        start = stop = self._rootItem.count()
-        self.beginInsertRows(QModelIndex(), start, stop)
-        top = Item(
-            parent=self._rootItem,
-            root=True,
-            key=path,
-            data=meta,
-            icon=self.torrent_icon,
-        )
-        self._rootItem.add_child(top)
-        Item.build(meta, top)
-        self.endInsertRows()
+        return 1
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole):
         """
@@ -511,17 +462,199 @@ class BencodeModel(QAbstractItemModel):
         Return data from a json item according index and role
         """
         if index and index.isValid():
-            item = index.internalPointer()
+            item = self.getItem(index)
             if role == Qt.DisplayRole:
                 return item.text()
-            if role == Qt.EditRole:
-                if not item.has_children():
+            if role == Qt.EditRole:  # pragma: nocover
+                if not item.hasChildren():
                     return item.text()
             elif role == Qt.DecorationRole:
                 return item.icon()
         return None
 
-    def setData(self, index: QModelIndex, value: Any, role: Qt.ItemDataRole):
+    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+        """
+        Override from QAbstractItemModel.
+
+        Return flags of index
+        """
+        flags = super().flags(index)
+        if index and index.isValid():
+            item = self.getItem(index)
+            if not item.hasChildren():
+                flags |= Qt.ItemIsEditable
+        return flags
+
+    def getItem(self, index: QModelIndex) -> Item:
+        """
+        Get the item associated with the model index.
+
+        Parameters
+        ----------
+        index : QModelIndex
+            model index
+
+        Returns
+        -------
+        Item
+            Tree Item
+        """
+        item = self.rootItem
+        if index.isValid():
+            item = index.internalPointer()
+        return item
+
+    def index(self, row: int, column: int = 0, parent=QModelIndex()):
+        """
+        Override from QAbstractItemModel.
+
+        Return index according row, column and parent
+        """
+        if self.hasIndex(row, column, parent):
+            if not parent.isValid():
+                parentItem = self.rootItem
+            else:
+                parentItem = self.getItem(parent)
+            childItem = parentItem.child(row)
+            if childItem:
+                return self.createIndex(row, column, childItem)
+        return QModelIndex()
+
+    def insertColumns(self,
+                      position: int,
+                      columns: int = 0,
+                      parent=QModelIndex()):  # pragma: nocover
+        """Insert a column into tree."""
+        self.beginInsertColumns(parent, position, position + columns - 1)
+        success = self.rootItem.insertColumns(position, columns)
+        self.endInsertColumns()
+        return success
+
+    def removeRow(self, row, parentIndex):  # pragma: nocover
+        """Remove row from treeview."""
+        return self.removeRows(row, 1, parentIndex)
+
+    def removeRows(self, position: int, rows: int, index=QModelIndex()):
+        """
+        Remove rows from the model and view.
+
+        Parameters
+        ----------
+        position : int
+            start index
+        rows : int
+            end index
+        index : QModelIndex, optional
+            item index, by default QModelIndex()
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        parentItem = self.getItem(index)
+        self.beginRemoveRows(index, position, position + rows - 1)
+        success = parentItem.removeChildren(position, rows)
+        self.endRemoveRows()
+        return success
+
+    def insertRow(self, position: int, parent=QModelIndex()) -> bool:
+        """
+        Insert a single row into the tree.
+
+        Parameters
+        ----------
+        position : int
+            location to insert the row.
+        parent : QModelIndex, optional
+            parent index, by default QModelIndex()
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        return self.insertRows(position, 1, parent)  # pragma: nocover
+
+    def insertRows(self, position: int, rows: int,
+                   parent=QModelIndex()) -> bool:  # pragma: nocover
+        """
+        Add item row and tree to the model and view.
+
+        Parameters
+        ----------
+        position : int
+            location
+        rows : int
+            number of rows
+        parent : QModelIndex, optional
+            parent index, by default QModelIndex()
+
+        Returns
+        -------
+        bool
+            success state
+        """
+        parentItem = self.getItem(parent)
+        self.beginInsertRows(parent, position, position + rows - 1)
+        success = parentItem.insertChildren(position, rows,
+                                            self.rootItem.columnCount())
+        self.endInsertRows()
+        return success
+
+    def parent(self, index: QModelIndex) -> QModelIndex:
+        """
+        Override from QAbstractItemModel.
+
+        Return parent index of index
+        """
+        if index and index.isValid():
+            childItem = self.getItem(index)
+            parentItem = childItem.parent()
+            if parentItem and parentItem != self.rootItem:
+                return self.createIndex(parentItem.childNumber(), 0,
+                                        parentItem)
+        return QModelIndex()
+
+    def removeColumns(self,
+                      position: int,
+                      columns: int = 0,
+                      index=QModelIndex()):  # pragma: nocover
+        """
+        Remove rows from the model and view.
+
+        Parameters
+        ----------
+        position : int
+            start index
+        columns : int
+            end index
+        index : QModelIndex, optional
+            item index, by default QModelIndex()
+        """
+        parentItem = self.getItem(index)
+        self.beginRemoveRows(index, position, position + columns - 1)
+        success = parentItem.removeChildren(position, columns)
+        self.endRemoveRows()
+        if self.rootItem.columnCount() == 0:
+            self.removeRows(0, self.rowCount())
+        return success
+
+    def rowCount(self, parent=QModelIndex()):
+        """
+        Override from QAbstractItemModel.
+
+        Return row count from parent index
+        """
+        parentItem = self.getItem(parent)
+        return parentItem.childCount()
+
+    def setData(
+        self,
+        index: QModelIndex,
+        value: Any,
+        role: Qt.ItemDataRole = Qt.EditRole,
+    ):  # pragma: nocover
         """Override from QAbstractItemModel.
 
         Set json item according index and role
@@ -536,77 +669,35 @@ class BencodeModel(QAbstractItemModel):
             role
         """
         if role == Qt.EditRole:
-            item = index.internalPointer()
-            old = item.key
+            item = self.getItem(index)
             if not item.has_children():
-                item.key = value
-                self.itemValueChanged.emit(old, value, index)
-                self.dataChanged.emit(index, index, [Qt.EditRole])
-                return True
+                result = item.setData(value)
+                if result:
+                    self.dataChanged.emit(index, index)
+                    return True
         return False
 
-    def index(self, row: int, column: int, parent=QModelIndex()):
+    def addItem(self, item: Item):
         """
-        Override from QAbstractItemModel.
+        Add item to the view.
 
-        Return index according row, column and parent
+        Parameters
+        ----------
+        item : Item
+            added item
         """
-        if self.hasIndex(row, column, parent):
-            if not parent.isValid():
-                parentItem = self._rootItem
-            else:
-                parentItem = parent.internalPointer()
-            childItem = parentItem.child(row)
-            if childItem:
-                return self.createIndex(row, column, childItem)
-        return QModelIndex()
+        rowCount = self.rowCount()
+        self.beginInsertRows(QModelIndex(), rowCount, rowCount)
+        item.setIcon(self.torrent_icon)
+        item.isRoot(True)
+        self.rootItem.addChild(item)
+        self.endInsertRows()
 
-    def parent(self, index: QModelIndex) -> QModelIndex:
-        """
-        Override from QAbstractItemModel.
+    def row(self, index: int) -> Item:  # pragma: nocover
+        """Return the row item."""
+        return self.rootItem.child(index)
 
-        Return parent index of index
-        """
-        if index and index.isValid():
-            childItem = index.internalPointer()
-            parentItem = childItem.parent()
-            if parentItem and parentItem != self._rootItem:
-                return self.createIndex(parentItem.row(), 0, parentItem)
-        return QModelIndex()
-
-    def rowCount(self, parent=QModelIndex()):
-        """
-        Override from QAbstractItemModel.
-
-        Return row count from parent index
-        """
-        parentItem = self._rootItem
-        if parent.isValid():
-            parentItem = parent.internalPointer()
-        return parentItem.count()
-
-    def columnCount(self, _=QModelIndex()):
-        """
-        Override from QAbstractItemModel.
-
-        Return column number. For the model, it always return 2 columns
-        """
-        return 1
-
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
-        """
-        Override from QAbstractItemModel.
-
-        Return flags of index
-        """
-        flags = super().flags(index)
-        if index and index.isValid():
-            item = index.internalPointer()
-            if not item.has_children():
-                flags |= Qt.ItemIsEditable
-        return flags
-
-    def to_bencode(self, item: Item) -> Any:  # pragma: nocover
+    def to_bencode(self, item: Item) -> Any:
         """
         Convert Item Node Tree to bencoded data.
 
@@ -620,19 +711,14 @@ class BencodeModel(QAbstractItemModel):
         Any
             the edited data.
         """
-        if not item.has_children():
-            if item._edit is not None:
-                return item._edit
-            return None
-        total = item.count()
-        for i in range(total):
+        if not item.hasChildren and item.edit is not None:
+            return item.data()  # pragma: nocover
+        for i in range(item.childCount()):
             child = item.child(i)
             change = self.to_bencode(child)
-            if change is not None:
+            if change is not None:  # pragma: nocover
                 data = item.parent().data
-                data[item.key] = change
-        if item._edit is not None:
-            return item._edit
+                data[item.itemData] = change
         return None
 
 
@@ -649,4 +735,6 @@ class Thread(QThread):
         """Iterate through list and emit a signal with data."""
         for tfile in self.lst:  # pragma: nocover
             meta = pyben.load(tfile)
-            self.tree.addChildInfo.emit(tfile, meta)
+            root = Item(data=meta, value=tfile)
+            Item.buildItem(meta, root)
+            self.tree.addChildInfo.emit(root)

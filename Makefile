@@ -45,6 +45,7 @@ clean-build: ## remove build artifacts
 	rm -frv .tox/
 	rm -fv .coverage
 	rm -frv htmlcov/
+	rm -frv coverage.xml
 	rm -rfv */__pycache__
 	rm -fv corbertura.xml
 	rm -frv .pytest_cache
@@ -52,12 +53,11 @@ clean-build: ## remove build artifacts
 	rm -rfv tests/TESTINGDIR
 
 test: clean ## run tests quickly with the default Python
-	pip install --upgrade --force-reinstall --no-cache torrentfile torrentfileQt ebookatty
 	tox
 	coverage report
 	coverage xml -o coverage.xml
 
-push: install test ## push changes to remote
+push: ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push

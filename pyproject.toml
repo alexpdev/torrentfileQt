@@ -87,6 +87,6 @@ max-attributes=35
 max-branches=28
 max-locals=20
 max-parents=7
-max-public-methods=20
+max-public-methods=30
 max-returns=6
 max-statements=120

@@ -342,7 +342,7 @@ class BrowseFileButton(QPushButton):
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)} KiB"
         else:
-            val = f"{piece_length//(2**20)} MiB"
+            val = f"{piece_length//(2**20)} MiB"  # pragma: nocover
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
                 self.window.piece_length.setCurrentIndex(i)
