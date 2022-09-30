@@ -27,7 +27,8 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QTreeView,
                                QVBoxLayout, QWidget)
 
-from torrentfileQt.utils import browse_folder, browse_torrent, get_icon
+from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
+                                 torrent_filter)
 
 
 class BencodeEditWidget(QWidget):
@@ -76,7 +77,7 @@ class BencodeEditWidget(QWidget):
         entry has been marked as edited.
         """
         rows = self.treeview.rowCount()
-        for i in range(rows):  # pragma: nocover
+        for i in range(rows):
             item = self.treeview.item(i, 0)
             if item.edited():
                 self.treeview.save_item(item)
@@ -84,26 +85,6 @@ class BencodeEditWidget(QWidget):
     def clear_contents(self):
         """Wipe the tree of all of it's contents."""
         self.treeview.clear()
-
-    def torrent_filter(self, paths: tuple) -> list:
-        """
-        Filter non torrent files from the given tuple of paths.
-
-        Parameters
-        ----------
-        paths : tuple
-            path strings
-
-        Returns
-        -------
-        list
-            torrent file paths
-        """
-        torrents = []
-        for path in paths:
-            if os.path.isfile(path) and path.endswith(".torrent"):
-                torrents.append(path)
-        return torrents
 
     def load_file(self, paths: list = None):
         """
@@ -126,7 +107,7 @@ class BencodeEditWidget(QWidget):
         paths : list
             list of path strings
         """
-        paths = self.torrent_filter(paths)
+        paths = torrent_filter(paths)
         self.thread = Thread(paths, self.treeview)
         self.thread.start()
         self.thread.finished.connect(self.thread.deleteLater)
@@ -202,9 +183,10 @@ class BencodeView(QTreeView):
         item : dict
             torrent file metadata
         """
-        path = item.itemData
-        self.model().to_bencode(item)
-        pyben.dump(item.data(), path)
+        if item.edited():
+            path = item.itemData
+            self.model().to_bencode(item)
+            pyben.dump(item.data(), path)
 
 
 class Item:
@@ -231,6 +213,7 @@ class Item:
         self.parentItem = parent
         self.itemData = value
         self.childItems = []
+        self.columns = 1
         self._data = data
         self._index = None
         self._icon = None
@@ -242,9 +225,9 @@ class Item:
         """Return parent item."""
         return self.parentItem
 
-    def isIndex(self) -> bool:  
+    def isIndex(self) -> bool:
         """Return index state."""
-        return self._index is not None
+        return self._index is not None  # pragma: nocover
 
     def setIndex(self, index: int):
         """Set index state."""
@@ -270,14 +253,13 @@ class Item:
 
     def edited(self, state: bool = None, other: Any = None):
         """Set the edited state."""
-        if state is None and other is None:
-            return self._edited
-        if state and other is not None:
-            self.edit = other
+        if state is not None:
+            if other is not None:
+                self.edit = other
             if not self._isroot:
-                self.parentItem.edited(True)
-        self._edited = state
-        return None
+                self.parentItem.edited(state)
+            self._edited = state
+        return self._edited
 
     def child(self, row: int) -> "Item":
         """Return the child of the current item from the given row."""
@@ -297,9 +279,9 @@ class Item:
             return self.parentItem.childItems.index(self)
         return 0
 
-    def columnCount(self):  # pragma: nocover
+    def columnCount(self):
         """Return number of columns."""
-        return 0
+        return self.columns  # pragma: nocover
 
     def data(self):
         """Return the data for the specified column."""
@@ -374,7 +356,7 @@ class Item:
             self.itemData = value
             self.edited(True, old)
             return True
-        return False
+        return False  # pragma: nocover
 
     def index(self):
         """Get the index for the item."""
@@ -440,6 +422,7 @@ class BencodeModel(QAbstractItemModel):
             parent widget, by default None
         """
         super().__init__(parent=parent)
+        self.columns = 1
         self.rootItem = Item()
         self.data_icon = QIcon(get_icon("data"))
         self.list_icon = QIcon(get_icon("list"))
@@ -453,7 +436,7 @@ class BencodeModel(QAbstractItemModel):
 
         Return column number. For the model, it always return 2 columns
         """
-        return 1
+        return self.columns
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole):
         """
@@ -465,8 +448,8 @@ class BencodeModel(QAbstractItemModel):
             item = self.getItem(index)
             if role == Qt.DisplayRole:
                 return item.text()
-            if role == Qt.EditRole:  # pragma: nocover
-                if not item.hasChildren():
+            if role == Qt.EditRole:
+                if not item.hasChildren():  # pragma: nocover
                     return item.text()
             elif role == Qt.DecorationRole:
                 return item.icon()
@@ -654,7 +637,7 @@ class BencodeModel(QAbstractItemModel):
         index: QModelIndex,
         value: Any,
         role: Qt.ItemDataRole = Qt.EditRole,
-    ):  # pragma: nocover
+    ):
         """Override from QAbstractItemModel.
 
         Set json item according index and role
@@ -670,12 +653,12 @@ class BencodeModel(QAbstractItemModel):
         """
         if role == Qt.EditRole:
             item = self.getItem(index)
-            if not item.has_children():
+            if not item.hasChildren():
                 result = item.setData(value)
                 if result:
                     self.dataChanged.emit(index, index)
                     return True
-        return False
+        return False  # pragma: nocover
 
     def addItem(self, item: Item):
         """
@@ -716,9 +699,9 @@ class BencodeModel(QAbstractItemModel):
         for i in range(item.childCount()):
             child = item.child(i)
             change = self.to_bencode(child)
-            if change is not None:  # pragma: nocover
-                data = item.parent().data
-                data[item.itemData] = change
+            if change is not None:
+                data = item.parent().data  # pragma: nocover
+                data[item.itemData] = change  # pragma: nocover
         return None
 
 

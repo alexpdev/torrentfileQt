@@ -955,7 +955,7 @@ QMenu::icon {
     background-color: transparent;
 }
 QMenu::icon:checked {
-    background-color: #AFF;
+    background-color: #ecf9ff;
     border: 1px inset red;
     position: absolute;
     top: 1px;
@@ -1157,11 +1157,11 @@ QScrollBar::sub-line:vertical:on {
     subcontrol-origin: margin;
 }
 QStatusBar {
-    border-top-color: black;
+    border-top-color: #3c5953;
     border-top-width: 1px;
     font-size: 8pt;
     padding: 3px;
-    color: #700;
+    color: #000000;
 }
 QTabWidget::pane {
     border-top-color: #667;
@@ -1169,7 +1169,6 @@ QTabWidget::pane {
     border-top-style: outset;
     border-bottom-color: #444;
     border-bottom-width: 1px;
-
     font-size: 10pt;
 }
 QTabWidget::tab-bar {

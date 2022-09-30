@@ -73,7 +73,7 @@ class CreateWidget(QWidget):
         self.version_label = QLabel("Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
         self.announce_label = QLabel("Trackers: ", parent=self)
-        self.web_seed_label = QLabel("Web-Seeds: ")
+        self.web_seed_label = QLabel("Web-Seeds: ", parent=self)
         self.source_label = QLabel("Source: ", parent=self)
         self.piece_length_label = QLabel("Piece Size: ", parent=self)
 

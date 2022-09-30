@@ -57,7 +57,7 @@ test: clean ## run tests quickly with the default Python
 	coverage report
 	coverage xml -o coverage.xml
 
-push: ## push changes to remote
+push: test ## push changes to remote
 	git add .
 	git commit -m "$m"
 	git push

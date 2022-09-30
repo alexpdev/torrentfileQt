@@ -39,7 +39,8 @@ class StyleManager(QObject):
         self.current = None
         self.applyTheme.connect(self.set_app_theme)
 
-    def set_app_theme(self, theme):
+    @staticmethod
+    def set_app_theme(theme):
         """Set the current stylesheet."""
         app = QApplication.instance()
         app.set_new_theme(theme)
@@ -341,4 +342,25 @@ def browse_torrent(widget, torrent=None):
         torrent = torrent, None
     if torrent and torrent[0]:
         torrents = [os.path.normpath(i) for i in torrent if i]
+    return torrents
+
+
+def torrent_filter(paths: tuple) -> list:
+    """
+    Filter non torrent files from the given tuple of paths.
+
+    Parameters
+    ----------
+    paths : tuple
+        path strings
+
+    Returns
+    -------
+    list
+        torrent file paths
+    """
+    torrents = []
+    for path in paths:
+        if os.path.isfile(path) and path.endswith(".torrent"):
+            torrents.append(path)
     return torrents

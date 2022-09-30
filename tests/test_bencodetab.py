@@ -22,6 +22,7 @@ import os
 
 import pyben
 import pytest
+from PySide6.QtCore import Qt
 from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, tempfile, ttorrent, wind
@@ -87,7 +88,7 @@ def test_bencode_model(wind, ttorrent, size):
         while ritem.hasChildren():
             ritem = ritem.child(0)
         treeview.model().index(0, 0, ritem.index())
-        treeview.model().setData(ritem.index(), "marshmallow", 0)
+        treeview.model().setData(ritem.index(), "marshmallow", Qt.EditRole)
         assert ritem.text() is not None
         proc_time()
         treeview.save_item(item)

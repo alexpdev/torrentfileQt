@@ -33,7 +33,7 @@ from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfileQt import Application
 
 APP = Application(sys.argv)
-APP.window.show()
+# APP.window.show()
 
 
 def exception_hook(exctype, value, traceback):  # pragma:  no cover
