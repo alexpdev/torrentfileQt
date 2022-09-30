@@ -6,7 +6,7 @@ name = "torrentfileQt"
 authors = [{name = "alexpdev", email = "alexpdev@pm.me"}]
 description = "GUI based tool for creating Bittorrent files."
 license = {file = "LICENSE"}
-version = "0.3.6"
+version = "0.3.7"
 keywords = ["GUI", "Bittorrent", "metafile"]
 readme = "./README.md"
 requires-python = ">=3.6"
