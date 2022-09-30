@@ -135,6 +135,7 @@ class Application(QApplication):
         self.window = Window(parent=None, app=self)
 
     def _setup_stylesheets(self):
+        """Setup initial stylesheet state."""
         self.qstyles = StyleManager(THEMES)
         self.qstyles.set_theme_from_title(DEFAULT_THEME)
 

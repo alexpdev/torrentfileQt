@@ -139,7 +139,7 @@ QWidget {
     border: 1px solid #f71;
 }
 *[InfoTree="true"]::item:selected {
-    border: 1px solid #567dbc;
+    border: 1px solid #e0d3ba;
 }
 *[InfoTree="true"]::branch {
         background: palette(transparent);
@@ -169,7 +169,6 @@ QWidget {
     padding: 0px;
     margin: 0px;
     font-size: 9pt;
-
 }
 QAbstractScrollArea {
     background-color: #19232D;
@@ -527,10 +526,11 @@ QScrollBar::sub-line:vertical:hover, QScrollBar::sub-line:vertical:on {
 }
 QStatusBar {
     border-top-color: black;
+    background: #19232D;
     border-top-width: 1px;
     padding: 3px;
     font-size: 8pt;
-    color: #F00;
+    color: #FFF;
 }
 QTabWidget::pane {
     border-top: 2px solid black;
@@ -545,8 +545,9 @@ QTabBar::tab {
     border-width: 3px;
     font-size: 10pt;
     color: #e9e7e6;
-    padding-left: 4px;
-    padding-right: 4px;
+    width: 110px;
+    padding-left: 2px;
+    padding-right: 2px;
     margin-right: 2px;
     padding-bottom: 2px;
     background-color: #444;
@@ -928,7 +929,7 @@ QLabel:disabled {
     selection-background-color: #ccc;
 }
 QMenuBar {
-    background-color: #CFF;
+    background-color: #eaffff;
     font-size: 9pt;
     padding: 2px;
     margin-bottom: 2px;
