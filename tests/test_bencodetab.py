@@ -34,6 +34,28 @@ def test_fix():
     assert dir1 and dir2 and tempfile and ttorrent and wind
 
 
+@pytest.fixture(params=list(range(17, 20)))
+def treedir(request):
+    """Fixture for temporary torrent files."""
+    paths = []
+    for i in range(8):
+        tfile = tempfile(exp=request.param + 2)
+        args = {
+            "path": tfile,
+            "outfile": str(tfile) + ".torrent",
+            "url_list": [f"url{i}", f"url{i+1}"],
+            "announce": [f"url{i+2}", f"url{i+3}"],
+            "comment": f"This is a comment + {i}",
+            "source": f"SomeSource{i}",
+            "private": 1,
+            "piece_length": request.param - 1,
+        }
+        torrent = TorrentFileHybrid(**args)
+        torrent.write()
+        paths.append(args["outfile"])
+    return os.path.commonpath(paths)
+
+
 def test_bencode_load_file(ttorrent, wind):
     """Test the load file function in the becodeEditWidget."""
     widget = wind.central.bencodeEditWidget
@@ -53,58 +75,64 @@ def test_bencode_load_folder(ttorrent, wind):
     assert widget.treeview.rowCount() > 0
 
 
-@pytest.mark.parametrize("size", list(range(17, 20)))
-def test_bencode_model(wind, ttorrent, size):
-    """Test the bencodeEditor Item model."""
-    paths = [ttorrent]
-    for i in range(8):
-        tfile = tempfile(exp=size + 2)
-        args = {
-            "path": tfile,
-            "outfile": str(tfile) + ".torrent",
-            "url_list": [f"url{i}", f"url{i+1}"],
-            "announce": [f"url{i+2}", f"url{i+3}"],
-            "comment": f"This is a comment + {i}",
-            "source": f"SomeSource{i}",
-            "private": 1,
-            "piece_length": size - 1,
-        }
-        torrent = TorrentFileHybrid(**args)
-        torrent.write()
-        paths.append(args["outfile"])
+def test_treedir(treedir, wind):
+    """Test item functions and model."""
     widget = wind.central.bencodeEditWidget
-    wind.central.setCurrentWidget(widget)
-    proc_time()
-    common = os.path.commonpath(paths)
-    widget.load_folder(common)
-    treeview = widget.treeview
-    treeview.expandAll()
-    proc_time()
-    total = treeview.rowCount()
+    widget.load_folder(treedir)
+    proc_time(1)
+    assert widget.treeview.model().rowCount() > 0
+    total = widget.treeview.rowCount()
     for i in range(total):
-        item = treeview.item(i, 0)
-        assert str(item.itemData) == item.text()
+        item = widget.treeview.item(i, 0)
         ritem = item
         while ritem.hasChildren():
             ritem = ritem.child(0)
-        treeview.model().index(0, 0, ritem.index())
-        treeview.model().setData(ritem.index(), "marshmallow", Qt.EditRole)
-        assert ritem.text() is not None
+            parent = ritem.parent()
+            isindex = ritem.isIndex()
+            isroot = ritem.isRoot()
+            icon = ritem.icon()
+            text = ritem.text()
+            _ = ritem.edited()
+            _ = ritem.childCount()
+            _ = ritem.columnCount()
+            _ = ritem.data()
+            index = ritem.index()
+            for role in [Qt.DisplayRole, Qt.EditRole, Qt.DecorationRole]:
+                info = widget.treeview.model().data(index, role)
+                if info:
+                    assert info in [text, icon]
+            proc_time()
+            if not ritem.hasChildren():
+                widget.treeview.model().flags(index)
+                assert isindex is False
+                assert isroot is False
+                assert parent.index() == widget.treeview.model().parent(index)
+                proc_time()
+                widget.treeview.model().setData(index, "marshmallow",
+                                                Qt.EditRole)
+                proc_time()
+                ritem.setData("smores")
+                proc_time()
+        widget.save_changes()
         proc_time()
-        treeview.save_item(item)
-    widget.save_changes()
-    proc_time()
-    widget.clear_contents()
-    proc_time()
-    treeview.clear()
-    proc_time()
-    assert treeview.rowCount() == 0
+        widget.treeview.save_item(item)
+        proc_time()
+        widget.treeview.clear()
+        proc_time()
+        widget.clear_contents()
+        proc_time()
+        assert widget.treeview.rowCount() == 0
 
 
-def test_bencode_item(wind, ttorrent):
-    """Test the bencode tab item object."""
-    _ = wind
-    meta = pyben.load(ttorrent)
-    item = Item(value=ttorrent, data=meta)
-    item.buildItem(meta, item)
-    assert len(item.childItems) > 0
+def test_bencode_item(treedir):
+    """Test build items."""
+    items = []
+    for fd in os.listdir(treedir):
+        if fd.endswith(".torrent"):
+            path = os.path.join(treedir, fd)
+            meta = pyben.load(path)
+            root = Item(data=meta, value=path)
+            Item.buildItem(meta, root)
+            assert root.hasChildren()
+            items.append(root)
+    assert len(items) > 0
