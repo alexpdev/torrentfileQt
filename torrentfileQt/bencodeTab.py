@@ -154,7 +154,6 @@ class BencodeView(QTreeView):
         """Clear the contents of the widget."""
         rows = self.model().rowCount()
         self.model().removeRows(0, rows)
-        assert self.model().rowCount() == 0
 
     def addItem(self, item: "Item"):
         """
