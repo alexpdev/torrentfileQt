@@ -306,7 +306,7 @@ class PieceLengthCalculator(QGroupBox):
     def browse_files(self, path=None):
         """Browse for files for caluclating ideal piece lengths."""
         if not path:
-            path = browse_files(self)  # pragma: nocover
+            path = browse_files(self)[0]  # pragma: nocover
         self.calculate(path)
 
     def browse_folders(self, path=None):

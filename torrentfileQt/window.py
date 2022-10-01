@@ -24,6 +24,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
                                QVBoxLayout)
 
+from torrentfileQt.bencodeTab import BencodeEditWidget
 from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
@@ -102,15 +103,18 @@ class TabWidget(QTabWidget):
         self.infoWidget = InfoWidget(parent=self)
         self.editorWidget = EditorWidget(parent=self)
         self.toolWidget = ToolWidget(parent=self)
+        self.bencodeEditWidget = BencodeEditWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.checkWidget, "Re-Check Torrent")
-        self.addTab(self.infoWidget, "Torrent Info")
-        self.addTab(self.editorWidget, "Torrent Editor")
-        self.addTab(self.toolWidget, "Tools")
+        self.addTab(self.editorWidget, "Edit Torrent")
+        self.addTab(self.infoWidget, "Torrent Details")
+        self.addTab(self.toolWidget, "Torrent Tools")
+        self.addTab(self.bencodeEditWidget, "Bencode Editor")
         self.toolWidget.setObjectName("toolWidget")
         self.createWidget.setObjectName("createTab")
-        self.checkWidget.setObjectName("checkTab")
         self.infoWidget.setObjectName("infoTab")
+        self.checkWidget.setObjectName("checkTab")
+        self.bencodeEditWidget.setObjectName("bencodeTab")
         self.editorWidget.setObjectName("editorTab")
 
 
@@ -127,14 +131,17 @@ class Application(QApplication):
             argument list passed to window.
         """
         super().__init__(args)
-        self.styleManager = StyleManager(THEMES)
-        self.styleManager.themeRequest.connect(self.apply_theme)
+        self._setup_stylesheets()
         self.window = Window(parent=None, app=self)
-        self.styleManager.set_theme_from_title(DEFAULT_THEME)
 
-    def apply_theme(self, theme):
+    def _setup_stylesheets(self):
+        """Construct initial stylesheet state."""
+        self.qstyles = StyleManager(THEMES)
+        self.qstyles.set_theme_from_title(DEFAULT_THEME)
+
+    def set_new_theme(self, theme):
         """Apply the given stylesheet."""
-        self.styleManager.current = theme
+        self.qstyles.current = theme
         self.setStyleSheet(theme)
 
     @classmethod

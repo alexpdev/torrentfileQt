@@ -164,9 +164,9 @@ class BrowseTorrents(QPushButton):
         path : str
             Path to file or folder to include in torrent.
         """
-        path = browse_torrent(self, path)
+        paths = browse_torrent(self, path)
         self.parent().fileInput.clear()
-        self.parent().fileInput.setText(path)
+        self.parent().fileInput.setText(paths[0])
 
 
 class BrowseFolders(QPushButton):
@@ -213,13 +213,13 @@ class BrowseFiles(QPushButton):
         self.setIcon(QIcon(get_icon("browse_file")))
         self.clicked.connect(self.browse_files)
 
-    def browse_files(self, path=None):  # pragma: nocover
+    def browse_files(self, paths=None):  # pragma: nocover
         """
         Browse Action performed when user presses button.
         """
-        path = browse_files(self, path)
+        paths = browse_files(self, paths)
         self.widget.searchInput.clear()
-        self.widget.searchInput.setText(path)
+        self.widget.searchInput.setText(paths[0])
 
 
 class LogTextEdit(QPlainTextEdit):
@@ -302,7 +302,7 @@ class TreePieceItem(QTreeWidgetItem):
 class ProgressBar(QProgressBar):
     """Progress Bar Widget."""
 
-    valueChanged = Signal([int])
+    valueChanged = Signal(int)
 
     def __init__(self, parent=None, size=0):
         """Construct for the progress bar widget."""
@@ -343,10 +343,10 @@ class TreeWidget(QTreeWidget):
         this widgets parent.
     """
 
-    addPathChild = Signal([str, str])
-    reChecking = Signal([str, str])
-    addValue = Signal([str, int])
-    addCount = Signal([str, int])
+    addPathChild = Signal(str, str)
+    reChecking = Signal(str, str)
+    addValue = Signal(str, int)
+    addCount = Signal(str, int)
 
     def __init__(self, parent=None):
         """Construct for Tree Widget."""
@@ -354,8 +354,8 @@ class TreeWidget(QTreeWidget):
         self.window = parent.window
         self.setColumnCount(2)
         self.setIndentation(12)
-        self.item = self.invisibleRootItem()
-        self.item.setExpanded(True)
+        self.rootitem = self.invisibleRootItem()
+        self.rootitem.setExpanded(True)
         header = self.header()
         header.setSizeAdjustPolicy(header.SizeAdjustPolicy.AdjustToContents)
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
@@ -368,7 +368,7 @@ class TreeWidget(QTreeWidget):
         self.total = 0
         self.root = None
         self.piece_length = None
-        self.item_tree = {"widget": self.item}
+        self.item_tree = {"widget": self.rootitem}
         self.addPathChild.connect(self.add_path_child)
         self.reChecking.connect(self.get_hashes)
         self.addValue.connect(self.setItemValue)

@@ -1,5 +1,20 @@
 # TorrentFileQt
 
+## Version 0.3.7
+
+    - Added bencode editor tab
+    - Added full bencode viewing support
+    - Added support for editing bencode values 
+    - Ability to save the edits back to original torrentfile
+    - added new module for testing bencode editor
+    - minor UI tweaks 
+    - covered all coverage gaps for now
+    - Added new icons for bencode editor fields
+    - updated manifest
+    - other minor bug fixes
+
+* * *
+
 ## Version 0.3.6
 
     - Edits throughout the full source code.

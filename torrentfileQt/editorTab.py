@@ -49,6 +49,7 @@ class EditorWidget(QWidget):
         self.counter = 0
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
+        self.line.setProperty("editLine", "true")
         self.setProperty("editWidget", "true")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
@@ -147,6 +148,7 @@ class FileButton(QPushButton):
     def __init__(self, parent=None):
         """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
+        self.setProperty("editFileButton", "true")
         self.widget = parent
         self.setIcon(QIcon(get_icon("browse_file")))
         self.setText("File")
@@ -155,10 +157,10 @@ class FileButton(QPushButton):
 
     def browse(self, path: str = None):
         """Browse method for finding the .torrent file user wishes to edit."""
-        path = browse_torrent(self, path)
+        paths = browse_torrent(self, path)
         self.widget.table.clear()
-        self.widget.line.setText(path)
-        self.widget.table.handleTorrent.emit(path)
+        self.widget.line.setText(paths[0])
+        self.widget.table.handleTorrent.emit(paths[0])
 
 
 class AddItemButton(QAction):
@@ -204,7 +206,7 @@ class RemoveItemButton(QAction):
 class Table(QTableWidget):
     """Table widget for displaying editable information from .torrent file."""
 
-    handleTorrent = Signal([str])
+    handleTorrent = Signal(str)
 
     def __init__(self, parent=None):
         """Construct for the Table Widget on torrent editor tab."""

@@ -43,7 +43,7 @@ class TreeWidget(QTreeWidget):
         The widget containing this widget.
     """
 
-    itemReady = Signal([str, str])
+    itemReady = Signal(str, str)
 
     def __init__(self, parent=None):
         """Construct for tree widget."""
@@ -331,8 +331,8 @@ class SelectButton(QPushButton):
 
     def selectTorrent(self, path=None):
         """Collect torrent information and send to the screen for display."""
-        path = browse_torrent(self, path)
-        kws = format_data(path)
+        paths = browse_torrent(self, path)
+        kws = format_data(paths[0])
         self.parent().fill(**kws)
 
 

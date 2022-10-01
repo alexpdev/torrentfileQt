@@ -73,7 +73,7 @@ class CreateWidget(QWidget):
         self.version_label = QLabel("Version: ", parent=self)
         self.comment_label = QLabel("Comment: ", parent=self)
         self.announce_label = QLabel("Trackers: ", parent=self)
-        self.web_seed_label = QLabel("Web-Seeds: ")
+        self.web_seed_label = QLabel("Web-Seeds: ", parent=self)
         self.source_label = QLabel("Source: ", parent=self)
         self.piece_length_label = QLabel("Piece Size: ", parent=self)
 
@@ -333,16 +333,16 @@ class BrowseFileButton(QPushButton):
 
         Opens File/Folder Dialog.
         """
-        path = browse_files(self, path)
+        paths = browse_files(self, path)
         self.window.path_input.clear()
         self.window.output_input.clear()
-        self.window.path_input.setText(path)
-        self.window.output_input.setText(path + ".torrent")
-        piece_length = path_piece_length(path)
+        self.window.path_input.setText(paths[0])
+        self.window.output_input.setText(paths[0] + ".torrent")
+        piece_length = path_piece_length(paths[0])
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)} KiB"
         else:
-            val = f"{piece_length//(2**20)} MiB"
+            val = f"{piece_length//(2**20)} MiB"  # pragma: nocover
         for i in range(self.window.piece_length.count()):
             if self.window.piece_length.itemText(i) == val:
                 self.window.piece_length.setCurrentIndex(i)

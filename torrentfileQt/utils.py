@@ -23,13 +23,13 @@ from copy import deepcopy
 from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog
 
 
 class StyleManager(QObject):
     """Manage QStyleSheets for the app."""
 
-    themeRequest = Signal([str])
+    applyTheme = Signal(str)
 
     def __init__(self, themes):
         """Initialize styleManager class."""
@@ -37,6 +37,13 @@ class StyleManager(QObject):
         self.themes = themes
         self.parser = QssParser()
         self.current = None
+        self.applyTheme.connect(self.set_app_theme)
+
+    @staticmethod
+    def set_app_theme(theme):
+        """Set the current stylesheet."""
+        app = QApplication.instance()
+        app.set_new_theme(theme)
 
     def setTheme(self, theme):
         """
@@ -47,7 +54,7 @@ class StyleManager(QObject):
         theme : str
             the qss formating string to apply as the theme.
         """
-        self.themeRequest.emit(theme)
+        self.applyTheme.emit(theme)
 
     def set_theme_from_title(self, title):
         """
@@ -113,7 +120,7 @@ class StyleManager(QObject):
                     if 24 > number + amount > 0:
                         value["font-size"] = f"{number + amount}pt"
         theme = self._create_ssheet(widgets)
-        self.themeRequest.emit(theme)
+        self.applyTheme.emit(theme)
 
 
 class QssParser:
@@ -310,8 +317,8 @@ def browse_files(widget, path=None):
     if isinstance(path, str):
         path = (path, None)
     if path and path[0]:
-        path = os.path.normpath(path[0])
-    return path
+        paths = [os.path.normpath(i) for i in path if i]
+    return paths
 
 
 def browse_torrent(widget, torrent=None):
@@ -334,5 +341,26 @@ def browse_torrent(widget, torrent=None):
     if isinstance(torrent, str):
         torrent = torrent, None
     if torrent and torrent[0]:
-        torrent = os.path.normpath(torrent[0])
-    return torrent
+        torrents = [os.path.normpath(i) for i in torrent if i]
+    return torrents
+
+
+def torrent_filter(paths: tuple) -> list:
+    """
+    Filter non torrent files from the given tuple of paths.
+
+    Parameters
+    ----------
+    paths : tuple
+        path strings
+
+    Returns
+    -------
+    list
+        torrent file paths
+    """
+    torrents = []
+    for path in paths:
+        if os.path.isfile(path) and path.endswith(".torrent"):
+            torrents.append(path)
+    return torrents
