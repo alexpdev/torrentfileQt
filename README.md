@@ -25,6 +25,7 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 -   Drag and drop files onto any tab
 -   Create magnet link URIs
 -   Analyze piece lengths for torrent files
+-   Now with full Bencode edit support
 
 ## Requirements
 

@@ -45,6 +45,10 @@ clean-build: ## remove build artifacts
 	rm -frv .tox/
 	rm -fv .coverage
 	rm -frv htmlcov/
+	rm -frv bin/dist
+	rm -frv bin/build
+	rm -frv bin/*.zip
+	rm -frv htmlcov
 	rm -frv coverage.xml
 	rm -rfv */__pycache__
 	rm -fv corbertura.xml
