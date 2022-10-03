@@ -368,7 +368,7 @@ QPushButton{
     border-radius: 8px;
     border-width: 3px;
     padding: 3px 4px 3px 4px;
-    font-size: 12pt;
+    font-size: 10pt;
     font-weight: bold;
     color: #dedede;
     background-color: #111;
@@ -537,15 +537,15 @@ QTabWidget::pane {
     font-size: 10pt;
 }
 QTabWidget::tab-bar {
-    left: 5px;
+    left: 3px;
 }
 QTabBar::tab {
     border-style: outset;
     border-color: #f61;
     border-width: 3px;
-    font-size: 10pt;
+    font-size: 9pt;
     color: #e9e7e6;
-    width: 110px;
+    width: 95px;
     padding-left: 2px;
     padding-right: 2px;
     margin-right: 2px;

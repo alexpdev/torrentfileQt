@@ -329,9 +329,9 @@ class SelectButton(QPushButton):
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-    def selectTorrent(self, path=None):
+    def selectTorrent(self, paths=None):
         """Collect torrent information and send to the screen for display."""
-        paths = browse_torrent(self, path)
+        paths = browse_torrent(self, paths)
         kws = format_data(paths[0])
         self.parent().fill(**kws)
 

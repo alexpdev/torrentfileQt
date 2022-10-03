@@ -45,7 +45,7 @@ class StyleManager(QObject):
         app = QApplication.instance()
         app.set_new_theme(theme)
 
-    def setTheme(self, theme):
+    def setTheme(self, theme: str):
         """
         Set the current QStyleSheet theme.
 
@@ -56,7 +56,7 @@ class StyleManager(QObject):
         """
         self.applyTheme.emit(theme)
 
-    def set_theme_from_title(self, title):
+    def set_theme_from_title(self, title: str):
         """
         Set the theme from it's key in the theme dict.
 
@@ -102,7 +102,7 @@ class StyleManager(QObject):
         """Decrease the widgets font size."""
         self._adjust_font(-1)
 
-    def _adjust_font(self, amount):
+    def _adjust_font(self, amount: int):
         """
         Adjust font size for all widgets.
 
@@ -134,7 +134,7 @@ class QssParser:
         self.result = {}
         self.total = len(self.lines)
 
-    def parse(self, sheet):
+    def parse(self, sheet: str) -> dict:
         """
         Parse the provided qss sheet.
 
@@ -142,6 +142,11 @@ class QssParser:
         ----------
         sheet : str
             Style sheet to parse.
+
+        Returns
+        -------
+        dict
+            collection of stylesheet strings
         """
         self.lines = sheet.split("\n")
         self.line_num = 0
@@ -167,7 +172,7 @@ class QssParser:
             self.line_num += 1
         self.line_num += 1
 
-    def _add_widgets(self, widgets, props):
+    def _add_widgets(self, widgets: str, props: dict):
         """
         Add widgets to the the master collection.
 
@@ -184,7 +189,7 @@ class QssParser:
             self.collection.append({widget.strip(): deepcopy(props)})
 
     @staticmethod
-    def _serialize_prop(line):
+    def _serialize_prop(line: str) -> dict:
         """
         Normalize property string into name and value.
 
@@ -260,7 +265,7 @@ class QssParser:
             self.result.update(row)
 
 
-def get_icon(name):
+def get_icon(name: str) -> str:
     """
     Return the path to the icon referenced by name.
 
@@ -268,6 +273,11 @@ def get_icon(name):
     ----------
     name : str
         filename without extension for the icon.
+
+    Returns
+    -------
+    str
+        path to appropriate icon image
     """
     parent = os.path.dirname(__file__)
     assets = os.path.join(parent, "assets")
@@ -275,7 +285,7 @@ def get_icon(name):
     return path if path.endswith(".png") else path + ".png"
 
 
-def browse_folder(widget, folder=None):
+def browse_folder(widget: object, folder: str = None) -> str:
     """
     Browse for folder performed when user presses button.
 
@@ -285,6 +295,11 @@ def browse_folder(widget, folder=None):
         The widget making the call.
     folder : str
         Optional testing path
+
+    Returns
+    -------
+    str
+        folder path
     """
     if not folder:
         folder = QFileDialog.getExistingDirectory(  # pragma: nocover
@@ -297,7 +312,12 @@ def browse_folder(widget, folder=None):
     return folder
 
 
-def browse_files(widget, path=None):
+def clean_list(lst: list) -> list:
+    """Remove empty values from the list."""
+    return [item for item in lst if item]
+
+
+def browse_files(widget: object, paths: list = None) -> list:
     """
     Browse for files action performed when user presses button.
 
@@ -305,23 +325,26 @@ def browse_files(widget, path=None):
     ----------
     widget : QWidget
         The widget making the call.
-    path : str
-        Optional testing path
+    paths : list
+        list of path strings
+
+    Returns
+    -------
+    list
+        list of pathstrings
     """
-    if not path:
-        path = QFileDialog.getOpenFileName(  # pragma: nocover
+    if not paths:
+        paths = QFileDialog.getOpenFileName(  # pragma: nocover
             parent=widget,
             dir=str(Path.home()),
             caption="Select Contents File...",
         )
-    if isinstance(path, str):
-        path = (path, None)
-    if path and path[0]:
-        paths = [os.path.normpath(i) for i in path if i]
+    if paths and paths[0]:
+        paths = [os.path.normpath(i) for i in paths if i]
     return paths
 
 
-def browse_torrent(widget, torrent=None):
+def browse_torrent(widget: object, torrents: list = None) -> list:
     """
     Browse for torrent file performed when user presses button.
 
@@ -329,19 +352,22 @@ def browse_torrent(widget, torrent=None):
     ----------
     widget : QWidget
         The widget making the call.
-    torrent : str
-        Optional testing path.
+    torrents : list
+        list of path strings
+
+    Returns
+    -------
+    list
+        list of path strings
     """
-    if not torrent:
-        torrent = QFileDialog.getOpenFileName(  # pragma: nocover
+    if not torrents:
+        torrents = QFileDialog.getOpenFileName(  # pragma: nocover
             parent=widget,
             dir=str(Path.home()),
             caption="Select *.torrent File...",
         )
-    if isinstance(torrent, str):
-        torrent = torrent, None
-    if torrent and torrent[0]:
-        torrents = [os.path.normpath(i) for i in torrent if i]
+    if torrents and torrents[0]:
+        torrents = [os.path.normpath(i) for i in torrents if i]
     return torrents
 
 

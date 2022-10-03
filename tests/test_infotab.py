@@ -36,7 +36,7 @@ def test_info_tab_select1(wind, ttorrent):
     proc_time()
     wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(path=ttorrent)
+    button.selectTorrent(paths=[ttorrent])
     assert infotab.nameEdit.text() != ""
 
 
@@ -53,7 +53,7 @@ def test_infotab_select2(wind, dir2, creator):
     proc_time()
     wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(path=outfile)
+    button.selectTorrent(paths=[outfile])
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile, dir2)
@@ -74,7 +74,7 @@ def test_infotab_single(wind, creator, size):
     proc_time()
     wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(path=outfile)
+    button.selectTorrent(paths=[outfile])
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile, tfile)
@@ -93,7 +93,7 @@ def test_infotab_nested(wind, creator, dir3):
     proc_time()
     wind.central.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(path=outfile)
+    button.selectTorrent(paths=[outfile])
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile)

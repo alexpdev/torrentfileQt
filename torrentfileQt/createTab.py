@@ -327,13 +327,13 @@ class BrowseFileButton(QPushButton):
         self.clicked.connect(self.browse)
         self.window = parent
 
-    def browse(self, path=None):
+    def browse(self, paths=None):
         """
         Browse performed when user presses button.
 
         Opens File/Folder Dialog.
         """
-        paths = browse_files(self, path)
+        paths = browse_files(self, paths)
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(paths[0])
