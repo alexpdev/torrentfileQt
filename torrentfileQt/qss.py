@@ -361,10 +361,10 @@ QPushButton{
     margin-left: 8px;
     margin-right: 8px;
     border-style: outset;
-    border-top-color: #e18133;
-    border-right-color: #e67f2f;
-    border-left-color: #e67f2f;
-    border-bottom-color: #e67e22;
+    border-top-color: #fa5a13;
+    border-right-color: #f95E10;
+    border-left-color: #f86a11;
+    border-bottom-color: #ef6f12;
     border-radius: 8px;
     border-width: 3px;
     padding: 3px 4px 3px 4px;
@@ -376,12 +376,20 @@ QPushButton{
 QPushButton:hover{
     border-style: inset;
     border-width: 3px;
+    border-top-color: #e18133;
+    border-right-color: #e67f2f;
+    border-left-color: #e67f2f;
+    border-bottom-color: #e67e22;
     color: #efefefef;
     background-color: #000;
 }
 QPushButton:pressed{
-    border-style: inset;
+    border-style: groove;
     border-bottom-width: 3px;
+    border-top-color: #f61;
+    border-right-color: #f62;
+    border-left-color: #f51;
+    border-bottom-color: #f60;
     color: #ffffff;
     background-color: #112;
 }
@@ -637,17 +645,26 @@ QToolButton {
     font-size: 8pt;
     border-style: outset;
     border-color: #e67e22;
-    border-width: 2px;
+    border-width: 3px;
     border-radius: 8px;
     color: #FFF;
     padding: 2px;
-    margin: 2px;
+    margin: 1px;
     background-color: #112;
 }
 QToolButton:hover {
     border-style: inset;
-    margin-bottom: 1px;
-    padding: 2px;
+    background-color: #111
+}
+QToolButton:pressed {
+    border-style: ridge;
+    margin-bottom: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 0px;
+    padding-bottom: 1px;
+    padding-right: 1px;
+    border-color: #f61;
     background-color: #000;
 }
 """ % arrow)

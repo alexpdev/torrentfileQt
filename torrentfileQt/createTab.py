@@ -334,6 +334,7 @@ class BrowseFileButton(QPushButton):
         Opens File/Folder Dialog.
         """
         paths = browse_files(self, paths)
+        if not paths:  return
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(paths[0])
@@ -369,6 +370,7 @@ class BrowseDirButton(QPushButton):
         Opens File/Folder Dialog.
         """
         path = browse_folder(self, path)
+        if not path: return
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(path)
