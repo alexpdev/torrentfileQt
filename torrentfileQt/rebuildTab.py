@@ -93,14 +93,14 @@ class RebuildWidget(QWidget):
         self.dest_folder_button.clicked.connect(self.dest_folder_click)
         self.submit_button.clicked.connect(self.rebuild_click)
 
-    def torrent_file_click(self, paths=None):
+    def torrent_file_click(self, paths=None):  # pragma: nocover
         """Browse for for files paths for torrents."""
         paths = torrent_filter(browse_torrent(self, paths))
         current = self.torrent_edit.toPlainText().split("\n")
         output = "\n".join(clean_list(current + paths))
         self.torrent_edit.setPlainText(output)
 
-    def torrent_folder_click(self, path=None):
+    def torrent_folder_click(self, path=None):  # pragma: nocover
         """Browse for for folder paths for torrents."""
         path = browse_folder(self, path)
         paths = [os.path.join(path, x) for x in os.listdir(path)]
@@ -108,25 +108,25 @@ class RebuildWidget(QWidget):
         output = "\n".join(clean_list(torrent_filter(paths) + current))
         self.torrent_edit.setPlainText(output)
 
-    def content_folder_click(self, path=None):
+    def content_folder_click(self, path=None):  # pragma: nocover
         """Browse for for folder paths for torrent contents."""
         path = browse_folder(self, path)
         current = self.content_edit.toPlainText().split("\n")
         output = "\n".join(clean_list(current + [path]))
         self.content_edit.setPlainText(output)
 
-    def dest_folder_click(self, path=None):
+    def dest_folder_click(self, path=None):  # pragma: nocover
         """Browse for for destination destination folder path."""
         path = browse_folder(self, path)
         self.dest_line_edit.setText(path)
 
-    def log_message(self, text: str):
+    def log_message(self, text: str):  # pragma: nocover
         """Post log message to the textbrowser."""
         current = self.textBrowser.toPlainText()
         current += "\n" + text
         self.textBrowser.setPlainText(current)
 
-    def rebuild_click(self):
+    def rebuild_click(self):  # pragma: nocover
         """Submit the data and start the Assembler."""
         torrent_paths = self.torrent_edit.toPlainText().split("\n")
         content_paths = self.content_edit.toPlainText().split("\n")
@@ -142,18 +142,18 @@ class Thread(QThread):
 
     messageLogged = Signal(str)
 
-    def __init__(self, metafiles, contents, dest):
+    def __init__(self, metafiles, contents, dest):  # pragma: nocover
         """Build the thread object for the torrent rebuild assembler."""
         super().__init__()
         self.metafiles = metafiles
         self.contents = contents
         self.dest = dest
 
-    def callback(self, message: str):
+    def callback(self, message: str):  # pragma: nocover
         """Send signal containing messages from the assembler."""
         self.messageLogged.emit(message)
 
-    def run(self):
+    def run(self):  # pragma: nocover
         """Run the assembler."""
         Assembler.set_callback(self.callback)
         self.assembler = Assembler(self.metafiles, self.contents, self.dest)
