@@ -56,7 +56,7 @@ clean-build: ## remove build artifacts
 	rm -rfv *.egg-info
 	rm -rfv tests/TESTINGDIR
 
-test: clean ## run tests quickly with the default Python
+test: install clean ## run tests quickly with the default Python
 	tox
 	coverage report
 	coverage xml -o coverage.xml

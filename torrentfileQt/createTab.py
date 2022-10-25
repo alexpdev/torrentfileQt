@@ -30,7 +30,8 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem, QWidget)
+                               QPushButton, QRadioButton, QSizePolicy,
+                               QSpacerItem, QWidget)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -99,7 +100,7 @@ class CreateWidget(QWidget):
         self.spacer2 = QSpacerItem(70, 0)
 
         sizePolicy = self.path_input.sizePolicy()
-        sizePolicy.setHorizontalPolicy(sizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalPolicy(QSizePolicy.MinimumExpanding)
 
         self.announce_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.web_seed_label.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -327,13 +328,15 @@ class BrowseFileButton(QPushButton):
         self.clicked.connect(self.browse)
         self.window = parent
 
-    def browse(self, path=None):
+    def browse(self, paths=None):
         """
         Browse performed when user presses button.
 
         Opens File/Folder Dialog.
         """
-        paths = browse_files(self, path)
+        paths = browse_files(self, paths)
+        if not paths:
+            return  # pragma: nocover
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(paths[0])
@@ -369,6 +372,8 @@ class BrowseDirButton(QPushButton):
         Opens File/Folder Dialog.
         """
         path = browse_folder(self, path)
+        if not path:
+            return  # pragma: nocover
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(path)

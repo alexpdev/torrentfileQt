@@ -140,6 +140,7 @@ class Button(QPushButton):
             elif label in info and info[label] != value:
                 info[label] = value  # pragma: no cover
         pyben.dump(meta, text)
+        self.window.statusBar().showMessage("File Saved")
 
 
 class FileButton(QPushButton):
@@ -155,9 +156,9 @@ class FileButton(QPushButton):
         self.window = parent.window
         self.clicked.connect(self.browse)
 
-    def browse(self, path: str = None):
+    def browse(self, paths: list = None):
         """Browse method for finding the .torrent file user wishes to edit."""
-        paths = browse_torrent(self, path)
+        paths = browse_torrent(self, paths)
         self.widget.table.clear()
         self.widget.line.setText(paths[0])
         self.widget.table.handleTorrent.emit(paths[0])

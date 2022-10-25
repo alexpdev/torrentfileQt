@@ -1,0 +1,73 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+# ##############################################################################
+# Copyright 2020 AlexPDev
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##############################################################################
+"""Module for stylesheets."""
+
+import os
+from urllib.request import pathname2url as path2url
+
+from torrentfileQt.utils import get_icon
+
+
+def compile():
+    style = Main_Styles
+    style += MainWindow_Styles
+    return style
+
+
+Main_Styles = """
+* {
+    padding: 0px;
+    margin: 0px;
+    border: 0px solid transparent;
+    border-radius: 0px;
+}
+"""
+
+MainWindow_Styles = """
+QMainWindow,
+QWidget {
+    background-color: qlineargradient(x1:0 y1:0 x2:0 y2:1 stop:0 #19232d stop:1 #2e373f);
+    color: #fefefe;
+}
+QTabBar:tab {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 4px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 12px;
+    margin-right: 4px;
+    border-right: 3px solid #f33101;
+    border-top: 1px outset #07E23f;
+    border-bottom: 1px outset #07E23f;
+}
+QLabel {
+    background-color: transparent;
+}
+QTextEdit,
+QPlainTextEdit,
+QLineEdit,
+QListWidget,
+QTreeWidget,
+QTreeView,
+QTableWidget{
+    background-color: qlineargradient(x1:0 y1:0 x2:1 y2:1 stop:0 #333128 stop:0 #313638);
+}
+"""
+# background-image: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);

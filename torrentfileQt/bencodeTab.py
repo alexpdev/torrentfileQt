@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-# -*- coding: utf-8 -*-
+# -_- coding: utf-8 -_-
 
 ##############################################################################
 # Copyright 2020 AlexPDev
@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# <http://www.apache.org/licenses/LICENSE-2.0>
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,9 @@ from typing import Any
 
 import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QTreeView,
-                               QVBoxLayout, QWidget)
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import (QHBoxLayout, QToolBar, QTreeView, QVBoxLayout,
+                               QWidget)
 
 from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
                                  torrent_filter)
@@ -48,30 +48,56 @@ class BencodeEditWidget(QWidget):
         super().__init__(parent=parent)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.file_button = QPushButton("Select File", self)
-        self.file_button.setIcon(QIcon(get_icon("browse_file")))
-        self.folder_button = QPushButton("Select Folder", self)
-        self.folder_button.setIcon(QIcon(get_icon("browse_folder")))
-        self.save_button = QPushButton("Save Data", self)
-        self.save_button.setIcon(QIcon(get_icon("save-as")))
-        self.clear_button = QPushButton("Clear Contents", self)
-        self.clear_button.setIcon(QIcon(get_icon("erase")))
-        self.hlayout1 = QHBoxLayout()
-        self.hlayout1.addWidget(self.file_button)
-        self.hlayout1.addWidget(self.folder_button)
-        self.hlayout1.addWidget(self.save_button)
-        self.hlayout1.addWidget(self.clear_button)
-        self.layout.addLayout(self.hlayout1)
+        self.toolbar = QToolBar(parent=self)
+        self.file_action = QAction(QIcon(get_icon("browse_file")),
+                                   "Select File")
+        self.folder_action = QAction(QIcon(get_icon("browse_folder")),
+                                     "Select Folder")
+        self.save_action = QAction(QIcon(get_icon("save-as")), "Save Data")
+        self.clear_action = QAction(QIcon(get_icon("erase")), "Clear Data")
+        self.remove_item_action = QAction(QIcon(get_icon("trash")),
+                                          "Remove Item")
+        self.insert_item_action = QAction(QIcon(get_icon("insert")),
+                                          "Insert Item")
         self.treeview = BencodeView(self)
+        self.toolbar.addActions((self.file_action, self.folder_action))
+        self.toolbar.addSeparator()
+        self.toolbar.addActions(
+            [self.insert_item_action, self.remove_item_action])
+        self.toolbar.addSeparator()
+        self.toolbar.addActions((self.save_action, self.clear_action))
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.toolbar_layout = QHBoxLayout()
+        self.toolbar_layout.addStretch(1)
+        self.toolbar_layout.addWidget(self.toolbar)
+        self.toolbar_layout.addStretch(1)
+        self.layout.addLayout(self.toolbar_layout)
         self.layout.addWidget(self.treeview)
-        self.file_button.clicked.connect(self.load_file)
-        self.folder_button.clicked.connect(self.load_folder)
-        self.save_button.clicked.connect(self.save_changes)
-        self.clear_button.clicked.connect(self.clear_contents)
+        self.file_action.triggered.connect(self.load_file)
+        self.folder_action.triggered.connect(self.load_folder)
+        self.save_action.triggered.connect(self.save_changes)
+        self.clear_action.triggered.connect(self.clear_contents)
+        self.remove_item_action.triggered.connect(self.remove_view_item)
+        self.insert_item_action.triggered.connect(self.insert_view_item)
+
+    def remove_view_item(self):
+        """Remove the currently selected row."""
+        current = self.treeview.selectionModel().currentIndex()
+        item = self.treeview.model().getItem(current)
+        row = item.childNumber()
+        self.treeview.model().removeRow(row, current.parent())
+
+    def insert_view_item(self):
+        """Insert the currently selected row."""
+        current = self.treeview.selectionModel().currentIndex()
+        parent = self.treeview.model().parent(current)
+        item = self.treeview.model().getItem(current)
+        row = item.childNumber()
+        self.treeview.model().insertRow(row, parent)
 
     def save_changes(self):
         """
-        Trigger when Save button is clicked.
+        Trigger when Save action is clicked.
 
         Traverses contents of bencode editor and saving their contents if any
         entry has been marked as edited.
@@ -88,7 +114,7 @@ class BencodeEditWidget(QWidget):
 
     def load_file(self, paths: list = None):
         """
-        Load the a file or files from the Files_button.
+        Load the a file or files from the Files_action.
 
         Parameters
         ----------
@@ -305,6 +331,8 @@ class Item:
             success state
         """
         if position >= 0 and position + count <= len(self.childItems):
+            if not self.hasChildren() or self.isIndex():
+                return False
             for _ in range(count):
                 item = Item(parent=self, value=None, data=None)
                 self.childItems.insert(position, item)
@@ -487,11 +515,26 @@ class BencodeModel(QAbstractItemModel):
             item = index.internalPointer()
         return item
 
-    def index(self, row: int, column: int = 0, parent=QModelIndex()):
+    def index(self,
+              row: int,
+              column: int = 0,
+              parent: QModelIndex = QModelIndex()):
         """
-        Override from QAbstractItemModel.
+        Get the index for the given row and column of the parent index.
 
-        Return index according row, column and parent
+        Parameters
+        ----------
+        row : int
+            row number
+        column : int, optional
+            column number, by default 0
+        parent : QModelIndex, optional
+            parent index, by default QModelIndex()
+
+        Returns
+        -------
+        QModelIndex
+            The item's index
         """
         if self.hasIndex(row, column, parent):
             if not parent.isValid():
@@ -580,8 +623,7 @@ class BencodeModel(QAbstractItemModel):
         """
         parentItem = self.getItem(parent)
         self.beginInsertRows(parent, position, position + rows - 1)
-        success = parentItem.insertChildren(position, rows,
-                                            self.rootItem.columnCount())
+        success = parentItem.insertChildren(position, rows)
         self.endInsertRows()
         return success
 
@@ -597,7 +639,7 @@ class BencodeModel(QAbstractItemModel):
             if parentItem and parentItem != self.rootItem:
                 return self.createIndex(parentItem.childNumber(), 0,
                                         parentItem)
-        return QModelIndex()
+        return QModelIndex()  # pragma: nocover
 
     def removeColumns(self,
                       position: int,
@@ -694,14 +736,15 @@ class BencodeModel(QAbstractItemModel):
         Any
             the edited data.
         """
-        if not item.hasChildren and item.edit is not None:
-            return item.data()  # pragma: nocover
+        if not item.hasChildren():
+            return item.itemData
         for i in range(item.childCount()):
             child = item.child(i)
             change = self.to_bencode(child)
             if change is not None:
-                data = item.parent().data  # pragma: nocover
-                data[item.itemData] = change  # pragma: nocover
+                data = item.parent().data()
+                if data[item.itemData] != change:
+                    data[item.itemData] = change
         return None
 
 

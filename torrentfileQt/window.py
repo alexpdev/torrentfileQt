@@ -31,8 +31,11 @@ from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar
 from torrentfileQt.qss import dark_theme, light_theme
+from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
+
+# from torrentfileQt.qss import compile
 
 THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
 DEFAULT_THEME = "dark_theme"
@@ -104,13 +107,16 @@ class TabWidget(QTabWidget):
         self.editorWidget = EditorWidget(parent=self)
         self.toolWidget = ToolWidget(parent=self)
         self.bencodeEditWidget = BencodeEditWidget(parent=self)
+        self.rebuildWidget = RebuildWidget(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
-        self.addTab(self.checkWidget, "Re-Check Torrent")
         self.addTab(self.editorWidget, "Edit Torrent")
-        self.addTab(self.infoWidget, "Torrent Details")
-        self.addTab(self.toolWidget, "Torrent Tools")
+        self.addTab(self.checkWidget, "Recheck Torrent")
+        self.addTab(self.rebuildWidget, "Rebuild Torrent")
         self.addTab(self.bencodeEditWidget, "Bencode Editor")
+        self.addTab(self.infoWidget, "Torrent Info")
+        self.addTab(self.toolWidget, "Torrent Tools")
         self.toolWidget.setObjectName("toolWidget")
+        self.rebuildWidget.setObjectName("rebuildTab")
         self.createWidget.setObjectName("createTab")
         self.infoWidget.setObjectName("infoTab")
         self.checkWidget.setObjectName("checkTab")
@@ -133,6 +139,7 @@ class Application(QApplication):
         super().__init__(args)
         self._setup_stylesheets()
         self.window = Window(parent=None, app=self)
+        # self.setStyleSheet(compile())
 
     def _setup_stylesheets(self):
         """Construct initial stylesheet state."""

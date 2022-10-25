@@ -66,7 +66,7 @@ def test_create_tab_browse(dir2, wind):
     createtab.window.central.setCurrentWidget(createtab)
     proc_time()
     button = createtab.browse_file_button
-    button.browse(path=path)
+    button.browse(paths=[path])
     createtab.comment_input.setText("Some Text")
     createtab.source_input.setText("Some Source")
     assert createtab.path_input.text() == path
