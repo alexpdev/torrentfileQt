@@ -35,6 +35,8 @@ from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
 
+# from torrentfileQt.qss import compile
+
 THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
 DEFAULT_THEME = "dark_theme"
 
@@ -137,6 +139,7 @@ class Application(QApplication):
         super().__init__(args)
         self._setup_stylesheets()
         self.window = Window(parent=None, app=self)
+        # self.setStyleSheet(compile())
 
     def _setup_stylesheets(self):
         """Construct initial stylesheet state."""

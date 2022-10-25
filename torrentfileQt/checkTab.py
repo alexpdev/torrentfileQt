@@ -129,6 +129,7 @@ class ReCheckButton(QPushButton):
         fileInput = self.widget.fileInput
         metafile = fileInput.text()
         content = searchInput.text()
+        self.window.statusBar().showMessage("Checking...", 3000)
         if os.path.exists(metafile):
             Checker.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
@@ -389,6 +390,7 @@ class TreeWidget(QTreeWidget):
         phashes = PieceHasher(metafile, contents, self)
         phashes.addTreeWidgets()
         phashes.iter_hashes()
+        self.window.statusBar.showMessage("Complete", 2000)
 
     def clear(self):
         """Remove any objects from Tree Widget."""
@@ -435,6 +437,7 @@ class TreeWidget(QTreeWidget):
             item_tree = item_tree[partial]
             self.window.app.processEvents()
         self.paths.append(path)
+        self.window.statusBar().showMessage("Checking...")
 
 
 class PieceHasher:

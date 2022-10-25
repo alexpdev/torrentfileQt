@@ -30,7 +30,8 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem, QWidget)
+                               QPushButton, QRadioButton, QSizePolicy,
+                               QSpacerItem, QWidget)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -99,7 +100,7 @@ class CreateWidget(QWidget):
         self.spacer2 = QSpacerItem(70, 0)
 
         sizePolicy = self.path_input.sizePolicy()
-        sizePolicy.setHorizontalPolicy(sizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalPolicy(QSizePolicy.MinimumExpanding)
 
         self.announce_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.web_seed_label.setAlignment(Qt.AlignmentFlag.AlignRight)

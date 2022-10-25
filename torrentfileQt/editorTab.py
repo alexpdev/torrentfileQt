@@ -140,6 +140,7 @@ class Button(QPushButton):
             elif label in info and info[label] != value:
                 info[label] = value  # pragma: no cover
         pyben.dump(meta, text)
+        self.window.statusBar().showMessage("File Saved")
 
 
 class FileButton(QPushButton):
