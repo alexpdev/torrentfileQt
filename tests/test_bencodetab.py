@@ -22,7 +22,7 @@ import os
 
 import pyben
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QItemSelectionModel, Qt
 from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, tempfile, ttorrent, wind
@@ -122,6 +122,23 @@ def test_treedir(treedir, wind):
         widget.clear_contents()
         proc_time()
         assert widget.treeview.rowCount() == 0
+
+
+def test_treeremove(treedir, wind):
+    """Test item functions and model."""
+    widget = wind.central.bencodeEditWidget
+    widget.load_folder(treedir)
+    proc_time(1)
+    assert widget.treeview.model().rowCount() > 0
+    total = widget.treeview.rowCount()
+    for i in range(total):
+        item = widget.treeview.item(i, 0)
+        ritem = item
+        rect = widget.treeview.visualRect(ritem.index())
+        widget.treeview.setSelection(rect,
+                                     QItemSelectionModel.SelectionFlag.Select)
+        widget.insert_view_item()
+        widget.remove_view_item()
 
 
 def test_bencode_item(treedir):

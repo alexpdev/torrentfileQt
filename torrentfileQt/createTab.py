@@ -336,7 +336,7 @@ class BrowseFileButton(QPushButton):
         """
         paths = browse_files(self, paths)
         if not paths:
-            return
+            return  # pragma: nocover
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(paths[0])
@@ -373,7 +373,7 @@ class BrowseDirButton(QPushButton):
         """
         path = browse_folder(self, path)
         if not path:
-            return
+            return  # pragma: nocover
         self.window.path_input.clear()
         self.window.output_input.clear()
         self.window.path_input.setText(path)

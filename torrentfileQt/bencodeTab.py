@@ -639,7 +639,7 @@ class BencodeModel(QAbstractItemModel):
             if parentItem and parentItem != self.rootItem:
                 return self.createIndex(parentItem.childNumber(), 0,
                                         parentItem)
-        return QModelIndex()
+        return QModelIndex()  # pragma: nocover
 
     def removeColumns(self,
                       position: int,

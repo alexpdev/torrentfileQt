@@ -314,7 +314,7 @@ def browse_folder(widget: object, folder: str = None) -> str:
 
 def clean_list(lst: list) -> list:
     """Remove empty values from the list."""
-    return [item for item in lst if item]
+    return [item for item in lst if item]  # pragma: nocover
 
 
 def browse_files(widget: object, paths: list = None) -> list:
