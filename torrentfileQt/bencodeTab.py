@@ -1,8 +1,8 @@
 #! /usr/bin/python3
-# -_- coding: utf-8 -_-
+# -*- coding: utf-8 -*-
 
 ##############################################################################
-# Copyright 2020 AlexPDev
+# Copyright 2022 AlexPDev
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -196,7 +196,7 @@ class BencodeView(QTreeView):
         """Return number of rows in the tree view."""
         return self.model().rowCount()
 
-    def item(self, row: int, column: int):
+    def item(self, row: int, column: int) -> "Item":
         """Return the item associated with the given index values."""
         return self.model().getItem(self.model().index(row, column))
 
