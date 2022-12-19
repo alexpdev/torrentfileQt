@@ -33,25 +33,9 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 -   Pyside6
 -   torrentfile
 
-## ScreenShots
+## Usage Overview
 
-![createtorrent.png](./assets/screenshots/createWidget.png)
-
-* * *
-
-![checktorrent.png](./assets/screenshots/recheckWidget.png)
-
-* * *
-
-![edittorrent.png](./assets/screenshots/editWidget.png)
-
-* * *
-
-![torrentinfo.png](./assets/screenshots/infoWidget.png)
-
-* * *
-
-![torrentinfo.png](./assets/screenshots/toolsWidget.png)
+![edittorrent.png](./assets/torrentfileQt.gif)
 
 * * *
 

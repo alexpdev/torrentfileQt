@@ -18,12 +18,10 @@
 ##############################################################################
 """Module for the menu bar."""
 
-import json
-import os
 import webbrowser
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QInputDialog, QMenu, QMenuBar
+from PySide6.QtWidgets import QMenu, QMenuBar
 
 
 class MenuBar(QMenuBar):
@@ -42,9 +40,7 @@ class MenuBar(QMenuBar):
         self.window = parent
         self.file_menu = FileMenu("File", self)
         self.help_menu = HelpMenu("Help", self)
-        self.profile_menu = ProfileMenu("Profiles", self)
         self.addMenu(self.file_menu)
-        self.addMenu(self.profile_menu)
         self.addMenu(self.help_menu)
 
 
@@ -161,138 +157,3 @@ class HelpMenu(QMenu):
     def repository():  # pragma: no cover
         """Open webbrowser to GitHub Repo."""
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
-
-
-class ProfileMenu(QMenu):
-    """Menu for the Profile dropdown in menubar."""
-
-    def __init__(self, title, parent):
-        """
-        Construct for top level widgets.
-
-        Parameters
-        ----------
-        title : str
-            The menu bar categorie string.
-        parent : QWidget
-            This widgets parent widget.
-        """
-        super().__init__(title, parent)
-        self.widget = parent
-        self.window = parent.window
-        self.profile_actions = []
-        self.home = os.path.join(os.path.expanduser("~"), ".torrentfileQt")
-        self.profiles = os.path.join(self.home, "profiles.json")
-        self.add_profile_actions()
-        self.actionAddProfile = QAction(self.window)
-        self.actionAddProfile.setText("Add Profile")
-        self.actionAddProfile.setObjectName("actionAddProfile")
-        self.addAction(self.actionAddProfile)
-        self.actionAddProfile.triggered.connect(self.add_profile)
-
-    def add_profile_actions(self):
-        """Add action class for each profile found in profiles."""
-        if os.path.exists(self.home):
-            if os.path.exists(self.profiles):
-                with open(self.profiles, "rt") as jsonfile:
-                    try:
-                        profiles = json.load(jsonfile)
-                    except json.JSONDecodeError:  # pragma: nocover
-                        profiles = {}
-                for profile in profiles:
-                    action = QAction(self.window)
-                    action.setText(profile)
-                    profile_action = ProfileAction(profile, action, self)
-                    self.addAction(action)
-                    self.profile_actions.append(profile_action)
-
-    def add_profile(self, name=None):
-        """Add a profile."""
-        if not os.path.exists(self.home):
-            os.mkdir(self.home)
-        if not name:  # pragma: nocover
-            name, result = QInputDialog.getText(self, "Add Profile",
-                                                "Profile Name")
-            if not result:
-                return
-        tab = self.window.central.createWidget
-        source = tab.source_input.text()
-        trackers = tab.announce_input.toPlainText().split("\n")
-        webseeds = tab.web_seed_input.toPlainText().split("\n")
-        piece_length_index = tab.piece_length.currentIndex()
-        piece_length = tab.piece_length.itemData(piece_length_index)
-        if tab.hybridbutton.isChecked():
-            version = 3  # pragma: nocover
-        elif tab.v2button.isChecked():
-            version = 2
-        else:
-            version = 1
-        private = False
-        if tab.private.isChecked():
-            private = True
-        attributes = {
-            "version": version,
-            "private": private,
-            "piece_length": piece_length,
-            "trackers": trackers,
-            "web_seeds": webseeds,
-            "source": source,
-        }
-        if not os.path.exists(self.profiles):
-            with open(self.profiles, "wt") as jsonfile:
-                json.dump({name: attributes}, jsonfile)
-        else:
-            with open(self.profiles, "rt") as jsonfile:
-                try:
-                    profiles = json.load(jsonfile)
-                except json.JSONDecodeError:  # pragma: nocover
-                    profiles = {}
-            profiles[name] = attributes
-            with open(self.profiles, "wt") as jsonfile:
-                json.dump(profiles, jsonfile)
-
-
-class ProfileAction:
-    """
-    Store the name and action taken when this menu button is triggered.
-
-    Parameters
-    ----------
-    name : `str`
-        name of the profile and menubutton
-    action : `QAction`
-        Action associated with the name
-    parent : `QMenu`
-        the menu which holds the action
-    """
-
-    def __init__(self, name, action, parent):
-        """Initialize ProfileAction class."""
-        self.name = name
-        self.action = action
-        self.parent = parent
-        self.action.triggered.connect(self.trigger)
-
-    def trigger(self):
-        """Fill the create tab with saved values in profile."""
-        filename = os.path.join(self.parent.home, "profiles.json")
-        with open(filename, "rt") as jsonfile:
-            profiles = json.load(jsonfile)
-        profile = profiles[self.name]
-        tab = self.parent.window.central.createWidget
-        tab.source_input.setText(profile["source"])
-        tab.announce_input.insertPlainText("\n".join(profile["trackers"]))
-        tab.web_seed_input.insertPlainText("\n".join(profile["web_seeds"]))
-        if profile["version"] == 3:
-            tab.hybridbutton.click()
-        elif profile["version"] == 2:
-            tab.v2button.click()
-        else:
-            tab.v1button.click()
-        if profile["private"]:
-            tab.private.click()
-        if profile["piece_length"]:
-            for i in range(tab.piece_length.count()):
-                if tab.piece_length.itemData(i) == profile["piece_length"]:
-                    tab.piece_length.setCurrentIndex(i)
-                    break
