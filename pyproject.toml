@@ -2,7 +2,6 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
 name = "torrentfileQt"
 description = "GUI based tool for creating Bittorrent files."
