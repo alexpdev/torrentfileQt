@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "torrentfileQt"
 description = "GUI based tool for creating Bittorrent files."
-readme = "README.md"
 requires-python = ">=3.6"
 keywords = ["GUI", "Bittorrent", "metafile", "torrentfile"]
 authors = [{name = "alexpdev", email = "alexpdev@pm.me"}]
@@ -23,11 +22,15 @@ classifiers=[
     "License :: OSI Approved :: Apache Software License",
 ]
 dependencies = ["torrentfile", "PySide6"]
+dynamic = ["readme"]
 
 [project.scripts]
 torrentfileqt = "torrentfileQt.__main__:main"
 
-[tools.setuptools]
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+
+[tool.setuptools]
 packages = ["torrentfileQt"]
 include-package-data = true
 
