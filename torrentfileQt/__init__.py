@@ -22,7 +22,7 @@ import ctypes
 import sys
 
 from torrentfileQt.version import __version__
-from torrentfileQt.window import Application, Window, execute
+from torrentfileQt.window2 import Application, Window, execute
 
 myappid = f"TorrentfileQt.{__version__}"
 if sys.platform == "win32":

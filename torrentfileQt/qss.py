@@ -69,6 +69,70 @@ QWidget {
     background-color: #39434d;
     border-width: 0px;
 }
+QPushButton[close="true"] {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #b41605;
+}
+QPushButton[min="true"] {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #c9c405;
+}
+QPushButton[max="true"] {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: green;
+}
+QPushButton[close="true"]:hover {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #eb0505;
+}
+QPushButton[min="true"]:hover {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #f8eb52;
+}
+QPushButton[max="true"]:hover {
+    border: 1px outset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #06e901;
+}
+QPushButton[close=true]:pressed {
+    border: 1px inset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #c10909;
+}
+QPushButton[min=true]:pressed {
+    border: 1px inset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #f5e623;
+}
+QPushButton[max=true]:pressed {
+    border: 1px inset #333;
+    min-width: 5px;
+    min-height: 5px;
+    border-radius: 9px;
+    background-color: #22fe1d;
+}
+
 *[editToolBar="true"] {
     background-color: #3a3a3a;
     spacing: 3px;
@@ -579,6 +643,19 @@ QTreeWidget {
     font-size: 9pt;
     color: #eeeeee;
 }
+QWidget[Tabbar="true"] {
+    border-style: outset;
+    border-color: #f61;
+    border-width: 3px;
+    font-size: 9pt;
+    background-color: #222;
+}
+QPushButton[Tab="true"]{
+    border: #f61 2px solid;
+    background-color: #422;
+    color: #FFF;
+    padding: 10px;
+}
 QTreeWidget::item::selected {
     color: #FFFFFF;
     font-size: 9pt;
@@ -713,6 +790,51 @@ QScrollBar {
 QWidget {
     background-color: #E3E6F1;
     border-width: 0px;
+}
+*[close="true"] {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: #b41605;
+}
+*[min="true"] {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: #c9c405;
+}
+*[max="true"] {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: green;
+}
+*[close="true"]:hover {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: #eb0505;
+}
+*[min="true"]:hover {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: #f8eb52;
+}
+*[max="true"]:hover {
+    border: 1px outset #333;
+    border-radius: 9px;
+    background-color: #06e901;
+}
+*[close="true"]:pressed {
+    border: 1px inset #333;
+    border-radius: 9px;
+    background-color: #c10909;
+}
+*[min="true"]:pressed {
+    border: 1px inset #333;
+    border-radius: 9px;
+    background-color: #f5e623;
+}
+*[max="true"]:pressed {
+    border: 1px inset #333;
+    border-radius: 9px;
+    background-color: #22fe1d;
 }
 *[editToolBar="true"] {
     background-color: #3a3a3a;
