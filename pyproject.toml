@@ -23,6 +23,11 @@ classifiers=[
 dependencies = ["torrentfile", "PySide6"]
 dynamic = ["readme"]
 
+[project.urls]
+homepage = "https://github.com/alexpdev/torrentfileQt"
+repository = "https://github.com"
+issues = "https://github.com/alexpdev/torrentfileQt/issues"
+
 [project.scripts]
 torrentfileqt = "torrentfileQt.__main__:main"
 
