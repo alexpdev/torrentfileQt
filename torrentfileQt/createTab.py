@@ -100,7 +100,7 @@ class CreateWidget(QWidget):
         self.spacer2 = QSpacerItem(70, 0)
 
         sizePolicy = self.path_input.sizePolicy()
-        sizePolicy.setHorizontalPolicy(QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.MinimumExpanding)
 
         self.announce_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.web_seed_label.setAlignment(Qt.AlignmentFlag.AlignRight)

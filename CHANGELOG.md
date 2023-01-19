@@ -1,5 +1,11 @@
 # TorrentFileQt
 
+## Version 0.3.8
+
+-   Minor bug fixes for windows 11
+
+* * *
+
 ## Version 0.3.7
 
 -   Added bencode editor tab
