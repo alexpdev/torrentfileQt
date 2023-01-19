@@ -58,8 +58,6 @@ clean-build: ## remove build artifacts
 
 test: install clean ## run tests quickly with the default Python
 	tox
-	coverage report
-	coverage xml -o coverage.xml
 
 push: test ## push changes to remote
 	git add .
