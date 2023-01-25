@@ -81,6 +81,7 @@ class Window(QMainWindow):
         self.titleBar = TitleBar(parent=self)
         self.central_layout.addWidget(self.titleBar)
         self.hlayout = QHBoxLayout()
+        self.central_layout.setSpacing(0)
         self.setContentsMargins(1,0,1,1)
         self.titleBar.setWindowTitle("TorrentfileQt")
         self.central_layout.setContentsMargins(0,0,0,0)
@@ -113,7 +114,7 @@ class TabWidget(QWidget):
         super().__init__(parent=parent)
         self._parent = parent
         self.layout = QVBoxLayout(self)
-        self.setProperty("tabs", "true")
+        self.setProperty("tabs", True)
         self.setObjectName("tabbar")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.createWidget = CreateWidget(parent=self)
@@ -131,7 +132,9 @@ class TabWidget(QWidget):
         self.addTab(self.bencodeEditWidget, "Bencode Editor")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.toolWidget, "Torrent Tools")
+        self.createWidget.setProperty("ActiveTab", True)
         self.layout.addStretch(1)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.toolWidget.setObjectName("toolWidget")
         self.rebuildWidget.setObjectName("rebuildTab")
         self.createWidget.setObjectName("createTab")
@@ -150,11 +153,20 @@ class TabWidget(QWidget):
         }
         self.layout.addWidget(button)
         self._parent.stack.addWidget(widget)
-        button.setProperty("Tab", "true")
+        button.setProperty("Tab", True)
         button.clicked.connect(self.tabs[l]["func"])
 
     def open_tab(self, index):
+        for k, v in self.tabs.items():
+            button = v.get("button")
+            if k == index:
+                button.setProperty("Tab", False)
+                button.setProperty("ActiveTab", True)
+            elif button.property("ActiveTab"):
+                button.setProperty("ActiveTab", False)
+                button.setProperty("Tab", True)
         self.window().stack.setCurrentIndex(index)
+
 
 
 class Application(QApplication):

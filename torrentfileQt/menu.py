@@ -68,6 +68,7 @@ class TitleBar(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("titlebar")
         pix = QIcon(icon)
+
         self.icon = QToolButton(parent=self)
         self.icon.setObjectName("titlebaricon")
         self.icon.setIcon(pix)
@@ -81,7 +82,8 @@ class TitleBar(QWidget):
         sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
         self.closeButton.setSizePolicy(sizePolicy)
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(1,1,1,1)
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
         self.layout.addWidget(self.icon)
         self.layout.addStretch(1)
         self.layout.addWidget(self.label)
