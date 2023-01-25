@@ -1,5 +1,13 @@
 # TorrentFileQt
 
+## Version 0.3.8
+
+-   Minor bug fixes for windows 11
+-   Updated CI/CD workflow and tools
+-   re-wrote tox workflow
+
+* * *
+
 ## Version 0.3.7
 
 -   Added bencode editor tab

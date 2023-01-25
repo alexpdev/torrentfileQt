@@ -81,7 +81,9 @@ class Window(QMainWindow):
         self.titleBar = TitleBar(parent=self)
         self.central_layout.addWidget(self.titleBar)
         self.hlayout = QHBoxLayout()
+        self.setContentsMargins(1,0,1,1)
         self.titleBar.setWindowTitle("TorrentfileQt")
+        self.central_layout.setContentsMargins(0,0,0,0)
         self.titleBar.setWindowIcon(self.icon)
         self.titleBar.setMenuBar(self.menubar)
         self.stack = QStackedWidget(parent=self)
@@ -111,7 +113,9 @@ class TabWidget(QWidget):
         super().__init__(parent=parent)
         self._parent = parent
         self.layout = QVBoxLayout(self)
-        self.setProperty("Tabbar", "true")
+        self.setProperty("tabs", "true")
+        self.setObjectName("tabbar")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.createWidget = CreateWidget(parent=self)
         self.checkWidget = CheckWidget(parent=self)
         self.infoWidget = InfoWidget(parent=self)
@@ -127,6 +131,7 @@ class TabWidget(QWidget):
         self.addTab(self.bencodeEditWidget, "Bencode Editor")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.toolWidget, "Torrent Tools")
+        self.layout.addStretch(1)
         self.toolWidget.setObjectName("toolWidget")
         self.rebuildWidget.setObjectName("rebuildTab")
         self.createWidget.setObjectName("createTab")
@@ -145,7 +150,7 @@ class TabWidget(QWidget):
         }
         self.layout.addWidget(button)
         self._parent.stack.addWidget(widget)
-        button.setProperty("Tab", "True")
+        button.setProperty("Tab", "true")
         button.clicked.connect(self.tabs[l]["func"])
 
     def open_tab(self, index):

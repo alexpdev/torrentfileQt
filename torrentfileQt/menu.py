@@ -21,8 +21,9 @@
 import os
 import webbrowser
 
-from PySide6.QtGui import QAction, QPixmap
-from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout
+from PySide6.QtGui import QAction, QPixmap, QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton
 
 
 
@@ -64,12 +65,15 @@ class TitleBar(QWidget):
         """Construct for titlebar."""
         super().__init__(parent=parent)
         self.label = QLabel()
-        self.setProperty("titleBar", "true")
-        pix = QPixmap(icon)
-        self.icon = QLabel()
-        self.icon.setPixmap(pix)
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setObjectName("titlebar")
+        pix = QIcon(icon)
+        self.icon = QToolButton(parent=self)
+        self.icon.setObjectName("titlebaricon")
+        self.icon.setIcon(pix)
         self.label.setText("TitleBar")
-        self.setMaximumHeight(50)
+        self.label.setObjectName("titlebartitle")
+        self.setMaximumHeight(35)
         self.closeButton = TitleBarButton("close", parent=self)
         self.minimizeButton = TitleBarButton("min", parent=self)
         self.maximizeButton = TitleBarButton("max", parent=self)
@@ -77,6 +81,7 @@ class TitleBar(QWidget):
         sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
         self.closeButton.setSizePolicy(sizePolicy)
         self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(1,1,1,1)
         self.layout.addWidget(self.icon)
         self.layout.addStretch(1)
         self.layout.addWidget(self.label)
@@ -94,8 +99,8 @@ class TitleBar(QWidget):
 
     def setWindowIcon(self, icon: str) -> None:
         """Sets the window icon."""
-        pixmap = QPixmap(icon)
-        self.icon.setPixmap(pixmap)
+        icon = QIcon(icon)
+        self.icon.setIcon(icon)
 
     def mouseDoubleClickEvent(self, _):
         if self.window().isMaximized():

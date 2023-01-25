@@ -9,7 +9,7 @@ requires-python = ">=3.6"
 keywords = ["GUI", "Bittorrent", "metafile", "torrentfile"]
 authors = [{name = "alexpdev", email = "alexpdev@pm.me"}]
 license = {file = "LICENSE"}
-version = "0.3.7"
+version = "0.3.8"
 classifiers=[
     "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
@@ -22,6 +22,11 @@ classifiers=[
 ]
 dependencies = ["torrentfile", "PySide6"]
 dynamic = ["readme"]
+
+[project.urls]
+homepage = "https://github.com/alexpdev/torrentfileQt"
+repository = "https://github.com"
+issues = "https://github.com/alexpdev/torrentfileQt/issues"
 
 [project.scripts]
 torrentfileqt = "torrentfileQt.__main__:main"
