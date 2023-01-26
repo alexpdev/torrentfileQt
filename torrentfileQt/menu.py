@@ -25,6 +25,8 @@ from PySide6.QtGui import QAction, QPixmap, QIcon
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton
 
+from torrentfileQt.utils import get_icon
+
 
 
 icon = os.path.join(os.path.dirname(__file__), "home.png")
@@ -38,7 +40,9 @@ class TitleBarButton(QPushButton):
         super().__init__(parent=parent)
         self.setFixedHeight(20)
         self.setFixedWidth(20)
-        self.setProperty(prop, "true")
+        self.setProperty(prop, True)
+        self.setProperty("titlebutton", True)
+        self.setIcon(QIcon(get_icon(prop)))
         self.clicked.connect(self.window_action)
 
     def window_action(self):
