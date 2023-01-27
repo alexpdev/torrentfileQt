@@ -27,7 +27,6 @@ from copy import deepcopy
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QRadioButton, QSizePolicy,
@@ -60,8 +59,10 @@ class CreateWidget(QWidget):
         super().__init__(parent=parent)
         self.content_dir = None
         self.outpath = None
-        self.window = parent.window
+        self.setObjectName("createTab")
         self.layout = QGridLayout()
+        self.setAcceptDrops(True)
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setLayout(self.layout)
 
         self.hlayout1 = QHBoxLayout()
@@ -78,13 +79,15 @@ class CreateWidget(QWidget):
         self.source_label = QLabel("Source: ", parent=self)
         self.piece_length_label = QLabel("Piece Size: ", parent=self)
 
-        self.path_input = QLineEdit(parent=self)
+        self.path_input = PathEdit(parent=self)
         self.output_input = QLineEdit(parent=self)
         self.source_input = QLineEdit(parent=self)
         self.comment_input = QLineEdit(parent=self)
 
         self.announce_input = QPlainTextEdit(parent=self)
         self.web_seed_input = QPlainTextEdit(parent=self)
+        self.announce_input.setMaximumHeight(150)
+        self.web_seed_input.setMaximumHeight(150)
         self.piece_length = ComboBox.piece_length(parent=self)
         self.private = QCheckBox("Private", parent=self)
         self.submit_button = SubmitButton("Create Torrent", parent=self)
@@ -166,6 +169,38 @@ class CreateWidget(QWidget):
         self.browse_file_button.setObjectName("createWidget_browsefile_button")
 
 
+
+class PathEdit(QLineEdit):
+    """Enable Drag and Drop"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dropEvent(self, event) -> bool:
+        """Drag drop event for widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            self.setText(path)
+            return True
+        return False
+
+
 class TorrentFileCreator(QThread):
     """
     Torrentfile creation class.
@@ -217,7 +252,6 @@ class SubmitButton(QPushButton):
         self.thread = None
         self._text = text
         self.widget = parent
-        self.window = parent.window
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText(text)
         self.clicked.connect(self.submit)
@@ -278,11 +312,11 @@ class SubmitButton(QPushButton):
 
     def updateStatusBarBegin(self):
         """Update the status bar when torrent creation is complete."""
-        self.window.statusBar().showMessage("Processing", 3000)
+        self.window().statusBar().showMessage("Processing", 3000)
 
     def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
-        self.window.statusBar().showMessage("Completed", 3000)
+        self.window().statusBar().showMessage("Completed", 3000)
 
 
 class OutButton(QPushButton):
@@ -294,8 +328,7 @@ class OutButton(QPushButton):
         self.window = parent.window
         self.widget = parent
         self.setText("File")
-        self.setProperty("createButton", "true")
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
@@ -321,8 +354,7 @@ class BrowseFileButton(QPushButton):
     def __init__(self, parent=None):
         """Public constructor for browsebutton class."""
         super().__init__(parent)
-        self.setProperty("createButton", "true")
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.setText("File")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
@@ -359,9 +391,8 @@ class BrowseDirButton(QPushButton):
         """Construct for folder browser button."""
         super().__init__(parent=parent)
         self.setText("Folder")
-        self.setIcon(QIcon(get_icon("browse_folder")))
+        self.setIcon(get_icon("browse_folder"))
         self.window = parent
-        self.setProperty("createButton", "true")
         self.clicked.connect(self.browse)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 

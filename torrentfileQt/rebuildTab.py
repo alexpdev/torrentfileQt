@@ -20,7 +20,7 @@
 
 import os
 
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QTextBrowser, QVBoxLayout, QWidget)
@@ -38,32 +38,26 @@ class RebuildWidget(QWidget):
         super().__init__(parent=parent)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+        self.setObjectName("rebuildTab")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.torrent_label = QLabel("Torrent File(s)/Folder(s)", self)
         self.torrent_file_button = QPushButton("Select File(s)", self)
         self.torrent_folder_button = QPushButton("Select Folder(s)", self)
-        self.torrent_folder_button.setIcon(QIcon(get_icon("browse_folder")))
-        self.torrent_file_button.setIcon(QIcon(get_icon("browse_file")))
+        self.torrent_folder_button.setIcon(get_icon("browse_folder"))
+        self.torrent_file_button.setIcon(get_icon("browse_file"))
         self.torrent_edit = QPlainTextEdit(parent=self)
         self.torrent_edit.setFixedHeight(85)
         self.content_label = QLabel("Content Path(s)")
         self.content_folder_button = QPushButton("Select Folder(s)", self)
-        self.content_folder_button.setIcon(QIcon(get_icon("browse_folder")))
+        self.content_folder_button.setIcon(get_icon("browse_folder"))
         self.content_edit = QPlainTextEdit(parent=self)
         self.content_edit.setFixedHeight(85)
         self.dest_label = QLabel("Destination Path")
         self.dest_line_edit = QLineEdit(parent=self)
         self.dest_line_edit.setProperty("infoLine", True)
         self.dest_folder_button = QPushButton("Select Folder", self)
-        self.dest_folder_button.setIcon(QIcon(get_icon("browse_folder")))
+        self.dest_folder_button.setIcon(get_icon("browse_folder"))
         self.submit_button = QPushButton("Rebuild", self)
-        buttons = [
-            self.dest_folder_button,
-            self.content_folder_button,
-            self.torrent_file_button,
-            self.torrent_folder_button,
-        ]
-        for button in buttons:
-            button.setProperty("createButton", "true")
         self.hlayout1 = QHBoxLayout()
         self.hlayout2 = QHBoxLayout()
         self.hlayout3 = QHBoxLayout()

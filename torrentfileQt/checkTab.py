@@ -42,9 +42,12 @@ class CheckWidget(QWidget):
         """Construct for check tab."""
         super().__init__(parent=parent)
         self.window = parent.window
+        self.setObjectName("checkTab")
         self.vlayout = QVBoxLayout()
         self.layout = QFormLayout()
+        self.setAcceptDrops(True)
         self.setLayout(self.vlayout)
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.vlayout.addLayout(self.layout)
         self.splitter = QSplitter(parent=self)
         self.vlayout.addWidget(self.splitter)
@@ -54,12 +57,12 @@ class CheckWidget(QWidget):
 
         self.fileLabel = QLabel("Torrent File", parent=self)
         self.fileLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.fileInput = QLineEdit(parent=self)
+        self.fileInput = PathEdit(parent=self)
         self.browseButton1 = BrowseTorrents(parent=self)
 
         self.searchLabel = QLabel("Search Path", parent=self)
         self.searchLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.searchInput = QLineEdit(parent=self)
+        self.searchInput = PathEdit(parent=self)
         self.browseButton2 = BrowseFolders(parent=self)
         self.browseButton3 = BrowseFiles(parent=self)
         self.checkButton = ReCheckButton("Check", parent=self)
@@ -97,6 +100,37 @@ class CheckWidget(QWidget):
         self.splitter.setObjectName("CheckWidget_splitter")
 
 
+class PathEdit(QLineEdit):
+    """Enable Drag and Drop"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dropEvent(self, event) -> bool:
+        """Drag drop event for widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            self.setText(path)
+            return True
+        return False
+
+
 class ReCheckButton(QPushButton):
     """
     Button Widget for validating torrent files against downloaded contents.
@@ -115,7 +149,6 @@ class ReCheckButton(QPushButton):
         """Construct the CheckButton Widget."""
         super().__init__(text, parent=parent)
         self.widget = parent
-        self.window = parent.window
         self.clicked.connect(self.submit)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -129,7 +162,7 @@ class ReCheckButton(QPushButton):
         fileInput = self.widget.fileInput
         metafile = fileInput.text()
         content = searchInput.text()
-        self.window.statusBar().showMessage("Checking...", 3000)
+        self.window().statusBar().showMessage("Checking...", 3000)
         if os.path.exists(metafile):
             Checker.register_callback(textEdit.callback)
             logging.debug("Registering Callback, setting root")
@@ -150,7 +183,7 @@ class BrowseTorrents(QPushButton):
         """Construct Toolbar Button for selecting .torrentfile to check."""
         super().__init__(parent=parent)
         self.setText("File")
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.window = parent
         self.setProperty("createButton", "true")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -187,7 +220,7 @@ class BrowseFolders(QPushButton):
         self.widget = parent
         self.setText("Folder")
         self.setProperty("createButton", "true")
-        self.setIcon(QIcon(get_icon("browse_folder")))
+        self.setIcon(get_icon("browse_folder"))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse_folders)
 
@@ -211,7 +244,7 @@ class BrowseFiles(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setText("File")
         self.setProperty("createButton", "true")
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.clicked.connect(self.browse_files)
 
     def browse_files(self, paths=None):  # pragma: nocover
@@ -417,27 +450,28 @@ class TreeWidget(QTreeWidget):
             item_tree[partial] = {"widget": item}
             if i == len(partials) - 1:
                 if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = QIcon(get_icon("video"))
+                    fileicon = get_icon("video")
                 elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                    fileicon = QIcon(get_icon("archive"))
+                    fileicon = get_icon("archive")
                 elif re.match(r"\.r\d+$", path.suffix):
-                    fileicon = QIcon(get_icon("archive"))
+                    fileicon = get_icon("archive")
                 elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = QIcon(get_icon("music"))
+                    fileicon = get_icon("music")
                 else:
-                    fileicon = QIcon(get_icon("file"))
+                    fileicon = get_icon("file")
                 progressBar = ProgressBar(parent=None, size=size)
                 self.setItemWidget(item, 1, progressBar)
                 item.progbar = progressBar
                 self.itemWidgets[str(path)] = item
             else:
-                fileicon = QIcon(get_icon("folder"))
+                fileicon = get_icon("folder")
             item.setIcon(0, fileicon)
             item.setText(0, partial)
             item_tree = item_tree[partial]
             self.window.app.processEvents()
         self.paths.append(path)
         self.window.statusBar().showMessage("Checking...")
+
 
 
 class PieceHasher:

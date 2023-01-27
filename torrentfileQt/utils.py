@@ -19,10 +19,12 @@
 """Module for style manager."""
 
 import os
+import string
 from copy import deepcopy
 from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QFileDialog
 
 
@@ -31,12 +33,13 @@ class StyleManager(QObject):
 
     applyTheme = Signal(str)
 
-    def __init__(self, themes):
+    def __init__(self, themes, sheet, default):
         """Initialize styleManager class."""
         super().__init__()
+        self.sheet = sheet
         self.themes = themes
+        self.default = default
         self.parser = QssParser()
-        self.current = None
         self.applyTheme.connect(self.set_app_theme)
 
     @staticmethod
@@ -45,7 +48,7 @@ class StyleManager(QObject):
         app = QApplication.instance()
         app.set_new_theme(theme)
 
-    def setTheme(self, theme: str):
+    def setTheme(self, theme: str = None):
         """
         Set the current QStyleSheet theme.
 
@@ -54,6 +57,9 @@ class StyleManager(QObject):
         theme : str
             the qss formating string to apply as the theme.
         """
+        if not theme:
+            template = string.Template(self.sheet)
+            theme = template.substitute(self.themes[self.default])
         self.applyTheme.emit(theme)
 
     def set_theme_from_title(self, title: str):
@@ -282,7 +288,9 @@ def get_icon(name: str) -> str:
     parent = os.path.dirname(__file__)
     assets = os.path.join(parent, "assets")
     path = os.path.join(assets, name)
-    return path if path.endswith(".png") else path + ".png"
+    icon = path if path.endswith(".png") else path + ".png"
+    return QIcon(icon)
+
 
 
 def browse_folder(widget: object, folder: str = None) -> str:

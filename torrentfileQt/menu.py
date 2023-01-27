@@ -78,7 +78,7 @@ class TitleBar(QWidget):
         self.icon.setIcon(pix)
         self.label.setText("TitleBar")
         self.label.setObjectName("titlebartitle")
-        self.setMaximumHeight(35)
+        self.setMaximumHeight(40)
         self.closeButton = TitleBarButton("close", parent=self)
         self.minimizeButton = TitleBarButton("min", parent=self)
         self.maximizeButton = TitleBarButton("max", parent=self)

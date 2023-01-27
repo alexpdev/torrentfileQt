@@ -47,10 +47,9 @@ class EditorWidget(QWidget):
         super().__init__(parent=parent)
         self.window = parent.window
         self.counter = 0
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.layout = QVBoxLayout()
         self.line = QLineEdit(parent=self)
-        self.line.setProperty("editLine", "true")
-        self.setProperty("editWidget", "true")
         self.button = Button("Save", parent=self)
         self.fileButton = FileButton(parent=self)
         self.label = QLabel("Torrent File Editor", parent=self)
@@ -71,6 +70,7 @@ class EditorWidget(QWidget):
         self.table.setObjectName("Editor_table")
         self.setLayout(self.layout)
         self.setAcceptDrops(True)
+        self.setObjectName("editTab")
 
     def dragEnterEvent(self, event):
         """Drag enter event for widget."""
@@ -149,9 +149,8 @@ class FileButton(QPushButton):
     def __init__(self, parent=None):
         """Construct for the FileDialog button on Torrent Editor tab."""
         super().__init__(parent=parent)
-        self.setProperty("editFileButton", "true")
         self.widget = parent
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.setText("File")
         self.window = parent.window
         self.clicked.connect(self.browse)
@@ -170,7 +169,6 @@ class AddItemButton(QAction):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setProperty("editButton", "true")
         self.parent = parent
         self.box = None
         self.triggered.connect(self.add_item)
@@ -192,7 +190,6 @@ class RemoveItemButton(QAction):
     def __init__(self, parent):
         """Construct the Button."""
         super().__init__(parent)
-        self.setProperty("editButton", "true")
         self.parent = parent
         self.box = None
         self.triggered.connect(self.remove_item)
@@ -242,7 +239,6 @@ class Table(QTableWidget):
         self.flatten_data(data)
         counter = 0
         for k, v in sorted(self.info.items()):
-            self.window.app.processEvents()
             self.setRowCount(self.rowCount() + 1)
             item = QTableWidgetItem(0)
             item.setText(str(k))
@@ -319,18 +315,17 @@ class ToolBar(QToolBar):
     def __init__(self, parent=None):
         """Construct the toolbar instance."""
         super().__init__(parent=parent)
-        self.setProperty("editToolBar", "true")
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
         self.setMinimumWidth(800)
         self.line_edit = QLineEdit(parent=self)
         self.combo = Combo(self)
         self.combo.setLineEdit(self.line_edit)
         self.add_button = AddItemButton(self)
-        addIcon = QIcon(get_icon("plus"))
+        addIcon = get_icon("plus")
         self.add_button.setIcon(addIcon)
         self.add_button.box = self.combo
         self.remove_button = RemoveItemButton(self)
-        removeIcon = QIcon(get_icon("minus"))
+        removeIcon = get_icon("minus")
         self.remove_button.setIcon(removeIcon)
         self.remove_button.box = self.combo
         self.addWidget(self.combo)

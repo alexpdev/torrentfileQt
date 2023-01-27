@@ -75,19 +75,19 @@ class TreeWidget(QTreeWidget):
                 if i + 1 == len(partials):
                     _, suffix = os.path.splitext(partial)
                     if suffix in [".mp4", ".mkv"]:
-                        iconpath = QIcon(get_icon("video"))
+                        iconpath = get_icon("video")
                     elif suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                        iconpath = QIcon(get_icon("archive"))
+                        iconpath = get_icon("archive")
                     elif re.match(r"\.r\d+", suffix):
-                        iconpath = QIcon(get_icon("archive"))
+                        iconpath = get_icon("archive")
                     elif suffix in [".wav", ".mp3", ".flac", ".m4a", ".aac"]:
-                        iconpath = QIcon(get_icon("music"))
+                        iconpath = get_icon("music")
                     else:
-                        iconpath = QIcon(get_icon("file"))
+                        iconpath = get_icon("file")
                     item.setLength(length)
                 else:
-                    iconpath = QIcon(get_icon("folder"))
-                icon = QIcon(iconpath)
+                    iconpath = get_icon("folder")
+                icon = iconpath
                 item.setIcon(0, icon)
                 item.setText(1, partial)
                 tree["widget"].addChild(item)
@@ -108,7 +108,7 @@ class TreeItem(QTreeWidgetItem):
     def setLength(self, length):
         """Set length leaf for tree branches."""
         child = TreeItem(0)
-        icon = QIcon(QIcon(get_icon("scale")))
+        icon = get_icon("scale")
         child.setIcon(0, icon)
         child.setText(1, f"Size: {length} (bytes)")
         self.setExpanded(True)
@@ -123,6 +123,8 @@ class InfoWidget(QWidget):
         super().__init__(parent=parent)
         self.window = parent.window
         self.layout = QGridLayout()
+        self.setObjectName("infoTab")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setLayout(self.layout)
 
         # Labels

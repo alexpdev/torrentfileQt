@@ -46,19 +46,18 @@ class BencodeEditWidget(QWidget):
             parent widget, by default None
         """
         super().__init__(parent=parent)
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.layout = QVBoxLayout(self)
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setObjectName("bencodeTab")
         self.toolbar = QToolBar(parent=self)
-        self.file_action = QAction(QIcon(get_icon("browse_file")),
-                                   "Select File")
-        self.folder_action = QAction(QIcon(get_icon("browse_folder")),
+        self.setAcceptDrops(True)
+        self.file_action = QAction(get_icon("browse_file"), "Select File")
+        self.folder_action = QAction(get_icon("browse_folder"),
                                      "Select Folder")
-        self.save_action = QAction(QIcon(get_icon("save-as")), "Save Data")
-        self.clear_action = QAction(QIcon(get_icon("erase")), "Clear Data")
-        self.remove_item_action = QAction(QIcon(get_icon("trash")),
-                                          "Remove Item")
-        self.insert_item_action = QAction(QIcon(get_icon("insert")),
-                                          "Insert Item")
+        self.save_action = QAction(get_icon("save-as"), "Save Data")
+        self.clear_action = QAction(get_icon("erase"), "Clear Data")
+        self.remove_item_action = QAction(get_icon("trash"), "Remove Item")
+        self.insert_item_action = QAction(get_icon("insert"), "Insert Item")
         self.treeview = BencodeView(self)
         self.toolbar.addActions((self.file_action, self.folder_action))
         self.toolbar.addSeparator()
@@ -151,6 +150,29 @@ class BencodeEditWidget(QWidget):
             path = browse_folder(self, path)  # pragma: nocover
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
+
+    def dragEnterEvent(self, event):
+        """Drag enter event for widget."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dragMoveEvent(self, event):
+        """Drag Move Event for widgit."""
+        if event.mimeData().hasUrls:
+            event.accept()
+            return True
+        return event.ignore()
+
+    def dropEvent(self, event) -> bool:
+        """Drag drop event for widgit."""
+        urls = event.mimeData().urls()
+        path = urls[0].toLocalFile()
+        if os.path.exists(path):
+            self.load_thread([path])
+            return True
+        return False
 
 
 class BencodeView(QTreeView):

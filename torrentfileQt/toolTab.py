@@ -82,7 +82,7 @@ class MetafileButton(QPushButton):
         self.window = parent.window
         self.widget = parent
         self.setText("Select Torrent File")
-        self.setIcon(QIcon(get_icon("browse_file")))
+        self.setIcon(get_icon("browse_file"))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 
@@ -225,8 +225,8 @@ class PieceLengthCalculator(QGroupBox):
         super().__init__(parent=parent)
         self.setTitle("Piece Length Calculator")
         self.layout = QVBoxLayout(self)
-        icon = QIcon(get_icon("browse_file"))
-        icon2 = QIcon(get_icon("browse_folder"))
+        icon = get_icon("browse_file")
+        icon2 = get_icon("browse_folder")
         self.fileButton = QPushButton(icon, "Select File", self)
         self.folderButton = QPushButton(icon2, "Select Folder", self)
         self.hlayout = QHBoxLayout()

@@ -19,11 +19,12 @@
 """Graphical Extension for Users who prefer a GUI over CLI."""
 
 import sys
+import string
 
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget,
-                               QVBoxLayout, QWidget, QStackedWidget, QHBoxLayout, QLabel, QPushButton)
+                               QVBoxLayout, QWidget, QStackedWidget, QHBoxLayout, QLabel, QPushButton, QButtonGroup)
 
 from torrentfileQt.bencodeTab import BencodeEditWidget
 from torrentfileQt.checkTab import CheckWidget
@@ -31,15 +32,13 @@ from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar, TitleBar
-from torrentfileQt.qss import dark_theme, light_theme
+from torrentfileQt.qss import dark, light, style, tab_style
 from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
 
-# from torrentfileQt.qss import compile
 
-THEMES = {"dark_theme": dark_theme, "light_theme": light_theme}
-DEFAULT_THEME = "dark_theme"
+
 
 
 class Window(QMainWindow):
@@ -69,6 +68,7 @@ class Window(QMainWindow):
         self.statusbar = self.statusBar()
         self.icon = get_icon("torrentfile48")
         self.setObjectName("Mainwindow")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStatusBar(self.statusbar)
         self.resize(820, 740)
         self._setupUI()
@@ -84,6 +84,7 @@ class Window(QMainWindow):
         self.central_layout.setSpacing(0)
         self.setContentsMargins(1,0,1,1)
         self.titleBar.setWindowTitle("TorrentfileQt")
+        self.central.setAttribute(Qt.WA_StyledBackground, True)
         self.central_layout.setContentsMargins(0,0,0,0)
         self.titleBar.setWindowIcon(self.icon)
         self.titleBar.setMenuBar(self.menubar)
@@ -112,8 +113,10 @@ class TabWidget(QWidget):
             QMainWindow
         """
         super().__init__(parent=parent)
+        self.app = QApplication.instance()
         self._parent = parent
         self.layout = QVBoxLayout(self)
+        self.layout.addSpacing(10)
         self.setProperty("tabs", True)
         self.setObjectName("tabbar")
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -125,6 +128,8 @@ class TabWidget(QWidget):
         self.bencodeEditWidget = BencodeEditWidget(parent=self)
         self.rebuildWidget = RebuildWidget(parent=self)
         self.tabs = {}
+        self.buttons = []
+        self.button_group = QButtonGroup(parent=self)
         self.addTab(self.createWidget, "Create Torrent")
         self.addTab(self.editorWidget, "Edit Torrent")
         self.addTab(self.checkWidget, "Recheck Torrent")
@@ -132,74 +137,62 @@ class TabWidget(QWidget):
         self.addTab(self.bencodeEditWidget, "Bencode Editor")
         self.addTab(self.infoWidget, "Torrent Info")
         self.addTab(self.toolWidget, "Torrent Tools")
-        self.createWidget.setProperty("ActiveTab", True)
+        self.button_group.buttonClicked.connect(self.switch_tab)
+        self.button_group.buttonClicked.emit(self.buttons[0])
         self.layout.addStretch(1)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.toolWidget.setObjectName("toolWidget")
-        self.rebuildWidget.setObjectName("rebuildTab")
-        self.createWidget.setObjectName("createTab")
-        self.infoWidget.setObjectName("infoTab")
-        self.checkWidget.setObjectName("checkTab")
-        self.bencodeEditWidget.setObjectName("bencodeTab")
-        self.editorWidget.setObjectName("editorTab")
+        self.layout.setContentsMargins(0, 0, 2, 0)
 
     def addTab(self, widget, title):
         button = QPushButton(title, self)
         l = len(self.tabs)
-        self.tabs[l] = {
-            "widget": widget,
-            "button": button,
-            "func": lambda: self.open_tab(l)
-        }
+        self.tabs[l] = widget
+        self.buttons.append(button)
+        self.button_group.addButton(button)
+        self.button_group.setId(button, l)
         self.layout.addWidget(button)
         self._parent.stack.addWidget(widget)
         button.setProperty("Tab", True)
-        button.clicked.connect(self.tabs[l]["func"])
 
-    def open_tab(self, index):
-        for k, v in self.tabs.items():
-            button = v.get("button")
-            if k == index:
-                button.setProperty("Tab", False)
-                button.setProperty("ActiveTab", True)
-            elif button.property("ActiveTab"):
-                button.setProperty("ActiveTab", False)
-                button.setProperty("Tab", True)
-        self.window().stack.setCurrentIndex(index)
-
+    def switch_tab(self, button):
+        active_style = self.app.get_tab_style(True)
+        inactive_style = self.app.get_tab_style(False)
+        button.setStyleSheet(active_style)
+        b_id = self.button_group.id(button)
+        self._parent.stack.setCurrentWidget(self.tabs[b_id])
+        for button in self.buttons:
+            if self.button_group.id(button) != b_id:
+                button.setStyleSheet(inactive_style)
 
 
 class Application(QApplication):
     """QApplication Widget."""
 
-    def __init__(self, args):
-        """
-        Construct for main application backend.
-
-        Parameters
-        ----------
-        args : list
-            argument list passed to window.
-        """
-        super().__init__(args)
-        self._setup_stylesheets()
-        self.window = Window(parent=None, app=self)
-        # self.setStyleSheet(compile())
-
     def _setup_stylesheets(self):
         """Construct initial stylesheet state."""
-        self.qstyles = StyleManager(THEMES)
-        self.qstyles.set_theme_from_title(DEFAULT_THEME)
+        self.tab_style = tab_style
+        themes = {"dark": dark, "light": light}
+        self.styler = StyleManager(themes, style, "dark")
+        self.styler.setTheme()
 
     def set_new_theme(self, theme):
         """Apply the given stylesheet."""
-        self.qstyles.current = theme
+        self.styler.current = theme
         self.setStyleSheet(theme)
+
+    def get_tab_style(self, active):
+        """Return the stylesheet for current tab."""
+        tabstyle = self.tab_style(active)
+        template = string.Template(tabstyle)
+        theme = self.styler.themes[self.styler.default]
+        style = template.substitute(theme)
+        return style
 
     @classmethod
     def start(cls, args=None):  # pragma: no cover
         """Start the program entrypoint."""
         app = cls(args if args else sys.argv)
+        app._setup_stylesheets()
+        app.window = Window(parent=None, app=app)
         app.window.show()
         sys.exit(app.exec())
 
