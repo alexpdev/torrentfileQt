@@ -293,7 +293,7 @@ def get_icon(name: str) -> str:
 
 
 
-def browse_folder(widget: object, folder: str = None) -> str:
+def browse_folder(widget: object) -> str:
     """
     Browse for folder performed when user presses button.
 
@@ -301,20 +301,15 @@ def browse_folder(widget: object, folder: str = None) -> str:
     ----------
     widget : QWidget
         The widget making the call.
-    folder : str
-        Optional testing path
 
     Returns
     -------
     str
         folder path
     """
-    if not folder:
-        folder = QFileDialog.getExistingDirectory(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select Contents Folder...",
-        )
+    folder = QFileDialog.getExistingDirectory(
+        parent=widget, dir=str(Path.home()), caption="Select Folder",
+    )
     if folder:
         folder = os.path.normpath(folder)
     return folder
@@ -325,7 +320,7 @@ def clean_list(lst: list) -> list:
     return [item for item in lst if item]  # pragma: nocover
 
 
-def browse_files(widget: object, paths: list = None) -> list:
+def browse_files(widget: object) -> list:
     """
     Browse for files action performed when user presses button.
 
@@ -333,26 +328,20 @@ def browse_files(widget: object, paths: list = None) -> list:
     ----------
     widget : QWidget
         The widget making the call.
-    paths : list
-        list of path strings
 
     Returns
     -------
     list
         list of pathstrings
     """
-    if not paths:
-        paths = QFileDialog.getOpenFileName(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select Contents File...",
-        )
-    if paths and paths[0]:
-        paths = [os.path.normpath(i) for i in paths if i]
-    return paths
+    path, _ = QFileDialog.getOpenFileName(
+        parent=widget, dir=str(Path.home()), caption="Select File")
+    if not path:
+        path = ""
+    return os.path.normpath(path)
 
 
-def browse_torrent(widget: object, torrents: list = None) -> list:
+def browse_torrent(widget: object) -> list:
     """
     Browse for torrent file performed when user presses button.
 
@@ -368,12 +357,11 @@ def browse_torrent(widget: object, torrents: list = None) -> list:
     list
         list of path strings
     """
-    if not torrents:
-        torrents = QFileDialog.getOpenFileName(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select *.torrent File...",
-        )
+    torrents = QFileDialog.getOpenFileName(
+        parent=widget, dir=str(Path.home()),
+        caption="Select *.torrent File...",
+        filter=("*.torrent, Torrent", "*, Any")
+    )
     if torrents and torrents[0]:
         torrents = [os.path.normpath(i) for i in torrents if i]
     return torrents

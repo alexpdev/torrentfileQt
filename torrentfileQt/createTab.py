@@ -26,15 +26,19 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
+from PySide6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSizePolicy,
-                               QSpacerItem, QWidget)
+                               QPushButton, QRadioButton, QSpacerItem, QWidget)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
 from torrentfileQt.utils import browse_files, browse_folder, get_icon
+from torrentfileQt.widgets import DropGroupBox
 
 
 class CreateWidget(QWidget):
@@ -57,148 +61,103 @@ class CreateWidget(QWidget):
             Parent Widget. Defaults to None.
         """
         super().__init__(parent=parent)
-        self.content_dir = None
-        self.outpath = None
         self.setObjectName("createTab")
-        self.layout = QGridLayout()
         self.setAcceptDrops(True)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setLayout(self.layout)
+        self.centralLayout = QVBoxLayout(self)
+        self.centralWidget = QWidget()
+        self.centralWidget.setObjectName("CreateCentralWidget")
+        self.centralLayout.addWidget(self.centralWidget)
+        self.layout = QVBoxLayout(self.centralWidget)
 
-        self.hlayout1 = QHBoxLayout()
-        self.hlayout2 = QHBoxLayout()
-        self.hlayout3 = QHBoxLayout()
-        self.hlayout0 = QHBoxLayout()
 
-        self.path_label = QLabel("Path: ", parent=self)
-        self.output_label = QLabel("Save To: ", parent=self)
-        self.version_label = QLabel("Version: ", parent=self)
-        self.comment_label = QLabel("Comment: ", parent=self)
-        self.announce_label = QLabel("Trackers: ", parent=self)
-        self.web_seed_label = QLabel("Web-Seeds: ", parent=self)
-        self.source_label = QLabel("Source: ", parent=self)
-        self.piece_length_label = QLabel("Piece Size: ", parent=self)
-
-        self.path_input = PathEdit(parent=self)
-        self.output_input = QLineEdit(parent=self)
-        self.source_input = QLineEdit(parent=self)
-        self.comment_input = QLineEdit(parent=self)
-
-        self.announce_input = QPlainTextEdit(parent=self)
-        self.web_seed_input = QPlainTextEdit(parent=self)
-        self.announce_input.setMaximumHeight(150)
-        self.web_seed_input.setMaximumHeight(150)
-        self.piece_length = ComboBox.piece_length(parent=self)
-        self.private = QCheckBox("Private", parent=self)
-        self.submit_button = SubmitButton("Create Torrent", parent=self)
-        self.browse_dir_button = BrowseDirButton(parent=self)
-        self.browse_file_button = BrowseFileButton(parent=self)
-        self.output_button = OutButton(parent=self)
+        versionBox = QGroupBox()
+        versionBox.setTitle("Torrent Version")
+        hlayout0 = QHBoxLayout(versionBox)
         self.v1button = QRadioButton("v1 (default)", parent=self)
         self.v1button.setChecked(True)
-
         self.v2button = QRadioButton("v2", parent=self)
         self.hybridbutton = QRadioButton("v1+2 (hybrid)", parent=self)
-        self.spacer1 = QSpacerItem(150, 0)
-        self.spacer2 = QSpacerItem(70, 0)
+        hlayout0.addWidget(self.v1button)
+        hlayout0.addWidget(self.v2button)
+        hlayout0.addWidget(self.hybridbutton)
 
-        sizePolicy = self.path_input.sizePolicy()
-        sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.MinimumExpanding)
+        self.path_group = DropGroupBox(parent=self)
+        self.path_dir_button = BrowseDirButton(parent=self)
+        self.path_file_button = BrowseFileButton(parent=self)
+        self.path_group.addButton(self.path_dir_button)
+        self.path_group.addButton(self.path_file_button)
+        self.path_group.setTitle("Content Path")
+        self.path_group.setLabelText("Drop File/Folder Here")
+        self.path_dir_button.folderSelected.connect(self.setPath)
+        self.path_file_button.fileSelected.connect(self.setPath)
+        self.path_group.pathSelected.connect(self.setPath)
 
-        self.announce_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.web_seed_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.path_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.path_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.path_input.setSizePolicy(sizePolicy)
-        self.output_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.output_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.source_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.source_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.comment_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.comment_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.piece_length_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        output_label = QLabel("Save Path", parent=self)
+        output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        hlayout3 = QHBoxLayout()
+        self.output_path_edit = QLineEdit(parent=self)
+        self.output_button = OutButton(parent=self)
+        hlayout3.addWidget(self.output_path_edit)
+        hlayout3.addWidget(self.output_button)
 
-        self.hlayout1.addWidget(self.path_input)
-        self.hlayout0.addWidget(self.v1button)
-        self.hlayout0.addWidget(self.v2button)
-        self.hlayout0.addWidget(self.hybridbutton)
-        self.hlayout1.addWidget(self.browse_dir_button)
-        self.hlayout1.addWidget(self.browse_file_button)
-        self.hlayout2.addWidget(self.piece_length)
-        self.hlayout2.addItem(self.spacer1)
-        self.hlayout2.addWidget(self.private)
-        self.hlayout2.addItem(self.spacer2)
-        self.hlayout3.addWidget(self.output_input)
-        self.hlayout3.addWidget(self.output_button)
+        source_label = QLabel("Source", parent=self)
+        source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.source_edit = QLineEdit(parent=self)
 
-        self.layout.addWidget(self.path_label, 0, 0, 1, 1)
-        self.layout.addLayout(self.hlayout1, 0, 1, 1, 3)
-        self.layout.addWidget(self.output_label, 1, 0, 1, 1)
-        self.layout.addLayout(self.hlayout3, 1, 1, 1, 3)
-        self.layout.addWidget(self.source_label, 2, 0, 1, 1)
-        self.layout.addWidget(self.source_input, 2, 1, 1, 3)
-        self.layout.addWidget(self.comment_label, 3, 0, 1, 1)
-        self.layout.addWidget(self.comment_input, 3, 1, 1, 3)
-        self.layout.addWidget(self.announce_label, 4, 0, 1, 1)
-        self.layout.addWidget(self.announce_input, 4, 1, 1, 3)
-        self.layout.addWidget(self.web_seed_label, 5, 0, 1, 1)
-        self.layout.addWidget(self.web_seed_input, 5, 1, 1, 3)
-        self.layout.addWidget(self.piece_length_label, 6, 0, 1, 1)
-        self.layout.addWidget(self.version_label, 7, 0, 1, 1)
-        self.layout.addLayout(self.hlayout2, 6, 1, 1, 3)
-        self.layout.addLayout(self.hlayout0, 7, 1, 1, 3)
-        self.layout.addWidget(self.submit_button, 8, 0, 1, 4)
-        for i in range(1, self.layout.columnCount()):
-            self.layout.setColumnStretch(i, 1)
-        self.layout.setObjectName("createWidget_formLayout")
-        self.hlayout2.setObjectName("createWidget_hlayout2")
-        self.submit_button.setObjectName("createWidget_submit_button")
-        self.private.setObjectName("createWidget_private")
-        self.path_label.setObjectName("createWidget_path_label")
-        self.path_input.setObjectName("createWidget_path_input")
-        self.piece_length.setObjectName("createWidget_piece_length")
-        self.piece_length_label.setObjectName("createWidgetPiece_lengthLabel")
-        self.source_label.setObjectName("createWidget_source_label")
-        self.source_input.setObjectName("createWidget_source_input")
-        self.announce_input.setObjectName("createWidget_announce_input")
-        self.announce_label.setObjectName("createWidget_announce_label")
-        self.comment_input.setObjectName("createWidget_comment_input")
-        self.comment_label.setObjectName("createWidget_comment_label")
-        self.browse_dir_button.setObjectName("createWidget_browsedir_button")
-        self.browse_file_button.setObjectName("createWidget_browsefile_button")
+        comment_label = QLabel("Comment", parent=self)
+        comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.comment_edit = QLineEdit(parent=self)
+
+        announce_label = QLabel("Trackers: ", parent=self)
+        announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.announce_input = QPlainTextEdit(parent=self)
+        self.announce_input.setMaximumHeight(150)
+
+        web_seed_label = QLabel("Web-Seeds: ", parent=self)
+        web_seed_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.web_seed_input = QPlainTextEdit(parent=self)
+        self.web_seed_input.setMaximumHeight(150)
+
+        hlayout2 = QHBoxLayout()
+        piece_length_label = QLabel("Torrent Piece Length", parent=self)
+        self.piece_length_combo = ComboBox.piece_length(parent=self)
+        self.private = QCheckBox("Private", parent=self)
+        spacer1 = QSpacerItem(150, 0)
+        spacer2 = QSpacerItem(70, 0)
+        hlayout2.addWidget(piece_length_label)
+        hlayout2.addWidget(self.piece_length_combo)
+        hlayout2.addItem(spacer1)
+        hlayout2.addWidget(self.private)
+        hlayout2.addItem(spacer2)
+
+        self.submit_button = SubmitButton("Create Torrent", parent=self)
+
+        self.layout.addWidget(self.path_group)
+        self.layout.addWidget(output_label)
+        self.layout.addLayout(hlayout3)
+        self.layout.addLayout(hlayout2)
+        self.layout.addWidget(versionBox)
+        self.layout.addWidget(source_label)
+        self.layout.addWidget(self.source_edit)
+        self.layout.addWidget(comment_label)
+        self.layout.addWidget(self.comment_edit)
+        self.layout.addWidget(announce_label)
+        self.layout.addWidget(self.announce_input)
+        self.layout.addWidget(web_seed_label)
+        self.layout.addWidget(self.web_seed_input)
+        self.layout.addWidget(self.submit_button)
 
 
-
-class PathEdit(QLineEdit):
-    """Enable Drag and Drop"""
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.setAcceptDrops(True)
-
-    def dragEnterEvent(self, event):
-        """Drag enter event for widget."""
-        if event.mimeData().hasUrls:
-            event.accept()
-            return True
-        return event.ignore()
-
-    def dragMoveEvent(self, event):
-        """Drag Move Event for widgit."""
-        if event.mimeData().hasUrls:
-            event.accept()
-            return True
-        return event.ignore()
-
-    def dropEvent(self, event) -> bool:
-        """Drag drop event for widgit."""
-        urls = event.mimeData().urls()
-        path = urls[0].toLocalFile()
-        if os.path.exists(path):
-            self.setText(path)
-            return True
-        return False
+    def setPath(self, path):
+        piece_length = path_piece_length(path)
+        if piece_length < (2**20):
+            val = f"{piece_length//(2**10)} KiB"
+        else:
+            val = f"{piece_length//(2**20)} MiB"
+        self.path_group.setLabelText(path)
+        self.piece_length_combo.setValue(val)
+        self.output_input.setText(path + ".torrent")
 
 
 class TorrentFileCreator(QThread):
@@ -322,79 +281,67 @@ class SubmitButton(QPushButton):
 class OutButton(QPushButton):
     """Button widget."""
 
+    savePathSelected = Signal(str)
+
     def __init__(self, parent=None):
         """Construct for file picker for outfile button."""
         super().__init__(parent=parent)
-        self.window = parent.window
-        self.widget = parent
         self.setText("File")
         self.setIcon(get_icon("browse_file"))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
-    def output(self, outpath=None):
+    def output(self):
         """Assign output path for created torrent file."""
-        if not outpath:  # pragma: no cover
-            outpath, _ = QFileDialog.getSaveFileName(
-                parent=self,
-                caption="Save as...",
-                dir=str(Path.home()),
-                filter="*.torrent",
-                selectedFilter="",
-            )
+        outpath, _ = QFileDialog.getSaveFileName(
+            parent=self,
+            caption="Save as",
+            dir=str(Path.home()),
+            filter="*.torrent",
+            selectedFilter="",
+        )
         if outpath:
-            self.widget.output_input.clear()
-            self.parent().output_input.setText(outpath)
-            self.parent().outpath = outpath
+            self.savePathSelected.emit(outpath)
 
 
 class BrowseFileButton(QPushButton):
     """Button widget for browse."""
 
+    fileSelected = Signal(str)
+
     def __init__(self, parent=None):
         """Public constructor for browsebutton class."""
         super().__init__(parent)
+        self.setObjectName("CreateFileButton")
         self.setIcon(get_icon("browse_file"))
-        self.setText("File")
+        self.setText("Select File")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
-        self.window = parent
 
-    def browse(self, paths=None):
+    def browse(self):
         """
         Browse performed when user presses button.
 
         Opens File/Folder Dialog.
         """
-        paths = browse_files(self, paths)
-        if not paths:
-            return  # pragma: nocover
-        self.window.path_input.clear()
-        self.window.output_input.clear()
-        self.window.path_input.setText(paths[0])
-        self.window.output_input.setText(paths[0] + ".torrent")
-        piece_length = path_piece_length(paths[0])
-        if piece_length < (2**20):
-            val = f"{piece_length//(2**10)} KiB"
-        else:
-            val = f"{piece_length//(2**20)} MiB"  # pragma: nocover
-        for i in range(self.window.piece_length.count()):
-            if self.window.piece_length.itemText(i) == val:
-                self.window.piece_length.setCurrentIndex(i)
-                break
+        path = browse_files(self)
+        if path:
+            self.fileSelected.emit(path)
 
 
 class BrowseDirButton(QPushButton):
     """Browse filesystem folders for path."""
 
+    folderSelected = Signal(str)
+
     def __init__(self, parent=None):
         """Construct for folder browser button."""
         super().__init__(parent=parent)
-        self.setText("Folder")
+        self.setObjectName("CreateFolderButton")
         self.setIcon(get_icon("browse_folder"))
-        self.window = parent
-        self.clicked.connect(self.browse)
+        self.setText("Select Folder")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.clicked.connect(self.browse)
 
     def browse(self, path=None):
         """
@@ -403,21 +350,8 @@ class BrowseDirButton(QPushButton):
         Opens File/Folder Dialog.
         """
         path = browse_folder(self, path)
-        if not path:
-            return  # pragma: nocover
-        self.window.path_input.clear()
-        self.window.output_input.clear()
-        self.window.path_input.setText(path)
-        self.window.output_input.insert(path + ".torrent")
-        piece_length = path_piece_length(path)
-        if piece_length < (2**20):
-            val = f"{piece_length//(2**10)} KiB"
-        else:  # pragma: no cover
-            val = f"{piece_length//(2**20)} MiB"
-        for i in range(self.window.piece_length.count()):
-            if self.window.piece_length.itemText(i) == val:
-                self.window.piece_length.setCurrentIndex(i)
-                break
+        if path:
+            self.folderSelected.emit(path)
 
 
 class ComboBox(QComboBox):
@@ -441,3 +375,10 @@ class ComboBox(QComboBox):
                 item = str((2**exp) // (2**20)) + " MiB"
             box.addItem(item, 2**exp)
         return box
+
+    def setValue(self, val):
+        """Set the current value to val."""
+        for i in range(self.count()):
+            if self.itemText(i) == val:
+                self.setCurrentIndex(i)
+                break

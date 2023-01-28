@@ -37,7 +37,8 @@ dark = {
     "_11":"#704523",
     "_12":"#302513",
     "_13":"#192031",
-    "_14":"#656565",
+    "_14":"#858585",
+    "_15":"#FFFFAA",
     "_arrow": str(arrow)
 }
 
@@ -55,6 +56,8 @@ light = {
     "_11":"#4075E3",
     "_12":"#A0D5E3",
     "_13":"#E9D0C1",
+    "_14":"#8B8B8B",
+    "_15":"#000055",
     "_arrow": str(arrow)
 }
 
@@ -210,6 +213,44 @@ QMenu::indicator {
     padding: 0px;
     margin: 0px;
     font-size: 9pt;
+}
+#CreateCentralWidget {
+    margin: 15px;
+}
+#CreateCentralWidget QLabel {
+    font-weight: bold;
+    font-size: 10pt;
+    margin: 2px 5px;
+}
+#CreateCentralWidget ComboBox {
+    padding: 3px;
+    margin: 3px;
+}
+*[DropGroupBox="true"] {
+    border: 1px dashed $_14;
+    margin-top: 17px;
+    font-size: 12px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+*[DropGroupBox="true"]::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 5px 10px;
+}
+*[DropGroupBox="true"] QPushButton {
+    background-color: transparent;
+    color: $_1;
+}
+*[DropGroupBox="true"] QPushButton:hover {
+    border-color: $_1;
+    color: $_15;
+}
+*[DropGroupBox="true"] QLabel {
+    font-size: 12pt;
+    font-weight: bold;
 }
 """
 
