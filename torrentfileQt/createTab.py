@@ -66,12 +66,14 @@ class CreateWidget(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.centralLayout = QVBoxLayout(self)
         self.centralWidget = QWidget()
+        self.centralWidget.setAcceptDrops(True)
+        self.centralWidget.setAttribute(Qt.WA_StyledBackground, True)
         self.centralWidget.setObjectName("CreateCentralWidget")
         self.centralLayout.addWidget(self.centralWidget)
         self.layout = QVBoxLayout(self.centralWidget)
 
-
         versionBox = QGroupBox()
+        versionBox.setObjectName("VersionBox")
         versionBox.setTitle("Torrent Version")
         hlayout0 = QHBoxLayout(versionBox)
         self.v1button = QRadioButton("v1 (default)", parent=self)
@@ -132,12 +134,13 @@ class CreateWidget(QWidget):
         hlayout2.addItem(spacer2)
 
         self.submit_button = SubmitButton("Create Torrent", parent=self)
+        self.submit_button.setObjectName("CreateSubmitButton")
 
+        self.layout.addWidget(versionBox)
         self.layout.addWidget(self.path_group)
+        self.layout.addLayout(hlayout2)
         self.layout.addWidget(output_label)
         self.layout.addLayout(hlayout3)
-        self.layout.addLayout(hlayout2)
-        self.layout.addWidget(versionBox)
         self.layout.addWidget(source_label)
         self.layout.addWidget(self.source_edit)
         self.layout.addWidget(comment_label)
@@ -148,8 +151,8 @@ class CreateWidget(QWidget):
         self.layout.addWidget(self.web_seed_input)
         self.layout.addWidget(self.submit_button)
 
-
-    def setPath(self, path):
+    def setPath(self, path: str):
+        """Set the path of the torrent content."""
         piece_length = path_piece_length(path)
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)} KiB"
@@ -157,7 +160,7 @@ class CreateWidget(QWidget):
             val = f"{piece_length//(2**20)} MiB"
         self.path_group.setLabelText(path)
         self.piece_length_combo.setValue(val)
-        self.output_input.setText(path + ".torrent")
+        self.output_path_edit.setText(path + ".torrent")
 
 
 class TorrentFileCreator(QThread):
@@ -196,74 +199,73 @@ class TorrentFileCreator(QThread):
 class SubmitButton(QPushButton):
     """Button widget."""
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text: str, parent: QWidget = None) -> None:
         """
         Construct the submit button.
 
         Parameters
         ----------
-        text : `str`
+        text : str
             Text displayed on the button itself.
         parent : QWidget
-            The tab widget parent.
+            The tab widget parent. default = None
         """
         super().__init__(text, parent=parent)
-        self.thread = None
-        self._text = text
-        self.widget = parent
         self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setObjectName("CreateSubmitButton")
         self.setText(text)
         self.clicked.connect(self.submit)
+        self._parent = parent
+        self.thread = None
+
 
     def submit(self):
         """Submit Action performed when user presses Submit Button."""
+        parent = self._parent
         # Gather Information from other Widgets.
         args = {}
-        if self.widget.private.isChecked():
+        if parent.private.isChecked():
             args["private"] = 1
 
         # add source to metadata
-        sourcetext = self.widget.source_input.text()
+        sourcetext = parent.source_edit.text()
         if sourcetext:
             args["source"] = sourcetext
 
         # add comments to metadata
-        commenttext = self.widget.comment_input.text()
+        commenttext = parent.comment_edit.text()
         if commenttext:
             args["comment"] = commenttext
 
         # at least 1 tracker input is required
-        announce = self.widget.announce_input.toPlainText()
-        announce = [i for i in announce.split("\n") if i]
+        announce = parent.announce_input.toPlainText()
+        announce = [i.strip() for i in announce.split("\n") if i]
         if announce:
             args["announce"] = announce
 
-        url_list = self.widget.web_seed_input.toPlainText()
-        url_list = [i for i in url_list.split("\n") if i]
+        url_list = parent.web_seed_input.toPlainText()
+        url_list = [i.strip() for i in url_list.split("\n") if i]
         if url_list:
             args["url_list"] = url_list
 
         # Calculates piece length if not specified by user.
-        outtext = os.path.realpath(self.widget.output_input.text())
+        outtext = os.path.realpath(parent.output_path_edit.text())
         if outtext:
             args["outfile"] = outtext
 
-        current = self.widget.piece_length.currentIndex()
+        current = parent.piece_length_combo.currentIndex()
         if current:
-            piece_length_index = self.widget.piece_length.currentIndex()
-            piece_length = self.widget.piece_length.itemData(
-                piece_length_index)
+            piece_length = parent.piece_length_combo.itemData(current)
             args["piece_length"] = piece_length
 
-        if self.widget.hybridbutton.isChecked():
+        if parent.hybridbutton.isChecked():
             creator = TorrentFileHybrid
-        elif self.widget.v2button.isChecked():
+        elif parent.v2button.isChecked():
             creator = TorrentFileV2
         else:
             creator = TorrentFile
 
-        path = self.widget.path_input.text()
-        args["path"] = path
+        args["path"] = parent.path_group.getLabelText()
         self.thread = TorrentFileCreator(args, creator)
         self.thread.created.connect(self.updateStatusBarEnd)
         self.thread.started.connect(self.updateStatusBarBegin)
@@ -276,6 +278,7 @@ class SubmitButton(QPushButton):
     def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
         self.window().statusBar().showMessage("Completed", 3000)
+        self.thread.deleteLater()
 
 
 class OutButton(QPushButton):

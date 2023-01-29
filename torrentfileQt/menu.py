@@ -23,7 +23,7 @@ import webbrowser
 
 from PySide6.QtGui import QAction, QPixmap, QIcon
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton
+from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton, QDialog, QVBoxLayout, QPlainTextEdit
 
 from torrentfileQt.utils import get_icon
 
@@ -82,6 +82,8 @@ class TitleBar(QWidget):
         self.closeButton = TitleBarButton("close", parent=self)
         self.minimizeButton = TitleBarButton("min", parent=self)
         self.maximizeButton = TitleBarButton("max", parent=self)
+        self.stylebutton = QPushButton("Style Menu", parent=self)
+        self.stylebutton.clicked.connect(self.open_style_dialog)
         sizePolicy = QSizePolicy()
         sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
         self.closeButton.setSizePolicy(sizePolicy)
@@ -89,6 +91,7 @@ class TitleBar(QWidget):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.addWidget(self.icon)
+        self.layout.addWidget(self.stylebutton)
         self.layout.addStretch(1)
         self.layout.addWidget(self.label)
         self.layout.addStretch(1)
@@ -135,6 +138,43 @@ class TitleBar(QWidget):
     def setMenuBar(self, menubar):
         self.menuBar = menubar
         self.layout.insertWidget(1, menubar)
+
+    def open_style_dialog(self):
+        app = QApplication.instance()
+        styler = app.styler
+        self.dialog = QDialog()
+        self.dialog.resize(500,700)
+        vlayout = QVBoxLayout(self.dialog)
+        hlayout = QHBoxLayout()
+        self.dialog.plainTextEdit = QPlainTextEdit()
+        self.dialog.plainTextEdit.setPlainText(styler.current)
+        writeButton = QPushButton("Write")
+        savebutton = QPushButton("Save")
+        cancelbutton = QPushButton("Cancel")
+        hlayout.addWidget(savebutton)
+        hlayout.addWidget(cancelbutton)
+        hlayout.addWidget(writeButton)
+        vlayout.addWidget(self.dialog.plainTextEdit)
+        vlayout.addLayout(hlayout)
+        savebutton.clicked.connect(self.saveStyle)
+        cancelbutton.clicked.connect(self.closeStyleDialog)
+        writeButton.clicked.connect(self.writeContents)
+        self.dialog.show()
+
+    def writeContents(self):
+        text = self.dialog.plainTextEdit.toPlainText()
+        with open(os.path.join(os.path.dirname(__file__), "temp.qss"), "wt") as qss:
+            qss.write(text)
+
+    def closeStyleDialog(self):
+        self.dialog.close()
+        self.dialog.deleteLater()
+
+    def saveStyle(self):
+        app = QApplication.instance()
+        text = self.dialog.plainTextEdit.toPlainText()
+        app.styler.setTheme(text)
+
 
 
 class MenuBar(QMenuBar):

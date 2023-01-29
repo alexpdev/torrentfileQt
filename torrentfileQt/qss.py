@@ -39,6 +39,9 @@ dark = {
     "_13":"#192031",
     "_14":"#858585",
     "_15":"#FFFFAA",
+    "_16": "#55A",
+    "_17": "#EA3",
+    "_18": "#599F95",
     "_arrow": str(arrow)
 }
 
@@ -58,6 +61,9 @@ light = {
     "_13":"#E9D0C1",
     "_14":"#8B8B8B",
     "_15":"#000055",
+    "_16": "#BB6",
+    "_17": "#26D",
+    "_18": "#B7707B",
     "_arrow": str(arrow)
 }
 
@@ -229,7 +235,7 @@ QMenu::indicator {
 *[DropGroupBox="true"] {
     border: 1px dashed $_14;
     margin-top: 17px;
-    font-size: 12px;
+    margin-bottom: 17px;
     border-bottom-left-radius: 15px;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -248,9 +254,85 @@ QMenu::indicator {
     border-color: $_1;
     color: $_15;
 }
-*[DropGroupBox="true"] QLabel {
-    font-size: 12pt;
-    font-weight: bold;
+#VersionBox {
+    border-color: $_14;
+    border-radius: 8px;
+    border-width: 1px;
+    border-style: solid;
+    margin: 8px;
+}
+#VersionBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top;
+    padding: 0px 5px 15px 5px;
+}
+#CreateSubmitButton {
+    margin: 10px;
+}
+#EditDropGroup {
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+#EditDropGroup QLabel {
+    margin-top: 5px;
+    font-weight: normal;
+    margin-bottom: 5px;
+}
+#EditDropGroup QPushButton {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 5px 0px;
+}
+#EditDropGroup::title {
+    subcontrol-origin-margin;
+    subcontrol-position: top center;
+    padding: 0px 12px 12px 12px;
+    font-size: 10pt;
+}
+#EditGroupBox {
+    padding: 0px;
+    margin: 0px;
+}
+#EditGroupBox QPushButton {
+    padding: 4px 6px;
+    margin-left: 4px;
+    margin-right: 4px;
+    border-radius: 12px;
+    border-color: $_3;
+    border-width: 2px;
+    background-color: $_16;
+}
+#EditGroupBox QComboBox {
+    padding: 8px 0px;
+    padding-right: 0px;
+    margin-left: 4px;
+    margin-right: 0px;
+    max-width: 300px;
+}
+#EditGroupBox QComboBox QLineEdit {
+    padding: 0px;
+    margin: 0px;
+}
+#EditTable {
+    margin: 8px;
+    padding: 2px;
+    gridline-color: $_17;
+    font-size: 10pt;
+    selection-background-color: $_18;
+}
+#EditTable QCheckBox {
+    margin-left: 12px;
+    padding: 4px;
+}
+#EditSaveButton {
+    border-radius: 12px;
+    border-color: $_14;
+    border-width: 2px;
+    background-color: $_16;
+    margin: 15px;
+    padding:8px;
 }
 """
 

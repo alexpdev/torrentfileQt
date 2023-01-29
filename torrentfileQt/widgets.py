@@ -6,7 +6,7 @@ from PySide6.QtGui import *
 
 class DropGroupBox(QGroupBox):
 
-    pathSelected = Signal(str, str)
+    pathSelected = Signal(str)
 
     def __init__(self, parent: QWidget = None):
         """
@@ -19,6 +19,7 @@ class DropGroupBox(QGroupBox):
         """
         super().__init__(parent=parent)
         self.setProperty("DropGroupBox", True)
+        self.setAcceptDrops(True)
         self.layout = QVBoxLayout(self)
         self._label = QLabel("")
         self._label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -29,24 +30,27 @@ class DropGroupBox(QGroupBox):
     def addButton(self, button: QPushButton):
         self.hlayout.addWidget(button)
 
-    def setLabelText(self, text):
+    def setLabelText(self, text: str):
         self._label.setText(text)
 
-    def dragEnterEvent(self, event):
+    def getLabelText(self) -> str:
+        return self._label.text()
+
+    def dragEnterEvent(self, event: QMouseEvent) -> bool:
         """Drag enter event for widget."""
         if event.mimeData().hasUrls:
             event.accept()
             return True
         return event.ignore()
 
-    def dragMoveEvent(self, event):
+    def dragMoveEvent(self, event: QMouseEvent) -> bool:
         """Drag Move Event for widgit."""
         if event.mimeData().hasUrls:
             event.accept()
             return True
         return event.ignore()
 
-    def dropEvent(self, event) -> bool:
+    def dropEvent(self, event: QMouseEvent) -> bool:
         """Drag drop event for widgit."""
         urls = event.mimeData().urls()
         path = urls[0].toLocalFile()

@@ -40,6 +40,7 @@ class StyleManager(QObject):
         self.themes = themes
         self.default = default
         self.parser = QssParser()
+        self.current = None
         self.applyTheme.connect(self.set_app_theme)
 
     @staticmethod
@@ -60,6 +61,7 @@ class StyleManager(QObject):
         if not theme:
             template = string.Template(self.sheet)
             theme = template.substitute(self.themes[self.default])
+        self.current = theme
         self.applyTheme.emit(theme)
 
     def set_theme_from_title(self, title: str):
