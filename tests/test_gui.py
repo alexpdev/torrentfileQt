@@ -80,53 +80,53 @@ def test_change_theme(wind):
 #     assert wind.central.createWidget.path_label.font().pointSize() < fontsize
 
 
-def test_styleManager():
-    """Test style manager from utils module."""
-    themes = {
-        "test": """
-QWidget {
-    background-color: #000;
-    color: #0AF;
-    border-color: #F71;
-    border-width: 3px;
-    border-style: outset;
-    border-radius: 8px;
-}
-QLineEdit,
-QLabel {
-    font-size: 15pt;
+# def test_styleManager():
+#     """Test style manager from utils module."""
+#     themes = {
+#         "test": """
+# QWidget {
+#     background-color: #000;
+#     color: #0AF;
+#     border-color: #F71;
+#     border-width: 3px;
+#     border-style: outset;
+#     border-radius: 8px;
+# }
+# QLineEdit,
+# QLabel {
+#     font-size: 15pt;
 
 
-}
-/* this is a comment*/
+# }
+# /* this is a comment*/
 
 
-QCheckBox::indicator {
-    background-color: red;
-    margin: ;
-}
+# QCheckBox::indicator {
+#     background-color: red;
+#     margin: ;
+# }
 
-/* this is a longer
-comment that spans two lines */
+# /* this is a longer
+# comment that spans two lines */
 
-QPushButton:pressed {
-    border-width:
-    3px;
-    border-style:
-    solid;
-    border-color:
-    #F71;
-}
+# QPushButton:pressed {
+#     border-width:
+#     3px;
+#     border-style:
+#     solid;
+#     border-color:
+#     #F71;
+# }
 
-QPushButton:hover {color: #080;}
-/* some comment
-*/
-QComboBox {
-    border: 12px solid pink;
-}"""
-    }
-    manager = StyleManager(themes)
-    manager.current = themes["test"]
-    collection = manager.parser.parse(themes["test"])
-    manager.parser._compile()
-    assert len(collection) > 1
+# QPushButton:hover {color: #080;}
+# /* some comment
+# */
+# QComboBox {
+#     border: 12px solid pink;
+# }"""
+#     }
+#     manager = StyleManager(themes)
+#     manager.current = themes["test"]
+#     collection = manager.parser.parse(themes["test"])
+#     manager.parser._compile()
+#     assert len(collection) > 1

@@ -86,10 +86,10 @@ class CheckWidget(QWidget):
         self.layout.addWidget(self.checkButton)
 
     def setPath(self, path):
-        self.content_group.setLabelText(path)
+        self.content_group.setPath(path)
 
     def setTorrent(self, path):
-        self.file_group.setLabelText(path)
+        self.file_group.setPath(path)
 
 
 class ReCheckButton(QPushButton):
@@ -305,9 +305,9 @@ class ProgressBar(QProgressBar):
     def normalize(self, val):
         """Convert larger values into smaller increments."""
         if self.total > 10_000_000:
-            val = val / (2**20)
+            val = val // (2**20)
         elif self.total > 10_000:
-            val = val / (2**10)
+            val = val // (2**10)
         return val
 
     def addValue(self, value):

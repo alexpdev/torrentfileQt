@@ -205,7 +205,9 @@ def wind():
     `tuple`
         information to pass to test function.
     """
-    return APP.window
+    window = APP.window
+    window.show()
+    return window
 
 
 @pytest.fixture(params=[TorrentFile, TorrentFileHybrid, TorrentFileV2])
