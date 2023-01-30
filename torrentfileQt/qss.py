@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
-# ##############################################################################
+
+# ############################################################################
 # Copyright 2020 AlexPDev
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,46 +25,46 @@ arrow_path = Path(__file__).parent / "assets" / "arrow.png"
 arrow = path2url(str(arrow_path))
 
 dark = {
-    "_1":"#FFFFFF",
-    "_2":"#19232D",
-    "_3":"#f61",
-    "_4":"#333a3f",
-    "_5":"#402503",
-    "_6":"#661d12",
-    "_7":"#311",
-    "_8":"#555",
-    "_9":"#333",
-    "_10":"#111",
-    "_11":"#704523",
-    "_12":"#302513",
-    "_13":"#192031",
-    "_14":"#858585",
-    "_15":"#FFFFAA",
-    "_16": "#55A",
-    "_17": "#EA3",
-    "_18": "#599F95",
-    "_arrow": str(arrow)
+    "_1":      "#FFFFFF",
+    "_2":      "#19232D",
+    "_3":      "#f61",
+    "_4":      "#333a3f",
+    "_5":      "#402503",
+    "_6":      "#661d12",
+    "_7":      "#311",
+    "_8":      "#555",
+    "_9":      "#333",
+    "_10":     "#111",
+    "_11":     "#704523",
+    "_12":     "#302513",
+    "_13":     "#1F3249",
+    "_14":     "#858585",
+    "_15":     "#FFFFAA",
+    "_16":     "#55A",
+    "_17":     "#EA3",
+    "_18":     "#599F95",
+    "_arrow":  str(arrow)
 }
 
 light = {
-    "_1":"#000000",
-    "_2":"#59A3FD",
-    "_3":"#CED",
-    "_4":"#DA9",
-    "_5":"#6F9",
-    "_6":"#46DdE2",
-    "_7":"#CFF",
-    "_8":"#CCC",
-    "_9":"#DDD",
-    "_10":"#EEE",
-    "_11":"#4075E3",
-    "_12":"#A0D5E3",
-    "_13":"#E9D0C1",
-    "_14":"#8B8B8B",
-    "_15":"#000055",
-    "_16": "#BB6",
-    "_17": "#26D",
-    "_18": "#B7707B",
+    "_1":     "#000000",
+    "_2":     "#59A3FD",
+    "_3":     "#CED",
+    "_4":     "#DA9",
+    "_5":     "#6F9",
+    "_6":     "#46DdE2",
+    "_7":     "#CFF",
+    "_8":     "#CCC",
+    "_9":     "#DDD",
+    "_10":    "#EEE",
+    "_11":    "#4075E3",
+    "_12":    "#A0D5E3",
+    "_13":    "#E9D0C1",
+    "_14":    "#8B8B8B",
+    "_15":    "#000055",
+    "_16":    "#BB6",
+    "_17":    "#26D",
+    "_18":    "#B7707B",
     "_arrow": str(arrow)
 }
 
@@ -96,17 +97,24 @@ QLineEdit {
     padding: 6px;
 }
 QPushButton {
-    background-color: $_11;
+    background-color: $_16;
     padding: 4px;
     margin-left: 4px;
     margin-right: 4px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-radius: 3px;
+    border-radius: 8px;
     border-style: solid;
     border-color: $_3;
-    border-bottom-width: 3px;
+    border-width: 2px;
+}
+QGroupBox {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+QGroupBox::title {
+    font-weight: bold;
+    font-size: 11pt;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 QWidget#tabbar {
     background-color: $_9;
@@ -123,7 +131,7 @@ QToolButton,
 QLabel {
     background-color: transparent;
     margin: 3px;
-    padding 3px;
+    padding: 3px;
     font-size: 10pt;
 }
 QPushButton[titlebutton="true"]{
@@ -171,6 +179,34 @@ QMenu::indicator {
     height: 13px;
     background-color: $_7;
 }
+
+*[DropGroupBox="true"] {
+    border: 1px dashed $_14;
+    background-color: $_13;
+    border-radius: 15px;
+    margin-top: 8px;
+}
+*[DropGroupBox="true"] QLabel {
+    margin-top: 12px;
+    font-weight: normal;
+    font-size: 10pt;
+}
+*[DropGroupBox="true"]::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    font-weight: bold;
+    font-size: 11pt;
+}
+*[DropGroupBox="true"] QPushButton {
+    background-color: transparent;
+    border-width: 0px 0px 2px 0px;
+    color: $_1;
+}
+*[DropGroupBox="true"] QPushButton:hover {
+    border-color: $_18;
+    color: $_15;
+}
+
 *[InfoTree="true"]{
     font-size: 10pt;
     margin: 15px;
@@ -220,6 +256,13 @@ QMenu::indicator {
     margin: 0px;
     font-size: 9pt;
 }
+
+#CreateOutButton {
+    padding: 4px 55px 4px 55px;
+}
+#CreateSubmitButton {
+    margin: 10px 15px 5px 15px;
+}
 #CreateCentralWidget {
     margin: 15px;
 }
@@ -228,68 +271,54 @@ QMenu::indicator {
     font-size: 10pt;
     margin: 2px 5px;
 }
-#CreateCentralWidget ComboBox {
+#CreatePathGroup QLabel {
+    font-weight: normal;
+    font-size: 9pt;
+}
+#CreateCentralWidget QComboBox {
     padding: 3px;
     margin: 3px;
 }
-*[DropGroupBox="true"] {
-    border: 1px dashed $_14;
-    margin-top: 17px;
-    margin-bottom: 17px;
-    border-bottom-left-radius: 15px;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-*[DropGroupBox="true"]::title {
-    subcontrol-origin: margin;
-    subcontrol-position: top left;
-    padding: 5px 10px;
-}
-*[DropGroupBox="true"] QPushButton {
-    background-color: transparent;
-    color: $_1;
-}
-*[DropGroupBox="true"] QPushButton:hover {
-    border-color: $_1;
-    color: $_15;
-}
-#VersionBox {
-    border-color: $_14;
+#CreatePieceLength,
+#CreateVersionBox {
+    padding: 8px;
+    margin-top: 8px;
     border-radius: 8px;
     border-width: 1px;
     border-style: solid;
-    margin: 8px;
+    border-color: $_14;
 }
-#VersionBox::title {
+#CreatePieceLength::title,
+#CreateVersionBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top;
-    padding: 0px 5px 15px 5px;
 }
-#CreateSubmitButton {
-    margin: 10px;
+#CreateProgressTable {
+    gridline-color: transparent;
+    selection-background-color: $_18;
+    color: $_1;
 }
+#CreateProgressTable QHeaderView::section {
+    gridline-color: transparent;
+    background-color: $_4;
+    font-weight: bold;
+    font-size: 9pt;
+}
+#CreateProgressTable QProgressBar{
+    border: 4px solid $_10;
+    border-radius: 14px;
+    background-color: transparent;
+    text-align: center;
+    color: $_1;
+}
+#CreateProgressTable QProgressBar::chunk{
+    background-color: #073;
+    border-radius: 10px;
+}
+
 #EditDropGroup {
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-top: 10px;
-    margin-bottom: 15px;
-}
-#EditDropGroup QLabel {
-    margin-top: 5px;
-    font-weight: normal;
-    margin-bottom: 5px;
-}
-#EditDropGroup QPushButton {
-    margin-top: 2px;
-    margin-bottom: 2px;
-    padding: 5px 0px;
-}
-#EditDropGroup::title {
-    subcontrol-origin-margin;
-    subcontrol-position: top center;
-    padding: 0px 12px 12px 12px;
-    font-size: 10pt;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 #EditGroupBox {
     padding: 0px;
@@ -327,10 +356,6 @@ QMenu::indicator {
     padding: 4px;
 }
 #EditSaveButton {
-    border-radius: 12px;
-    border-color: $_14;
-    border-width: 2px;
-    background-color: $_16;
     margin: 15px;
     padding:8px;
 }
@@ -339,7 +364,7 @@ QMenu::indicator {
 def tab_style(active):
     var = 8 if active else 9
     tab = f"""
-        QPushButton[Tab="true"]{{
+        QPushButton[Tab="true"] {{
             padding-top: 18px;
             padding-bottom: 18px;
             border-bottom-width: 0px;
@@ -351,6 +376,5 @@ def tab_style(active):
             border-top-width: 0px;
             border-right-width: 0px;
             border-radius: 0px;
-        }}
-    """
+    }}"""
     return tab

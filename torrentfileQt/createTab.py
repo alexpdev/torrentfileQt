@@ -69,37 +69,55 @@ class CreateWidget(QWidget):
         self.centralWidget.setAcceptDrops(True)
         self.centralWidget.setAttribute(Qt.WA_StyledBackground, True)
         self.centralWidget.setObjectName("CreateCentralWidget")
-        self.centralLayout.addWidget(self.centralWidget)
         self.layout = QVBoxLayout(self.centralWidget)
 
-        versionBox = QGroupBox()
-        versionBox.setObjectName("VersionBox")
-        versionBox.setTitle("Torrent Version")
-        hlayout0 = QHBoxLayout(versionBox)
+        self.path_group = DropGroupBox(parent=self)
+        self.path_group.setObjectName("CreatePathGroup")
+        self.path_group.setTitle("Content Path")
+        self.path_group.setLabelText("drag & drop file/folder here or ...")
+        self.path_dir_button = BrowseDirButton(parent=self)
+        self.path_dir_button.folderSelected.connect(self.setPath)
+        self.path_file_button = BrowseFileButton(parent=self)
+        self.path_file_button.fileSelected.connect(self.setPath)
+        self.path_group.addButton(self.path_dir_button)
+        self.path_group.addButton(self.path_file_button)
+        self.path_group.pathSelected.connect(self.setPath)
+
+        versionBox = QGroupBox(self)
+        versionBox.setObjectName("CreateVersionBox")
+        piece_length_box = QGroupBox(self)
+        piece_length_box.setObjectName("CreatePieceLength")
+        piece_length_box.setTitle("Torrent Piece Length")
+        versionBox.setTitle("Version/Private/Piece Length")
         self.v1button = QRadioButton("v1 (default)", parent=self)
         self.v1button.setChecked(True)
         self.v2button = QRadioButton("v2", parent=self)
         self.hybridbutton = QRadioButton("v1+2 (hybrid)", parent=self)
-        hlayout0.addWidget(self.v1button)
-        hlayout0.addWidget(self.v2button)
-        hlayout0.addWidget(self.hybridbutton)
+        self.piece_length_combo = ComboBox.piece_length(parent=self)
+        self.private = QCheckBox("Private", parent=self)
 
-        self.path_group = DropGroupBox(parent=self)
-        self.path_dir_button = BrowseDirButton(parent=self)
-        self.path_file_button = BrowseFileButton(parent=self)
-        self.path_group.addButton(self.path_dir_button)
-        self.path_group.addButton(self.path_file_button)
-        self.path_group.setTitle("Content Path")
-        self.path_group.setLabelText("Drop File/Folder Here")
-        self.path_dir_button.folderSelected.connect(self.setPath)
-        self.path_file_button.fileSelected.connect(self.setPath)
-        self.path_group.pathSelected.connect(self.setPath)
+        versionBox.setToolTip("These controls may be ignored if you do not"
+                              " have a specific need to adjust them.")
+
+        layout0 = QGridLayout(versionBox)
+        layout0.addWidget(self.v1button,0,0)
+        layout0.addWidget(self.v2button,1,0)
+        layout0.addWidget(self.hybridbutton,2,0)
+        layout0.addWidget(self.private, 0, 1)
+        layout0.addWidget(piece_length_box,1,1,2,1)
+
+        vlayout4 = QVBoxLayout(piece_length_box)
+        vlayout4.addWidget(self.piece_length_combo)
+
+        hlayout0 = QHBoxLayout()
+        hlayout0.addWidget(self.path_group)
+        hlayout0.addWidget(versionBox)
 
         output_label = QLabel("Save Path", parent=self)
         output_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        hlayout3 = QHBoxLayout()
         self.output_path_edit = QLineEdit(parent=self)
         self.output_button = OutButton(parent=self)
+        hlayout3 = QHBoxLayout()
         hlayout3.addWidget(self.output_path_edit)
         hlayout3.addWidget(self.output_button)
 
@@ -111,45 +129,54 @@ class CreateWidget(QWidget):
         comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.comment_edit = QLineEdit(parent=self)
 
+        hlayout1 = QHBoxLayout()
+        vlayout0 = QVBoxLayout()
+        vlayout1 = QVBoxLayout()
+        vlayout0.addWidget(source_label)
+        vlayout0.addWidget(self.source_edit)
+        vlayout1.addWidget(comment_label)
+        vlayout1.addWidget(self.comment_edit)
+        hlayout1.addLayout(vlayout0)
+        hlayout1.addLayout(vlayout1)
+
         announce_label = QLabel("Trackers: ", parent=self)
         announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.announce_input = QPlainTextEdit(parent=self)
-        self.announce_input.setMaximumHeight(150)
+        self.announce_input.setToolTip("One URL per line")
 
         web_seed_label = QLabel("Web-Seeds: ", parent=self)
         web_seed_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.web_seed_input = QPlainTextEdit(parent=self)
-        self.web_seed_input.setMaximumHeight(150)
+        self.web_seed_input.setToolTip("One URI per line")
 
         hlayout2 = QHBoxLayout()
-        piece_length_label = QLabel("Torrent Piece Length", parent=self)
-        self.piece_length_combo = ComboBox.piece_length(parent=self)
-        self.private = QCheckBox("Private", parent=self)
-        spacer1 = QSpacerItem(150, 0)
-        spacer2 = QSpacerItem(70, 0)
-        hlayout2.addWidget(piece_length_label)
-        hlayout2.addWidget(self.piece_length_combo)
-        hlayout2.addItem(spacer1)
-        hlayout2.addWidget(self.private)
-        hlayout2.addItem(spacer2)
+        vlayout2 = QVBoxLayout()
+        vlayout3 = QVBoxLayout()
+        vlayout2.addWidget(announce_label)
+        vlayout2.addWidget(self.announce_input)
+        vlayout3.addWidget(web_seed_label)
+        vlayout3.addWidget(self.web_seed_input)
+        hlayout2.addLayout(vlayout2)
+        hlayout2.addLayout(vlayout3)
 
         self.submit_button = SubmitButton("Create Torrent", parent=self)
         self.submit_button.setObjectName("CreateSubmitButton")
 
-        self.layout.addWidget(versionBox)
-        self.layout.addWidget(self.path_group)
-        self.layout.addLayout(hlayout2)
+        self.bottomCentral = QWidget()
+        self.bottomLayout = QVBoxLayout(self.bottomCentral)
+        self.progress_tree = ProgressTable(self)
+        self.bottomLayout.addWidget(self.progress_tree)
+        self.layout.addLayout(hlayout0)
         self.layout.addWidget(output_label)
         self.layout.addLayout(hlayout3)
-        self.layout.addWidget(source_label)
-        self.layout.addWidget(self.source_edit)
-        self.layout.addWidget(comment_label)
-        self.layout.addWidget(self.comment_edit)
-        self.layout.addWidget(announce_label)
-        self.layout.addWidget(self.announce_input)
-        self.layout.addWidget(web_seed_label)
-        self.layout.addWidget(self.web_seed_input)
+        self.layout.addLayout(hlayout1)
+        self.layout.addLayout(hlayout2)
         self.layout.addWidget(self.submit_button)
+        self.splitter = QSplitter()
+        self.splitter.setOrientation(Qt.Vertical)
+        self.splitter.addWidget(self.centralWidget)
+        self.splitter.addWidget(self.bottomCentral)
+        self.centralLayout.addWidget(self.splitter)
 
     def setPath(self, path: str):
         """Set the path of the torrent content."""
@@ -158,7 +185,7 @@ class CreateWidget(QWidget):
             val = f"{piece_length//(2**10)} KiB"
         else:
             val = f"{piece_length//(2**20)} MiB"
-        self.path_group.setLabelText(path)
+        self.path_group.setPath(path)
         self.piece_length_combo.setValue(val)
         self.output_path_edit.setText(path + ".torrent")
 
@@ -179,14 +206,37 @@ class TorrentFileCreator(QThread):
     name : list
         container to add return values to
     """
-
     created = Signal()
+    prog_start_signal = Signal(int, str, int, str)
+    prog_update_signal = Signal(int)
+    prog_close_signal = Signal()
 
     def __init__(self, args, creator):
         """Construct the new thread."""
         super().__init__()
         self.args = args
         self.creator = creator
+        self.creator.hasher.prog_start = self.prog_start
+        self.creator.hasher.prog_update = self.prog_update
+        self.creator.hasher.prog_close = self.prog_close
+
+    def prog_start(self, total, path, length=50, unit=None):
+        """
+        Progress start signal.
+        """
+        self.prog_start_signal.emit(total, path, length, unit)
+
+    def prog_update(self, val):
+        """
+        Progress update signal.
+        """
+        self.prog_update_signal.emit(val)
+
+    def prog_close(self):
+        """
+        Progress stopped signal.
+        """
+        self.prog_close_signal.emit()
 
     def run(self):
         """Create a torrent file and emit it's path."""
@@ -265,10 +315,15 @@ class SubmitButton(QPushButton):
         else:
             creator = TorrentFile
 
-        args["path"] = parent.path_group.getLabelText()
+        args["path"] = parent.path_group.getPath()
+        tree = parent.progress_tree
+        tree.add_args(args)
         self.thread = TorrentFileCreator(args, creator)
         self.thread.created.connect(self.updateStatusBarEnd)
         self.thread.started.connect(self.updateStatusBarBegin)
+        self.thread.prog_start_signal.connect(tree.prog_start)
+        self.thread.prog_update_signal.connect(tree.prog_update)
+        self.thread.prog_close_signal.connect(tree.prog_close)
         self.thread.start()
 
     def updateStatusBarBegin(self):
@@ -289,8 +344,9 @@ class OutButton(QPushButton):
     def __init__(self, parent=None):
         """Construct for file picker for outfile button."""
         super().__init__(parent=parent)
-        self.setText("File")
+        self.setText("Select Save Path")
         self.setIcon(get_icon("browse_file"))
+        self.setObjectName("CreateOutButton")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
@@ -346,13 +402,13 @@ class BrowseDirButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.browse)
 
-    def browse(self, path=None):
+    def browse(self):
         """
         Browse action performed when user presses button.
 
         Opens File/Folder Dialog.
         """
-        path = browse_folder(self, path)
+        path = browse_folder(self)
         if path:
             self.folderSelected.emit(path)
 
@@ -385,3 +441,42 @@ class ComboBox(QComboBox):
             if self.itemText(i) == val:
                 self.setCurrentIndex(i)
                 break
+
+
+class ProgressTable(QTableWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setColumnCount(2)
+        self.verticalHeader().setHidden(True)
+        self.setHorizontalHeaderLabels(["Path", "Progress"])
+        self.setObjectName("CreateProgressTable")
+        self.max_chars = 80
+        hheader = self.horizontalHeader()
+        hheader.setSectionResizeMode(0, hheader.ResizeMode.ResizeToContents)
+        hheader.setSectionResizeMode(1, hheader.ResizeMode.Stretch)
+        hheader.setSectionsClickable(False)
+
+
+    def add_args(self, args):
+        self.path = args["path"]
+
+    def prog_start(self, total, path, *_):
+        index = self.rowCount()
+        self.insertRow(index)
+        item = QTableWidgetItem()
+        if len(path) > self.max_chars:
+            path = "..." + path[-self.max_chars:]
+        item.setText(path)
+        progbar = QProgressBar()
+        progbar.setRange(0, total - 1)
+        self.current = progbar
+        self.setItem(index, 0, item)
+        self.setCellWidget(index, 1, progbar)
+
+    def prog_update(self, value):
+        current = self.current.value()
+        self.current.setValue(current + value)
+
+    def prog_close(self):
+        self.current = None

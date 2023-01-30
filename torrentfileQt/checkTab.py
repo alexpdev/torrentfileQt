@@ -52,7 +52,8 @@ class CheckWidget(QWidget):
         self.hlayout = QHBoxLayout()
 
         self.file_group = DropGroupBox(parent=self)
-        self.file_group.setLabelText("drop torrent file here")
+        self.file_group.setLabelText("drag & drop torrent file here or...")
+        self.file_group.setTitle("Torrent File")
         self.file_button = BrowseTorrents(parent=self)
         self.file_button.torrentSelected.connect(self.setTorrent)
         self.file_group.addButton(self.file_button)
@@ -61,7 +62,8 @@ class CheckWidget(QWidget):
         self.layout.addLayout(self.hlayout)
 
         self.content_group = DropGroupBox(parent=self)
-        self.content_group.setLabelText("drop search folder here")
+        self.content_group.setLabelText("drag & drop search folder here or...")
+        self.content_group.setTitle("Content Search Folder")
         self.content_folders = BrowseFolders(parent=self)
         self.content_folders.folderSelected.connect(self.setPath)
         self.content_files = BrowseFiles(parent=self)

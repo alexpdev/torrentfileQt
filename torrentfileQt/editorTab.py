@@ -73,6 +73,7 @@ class EditorWidget(QWidget):
 
     def editTorrent(self, path: str) -> None:
         """Drag drop event for widgit."""
+        self.filegroup.setPath(path)
         self.table.clear()
         self.table.handleTorrent.emit(path)
 
@@ -156,9 +157,9 @@ class FileButton(QPushButton):
         self.clicked.connect(self.browse)
         self._parent = parent
 
-    def browse(self, paths: list = None):
+    def browse(self):
         """Browse method for finding the .torrent file user wishes to edit."""
-        path = browse_torrent(self, paths)
+        path = browse_torrent(self)
         if path:
             self.fileSelected.emit(path)
 
