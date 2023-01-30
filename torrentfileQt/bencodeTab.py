@@ -113,7 +113,7 @@ class BencodeEditWidget(QWidget):
         """Wipe the tree of all of it's contents."""
         self.treeview.clear()
 
-    def load_file(self, paths: list = None):
+    def load_file(self):
         """
         Load the a file or files from the Files_action.
 
@@ -122,7 +122,7 @@ class BencodeEditWidget(QWidget):
         paths : list, optional
             torrent file paths, by default None
         """
-        paths = browse_torrent(self, paths)
+        paths = browse_torrent(self)
         self.load_thread(paths)
 
     def load_thread(self, paths: list):
@@ -139,7 +139,7 @@ class BencodeEditWidget(QWidget):
         self.thread.start()
         self.thread.finished.connect(self.thread.deleteLater)
 
-    def load_folder(self, path: str = None):
+    def load_folder(self):
         """
         Load all of the files contained in given folder path.
 
@@ -148,8 +148,7 @@ class BencodeEditWidget(QWidget):
         path : str, optional
             folder path, by default None
         """
-        if not path:
-            path = browse_folder(self, path)  # pragma: nocover
+        path = browse_folder(self)
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 

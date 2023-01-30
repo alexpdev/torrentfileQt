@@ -24,8 +24,14 @@ from pathlib import Path
 import pytest
 
 from tests import dir1, dir2, proc_time, rmpath, tempfile, ttorrent, wind
+from torrentfileQt import checkTab
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
+class Obj:
+    value = None
+
+def mock_func(_):
+    return Obj.value
 
 def test_fixture():
     """Test Fixtures."""
@@ -34,14 +40,14 @@ def test_fixture():
 
 def test_missing_files_check(dir2, ttorrent, wind):
     """Test missing files checker proceduire."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
     dirpath = Path(dir2)
     for item in dirpath.iterdir():
         if item.is_file():
             os.remove(item)
-    checktab.fileInput.setText(ttorrent)
-    checktab.searchInput.setText(dir2)
+    checktab.file_group.setPath(ttorrent)
+    checktab.content_group.setPath(dir2)
     checktab.checkButton.click()
     proc_time()
     assert checktab.treeWidget.topLevelItemCount() > 0
@@ -49,9 +55,9 @@ def test_missing_files_check(dir2, ttorrent, wind):
 
 def test_shorter_files_check(wind, ttorrent, dir2):
     """Test missing files checker proceduire."""
-    checktab = wind.central.checkWidget
+    checktab = wind.tabs.checkWidget
     dirpath = Path(dir2)
-    wind.central.setCurrentWidget(checktab)
+    wind.stack.setCurrentWidget(checktab)
 
     def shortenfile(item):
         """Shave some data off the end of file."""
@@ -65,8 +71,8 @@ def test_shorter_files_check(wind, ttorrent, dir2):
         for item in dirpath.iterdir():
             if item.is_file():
                 shortenfile(item)
-    checktab.fileInput.setText(ttorrent)
-    checktab.searchInput.setText(dir2)
+    checktab.file_group.setPath(ttorrent)
+    checktab.content_group.setPath(dir2)
     checktab.checkButton.click()
     proc_time()
     assert checktab.treeWidget.topLevelItemCount() > 0
@@ -74,10 +80,10 @@ def test_shorter_files_check(wind, ttorrent, dir2):
 
 def test_check_tab(wind, ttorrent, dir1):
     """Test checker procedure."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
-    checktab.fileInput.setText(ttorrent)
-    checktab.searchInput.setText(dir1)
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
+    checktab.file_group.setPath(ttorrent)
+    checktab.content_group.setPath(dir1)
     checktab.checkButton.click()
     proc_time()
     assert checktab.textEdit.toPlainText() != ""
@@ -85,32 +91,36 @@ def test_check_tab(wind, ttorrent, dir1):
 
 def test_check_tab_input1(wind, dir1):
     """Test checker procedure."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
-    checktab.browseButton2.browse_folders(dir1)
-    assert checktab.searchInput.text() != ""
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
+    Obj.value = dir1
+    checkTab.browse_folder = mock_func
+    checktab.content_folders.click()
+    assert checktab.content_group.getPath() != ""
 
 
 def test_check_tab_input_2(wind, dir1):
     """Test checker procedure."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
-    checktab.browseButton1.browse((dir1, None))
-    assert checktab.fileInput.text() != ""
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
+    Obj.value = dir1
+    checkTab.browse_folder = mock_func
+    checktab.file_button.click()
+    assert checktab.file_group.getLabelText() != ""
 
 
 def test_check_tab4(wind):
     """Test checker procedure again."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
     tree_widget = checktab.treeWidget
     assert tree_widget.invisibleRootItem() is not None
 
 
 def test_clear_logtext(wind):
     """Test checker logTextEdit widget function."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
     text_edit = checktab.textEdit
     text_edit.insertPlainText("sometext")
     text_edit.clear_data()
@@ -119,8 +129,8 @@ def test_clear_logtext(wind):
 
 def test_checktab_tree(wind):
     """Check tree item counting functionality."""
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
     tree = TreeWidget(parent=checktab)
     item = TreePieceItem(type=0, tree=tree)
     item.progbar = ProgressBar(parent=tree, size=1000000)
@@ -134,18 +144,16 @@ def test_checktab_tree(wind):
 @pytest.mark.parametrize("ext", [".mkv", ".rar", ".r00", ".mp3"])
 def test_singlefile(size, ext, index, version, wind):
     """Test the singlefile for create and check tabs."""
-    createtab = wind.central.createWidget
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    createtab = wind.tabs.createWidget
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(createtab)
     testfile = str(tempfile(exp=size))
     tfile = testfile + ext
     os.rename(testfile, tfile)
     metafile = tfile + ".torrent"
-    createtab.path_input.clear()
-    createtab.output_input.clear()
-    createtab.browse_file_button.browse((tfile, None))
-    createtab.output_input.setText(metafile)
-    createtab.piece_length.setCurrentIndex(index)
+    createtab.path_group.setPath(tfile)
+    createtab.output_path_edit.setText(metafile)
+    createtab.piece_length_combo.setCurrentIndex(index)
     proc_time()
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
@@ -156,10 +164,9 @@ def test_singlefile(size, ext, index, version, wind):
     while proc_time(0.3):
         if wind.statusBar().currentMessage() != "Processing":
             break
-    checktab.fileInput.clear()
-    checktab.searchInput.clear()
-    checktab.fileInput.setText(metafile)
-    checktab.searchInput.setText(tfile)
+    wind.stack.setCurrentWidget(checktab)
+    checktab.file_group.setPath(metafile)
+    checktab.content_group.setPath(tfile)
     checktab.checkButton.click()
     proc_time()
     widges = checktab.treeWidget.itemWidgets
@@ -170,17 +177,15 @@ def test_singlefile(size, ext, index, version, wind):
 @pytest.mark.parametrize("version", [1, 2, 3])
 def test_singlefile_large(version, wind):
     """Test the singlefile with large size for create and check tabs."""
-    createtab = wind.central.createWidget
-    checktab = wind.central.checkWidget
-    wind.central.setCurrentWidget(checktab)
+    createtab = wind.tabs.createWidget
+    checktab = wind.tabs.checkWidget
+    wind.stack.setCurrentWidget(checktab)
     testfile = str(tempfile(exp=28))
     tfile = testfile + ".dat"
     os.rename(testfile, tfile)
     metafile = tfile + ".torrent"
-    createtab.path_input.clear()
-    createtab.output_input.clear()
-    createtab.browse_file_button.browse((tfile, None))
-    createtab.output_input.setText(metafile)
+    createtab.path_group.setPath(tfile)
+    createtab.output_path_edit.setText(metafile)
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
         if i + 1 == version:
@@ -190,10 +195,8 @@ def test_singlefile_large(version, wind):
     while proc_time(0.3):
         if wind.statusBar().currentMessage() != "Processing":
             break
-    checktab.fileInput.clear()
-    checktab.searchInput.clear()
-    checktab.fileInput.setText(metafile)
-    checktab.searchInput.setText(tfile)
+    checktab.file_group.setPath(metafile)
+    checktab.content_group.setPath(tfile)
     checktab.checkButton.click()
     widges = checktab.treeWidget.itemWidgets
     proc_time(0.3)

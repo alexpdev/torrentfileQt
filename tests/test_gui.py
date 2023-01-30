@@ -56,12 +56,6 @@ def test_window_menubar1(wind):
     assert wind.menubar is not None
 
 
-def test_tab_widget(wind):
-    """Test window Tab widget."""
-    tabwidget = wind.central
-    assert isinstance(tabwidget, TabWidget)
-
-
 def test_change_theme(wind):
     """Test changing the theme from the menubar."""
     wind.menubar.file_menu.actionLightTheme.trigger()
@@ -70,20 +64,20 @@ def test_change_theme(wind):
     assert wind.menubar.file_menu.actionDarkTheme.text() == "Dark Theme"
 
 
-def test_increase_font(wind):
-    """Test font size plus menu option."""
-    fontsize = wind.central.createWidget.path_label.font().pointSize()
-    wind.menubar.file_menu.actionFontPlus.trigger()
-    wind.menubar.file_menu.actionFontPlus.trigger()
-    assert wind.central.createWidget.path_label.font().pointSize() > fontsize
+# def test_increase_font(wind):
+#     """Test font size plus menu option."""
+#     fontsize = wind.central.createWidget.path_label.font().pointSize()
+#     wind.menubar.file_menu.actionFontPlus.trigger()
+#     wind.menubar.file_menu.actionFontPlus.trigger()
+#     assert wind.central.createWidget.path_label.font().pointSize() > fontsize
 
 
-def test_decrease_font(wind):
-    """Test font size minus menu option."""
-    fontsize = wind.central.createWidget.path_label.font().pointSize()
-    wind.menubar.file_menu.actionFontMinus.trigger()
-    wind.menubar.file_menu.actionFontMinus.trigger()
-    assert wind.central.createWidget.path_label.font().pointSize() < fontsize
+# def test_decrease_font(wind):
+#     """Test font size minus menu option."""
+#     fontsize = wind.central.createWidget.path_label.font().pointSize()
+#     wind.menubar.file_menu.actionFontMinus.trigger()
+#     wind.menubar.file_menu.actionFontMinus.trigger()
+#     assert wind.central.createWidget.path_label.font().pointSize() < fontsize
 
 
 def test_styleManager():

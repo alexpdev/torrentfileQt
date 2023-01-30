@@ -120,8 +120,8 @@ class ReCheckButton(QPushButton):
         parent.treeWidget.clear()
         parent.textEdit.clear()
         QApplication.instance().processEvents()
-        metafile = parent.file_group.getLabelText()
-        content = parent.content_group.getLabelText()
+        metafile = parent.file_group.getPath()
+        content = parent.content_group.getPath()
         self.window().statusBar().showMessage("Checking...", 3000)
         if os.path.exists(metafile):
             Checker.register_callback(parent.textEdit.callback)
@@ -158,7 +158,7 @@ class BrowseTorrents(QPushButton):
         path : str
             Path to file or folder to include in torrent.
         """
-        path = browse_torrent(self, path)
+        path = browse_torrent(self)
         self.torrentSelected.emit(path)
 
 
@@ -207,7 +207,7 @@ class BrowseFiles(QPushButton):
         """
         Browse Action performed when user presses button.
         """
-        path = browse_files(self, paths)
+        path = browse_files(self)
         self.filesSelected.emit(path)
 
 

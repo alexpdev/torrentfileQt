@@ -26,7 +26,9 @@ from PySide6.QtCore import QItemSelectionModel, Qt
 from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, tempfile, ttorrent, wind
+from torrentfileQt import bencodeTab
 from torrentfileQt.bencodeTab import Item
+
 
 
 def test_fix():
@@ -58,27 +60,42 @@ def treedir(request):
 
 def test_bencode_load_file(ttorrent, wind):
     """Test the load file function in the becodeEditWidget."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_file([ttorrent])
-    wind.central.setCurrentWidget(widget)
+    widget = wind.tabs.bencodeEditWidget
+
+    def browse_torrent_mock(_):
+        return [ttorrent]
+
+    bencodeTab.browse_torrent = browse_torrent_mock
+    widget.load_file()
+    wind.stack.setCurrentWidget(widget)
     proc_time(1)
     assert widget.treeview.rowCount() > 0
 
 
 def test_bencode_load_folder(ttorrent, wind):
     """Test the load folder function in the bencodeEditWidget."""
-    widget = wind.central.bencodeEditWidget
+    widget = wind.tabs.bencodeEditWidget
     dirname = os.path.dirname(ttorrent)
-    widget.load_folder(dirname)
-    wind.central.setCurrentWidget(widget)
+
+    def browse_folder_mock(_):
+        return dirname
+
+    bencodeTab.browse_folder = browse_folder_mock
+    widget.load_folder()
+    wind.stack.setCurrentWidget(widget)
     proc_time(1)
     assert widget.treeview.rowCount() > 0
 
 
 def test_treedir(treedir, wind):
     """Test item functions and model."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_folder(treedir)
+    widget = wind.tabs.bencodeEditWidget
+
+    def browse_folder_mock(_):
+        return treedir
+
+    bencodeTab.browse_folder = browse_folder_mock
+    widget.load_folder()
     proc_time(1)
     assert widget.treeview.model().rowCount() > 0
     total = widget.treeview.rowCount()
@@ -127,8 +144,12 @@ def test_treedir(treedir, wind):
 
 def test_treeremove(treedir, wind):
     """Test item functions and model."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_folder(treedir)
+    widget = wind.tabs.bencodeEditWidget
+
+    def test_folder_mock(_):
+        return treedir
+    bencodeTab.browse_folder = test_folder_mock
+    widget.load_folder()
     proc_time(1)
     assert widget.treeview.model().rowCount() > 0
     total = widget.treeview.rowCount()

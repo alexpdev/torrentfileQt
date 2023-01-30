@@ -23,8 +23,14 @@ import pytest
 from torrentfile.torrent import TorrentFileHybrid
 
 from tests import dir1, dir2, proc_time, rmpath, tempfile, wind
+from torrentfileQt import createTab
 from torrentfileQt.createTab import TorrentFileCreator
 
+class Obj:
+    value = None
+
+def mock_func(_):
+    return Obj.value
 
 def test_rmpath():
     """Test the rmpath function."""
@@ -41,13 +47,11 @@ def test_fixtures():
 def test_create_with_hasher1(dir2, wind):
     """Test the radio buttons on create tab v1 hasher."""
     metafile = dir2 + ".torrent"
-    creator = wind.central.createWidget
-    creator.window.central.setCurrentWidget(creator)
-    creator.path_input.clear()
-    creator.path_input.setText(dir2)
-    creator.output_input.clear()
+    creator = wind.tabs.createWidget
+    wind.stack.setCurrentWidget(creator)
+    creator.path_group.setPath(dir2)
     creator.web_seed_input.setPlainText("url1")
-    creator.output_input.setText(metafile)
+    creator.output_path_edit.setText(metafile)
     proc_time()
     creator.v1button.setChecked(True)
     creator.piece_length.setCurrentIndex(2)
@@ -62,30 +66,34 @@ def test_create_with_hasher1(dir2, wind):
 def test_create_tab_browse(dir2, wind):
     """Test Info tab select1."""
     path = dir2
-    createtab = wind.central.createWidget
-    createtab.window.central.setCurrentWidget(createtab)
+    createtab = wind.tabs.createWidget
+    wind.stack.setCurrentWidget(createtab)
     proc_time()
-    button = createtab.browse_file_button
-    button.browse(paths=[path])
-    createtab.comment_input.setText("Some Text")
-    createtab.source_input.setText("Some Source")
-    assert createtab.path_input.text() == path
+    button = createtab.path_file_button
+    Obj.value = dir2
+    createTab.browse_files = mock_func
+    button.browse()
+    createtab.comment_edit.setText("Some Text")
+    createtab.source_edit.setText("Some Source")
+    assert createtab.path_group.getPath() == path
 
 
 def test_create_tab_dir(dir2, wind):
     """Test create tab with folder."""
     path = dir2
     root = path
-    createtab = wind.central.createWidget
-    button = createtab.browse_dir_button
-    wind.central.setCurrentWidget(createtab)
+    createtab = wind.tabs.createWidget
+    button = createtab.path_dir_button
+    wind.stack.setCurrentWidget(createtab)
     proc_time()
-    button.browse(path=root)
+    createTab.browse_folder = mock_func
+    Obj.value = root
+    button.browse()
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
+    outbutton.savePathSelected.emit(torfile)
     createtab.announce_input.setPlainText("announce.com")
-    createtab.comment_input.setText("comment")
+    createtab.comment_edit.setText("comment")
     createtab.private.click()
     submit = createtab.submit_button
     submit.click()
@@ -111,21 +119,23 @@ def test_create_tab_fields(dir2, field, wind):
     """Test create tab with folder."""
     path = dir2
     root = path
-    createtab = wind.central.createWidget
-    button = createtab.browse_dir_button
-    button.browse(path=root)
-    createtab.window.central.setCurrentWidget(createtab)
+    createtab = wind.tabs.createWidget
+    button = createtab.path_dir_button
+    Obj.value = root
+    createTab.browse_folder = mock_func
+    button.browse()
+    wind.stack.setCurrentWidget(createtab)
     proc_time(0.4)
     torfile = root + ".test.torrent"
     outbutton = createtab.output_button
-    outbutton.output(outpath=torfile)
-    createtab.output_input.setText(torfile)
+    outbutton.savePathSelected.emit(torfile)
+    createtab.output_path_edit.setText(torfile)
     createtab.announce_input.setPlainText(
         "https://announce.com\nhttp://announce2.com\nhttp://announce4.com"
     )
-    createtab.comment_input.setText("some comment")
+    createtab.comment_edit.setText("some comment")
     createtab.private.setChecked(True)
-    createtab.source_input.setText("TestSource")
+    createtab.source_edit.setText("TestSource")
     submit = createtab.submit_button
     submit.click()
     proc_time(0.5)
@@ -140,12 +150,14 @@ def test_create_tab_fields(dir2, field, wind):
 def test_sized_create(wind):
     """Test browse file button on create tab."""
     path = str(tempfile(exp=28))
-    createtab = wind.central.createWidget
-    button = createtab.browse_file_button
+    createtab = wind.tabs.createWidget
+    button = createtab.path_file_button
     param = (path, None)
-    button.browse(param)
+    Obj.value = path
+    createTab.browse_files = mock_func
+    button.browse()
     proc_time()
-    assert createtab.path_input.text() == path
+    assert createtab.path_group.setPath() == path
 
 
 def test_torrentfile_creator(dir1):

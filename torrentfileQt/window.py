@@ -185,15 +185,16 @@ class Application(QApplication):
         return style
 
     @classmethod
-    def start(cls, args=None):  # pragma: no cover
+    def start(cls, args=None):
         """Start the program entrypoint."""
         app = cls(args if args else sys.argv)
         app._setup_stylesheets()
         app.window = Window(parent=None, app=app)
-        app.window.show()
-        sys.exit(app.exec())
+        return app
 
 
-def execute():
+def execute():  # pragma: nocover
     """Run application."""
-    Application.start()  # pragma: nocover
+    app = Application.start()
+    app.window.show()
+    sys.exit(app.exec())

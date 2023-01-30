@@ -21,6 +21,8 @@
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
+from torrentfileQt import infoTab
+
 from tests import (
     MockEvent,
     dir2,
@@ -32,6 +34,12 @@ from tests import (
     wind,
 )
 
+class Obj:
+    value = None
+
+def mock_func(_):
+    return Obj.value
+
 
 def test_fixture():
     """Test fixtures."""
@@ -40,11 +48,14 @@ def test_fixture():
 
 def test_info_tab_select1(wind, ttorrent):
     """Test Info tab select1."""
-    infotab = wind.central.infoWidget
+
+    infotab = wind.tabs.infoWidget
     proc_time()
-    wind.central.setCurrentWidget(infotab)
+    wind.stack.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(paths=[ttorrent])
+    Obj.value = [ttorrent]
+    infoTab.browse_torrent = mock_func
+    button.selectTorrent()
     assert infotab.nameEdit.text() != ""
 
 
@@ -58,11 +69,13 @@ def test_infotab_select2(wind, dir2, creator):
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = wind.central.infoWidget
+    infotab = wind.tabs.infoWidget
     proc_time()
-    wind.central.setCurrentWidget(infotab)
+    wind.stack.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(paths=[outfile])
+    Obj.value = [outfile]
+    infoTab.browse_torrent = mock_func
+    button.selectTorrent()
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile, dir2)
@@ -80,11 +93,13 @@ def test_infotab_single(wind, creator, size):
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = wind.central.infoWidget
+    infotab = wind.tabs.infoWidget
     proc_time()
-    wind.central.setCurrentWidget(infotab)
+    wind.stack.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(paths=[outfile])
+    Obj.value = [outfile]
+    infoTab.browse_torrent = mock_func
+    button.selectTorrent()
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile, tfile)
@@ -100,11 +115,13 @@ def test_infotab_nested(wind, creator, dir3):
     del torrent.meta["creation date"]
     del torrent.meta["announce-list"]
     outfile, _ = torrent.write()
-    infotab = wind.central.infoWidget
+    infotab = wind.tabs.infoWidget
     proc_time()
-    wind.central.setCurrentWidget(infotab)
+    wind.stack.setCurrentWidget(infotab)
     button = infotab.selectButton
-    button.selectTorrent(paths=[outfile])
+    Obj.value = [outfile]
+    infoTab.browse_torrent = mock_func
+    button.selectTorrent()
     name = torrent.meta["info"]["name"]
     assert infotab.nameEdit.text() == name
     rmpath(outfile)
@@ -112,8 +129,8 @@ def test_infotab_nested(wind, creator, dir3):
 
 def test_info_accept_method(wind, ttorrent):
     """Test drag enter event on info widget."""
-    info = wind.central.infoWidget
-    info.window.central.setCurrentWidget(info)
+    info = wind.tabs.infoWidget
+    wind.stack.setCurrentWidget(info)
     proc_time()
     event = MockEvent(ttorrent)
     assert info.dragEnterEvent(event)
@@ -123,8 +140,8 @@ def test_info_accept_method(wind, ttorrent):
 
 def test_info_move_event(wind, ttorrent):
     """Test move event on info widget."""
-    info = wind.central.infoWidget
-    info.window.central.setCurrentWidget(info)
+    info = wind.tabs.infoWidget
+    wind.stack.setCurrentWidget(info)
     proc_time()
     event = MockEvent(ttorrent)
     assert info.dragMoveEvent(event)
@@ -134,8 +151,8 @@ def test_info_move_event(wind, ttorrent):
 
 def test_info_drop_event(wind, ttorrent):
     """Test drop event on editor widget."""
-    info = wind.central.infoWidget
-    info.window.central.setCurrentWidget(info)
+    info = wind.tabs.infoWidget
+    wind.stack.setCurrentWidget(info)
     proc_time()
     event = MockEvent(ttorrent)
     assert info.dropEvent(event)
@@ -143,8 +160,8 @@ def test_info_drop_event(wind, ttorrent):
 
 def test_info_drop_false(wind):
     """Test drop event on editor widget is false."""
-    info = wind.central.infoWidget
-    info.window.central.setCurrentWidget(info)
+    info = wind.tabs.infoWidget
+    wind.stack.setCurrentWidget(info)
     proc_time()
     event = MockEvent(None)
     assert not info.dropEvent(event)
