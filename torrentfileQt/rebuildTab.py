@@ -20,8 +20,7 @@
 
 import os
 
-from PySide6.QtCore import QThread, Signal, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QTextBrowser, QVBoxLayout, QWidget)
 from torrentfile.rebuild import Assembler

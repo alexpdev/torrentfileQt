@@ -26,14 +26,12 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog,
-                               QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QRadioButton, QSpacerItem, QWidget)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
+                               QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                               QPlainTextEdit, QProgressBar, QPushButton,
+                               QRadioButton, QSplitter, QTableWidget,
+                               QTableWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
@@ -96,15 +94,17 @@ class CreateWidget(QWidget):
         self.piece_length_combo = ComboBox.piece_length(parent=self)
         self.private = QCheckBox("Private", parent=self)
 
-        versionBox.setToolTip("These controls may be ignored if you do not"
-                              " have a specific need to adjust them.")
+        versionBox.setToolTip(
+            "These controls may be ignored if you do not"
+            " have a specific need to adjust them."
+        )
 
         layout0 = QGridLayout(versionBox)
-        layout0.addWidget(self.v1button,0,0)
-        layout0.addWidget(self.v2button,1,0)
-        layout0.addWidget(self.hybridbutton,2,0)
+        layout0.addWidget(self.v1button, 0, 0)
+        layout0.addWidget(self.v2button, 1, 0)
+        layout0.addWidget(self.hybridbutton, 2, 0)
         layout0.addWidget(self.private, 0, 1)
-        layout0.addWidget(piece_length_box,1,1,2,1)
+        layout0.addWidget(piece_length_box, 1, 1, 2, 1)
 
         vlayout4 = QVBoxLayout(piece_length_box)
         vlayout4.addWidget(self.piece_length_combo)
@@ -206,6 +206,7 @@ class TorrentFileCreator(QThread):
     name : list
         container to add return values to
     """
+
     created = Signal()
     prog_start_signal = Signal(int, str, int, str)
     prog_update_signal = Signal(int)
@@ -267,7 +268,6 @@ class SubmitButton(QPushButton):
         self.clicked.connect(self.submit)
         self._parent = parent
         self.thread = None
-
 
     def submit(self):
         """Submit Action performed when user presses Submit Button."""
@@ -444,7 +444,6 @@ class ComboBox(QComboBox):
 
 
 class ProgressTable(QTableWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setColumnCount(2)
@@ -457,7 +456,6 @@ class ProgressTable(QTableWidget):
         hheader.setSectionResizeMode(1, hheader.ResizeMode.Stretch)
         hheader.setSectionsClickable(False)
 
-
     def add_args(self, args):
         self.path = args["path"]
 
@@ -466,7 +464,7 @@ class ProgressTable(QTableWidget):
         self.insertRow(index)
         item = QTableWidgetItem()
         if len(path) > self.max_chars:
-            path = "..." + path[-self.max_chars:]
+            path = "..." + path[-self.max_chars :]
         item.setText(path)
         progbar = QProgressBar()
         progbar.setRange(0, total - 1)

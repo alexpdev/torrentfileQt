@@ -25,15 +25,16 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QTextOption
-from PySide6.QtWidgets import (QPlainTextEdit, QProgressBar, QPushButton,
-                               QSplitter, QTreeWidget, QTreeWidgetItem,
-                               QVBoxLayout, QWidget, QHBoxLayout, QApplication)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QPlainTextEdit,
+                               QProgressBar, QPushButton, QSplitter,
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
 from torrentfile.recheck import Checker
 
 from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
                                  get_icon)
-
 from torrentfileQt.widgets import DropGroupBox
+
 
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
@@ -425,7 +426,6 @@ class TreeWidget(QTreeWidget):
             self.app.processEvents()
         self.paths.append(path)
         self.window().statusBar().showMessage("Checking...")
-
 
 
 class PieceHasher:

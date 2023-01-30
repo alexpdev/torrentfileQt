@@ -108,8 +108,9 @@ def test_treedir(treedir, wind):
                 assert isroot is False
                 assert parent.index() == widget.treeview.model().parent(index)
                 proc_time()
-                widget.treeview.model().setData(index, "marshmallow",
-                                                Qt.EditRole)
+                widget.treeview.model().setData(
+                    index, "marshmallow", Qt.EditRole
+                )
                 proc_time()
                 ritem.setData("smores")
                 proc_time()
@@ -135,8 +136,9 @@ def test_treeremove(treedir, wind):
         item = widget.treeview.item(i, 0)
         ritem = item
         rect = widget.treeview.visualRect(ritem.index())
-        widget.treeview.setSelection(rect,
-                                     QItemSelectionModel.SelectionFlag.Select)
+        widget.treeview.setSelection(
+            rect, QItemSelectionModel.SelectionFlag.Select
+        )
         widget.insert_view_item()
         widget.remove_view_item()
 

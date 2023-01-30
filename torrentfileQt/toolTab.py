@@ -21,7 +21,6 @@
 import os
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout,
                                QLabel, QLineEdit, QPushButton, QVBoxLayout,
                                QWidget)
@@ -243,11 +242,11 @@ class PieceLengthCalculator(QGroupBox):
         self.piece_count_line = QLineEdit()
         self.piece_length_combo = PieceLengthBox(self)
         for line in [
-                self.piece_length_combo,
-                self.piece_count_line,
-                self.path_line,
-                self.size_line,
-                self.file_count_line,
+            self.piece_length_combo,
+            self.piece_count_line,
+            self.path_line,
+            self.size_line,
+            self.file_count_line,
         ]:
             line.setProperty("infoLine", "true")
         self.grid = QGridLayout()
@@ -266,7 +265,8 @@ class PieceLengthCalculator(QGroupBox):
         self.fileButton.clicked.connect(self.browse_files)
         self.folderButton.clicked.connect(self.browse_folders)
         self.piece_length_combo.currentTextChanged.connect(
-            self.calculate_piece_length)
+            self.calculate_piece_length
+        )
 
     def calculate_piece_length(self):
         """

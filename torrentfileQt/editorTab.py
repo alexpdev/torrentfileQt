@@ -18,17 +18,15 @@
 ##############################################################################
 """Widgets and procedures for the "Torrent Editor" tab."""
 
-import os
 import datetime
 from copy import deepcopy
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (QComboBox, QCheckBox, QLabel, QLineEdit,
-                               QPushButton, QSizePolicy, QTableWidget,
-                               QTableWidgetItem, QToolBar, QVBoxLayout,
-                               QWidget, QGroupBox, QHBoxLayout)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox, QHBoxLayout,
+                               QLineEdit, QPushButton, QSizePolicy,
+                               QTableWidget, QTableWidgetItem, QVBoxLayout,
+                               QWidget)
 
 from torrentfileQt.utils import browse_torrent, get_icon
 from torrentfileQt.widgets import DropGroupBox
@@ -259,7 +257,7 @@ class Table(QTableWidget):
 
             elif k == "private":
                 widget = QCheckBox(parent=self)
-                widget.setChecked(v==True)
+                widget.setChecked(v == True)
                 self.setCellWidget(index, 1, widget)
 
             elif k == "creation date":
@@ -337,7 +335,7 @@ class EditGroupBox(QGroupBox):
         """Construct the toolbar instance."""
         super().__init__(parent=parent)
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setObjectName("EditGroupBox")
         self.line_edit = QLineEdit(parent=self)
         self.combo = Combo(self)

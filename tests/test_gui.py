@@ -89,8 +89,7 @@ def test_decrease_font(wind):
 def test_styleManager():
     """Test style manager from utils module."""
     themes = {
-        "test":
-        """
+        "test": """
 QWidget {
     background-color: #000;
     color: #0AF;

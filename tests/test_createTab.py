@@ -121,7 +121,8 @@ def test_create_tab_fields(dir2, field, wind):
     outbutton.output(outpath=torfile)
     createtab.output_input.setText(torfile)
     createtab.announce_input.setPlainText(
-        "https://announce.com\nhttp://announce2.com\nhttp://announce4.com")
+        "https://announce.com\nhttp://announce2.com\nhttp://announce4.com"
+    )
     createtab.comment_input.setText("some comment")
     createtab.private.setChecked(True)
     createtab.source_input.setText("TestSource")

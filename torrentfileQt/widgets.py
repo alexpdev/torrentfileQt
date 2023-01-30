@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
-from PySide6.QtWidgets import *
+
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from PySide6.QtWidgets import *
+
 
 class DropGroupBox(QGroupBox):
 

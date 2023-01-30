@@ -294,7 +294,6 @@ def get_icon(name: str) -> str:
     return QIcon(icon)
 
 
-
 def browse_folder(widget: object) -> str:
     """
     Browse for folder performed when user presses button.
@@ -310,7 +309,9 @@ def browse_folder(widget: object) -> str:
         folder path
     """
     folder = QFileDialog.getExistingDirectory(
-        parent=widget, dir=str(Path.home()), caption="Select Folder",
+        parent=widget,
+        dir=str(Path.home()),
+        caption="Select Folder",
     )
     if folder:
         folder = os.path.normpath(folder)
@@ -337,7 +338,8 @@ def browse_files(widget: object) -> list:
         list of pathstrings
     """
     path, _ = QFileDialog.getOpenFileName(
-        parent=widget, dir=str(Path.home()), caption="Select File")
+        parent=widget, dir=str(Path.home()), caption="Select File"
+    )
     if not path:
         path = ""
     return os.path.normpath(path)
@@ -360,9 +362,10 @@ def browse_torrent(widget: object) -> list:
         list of path strings
     """
     torrents = QFileDialog.getOpenFileName(
-        parent=widget, dir=str(Path.home()),
+        parent=widget,
+        dir=str(Path.home()),
         caption="Select *.torrent File...",
-        filter=("*.torrent, Torrent", "*, Any")
+        filter=("*.torrent, Torrent", "*, Any"),
     )
     if torrents and torrents[0]:
         torrents = [os.path.normpath(i) for i in torrents if i]

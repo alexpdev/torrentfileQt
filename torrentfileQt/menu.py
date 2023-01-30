@@ -21,13 +21,13 @@
 import os
 import webbrowser
 
-from PySide6.QtGui import QAction, QPixmap, QIcon
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton, QDialog, QVBoxLayout, QPlainTextEdit
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
+                               QMenu, QMenuBar, QPlainTextEdit, QPushButton,
+                               QSizePolicy, QToolButton, QVBoxLayout, QWidget)
 
 from torrentfileQt.utils import get_icon
-
-
 
 icon = os.path.join(os.path.dirname(__file__), "home.png")
 
@@ -89,7 +89,7 @@ class TitleBar(QWidget):
         self.closeButton.setSizePolicy(sizePolicy)
         self.layout = QHBoxLayout(self)
         self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.icon)
         self.layout.addWidget(self.stylebutton)
         self.layout.addStretch(1)
@@ -128,7 +128,7 @@ class TitleBar(QWidget):
         difx, dify = (pos - self._cpos).toTuple()
         geom = self.window().geometry()
         x, y, w, h = geom.x(), geom.y(), geom.width(), geom.height()
-        new_coords = x+difx, y+dify, w, h
+        new_coords = x + difx, y + dify, w, h
         self.window().setGeometry(*new_coords)
 
     def mouseReleaseEvent(self, event):
@@ -143,7 +143,7 @@ class TitleBar(QWidget):
         app = QApplication.instance()
         styler = app.styler
         self.dialog = QDialog()
-        self.dialog.resize(500,700)
+        self.dialog.resize(500, 700)
         vlayout = QVBoxLayout(self.dialog)
         hlayout = QHBoxLayout()
         self.dialog.plainTextEdit = QPlainTextEdit()
@@ -163,7 +163,9 @@ class TitleBar(QWidget):
 
     def writeContents(self):
         text = self.dialog.plainTextEdit.toPlainText()
-        with open(os.path.join(os.path.dirname(__file__), "temp.qss"), "wt") as qss:
+        with open(
+            os.path.join(os.path.dirname(__file__), "temp.qss"), "wt"
+        ) as qss:
             qss.write(text)
 
     def closeStyleDialog(self):
@@ -174,7 +176,6 @@ class TitleBar(QWidget):
         app = QApplication.instance()
         text = self.dialog.plainTextEdit.toPlainText()
         app.styler.setTheme(text)
-
 
 
 class MenuBar(QMenuBar):
