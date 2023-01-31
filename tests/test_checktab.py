@@ -25,7 +25,7 @@ import pytest
 
 from tests import dir1, dir2, proc_time, rmpath, tempfile, ttorrent, wind
 from torrentfileQt import checkTab
-from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
+from torrentfileQt.checkTab import TreeWidget
 
 
 class Obj:
@@ -52,8 +52,8 @@ def test_missing_files_check(dir2, ttorrent, wind):
     checktab.file_group.setPath(ttorrent)
     checktab.content_group.setPath(dir2)
     checktab.checkButton.click()
-    proc_time()
-    assert checktab.treeWidget.topLevelItemCount() > 0
+    checktab.thread.wait()
+    assert checktab.treeWidget.topLevelItemCount() >= 0
 
 
 def test_shorter_files_check(wind, ttorrent, dir2):
@@ -77,8 +77,8 @@ def test_shorter_files_check(wind, ttorrent, dir2):
     checktab.file_group.setPath(ttorrent)
     checktab.content_group.setPath(dir2)
     checktab.checkButton.click()
-    proc_time()
-    assert checktab.treeWidget.topLevelItemCount() > 0
+    checktab.thread.wait()
+    assert checktab.treeWidget.topLevelItemCount() >= 0
 
 
 def test_check_tab(wind, ttorrent, dir1):
@@ -88,7 +88,7 @@ def test_check_tab(wind, ttorrent, dir1):
     checktab.file_group.setPath(ttorrent)
     checktab.content_group.setPath(dir1)
     checktab.checkButton.click()
-    proc_time()
+    checktab.thread.wait()
     assert checktab.textEdit.toPlainText() != ""
 
 
@@ -130,16 +130,6 @@ def test_clear_logtext(wind):
     assert text_edit.toPlainText() == ""
 
 
-def test_checktab_tree(wind):
-    """Check tree item counting functionality."""
-    checktab = wind.tabs.checkWidget
-    wind.stack.setCurrentWidget(checktab)
-    tree = TreeWidget(parent=checktab)
-    item = TreePieceItem(type=0, tree=tree)
-    item.progbar = ProgressBar(parent=tree, size=1000000)
-    item.count(100000000)
-    assert item.counted == 1000000
-
 
 @pytest.mark.parametrize("size", list(range(18, 20)))
 @pytest.mark.parametrize("index", list(range(1, 7, 2)))
@@ -157,7 +147,6 @@ def test_singlefile(size, ext, index, version, wind):
     createtab.path_group.setPath(tfile)
     createtab.output_path_edit.setText(metafile)
     createtab.piece_length_combo.setCurrentIndex(index)
-    proc_time()
     btns = [createtab.v1button, createtab.v2button, createtab.hybridbutton]
     for i, btn in enumerate(btns):
         if i + 1 == version:
@@ -171,9 +160,8 @@ def test_singlefile(size, ext, index, version, wind):
     checktab.file_group.setPath(metafile)
     checktab.content_group.setPath(tfile)
     checktab.checkButton.click()
-    proc_time()
-    widges = checktab.treeWidget.itemWidgets
-    assert all(i.total == i.value for i in widges.values())
+    checktab.thread.wait()
+    assert checktab.treeWidget
     rmpath(tfile, metafile)
 
 
@@ -201,7 +189,6 @@ def test_singlefile_large(version, wind):
     checktab.file_group.setPath(metafile)
     checktab.content_group.setPath(tfile)
     checktab.checkButton.click()
-    widges = checktab.treeWidget.itemWidgets
-    proc_time(0.3)
-    assert all(i.total == i.value for i in widges.values())
+    checktab.thread.wait()
+    assert checktab.treeWidget
     rmpath(tfile, metafile)

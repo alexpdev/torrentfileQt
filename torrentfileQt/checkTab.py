@@ -92,8 +92,8 @@ class CheckWidget(QWidget):
         self.file_group.setPath(path)
 
     def populate_tree(self, metafile, content):
-        base = self.content_group.getPath()
         self.thread = RecheckThread(metafile, content)
+        base = self.content_group.getPath()
         self.thread.finished.connect(self.thread.deleteLater)
         self.treeWidget.set_thread_info(self.thread, base)
         self.thread.start()
@@ -135,6 +135,8 @@ class RecheckThread(QThread):
 
     def process_v1_hash(self, actual, expected, path, size):
         while size > 0:
+            if self.current >= len(self.pathlist):
+                return
             current = self.pathlist[self.current]
             current_length = self.fileinfo.get(current)["length"]
             if current_length == 0:
@@ -187,15 +189,16 @@ class ReCheckButton(QPushButton):
     def submit(self):
         """Submit data to piece hasher."""
         parent = self._parent
-        parent.treeWidget.clear()
-        parent.textEdit.clear()
         metafile = parent.file_group.getPath()
         content = parent.content_group.getPath()
-        self.window().statusBar().showMessage("Checking...", 3000)
         if os.path.exists(metafile):
+            parent.treeWidget.clear()
+            parent.textEdit.clear()
+            self.ready.emit(metafile, content)
             Checker.register_callback(parent.textEdit.callback)
             logging.debug("Registering Callback, setting root")
-            self.ready.emit(metafile, content)
+            self.window().statusBar().showMessage("Checking...", 3000)
+
 
 
 class BrowseTorrents(QPushButton):

@@ -160,6 +160,7 @@ class CreateWidget(QWidget):
         hlayout2.addLayout(vlayout3)
 
         self.submit_button = SubmitButton("Create Torrent", parent=self)
+        self.submit_button.dataCollected.connect(self.write_torrent)
         self.submit_button.setObjectName("CreateSubmitButton")
 
         self.bottomCentral = QWidget()
@@ -188,6 +189,24 @@ class CreateWidget(QWidget):
         self.path_group.setPath(path)
         self.piece_length_combo.setValue(val)
         self.output_path_edit.setText(path + ".torrent")
+
+    def write_torrent(self, args, creator):
+        self._thread = TorrentFileCreator(args, creator)
+        self._thread.created.connect(self.updateStatusBarEnd)
+        self._thread.started.connect(self.updateStatusBarBegin)
+        self._thread.prog_start_signal.connect(self.progress_tree.prog_start)
+        self._thread.prog_update_signal.connect(self.progress_tree.prog_update)
+        self._thread.prog_close_signal.connect(self.progress_tree.prog_close)
+        self._thread.start()
+
+    def updateStatusBarBegin(self):
+        """Update the status bar when torrent creation is complete."""
+        self.window().statusBar().showMessage("Processing", 3000)
+
+    def updateStatusBarEnd(self):
+        """Update the status bar when torrent creation is complete."""
+        self.window().statusBar().showMessage("Completed", 3000)
+        self.thread.deleteLater()
 
 
 class TorrentFileCreator(QThread):
@@ -249,6 +268,8 @@ class TorrentFileCreator(QThread):
 
 class SubmitButton(QPushButton):
     """Button widget."""
+
+    dataCollected = Signal(dict, object)
 
     def __init__(self, text: str, parent: QWidget = None) -> None:
         """
@@ -318,22 +339,8 @@ class SubmitButton(QPushButton):
         args["path"] = parent.path_group.getPath()
         tree = parent.progress_tree
         tree.add_args(args)
-        self.thread = TorrentFileCreator(args, creator)
-        self.thread.created.connect(self.updateStatusBarEnd)
-        self.thread.started.connect(self.updateStatusBarBegin)
-        self.thread.prog_start_signal.connect(tree.prog_start)
-        self.thread.prog_update_signal.connect(tree.prog_update)
-        self.thread.prog_close_signal.connect(tree.prog_close)
-        self.thread.start()
+        self.dataCollected.emit(args, creator)
 
-    def updateStatusBarBegin(self):
-        """Update the status bar when torrent creation is complete."""
-        self.window().statusBar().showMessage("Processing", 3000)
-
-    def updateStatusBarEnd(self):
-        """Update the status bar when torrent creation is complete."""
-        self.window().statusBar().showMessage("Completed", 3000)
-        self.thread.deleteLater()
 
 
 class OutButton(QPushButton):

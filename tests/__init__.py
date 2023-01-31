@@ -146,8 +146,7 @@ def teardown():  # pragma: nocover
     if os.path.exists(root):
         rmpath(root)
 
-
-@pytest.fixture(scope="package")
+@pytest.fixture
 def dir1():
     """Create a specific temporary structured directory.
 
@@ -171,8 +170,7 @@ def dir2():
         path to root of temporary directory
     """
     root = tempdir(ext="2")
-    yield root
-    rmpath(root)
+    return root
 
 
 @pytest.fixture
@@ -192,8 +190,8 @@ def dir3():
         "dir3/subdir/file5.epub",
     ]
     root = tempdir(files=files)
-    yield root
-    rmpath(root)
+    return root
+
 
 
 @pytest.fixture(scope="package")
