@@ -21,21 +21,14 @@
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
+from tests import (MockEvent, dir2, dir3, proc_time, rmpath, tempfile,
+                   ttorrent, wind)
 from torrentfileQt import infoTab
 
-from tests import (
-    MockEvent,
-    dir2,
-    dir3,
-    proc_time,
-    rmpath,
-    tempfile,
-    ttorrent,
-    wind,
-)
 
 class Obj:
     value = None
+
 
 def mock_func(_):
     return Obj.value

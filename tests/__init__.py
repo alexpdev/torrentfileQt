@@ -34,6 +34,7 @@ from torrentfileQt import Application
 
 APP = Application.start()
 
+
 def exception_hook(exctype, value, traceback):  # pragma:  no cover
     """Except hook capturing."""
     print(exctype, value, traceback)

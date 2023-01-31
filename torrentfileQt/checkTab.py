@@ -23,12 +23,11 @@ import os
 import re
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QTextOption
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QPlainTextEdit,
-                               QProgressBar, QPushButton, QSplitter,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (QHBoxLayout, QPlainTextEdit, QProgressBar,
+                               QPushButton, QSplitter, QTreeWidget,
+                               QTreeWidgetItem, QVBoxLayout, QWidget)
 from torrentfile.recheck import Checker
 
 from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
@@ -83,6 +82,7 @@ class CheckWidget(QWidget):
         self.layout.addWidget(self.splitter)
 
         self.checkButton = ReCheckButton("Check", parent=self)
+        self.checkButton.ready.connect(self.populate_tree)
         self.layout.addWidget(self.checkButton)
 
     def setPath(self, path):
@@ -90,6 +90,76 @@ class CheckWidget(QWidget):
 
     def setTorrent(self, path):
         self.file_group.setPath(path)
+
+    def populate_tree(self, metafile, content):
+        base = self.content_group.getPath()
+        self.thread = RecheckThread(metafile, content)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.treeWidget.set_thread_info(self.thread, base)
+        self.thread.start()
+
+
+class RecheckThread(QThread):
+    """Piece Hasher class for iterating through captured torrent pieces."""
+
+    path_ready = Signal(str, int)
+    progress_update = Signal(str, int)
+
+    def __init__(self, metafile, content):
+        """Construct for PieceHasher class."""
+        super().__init__()
+        self.metafile = metafile
+        self.content = content
+        self.current = 0
+
+    def get_path_information(self, fileinfo, pathlist):
+        """Add tree widgets items to tree widget."""
+        for _, val in fileinfo.items():
+            if val["path"] == self.root:
+                relpath = os.path.dirname(self.root)  # pragma: no cover
+            else:
+                relpath = os.path.relpath(val["path"], self.root)
+            length = val["length"]
+            self.path_ready.emit(relpath, length)
+
+    def iter_hashes(self, checker):
+        """Iterate through hashes and compare to torrentfile hashes."""
+        for actual, expected, path, size in checker.iter_hashes():
+            if self.checker.meta_version == 1:
+                self.process_v1_hash(actual, expected, path, size)
+            else:
+                if actual == expected:
+                    self.progress_update.emit(path, size)
+                else:
+                    self.progress_update.emit(path, size)
+
+    def process_v1_hash(self, actual, expected, path, size):
+        while size > 0:
+            current = self.pathlist[self.current]
+            current_length = self.fileinfo.get(current)["length"]
+            if current_length == 0:
+                self.current += 1
+                continue
+            if size > current_length:
+                amount = size - current_length
+                size -= amount
+                self.fileinfo.get(current)["length"] = 0
+                if actual == expected:
+                    self.progress_update.emit(current, amount)
+            else:
+                if actual == expected:
+                    self.progress_update.emit(current, size)
+                self.fileinfo.get(current)["length"] -= size
+                size = 0
+
+    def run(self):
+        self.checker = Checker(self.metafile, self.content)
+        self.root = os.path.dirname(self.checker.root)
+        fileinfo = self.checker.fileinfo
+        self.pathlist = self.checker.paths
+        self.fileinfo = {v["path"]: v for v in fileinfo.values()}
+        self.get_path_information(fileinfo, self.pathlist)
+        self.iter_hashes(self.checker)
 
 
 class ReCheckButton(QPushButton):
@@ -104,7 +174,7 @@ class ReCheckButton(QPushButton):
         This widgets parent widget.
     """
 
-    process = None
+    ready = Signal(str, str)
 
     def __init__(self, text, parent=None):
         """Construct the CheckButton Widget."""
@@ -119,14 +189,13 @@ class ReCheckButton(QPushButton):
         parent = self._parent
         parent.treeWidget.clear()
         parent.textEdit.clear()
-        QApplication.instance().processEvents()
         metafile = parent.file_group.getPath()
         content = parent.content_group.getPath()
         self.window().statusBar().showMessage("Checking...", 3000)
         if os.path.exists(metafile):
             Checker.register_callback(parent.textEdit.callback)
             logging.debug("Registering Callback, setting root")
-            parent.treeWidget.reChecking.emit(metafile, content)
+            self.ready.emit(metafile, content)
 
 
 class BrowseTorrents(QPushButton):
@@ -243,83 +312,6 @@ class LogTextEdit(QPlainTextEdit):
         return hint
 
 
-class TreePieceItem(QTreeWidgetItem):
-    """Item Widgets that are leafs to Tree Widget branches."""
-
-    def __init__(self, type=0, tree=None):
-        """Construct for tree widget items."""
-        super().__init__(type=type)
-        policy = self.ChildIndicatorPolicy.DontShowIndicatorWhenChildless
-        self.app = QApplication.instance()
-        self.setChildIndicatorPolicy(policy)
-        self.tree = tree
-        self.counted = self.value = 0
-        self.progbar = None
-
-    @property
-    def total(self):
-        """Return current value of progress bar."""
-        return self.progbar.total
-
-    @property
-    def left(self):
-        """Discard amount of data left to check."""
-        return self.progbar.total - self.counted
-
-    def addProgress(self, value):
-        """Increase progress bar value."""
-        if self.counted + value > self.total:
-            consumed = self.total - self.value  # pragma: no cover
-        else:
-            consumed = value
-        self.value += consumed
-        self.counted += consumed
-        self.progbar.valueChanged.emit(consumed)
-        self.app.processEvents()
-        return consumed
-
-    def count(self, value):
-        """Increase count without increasing value."""
-        if self.counted + value > self.total:
-            consumed = self.total - self.value
-            self.counted += consumed
-            return consumed
-        self.counted += value
-        return value
-
-
-class ProgressBar(QProgressBar):
-    """Progress Bar Widget."""
-
-    valueChanged = Signal(int)
-
-    def __init__(self, parent=None, size=0):
-        """Construct for the progress bar widget."""
-        super().__init__(parent=parent)
-        self.total = size
-        self.setValue(0)
-        size = self.normalize(size)
-        self.setRange(0, size)
-        self.valueChanged.connect(self.addValue)
-
-    def normalize(self, val):
-        """Convert larger values into smaller increments."""
-        if self.total > 10_000_000:
-            val = val // (2**20)
-        elif self.total > 10_000:
-            val = val // (2**10)
-        return val
-
-    def addValue(self, value):
-        """Increase value of progressbar."""
-        self.blockSignals(True)
-        currentvalue = self.value()
-        out = self.normalize(value)
-        addedVal = currentvalue + value
-        self.setValue(addedVal)
-        self.blockSignals(False)
-
-
 class TreeWidget(QTreeWidget):
     """
     Tree Widget for the `Check` tab.
@@ -332,153 +324,94 @@ class TreeWidget(QTreeWidget):
         this widgets parent.
     """
 
-    addPathChild = Signal(str, str)
-    reChecking = Signal(str, str)
-    addValue = Signal(str, int)
-    addCount = Signal(str, int)
-
     def __init__(self, parent=None):
         """Construct for Tree Widget."""
         super().__init__(parent=parent)
-        self.app = QApplication.instance()
         self.setColumnCount(2)
         self.setIndentation(12)
-        self.rootitem = self.invisibleRootItem()
-        self.rootitem.setExpanded(True)
         header = self.header()
         header.setSizeAdjustPolicy(header.SizeAdjustPolicy.AdjustToContents)
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
         self.setHeaderLabels(["Path", "Progress"])
         self.setHeaderHidden(False)
-        self.itemWidgets = {}
-        self.paths = []
-        self.total = 0
-        self.root = None
-        self.piece_length = None
-        self.item_tree = {"widget": self.rootitem}
-        self.addPathChild.connect(self.add_path_child)
-        self.reChecking.connect(self.get_hashes)
-        self.addValue.connect(self.setItemValue)
-        self.addCount.connect(self.setItemCount)
+        self.rootitem = self.invisibleRootItem()
+        self.rootitem.setExpanded(True)
+        self.progbars = []
+        self.thread = None
+        self.icons = {
+            "video": get_icon("video"),
+            "archive": get_icon("archive"),
+            "file": get_icon("file"),
+            "music": get_icon("music"),
+            "folder": get_icon("folder"),
+        }
 
-    def setItemValue(self, path, val):
-        """Set child widgets value to val."""
-        widget = self.itemWidgets[path]
-        widget.addProgress(val)
-
-    def setItemCount(self, path, val):
-        """Set child widgets count to val."""
-        widget = self.itemWidgets[path]
-        widget.count(val)
-
-    def get_hashes(self, metafile, contents):
-        """Fill tree widget with contents of torrentfile."""
-        phashes = PieceHasher(metafile, contents, self)
-        phashes.addTreeWidgets()
-        phashes.iter_hashes()
-        self.window().statusBar().showMessage("Complete", 2000)
+    def set_thread_info(self, thread, base):
+        self.thread = thread
+        self.base = os.path.dirname(base)
+        self.thread.path_ready.connect(self.setup_path_item)
+        self.thread.progress_update.connect(self.update_progress)
 
     def clear(self):
         """Remove any objects from Tree Widget."""
         super().clear()
-        self.item_tree = {"widget": self.invisibleRootItem()}
-        self.itemWidgets = {}
-        self.paths = []
         self.root = None
 
-    def add_path_child(self, path, size):
+    def new_item(self, text, icon):
+        item = QTreeWidgetItem()
+        item.setText(0, text)
+        item.setIcon(0, icon)
+        item.setExpanded(True)
+        return item
+
+    def setup_path_item(self, path, size):
         """Add branch to tree."""
-        path = Path(path)
-        size = int(size)
-        partials = path.parts
-        item, item_tree = None, self.item_tree
-        for i, partial in enumerate(partials):
-            if partial in item_tree:
-                item_tree = item_tree[partial]
-                continue
-            parent = item_tree["widget"]
-            item = TreePieceItem(0, tree=self)
-            parent.addChild(item)
-            parent.setExpanded(True)
-            item_tree[partial] = {"widget": item}
-            if i == len(partials) - 1:
-                if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
-                    fileicon = get_icon("video")
-                elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
-                    fileicon = get_icon("archive")
-                elif re.match(r"\.r\d+$", path.suffix):
-                    fileicon = get_icon("archive")
-                elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
-                    fileicon = get_icon("music")
-                else:
-                    fileicon = get_icon("file")
-                progressBar = ProgressBar(parent=None, size=size)
-                self.setItemWidget(item, 1, progressBar)
-                item.progbar = progressBar
-                self.itemWidgets[str(path)] = item
+        parts = list(Path(path).parts)
+        root = self.rootitem
+        while len(parts) > 1:
+            part = parts.pop(0)
+            for i in range(root.childCount()):
+                child = root.child(i)
+                if child.text(0) == part:
+                    root = child
+                    break
             else:
-                fileicon = get_icon("folder")
-            item.setIcon(0, fileicon)
-            item.setText(0, partial)
-            item_tree = item_tree[partial]
-            self.app.processEvents()
-        self.paths.append(path)
-        self.window().statusBar().showMessage("Checking...")
+                item = self.new_item(part, self.icons["folder"])
+                root.addChild(item)
+        fileicon = self.match_suffix_to_icon(Path(path))
+        item = self.new_item(parts[0], fileicon)
+        progressBar = QProgressBar(self)
+        self.progbars.append(progressBar)
+        progressBar.setRange(0, size - 1)
+        item.progbar = progressBar
+        root.addChild(item)
+        self.setItemWidget(item, 1, progressBar)
 
+    def match_suffix_to_icon(self, path):
+        if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
+            fileicon = self.icons["video"]
+        elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
+            fileicon = self.icons["archive"]
+        elif re.match(r"\.r\d+$", path.suffix):
+            fileicon = self.icons["archive"]
+        elif path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
+            fileicon = self.icons["music"]
+        else:
+            fileicon = self.icons["file"]
+        return fileicon
 
-class PieceHasher:
-    """Piece Hasher class for iterating through captured torrent pieces."""
-
-    def __init__(self, metafile, content, tree):
-        """Construct for PieceHasher class."""
-        self.metafile = metafile
-        self.content = content
-        self.tree = tree
-        self.checker = Checker(metafile, content)
-        self.root = os.path.dirname(self.checker.root)
-        self.fileinfo = self.checker.fileinfo
-        self.pathlist = self.checker.paths
-        self.current = 0
-
-    def addTreeWidgets(self):
-        """Add tree widgets items to tree widget."""
-        for _, val in self.fileinfo.items():
-            if val["path"] == self.root:
-                relpath = os.path.dirname(self.root)  # pragma: no cover
-            else:
-                relpath = os.path.relpath(val["path"], self.root)
-            length = val["length"]
-            self.tree.addPathChild.emit(relpath, str(length))
-
-    def iter_hashes(self):
-        """Iterate through hashes and compare to torrentfile hashes."""
-        for actual, expected, path, size in self.checker.iter_hashes():
-            if self.checker.meta_version == 1:
-                while size > 0:
-                    if self.current >= len(self.pathlist):
-                        break  # pragma: no cover
-                    current = self.pathlist[self.current]
-                    relpath = os.path.relpath(current, self.root)
-                    widget = self.tree.itemWidgets[relpath]
-                    if widget.left == 0:
-                        self.current += 1
-                        continue
-                    left, amount = widget.left, None
-                    if actual == expected:
-                        amount = left if left < size else size
-                        self.tree.addValue.emit(relpath, amount)
-                    else:
-                        amount = left if left < size else size
-                        self.tree.addCount.emit(relpath, amount)
-                    size -= amount
-            else:
-                if path == self.root:
-                    relpath = os.path.dirname(self.root)  # pragma: no cover
-                else:
-                    relpath = os.path.relpath(path, self.root)
-                if actual == expected:
-                    self.tree.addValue.emit(relpath, size)
-                else:
-                    self.tree.addCount.emit(relpath, size)
+    def update_progress(self, path, amount):
+        relpath = Path(os.path.relpath(path, self.base))
+        parts = list(relpath.parts)
+        base = self.rootitem
+        while parts:
+            part = parts.pop(0)
+            for i in range(base.childCount()):
+                item = base.child(i)
+                if item.text(0) == part:
+                    base = item
+                    break
+        prog = self.itemWidget(base, 1)
+        value = prog.value()
+        prog.setValue(value + amount)

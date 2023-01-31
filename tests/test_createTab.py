@@ -26,11 +26,14 @@ from tests import dir1, dir2, proc_time, rmpath, tempfile, wind
 from torrentfileQt import createTab
 from torrentfileQt.createTab import TorrentFileCreator
 
+
 class Obj:
     value = None
 
+
 def mock_func(_):
     return Obj.value
+
 
 def test_rmpath():
     """Test the rmpath function."""

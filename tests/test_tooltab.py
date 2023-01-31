@@ -22,16 +22,9 @@ import pytest
 from torrentfile import magnet
 from torrentfile.torrent import TorrentFile
 
-from tests import (
-    MockEvent,
-    dir1,
-    dir2,
-    proc_time,
-    rmpath,
-    tempfile,
-    ttorrent,
-    wind,
-)
+from tests import (MockEvent, dir1, dir2, proc_time, rmpath, tempfile,
+                   ttorrent, wind)
+
 
 @pytest.fixture
 def torrent(dir1):

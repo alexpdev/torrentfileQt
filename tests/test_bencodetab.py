@@ -30,7 +30,6 @@ from torrentfileQt import bencodeTab
 from torrentfileQt.bencodeTab import Item
 
 
-
 def test_fix():
     """Test fixtures."""
     assert dir1 and dir2 and tempfile and ttorrent and wind
@@ -148,6 +147,7 @@ def test_treeremove(treedir, wind):
 
     def test_folder_mock(_):
         return treedir
+
     bencodeTab.browse_folder = test_folder_mock
     widget.load_folder()
     proc_time(1)

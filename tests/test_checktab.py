@@ -27,11 +27,14 @@ from tests import dir1, dir2, proc_time, rmpath, tempfile, ttorrent, wind
 from torrentfileQt import checkTab
 from torrentfileQt.checkTab import ProgressBar, TreePieceItem, TreeWidget
 
+
 class Obj:
     value = None
 
+
 def mock_func(_):
     return Obj.value
+
 
 def test_fixture():
     """Test Fixtures."""
