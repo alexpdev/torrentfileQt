@@ -214,13 +214,11 @@ class OptionsMenu(QMenu):
 
     def light_theme(self):
         """Change the GUI theme for the application."""
-        app = QApplication.instance()
-        app.setTheme("light_theme")
+        QApplication.instance().set_theme("light")
 
     def dark_theme(self):
         """Change the GUI application to dark theme."""
-        app = QApplication.instance()
-        app.setTheme("dark_theme")
+        QApplication.instance().set_theme("dark")
 
     def about_qt(self):
         """Open the about qt menu."""

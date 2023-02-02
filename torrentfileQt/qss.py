@@ -51,13 +51,21 @@ QLineEdit {
 }
 QPushButton {
     background-color: $_16;
+    font-weight: bold;
     padding: 4px;
     margin-left: 4px;
     margin-right: 4px;
     border-radius: 8px;
-    border-style: solid;
+    border-style: outset;
     border-color: $_3;
     border-width: 2px;
+}
+QPushButton:hover {
+    background-color: $_20;
+}
+QPushButton:pressed {
+    background-color: $_20;
+    border-style: inset;
 }
 QGroupBox {
     margin-left: 4px;
@@ -76,7 +84,10 @@ QWidget#tabbar {
 }
 QMenuBar,
 QWidget#titlebar {
-    background-color: $_5;
+    background-color: $_16;
+}
+#titlebar QLabel {
+    font-weight: bold;
 }
 QRadioButton,
 QCheckBox,
@@ -107,7 +118,7 @@ QStatusBar {
     border-bottom-right-radius: 4px;
 }
 QMenuBar {
-    background-color: $_5;
+    padding-top: 3px;
     font-size: 10pt;
 }
 QMenuBar::item:pressed {
@@ -132,7 +143,6 @@ QMenu::separator {
 QMenu::indicator {
     background-color: $_7;
 }
-
 *[DropGroupBox="true"] {
     border: 1px dashed $_14;
     background-color: $_13;
@@ -159,12 +169,10 @@ QMenu::indicator {
     border-color: $_18;
     color: $_15;
 }
-
 *[InfoTree="true"]{
     font-size: 10pt;
     margin: 15px;
     show-decoration-selected: 1;
-    gridline-color: $_17;
 }
 *[InfoTree="true"]::item {
     border: 1px solid $_1;
@@ -244,7 +252,6 @@ QMenu::indicator {
     subcontrol-position: top;
 }
 #CreateProgressTable {
-    gridline-color: $_17;
     selection-background-color: $_18;
     color: $_1;
 }
@@ -259,24 +266,24 @@ QMenu::indicator {
     background-color: $_19;
     border-radius: 10px;
 }
-#CheckTree {
-    gridline-color: $_17;
-    selection-background-color: $_18;
-}
-#CheckTree QProgressBar {
+#checkTree QProgressBar {
     border: 4px solid $_10;
     border-radius: 14px;
     background-color: transparent;
     text-align: center;
     color: $_1;
 }
-#CheckTree QProgressBar::chunk{
+#checkTree QProgressBar::chunk{
     background-color: $_19;
     border-radius: 10px;
 }
 #EditDropGroup {
     margin-left: 20px;
     margin-right: 20px;
+}
+#EditDropGroup QPushButton {
+    margin-left: 3px;
+    margin-right: 3px;
 }
 #EditGroupBox {
     padding: 0px;
@@ -340,6 +347,7 @@ QMenu::indicator {
 """
 
 class Styles:
+    stylesheet = theme
     arrow_path = Path(__file__).parent / "assets" / "arrow.png"
     arrow = path2url(str(arrow_path))
     dark = {
@@ -358,10 +366,11 @@ class Styles:
         "_13": "#1F3249",
         "_14": "#858585",
         "_15": "#FFFFAA",
-        "_16": "#55A",
+        "_16": "#248",
         "_17": "#EA3",
         "_18": "#599F95",
         "_19": "#073",
+        "_20": "#147",
         "_arrow": str(arrow),
     }
     light = {
@@ -384,30 +393,26 @@ class Styles:
         "_17": "#26D",
         "_18": "#B7707B",
         "_19": "#073",
+        "_20": "#EA9",
         "_arrow": str(arrow),
     }
+    keys = {"light": light, "dark": dark}
     @staticmethod
-    def compile(style):
-        template = string.Template(theme)
-        return template.substitute(style)
+    def compile(stylesheet, theme):
+        template = string.Template(stylesheet)
+        return template.substitute(theme)
 
-    light_theme = compile(light)
-    dark_theme = compile(dark)
-
-    def tab_style(active):
+    def tab_stylesheet(active):
         var = 8 if active else 9
         tab = f"""
             QPushButton[Tab="true"] {{
                 padding-top: 18px;
                 padding-bottom: 18px;
-                border-bottom-width: 0px;
                 padding-left: 8px;
+                border-width: 0px;
+                border-radius: 0px;
                 margin: 0px;
                 font-size: 10pt;
-                border-left-width: 0px;
                 background-color: $_{var};
-                border-top-width: 0px;
-                border-right-width: 0px;
-                border-radius: 0px;
         }}"""
         return tab

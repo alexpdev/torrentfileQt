@@ -19,77 +19,11 @@
 """Module for style manager."""
 
 import os
-import string
 from copy import deepcopy
 from pathlib import Path
 
-from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QFileDialog
-
-
-class StyleManager(QObject):
-    """Manage QStyleSheets for the app."""
-
-    def __init__(self, themes, app):
-        """Initialize styleManager class."""
-        super().__init__()
-        self.app = app
-        self.themes = themes
-        self.parser = QssParser()
-        self.current = None
-        self.label = None
-
-    def setThemeKey(self, key: str = None):
-        """
-        Set the current QStyleSheet theme.
-
-        Parameters
-        ----------
-        key : str
-            the qss formating string to apply as the theme.
-        """
-        self.current = self.themes[key]
-        self.label = key
-        self.app.setStyleSheet(self.current)
-
-    def setTheme(self, theme: str = None):
-        """
-        Set the current QStyleSheet theme.
-
-        Parameters
-        ----------
-        theme : str
-            the qss formating string to apply as the theme.
-        """
-        self.current = theme
-        self.app.setStyleSheet(self.current)
-
-    @staticmethod
-    def _create_ssheet(sheets: list) -> str:
-        """
-        Update the sheet with data from table.
-
-        Parameters
-        ----------
-        sheets : list
-            list of all of the styles for a theme
-
-        Returns
-        -------
-        dict
-            the changed sheet
-        """
-        ssheet = ""
-        for row in sheets:
-            for k, v in row.items():
-                if not k or not v:
-                    continue  # pragma: nocover
-                ssheet += k + " {\n"
-                for key, val in v.items():
-                    ssheet += "    " + key + ": " + val + ";\n"
-                ssheet += "}\n"
-        return ssheet
+from PySide6.QtWidgets import QFileDialog
 
 
 class QssParser:
@@ -233,6 +167,31 @@ class QssParser:
         for row in self.collection:
             self.result.update(row)
 
+    @staticmethod
+    def _create_ssheet(sheets: list) -> str:
+        """
+        Update the sheet with data from table.
+
+        Parameters
+        ----------
+        sheets : list
+            list of all of the styles for a theme
+
+        Returns
+        -------
+        dict
+            the changed sheet
+        """
+        ssheet = ""
+        for row in sheets:
+            for k, v in row.items():
+                if not k or not v:
+                    continue  # pragma: nocover
+                ssheet += k + " {\n"
+                for key, val in v.items():
+                    ssheet += "    " + key + ": " + val + ";\n"
+                ssheet += "}\n"
+        return ssheet
 
 def get_icon(name: str) -> str:
     """

@@ -35,7 +35,7 @@ from torrentfileQt.menu import MenuBar, TitleBar
 from torrentfileQt.qss import Styles
 from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.toolTab import ToolWidget
-from torrentfileQt.utils import StyleManager, get_icon
+from torrentfileQt.utils import get_icon
 
 
 class Window(QMainWindow):
@@ -166,22 +166,21 @@ class Application(QApplication):
 
     def _setup_stylesheets(self):
         """Construct initial stylesheet state."""
-        self.themes = {"dark": Styles.dark_theme, "light": Styles.light_theme}
-        self.styler = StyleManager(self.themes, self)
-        self.styler.setThemeKey("dark")
-
-    def set_new_theme(self, theme):
-        """Apply the given stylesheet."""
-        self.styler.current = theme
+        self.current_theme = Styles.dark
+        theme = Styles.compile(Styles.stylesheet, self.current_theme)
         self.setStyleSheet(theme)
+
+    def set_theme(self, theme):
+        """Apply the given stylesheet."""
+        self.current_theme = Styles.keys[theme]
+        ssheet = Styles.compile(Styles.stylesheet, self.current_theme)
+        self.setStyleSheet(ssheet)
 
     def get_tab_style(self, active):
         """Return the stylesheet for current tab."""
-        tabstyle = Styles.tab_style(active)
-        template = string.Template(tabstyle)
-        theme = Styles.dark
-        style = template.substitute(theme)
-        return style
+        tabstyle = Styles.tab_stylesheet(active)
+        tabsheet = Styles.compile(tabstyle, self.current_theme)
+        return tabsheet
 
     @classmethod
     def start(cls, args=None):
