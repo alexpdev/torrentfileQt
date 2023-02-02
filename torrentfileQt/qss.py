@@ -18,58 +18,11 @@
 ##############################################################################
 """Module for stylesheets."""
 
+import string
 from pathlib import Path
 from urllib.request import pathname2url as path2url
 
-arrow_path = Path(__file__).parent / "assets" / "arrow.png"
-arrow = path2url(str(arrow_path))
-
-dark = {
-    "_1": "#FFFFFF",
-    "_2": "#19232D",
-    "_3": "#f61",
-    "_4": "#333a3f",
-    "_5": "#402503",
-    "_6": "#661d12",
-    "_7": "#311",
-    "_8": "#555",
-    "_9": "#333",
-    "_10": "#111",
-    "_11": "#704523",
-    "_12": "#302513",
-    "_13": "#1F3249",
-    "_14": "#858585",
-    "_15": "#FFFFAA",
-    "_16": "#55A",
-    "_17": "#EA3",
-    "_18": "#599F95",
-    "_arrow": str(arrow),
-}
-
-light = {
-    "_1": "#000000",
-    "_2": "#59A3FD",
-    "_3": "#CED",
-    "_4": "#DA9",
-    "_5": "#6F9",
-    "_6": "#46DdE2",
-    "_7": "#CFF",
-    "_8": "#CCC",
-    "_9": "#DDD",
-    "_10": "#EEE",
-    "_11": "#4075E3",
-    "_12": "#A0D5E3",
-    "_13": "#E9D0C1",
-    "_14": "#8B8B8B",
-    "_15": "#000055",
-    "_16": "#BB6",
-    "_17": "#26D",
-    "_18": "#B7707B",
-    "_arrow": str(arrow),
-}
-
-
-style = """
+theme = """
 QMainWindow {
     background-color: $_2;
 }
@@ -117,7 +70,7 @@ QGroupBox::title {
     padding-right: 4px;
 }
 QWidget#tabbar {
-    background-color: $_9;
+    background-color: $_10;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
 }
@@ -130,8 +83,6 @@ QCheckBox,
 QToolButton,
 QLabel {
     background-color: transparent;
-    margin: 3px;
-    padding: 3px;
     font-size: 10pt;
 }
 QPushButton[titlebutton="true"]{
@@ -140,9 +91,15 @@ QPushButton[titlebutton="true"]{
     padding: 1px;
     border-width: 0px;
 }
+QHeaderView {
+    gridline-color: transparent;
+    color: $_1;
+    background-color: $_14;
+}
 QHeaderView::section {
     color: $_1;
     background-color: $_14;
+    font-weight: bold;
 }
 QStatusBar {
     background-color: $_4;
@@ -151,9 +108,7 @@ QStatusBar {
 }
 QMenuBar {
     background-color: $_5;
-    padding: 2px;
-    font-size: 9pt;
-    margin-bottom: 2px;
+    font-size: 10pt;
 }
 QMenuBar::item:pressed {
     background-color: $_4;
@@ -175,8 +130,6 @@ QMenu::separator {
     margin: 0 1px;
 }
 QMenu::indicator {
-    width: 13px;
-    height: 13px;
     background-color: $_7;
 }
 
@@ -211,6 +164,7 @@ QMenu::indicator {
     font-size: 10pt;
     margin: 15px;
     show-decoration-selected: 1;
+    gridline-color: $_17;
 }
 *[InfoTree="true"]::item {
     border: 1px solid $_1;
@@ -221,7 +175,7 @@ QMenu::indicator {
 }
 *[InfoTree="true"]::item:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 $_6, stop: 1 $_5);
+                                stop: 0 $_8, stop: 1 $_9);
     border: 1px solid $_3;
 }
 *[InfoTree="true"]::item:selected {
@@ -261,15 +215,12 @@ QMenu::indicator {
     padding: 4px 55px 4px 55px;
 }
 #CreateSubmitButton {
-    margin: 10px 15px 5px 15px;
-}
-#CreateCentralWidget {
-    margin: 15px;
+    margin: 0px 15px 0px 15px;
 }
 #CreateCentralWidget QLabel {
     font-weight: bold;
     font-size: 10pt;
-    margin: 2px 5px;
+    margin: 0px 0px;
 }
 #CreatePathGroup QLabel {
     font-weight: normal;
@@ -281,7 +232,6 @@ QMenu::indicator {
 }
 #CreatePieceLength,
 #CreateVersionBox {
-    padding: 8px;
     margin-top: 8px;
     border-radius: 8px;
     border-width: 1px;
@@ -294,17 +244,11 @@ QMenu::indicator {
     subcontrol-position: top;
 }
 #CreateProgressTable {
-    gridline-color: transparent;
+    gridline-color: $_17;
     selection-background-color: $_18;
     color: $_1;
 }
-#CreateProgressTable QHeaderView::section {
-    gridline-color: transparent;
-    background-color: $_4;
-    font-weight: bold;
-    font-size: 9pt;
-}
-#CreateProgressTable QProgressBar{
+#CreateProgressTable QProgressBar {
     border: 4px solid $_10;
     border-radius: 14px;
     background-color: transparent;
@@ -312,10 +256,24 @@ QMenu::indicator {
     color: $_1;
 }
 #CreateProgressTable QProgressBar::chunk{
-    background-color: #073;
+    background-color: $_19;
     border-radius: 10px;
 }
-
+#CheckTree {
+    gridline-color: $_17;
+    selection-background-color: $_18;
+}
+#CheckTree QProgressBar {
+    border: 4px solid $_10;
+    border-radius: 14px;
+    background-color: transparent;
+    text-align: center;
+    color: $_1;
+}
+#CheckTree QProgressBar::chunk{
+    background-color: $_19;
+    border-radius: 10px;
+}
 #EditDropGroup {
     margin-left: 20px;
     margin-right: 20px;
@@ -359,23 +317,97 @@ QMenu::indicator {
     margin: 15px;
     padding:8px;
 }
+#bencodeMainLabel,
+#checkMainLabel,
+#createMainLabel,
+#editorMainLabel,
+#infoMainLabel,
+#rebuildMainLabel,
+#toolMainLabel {
+    font-size: 12pt;
+    font-weight: bold;
+    color: $_1;
+}
+#minButton:hover {
+    icon: url(torrentfileQt/assets/min-light.png);
+}
+#maxButton:hover {
+    icon: url(torrentfileQt/assets/max-light.png);
+}
+#closeButton:hover {
+    icon: url(torrentfileQt/assets/close-light.png);
+}
 """
 
+class Styles:
+    arrow_path = Path(__file__).parent / "assets" / "arrow.png"
+    arrow = path2url(str(arrow_path))
+    dark = {
+        "_1": "#FFFFFF",
+        "_2": "#19232D",
+        "_3": "#f61",
+        "_4": "#333a3f",
+        "_5": "#402503",
+        "_6": "#661d12",
+        "_7": "#311",
+        "_8": "#555",
+        "_9": "#333",
+        "_10": "#111",
+        "_11": "#704523",
+        "_12": "#302513",
+        "_13": "#1F3249",
+        "_14": "#858585",
+        "_15": "#FFFFAA",
+        "_16": "#55A",
+        "_17": "#EA3",
+        "_18": "#599F95",
+        "_19": "#073",
+        "_arrow": str(arrow),
+    }
+    light = {
+        "_1": "#000000",
+        "_2": "#59A3FD",
+        "_3": "#CED",
+        "_4": "#DA9",
+        "_5": "#6F9",
+        "_6": "#46DdE2",
+        "_7": "#CFF",
+        "_8": "#CCC",
+        "_9": "#DDD",
+        "_10": "#EEE",
+        "_11": "#4075E3",
+        "_12": "#A0D5E3",
+        "_13": "#E9D0C1",
+        "_14": "#8B8B8B",
+        "_15": "#000055",
+        "_16": "#BB6",
+        "_17": "#26D",
+        "_18": "#B7707B",
+        "_19": "#073",
+        "_arrow": str(arrow),
+    }
+    @staticmethod
+    def compile(style):
+        template = string.Template(theme)
+        return template.substitute(style)
 
-def tab_style(active):
-    var = 8 if active else 9
-    tab = f"""
-        QPushButton[Tab="true"] {{
-            padding-top: 18px;
-            padding-bottom: 18px;
-            border-bottom-width: 0px;
-            padding-left: 8px;
-            margin: 0px;
-            font-size: 10pt;
-            border-left-width: 0px;
-            background-color: $_{var};
-            border-top-width: 0px;
-            border-right-width: 0px;
-            border-radius: 0px;
-    }}"""
-    return tab
+    light_theme = compile(light)
+    dark_theme = compile(dark)
+
+    def tab_style(active):
+        var = 8 if active else 9
+        tab = f"""
+            QPushButton[Tab="true"] {{
+                padding-top: 18px;
+                padding-bottom: 18px;
+                border-bottom-width: 0px;
+                padding-left: 8px;
+                margin: 0px;
+                font-size: 10pt;
+                border-left-width: 0px;
+                background-color: $_{var};
+                border-top-width: 0px;
+                border-right-width: 0px;
+                border-radius: 0px;
+        }}"""
+        return tab

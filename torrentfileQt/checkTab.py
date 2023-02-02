@@ -21,13 +21,14 @@
 import logging
 import os
 import re
+import math
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QObject
 from PySide6.QtGui import QTextOption
 from PySide6.QtWidgets import (QHBoxLayout, QPlainTextEdit, QProgressBar,
                                QPushButton, QSplitter, QTreeWidget,
-                               QTreeWidgetItem, QVBoxLayout, QWidget)
+                               QTreeWidgetItem, QVBoxLayout, QWidget, QLabel, QApplication)
 from torrentfile.recheck import Checker
 
 from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
@@ -46,6 +47,10 @@ class CheckWidget(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.centralWidget = QWidget(parent=self)
         self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Torrent Checker")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("checkMainLabel")
+        self.centralLayout.addWidget(mainLabel)
         self.centralLayout.addWidget(self.centralWidget)
         self.centralWidget.setObjectName("CheckCentralWidget")
         self.layout = QVBoxLayout(self.centralWidget)
@@ -92,40 +97,43 @@ class CheckWidget(QWidget):
         self.file_group.setPath(path)
 
     def populate_tree(self, metafile, content):
-        self.thread = RecheckThread(metafile, content)
+        self.thread = RecheckThread(metafile, content, self.treeWidget)
         base = self.content_group.getPath()
         self.thread.finished.connect(self.thread.deleteLater)
         self.treeWidget.set_thread_info(self.thread, base)
-        self.thread.start()
+        self.thread.run()
 
 
-class RecheckThread(QThread):
+class RecheckThread(QObject):
     """Piece Hasher class for iterating through captured torrent pieces."""
 
     path_ready = Signal(str, int)
+    finished = Signal()
     progress_update = Signal(str, int)
 
-    def __init__(self, metafile, content):
+    def __init__(self, metafile, content, tree):
         """Construct for PieceHasher class."""
         super().__init__()
         self.metafile = metafile
         self.content = content
+        self.tree = tree
         self.current = 0
 
     def get_path_information(self, fileinfo, pathlist):
         """Add tree widgets items to tree widget."""
         for _, val in fileinfo.items():
             if val["path"] == self.root:
-                relpath = os.path.dirname(self.root)  # pragma: no cover
+                relpath = os.path.dirname(self.root)
             else:
                 relpath = os.path.relpath(val["path"], self.root)
             length = val["length"]
-            self.path_ready.emit(relpath, length)
+            self.tree.setup_path_item(relpath, length)
+            # path_ready.emit(relpath, length)
 
     def iter_hashes(self, checker):
         """Iterate through hashes and compare to torrentfile hashes."""
         for actual, expected, path, size in checker.iter_hashes():
-            if self.checker.meta_version == 1:
+            if checker.meta_version == 1:
                 self.process_v1_hash(actual, expected, path, size)
             else:
                 if actual == expected:
@@ -155,13 +163,13 @@ class RecheckThread(QThread):
                 size = 0
 
     def run(self):
-        self.checker = Checker(self.metafile, self.content)
-        self.root = os.path.dirname(self.checker.root)
-        fileinfo = self.checker.fileinfo
-        self.pathlist = self.checker.paths
+        checker = Checker(self.metafile, self.content)
+        self.root = os.path.dirname(checker.root)
+        fileinfo = checker.fileinfo
+        self.pathlist = checker.paths
         self.fileinfo = {v["path"]: v for v in fileinfo.values()}
         self.get_path_information(fileinfo, self.pathlist)
-        self.iter_hashes(self.checker)
+        self.iter_hashes(checker)
 
 
 class ReCheckButton(QPushButton):
@@ -194,10 +202,10 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             parent.treeWidget.clear()
             parent.textEdit.clear()
-            self.ready.emit(metafile, content)
             Checker.register_callback(parent.textEdit.callback)
-            logging.debug("Registering Callback, setting root")
-            self.window().statusBar().showMessage("Checking...", 3000)
+            self.ready.emit(metafile, content)
+            # logging.debug("Registering Callback, setting root")
+            # self.window().statusBar().showMessage("Checking...", 3000)
 
 
 
@@ -275,7 +283,7 @@ class BrowseFiles(QPushButton):
         self.setIcon(get_icon("browse_file"))
         self.clicked.connect(self.browse_files)
 
-    def browse_files(self, paths=None):  # pragma: nocover
+    def browse_files(self):
         """
         Browse Action performed when user presses button.
         """
@@ -330,6 +338,7 @@ class TreeWidget(QTreeWidget):
     def __init__(self, parent=None):
         """Construct for Tree Widget."""
         super().__init__(parent=parent)
+        self.setObjectName("checkTree")
         self.setColumnCount(2)
         self.setIndentation(12)
         header = self.header()
@@ -365,8 +374,12 @@ class TreeWidget(QTreeWidget):
         item = QTreeWidgetItem()
         item.setText(0, text)
         item.setIcon(0, icon)
-        item.setExpanded(True)
         return item
+
+    def setup_paths(self, lst):
+        for path, size in lst:
+            self.setup_path_item(path, size)
+        self.thread.start_hashing.emit()
 
     def setup_path_item(self, path, size):
         """Add branch to tree."""
@@ -382,14 +395,25 @@ class TreeWidget(QTreeWidget):
             else:
                 item = self.new_item(part, self.icons["folder"])
                 root.addChild(item)
+                root = item
         fileicon = self.match_suffix_to_icon(Path(path))
         item = self.new_item(parts[0], fileicon)
         progressBar = QProgressBar(self)
-        self.progbars.append(progressBar)
-        progressBar.setRange(0, size - 1)
+        if size < 1 << 30:
+            progressBar._total = size
+            progressBar._divisor = 1
+            progressBar._max = size
+        else:
+            progressBar._total = size
+            progressBar._divisor = 1 << 10
+            progressBar._max = progressBar._total // progressBar._divisor
+        progressBar.setRange(0, progressBar._max - 1)
         item.progbar = progressBar
+        self.progbars.append(progressBar)
         root.addChild(item)
         self.setItemWidget(item, 1, progressBar)
+        item.setExpanded(True)
+        QApplication.instance().processEvents()
 
     def match_suffix_to_icon(self, path):
         if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
@@ -415,6 +439,12 @@ class TreeWidget(QTreeWidget):
                 if item.text(0) == part:
                     base = item
                     break
+        base.setExpanded(True)
         prog = self.itemWidget(base, 1)
         value = prog.value()
-        prog.setValue(value + amount)
+        divisor = prog._divisor
+        increment = math.ceil(amount / divisor)
+        if value + increment > prog._max:
+            increment -= prog._max - value + increment
+        prog.setValue(value + increment)
+        QApplication.instance().processEvents()

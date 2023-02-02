@@ -31,23 +31,27 @@ from PySide6.QtWidgets import QApplication, QFileDialog
 class StyleManager(QObject):
     """Manage QStyleSheets for the app."""
 
-    applyTheme = Signal(str)
-
-    def __init__(self, themes, sheet, default):
+    def __init__(self, themes, app):
         """Initialize styleManager class."""
         super().__init__()
-        self.sheet = sheet
+        self.app = app
         self.themes = themes
-        self.default = default
         self.parser = QssParser()
         self.current = None
-        self.applyTheme.connect(self.set_app_theme)
+        self.label = None
 
-    @staticmethod
-    def set_app_theme(theme):
-        """Set the current stylesheet."""
-        app = QApplication.instance()
-        app.set_new_theme(theme)
+    def setThemeKey(self, key: str = None):
+        """
+        Set the current QStyleSheet theme.
+
+        Parameters
+        ----------
+        key : str
+            the qss formating string to apply as the theme.
+        """
+        self.current = self.themes[key]
+        self.label = key
+        self.app.setStyleSheet(self.current)
 
     def setTheme(self, theme: str = None):
         """
@@ -58,23 +62,8 @@ class StyleManager(QObject):
         theme : str
             the qss formating string to apply as the theme.
         """
-        if not theme:
-            template = string.Template(self.sheet)
-            theme = template.substitute(self.themes[self.default])
         self.current = theme
-        self.applyTheme.emit(theme)
-
-    def set_theme_from_title(self, title: str):
-        """
-        Set the theme from it's key in the theme dict.
-
-        Parameters
-        ----------
-        title : str
-            The key corresponding the the theme in the dict.
-        """
-        theme = self.themes[title]
-        self.setTheme(theme)
+        self.app.setStyleSheet(self.current)
 
     @staticmethod
     def _create_ssheet(sheets: list) -> str:
@@ -101,34 +90,6 @@ class StyleManager(QObject):
                     ssheet += "    " + key + ": " + val + ";\n"
                 ssheet += "}\n"
         return ssheet
-
-    def increase_font_size(self):
-        """Increase the widgets font size."""
-        self._adjust_font(1)
-
-    def decrease_font_size(self):
-        """Decrease the widgets font size."""
-        self._adjust_font(-1)
-
-    def _adjust_font(self, amount: int):
-        """
-        Adjust font size for all widgets.
-
-        Parameters
-        ----------
-        amount: int
-            the amount to adjust the font by.
-        """
-        widgets = self.parser.parse(self.current)
-        for row in widgets:
-            for _, value in row.items():
-                if "font-size" in value:
-                    val = value["font-size"]
-                    number = int("".join([i for i in val if i.isdigit()]))
-                    if 24 > number + amount > 0:
-                        value["font-size"] = f"{number + amount}pt"
-        theme = self._create_ssheet(widgets)
-        self.applyTheme.emit(theme)
 
 
 class QssParser:
@@ -365,11 +326,12 @@ def browse_torrent(widget: object) -> list:
         parent=widget,
         dir=str(Path.home()),
         caption="Select *.torrent File...",
-        filter=("*.torrent, Torrent", "*, Any"),
+        filter=("torrent (*.torrent);;Any (*.*)"),
     )
-    if torrents and torrents[0]:
-        torrents = [os.path.normpath(i) for i in torrents if i]
-    return torrents
+    if not torrents:
+        return torrents
+    return torrents[0]
+
 
 
 def torrent_filter(paths: tuple) -> list:

@@ -38,11 +38,12 @@ class TitleBarButton(QPushButton):
     def __init__(self, prop, parent=None):
         """Construct the standard window control buttons."""
         super().__init__(parent=parent)
-        self.setFixedHeight(20)
-        self.setFixedWidth(20)
+        self.setFixedHeight(25)
+        self.setFixedWidth(25)
         self.setProperty(prop, True)
         self.setProperty("titlebutton", True)
-        self.setIcon(QIcon(get_icon(prop)))
+        self.setObjectName(prop+"Button")
+        self.setIcon(QIcon(get_icon(prop+"-dark")))
         self.clicked.connect(self.window_action)
 
     def window_action(self):
@@ -72,18 +73,16 @@ class TitleBar(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("titlebar")
         pix = QIcon(icon)
-
         self.icon = QToolButton(parent=self)
         self.icon.setObjectName("titlebaricon")
         self.icon.setIcon(pix)
         self.label.setText("TitleBar")
         self.label.setObjectName("titlebartitle")
-        self.setMaximumHeight(40)
+        self.setMaximumHeight(35)
+        self.setMinimumHeight(30)
         self.closeButton = TitleBarButton("close", parent=self)
         self.minimizeButton = TitleBarButton("min", parent=self)
         self.maximizeButton = TitleBarButton("max", parent=self)
-        self.stylebutton = QPushButton("Style Menu", parent=self)
-        self.stylebutton.clicked.connect(self.open_style_dialog)
         sizePolicy = QSizePolicy()
         sizePolicy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
         self.closeButton.setSizePolicy(sizePolicy)
@@ -91,7 +90,6 @@ class TitleBar(QWidget):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.icon)
-        self.layout.addWidget(self.stylebutton)
         self.layout.addStretch(1)
         self.layout.addWidget(self.label)
         self.layout.addStretch(1)
@@ -139,6 +137,105 @@ class TitleBar(QWidget):
         self.menuBar = menubar
         self.layout.insertWidget(1, menubar)
 
+
+
+class MenuBar(QMenuBar):
+    """Main menu bar for top level menu of program."""
+
+    def __init__(self, parent=None):
+        """
+        Construct top level widgets.
+
+        Parameters
+        ----------
+        parent : QWidget
+            This widgets parent widget.
+        """
+        super().__init__(parent=parent)
+        self.window = parent
+        self.options_menu = OptionsMenu("Options", self)
+        self.addMenu(self.options_menu)
+
+
+class OptionsMenu(QMenu):
+    """Menu for the file dropdown in menubar."""
+
+    def __init__(self, title, parent):
+        """
+        Construct top level widgets.
+
+        Parameters
+        ----------
+        title : str
+            The menu bar categorie string.
+        parent : QWidget
+            This widgets parent widget.
+        """
+        super().__init__(title, parent)
+        self.widget = parent
+        self.window = parent.window
+        self.actionExit = QAction(self.window)
+        self.actionLightTheme = QAction(self.window)
+        self.actionDarkTheme = QAction(self.window)
+        self.styleAction = QAction(self.window)
+        self.addAction(self.actionExit)
+        self.addAction(self.actionLightTheme)
+        self.addAction(self.actionDarkTheme)
+        self.actionDarkTheme.setText("Dark Theme")
+        self.actionLightTheme.setText("Light Theme")
+        self.actionExit.setText("Exit")
+        self.styleAction.setText("Edit StyleSheet")
+        self.styleAction.triggered.connect(self.open_style_dialog)
+        self.actionExit.triggered.connect(self.exit_app)
+        self.actionLightTheme.triggered.connect(self.light_theme)
+        self.actionDarkTheme.triggered.connect(self.dark_theme)
+        self.actionExit.setObjectName("actionExit")
+        self.actionLightTheme.setObjectName("actionLightTheme")
+        self.actionDarkTheme.setObjectName("actiondDarkTheme")
+        self.actionAbout = QAction(self.window)
+        self.actionDocs = QAction(self.window)
+        self.actionRepo = QAction(self.window)
+        self.addAction(self.actionAbout)
+        self.addAction(self.actionDocs)
+        self.addAction(self.actionRepo)
+        self.addAction(self.styleAction)
+        self.actionRepo.setText("Github Repository")
+        self.actionAbout.setText("About")
+        self.actionDocs.setText("Documentation")
+        self.actionAbout.triggered.connect(self.about_qt)
+        self.actionDocs.triggered.connect(self.documentation)
+        self.actionRepo.triggered.connect(self.repository)
+        self.actionDocs.setObjectName("actionDocs")
+        self.actionAbout.setObjectName("actionAbout")
+
+    def exit_app(self):
+        """Close application."""
+        self.parent().window.app.quit()  # pragma: nocover
+
+    def light_theme(self):
+        """Change the GUI theme for the application."""
+        app = QApplication.instance()
+        app.setTheme("light_theme")
+
+    def dark_theme(self):
+        """Change the GUI application to dark theme."""
+        app = QApplication.instance()
+        app.setTheme("dark_theme")
+
+    def about_qt(self):
+        """Open the about qt menu."""
+        self.window.app.aboutQt()  # pragma: nocover
+
+    @staticmethod
+    def documentation():  # pragma: no cover
+        """Open webbrowser to TorrentFileQt documentation."""
+        webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
+
+    @staticmethod
+    def repository():  # pragma: no cover
+        """Open webbrowser to GitHub Repo."""
+        webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
+
     def open_style_dialog(self):
         app = QApplication.instance()
         styler = app.styler
@@ -176,138 +273,3 @@ class TitleBar(QWidget):
         app = QApplication.instance()
         text = self.dialog.plainTextEdit.toPlainText()
         app.styler.setTheme(text)
-
-
-class MenuBar(QMenuBar):
-    """Main menu bar for top level menu of program."""
-
-    def __init__(self, parent=None):
-        """
-        Construct top level widgets.
-
-        Parameters
-        ----------
-        parent : QWidget
-            This widgets parent widget.
-        """
-        super().__init__(parent=parent)
-        self.window = parent
-        self.file_menu = FileMenu("File", self)
-        self.help_menu = HelpMenu("Help", self)
-        self.addMenu(self.file_menu)
-        self.addMenu(self.help_menu)
-
-
-class FileMenu(QMenu):
-    """Menu for the file dropdown in menubar."""
-
-    def __init__(self, title, parent):
-        """
-        Construct top level widgets.
-
-        Parameters
-        ----------
-        title : str
-            The menu bar categorie string.
-        parent : QWidget
-            This widgets parent widget.
-        """
-        super().__init__(title, parent)
-        self.widget = parent
-        self.window = parent.window
-        self.actionExit = QAction(self.window)
-        self.actionLightTheme = QAction(self.window)
-        self.actionDarkTheme = QAction(self.window)
-        self.actionFontPlus = QAction(self.window)
-        self.actionFontMinus = QAction(self.window)
-        self.addAction(self.actionExit)
-        self.addAction(self.actionFontPlus)
-        self.addAction(self.actionFontMinus)
-        self.addAction(self.actionLightTheme)
-        self.addAction(self.actionDarkTheme)
-        self.actionFontPlus.setText("Font Size +")
-        self.actionFontMinus.setText("Font Size -")
-        self.actionDarkTheme.setText("Dark Theme")
-        self.actionLightTheme.setText("Light Theme")
-        self.actionExit.setText("Exit")
-        self.actionFontPlus.triggered.connect(self.increaseFont)
-        self.actionFontMinus.triggered.connect(self.decreaseFont)
-        self.actionExit.triggered.connect(self.exit_app)
-        self.actionLightTheme.triggered.connect(self.light_theme)
-        self.actionDarkTheme.triggered.connect(self.dark_theme)
-        self.actionFontPlus.setObjectName("actionIncreaseFont")
-        self.actionFontMinus.setObjectName("actionDecreaseFont")
-        self.actionExit.setObjectName("actionExit")
-        self.actionLightTheme.setObjectName("actionLightTheme")
-        self.actionDarkTheme.setObjectName("actiondDarkTheme")
-
-    def exit_app(self):
-        """Close application."""
-        self.parent().window.app.quit()  # pragma: nocover
-
-    def light_theme(self):
-        """Change the GUI theme for the application."""
-        app = self.parent().window.app
-        app.qstyles.set_theme_from_title("light_theme")
-
-    def dark_theme(self):
-        """Change the GUI application to dark theme."""
-        app = self.parent().window.app
-        app.qstyles.set_theme_from_title("dark_theme")
-
-    def increaseFont(self):
-        """Increase Font Size for all widgets with text."""
-        app = self.parent().window.app
-        app.qstyles.increase_font_size()
-
-    def decreaseFont(self):
-        """Decrease font size for all widgets with text."""
-        app = self.parent().window.app
-        app.qstyles.decrease_font_size()
-
-
-class HelpMenu(QMenu):
-    """Menu for the Help menu dropdown in menubar."""
-
-    def __init__(self, title, parent):
-        """
-        Construct for top level widgets.
-
-        Parameters
-        ----------
-        title : str
-            The menu bar categorie string.
-        parent : QWidget
-            This widgets parent widget.
-        """
-        super().__init__(title, parent)
-        self.widget = parent
-        self.window = parent.window
-        self.actionAbout = QAction(self.window)
-        self.actionDocs = QAction(self.window)
-        self.actionRepo = QAction(self.window)
-        self.addAction(self.actionAbout)
-        self.addAction(self.actionDocs)
-        self.addAction(self.actionRepo)
-        self.actionRepo.setText("Github Repository")
-        self.actionAbout.setText("About")
-        self.actionDocs.setText("Documentation")
-        self.actionAbout.triggered.connect(self.about_qt)
-        self.actionDocs.triggered.connect(self.documentation)
-        self.actionRepo.triggered.connect(self.repository)
-        self.actionDocs.setObjectName("actionDocs")
-        self.actionAbout.setObjectName("actionAbout")
-
-    def about_qt(self):
-        """Open the about qt menu."""
-        self.window.app.aboutQt()  # pragma: nocover
-
-    @staticmethod
-    def documentation():  # pragma: no cover
-        """Open webbrowser to TorrentFileQt documentation."""
-        webbrowser.open_new_tab("https://alexpdev.github.io/torrentfile")
-
-    @staticmethod
-    def repository():  # pragma: no cover
-        """Open webbrowser to GitHub Repo."""
-        webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")

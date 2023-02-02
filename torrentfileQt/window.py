@@ -32,7 +32,7 @@ from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
 from torrentfileQt.menu import MenuBar, TitleBar
-from torrentfileQt.qss import dark, light, style, tab_style
+from torrentfileQt.qss import Styles
 from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import StyleManager, get_icon
@@ -63,7 +63,7 @@ class Window(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.app = app
         self.statusbar = self.statusBar()
-        self.icon = get_icon("torrentfile48")
+        self.icon = get_icon("torrentfile126")
         self.setObjectName("Mainwindow")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStatusBar(self.statusbar)
@@ -166,10 +166,9 @@ class Application(QApplication):
 
     def _setup_stylesheets(self):
         """Construct initial stylesheet state."""
-        self.tab_style = tab_style
-        themes = {"dark": dark, "light": light}
-        self.styler = StyleManager(themes, style, "dark")
-        self.styler.setTheme()
+        self.themes = {"dark": Styles.dark_theme, "light": Styles.light_theme}
+        self.styler = StyleManager(self.themes, self)
+        self.styler.setThemeKey("dark")
 
     def set_new_theme(self, theme):
         """Apply the given stylesheet."""
@@ -178,9 +177,9 @@ class Application(QApplication):
 
     def get_tab_style(self, active):
         """Return the stylesheet for current tab."""
-        tabstyle = self.tab_style(active)
+        tabstyle = Styles.tab_style(active)
         template = string.Template(tabstyle)
-        theme = self.styler.themes[self.styler.default]
+        theme = Styles.dark
         style = template.substitute(theme)
         return style
 

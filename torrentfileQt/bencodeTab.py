@@ -25,7 +25,7 @@ import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QHBoxLayout, QToolBar, QTreeView, QVBoxLayout,
-                               QWidget)
+                               QWidget, QLabel)
 
 from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
                                  torrent_filter)
@@ -46,7 +46,14 @@ class BencodeEditWidget(QWidget):
             parent widget, by default None
         """
         super().__init__(parent=parent)
-        self.layout = QVBoxLayout(self)
+        self.centralWidget = QWidget(self)
+        self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Bencode Editor")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("bencodeMainLabel")
+        self.centralLayout.addWidget(mainLabel)
+        self.centralLayout.addWidget(self.centralWidget)
+        self.layout = QVBoxLayout(self.centralWidget)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("bencodeTab")
         self.toolbar = QToolBar(parent=self)

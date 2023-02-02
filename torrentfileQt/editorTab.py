@@ -26,7 +26,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox, QHBoxLayout,
                                QLineEdit, QPushButton, QSizePolicy,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
-                               QWidget)
+                               QWidget, QLabel)
 
 from torrentfileQt.utils import browse_torrent, get_icon
 from torrentfileQt.widgets import DropGroupBox
@@ -50,6 +50,10 @@ class EditorWidget(QWidget):
         self.centralWidget = QWidget()
         self.centralWidget.setObjectName("EditCentralWidget")
         self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Edit Torrent File")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("editorMainLabel")
+        self.centralLayout.addWidget(mainLabel)
         self.centralLayout.addWidget(self.centralWidget)
         self.layout = QVBoxLayout(self.centralWidget)
 

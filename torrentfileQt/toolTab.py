@@ -23,7 +23,7 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout,
                                QLabel, QLineEdit, QPushButton, QVBoxLayout,
-                               QWidget)
+                               QWidget, QSizePolicy)
 from torrentfile import magnet
 from torrentfile.utils import path_stat
 
@@ -37,9 +37,15 @@ class ToolWidget(QWidget):
     def __init__(self, parent=None):
         """Initialize the widget for creating magnet URI's from a metafile."""
         super().__init__(parent=parent)
+        self.centralWidget = QWidget()
+        self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Other Tools")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("toolMainLabel")
+        self.centralLayout.addWidget(mainLabel)
+        self.centralLayout.addWidget(self.centralWidget)
         self.window = parent.window
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.layout = QVBoxLayout(self.centralWidget)
         self.magnetgroup = MagnetGroup(self)
         self.layout.addWidget(self.magnetgroup)
         self.piece_length_calculator = PieceLengthCalculator()
@@ -108,6 +114,8 @@ class MagnetGroup(QGroupBox):
         self.layout = QVBoxLayout()
         self.setTitle("Create Magnet URI")
         self.setLayout(self.layout)
+        expand = QSizePolicy.Policy.MinimumExpanding
+        self.setSizePolicy(QSizePolicy(expand, expand))
         self.metafilebutton = MetafileButton(self)
         self.submit_button = SubmitButton(self)
         self.pathEdit = QLineEdit(self)
@@ -226,6 +234,8 @@ class PieceLengthCalculator(QGroupBox):
         self.layout = QVBoxLayout(self)
         icon = get_icon("browse_file")
         icon2 = get_icon("browse_folder")
+        expand = QSizePolicy.Policy.MinimumExpanding
+        self.setSizePolicy(QSizePolicy(expand, expand))
         self.fileButton = QPushButton(icon, "Select File", self)
         self.folderButton = QPushButton(icon2, "Select Folder", self)
         self.hlayout = QHBoxLayout()

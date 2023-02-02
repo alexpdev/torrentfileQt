@@ -63,10 +63,15 @@ class CreateWidget(QWidget):
         self.setAcceptDrops(True)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.centralLayout = QVBoxLayout(self)
+        self.centralLayout.setContentsMargins(0,1,0,1)
         self.centralWidget = QWidget()
         self.centralWidget.setAcceptDrops(True)
         self.centralWidget.setAttribute(Qt.WA_StyledBackground, True)
         self.centralWidget.setObjectName("CreateCentralWidget")
+        mainLabel = QLabel("Torrent Creator")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("createMainLabel")
+        self.centralLayout.addWidget(mainLabel)
         self.layout = QVBoxLayout(self.centralWidget)
 
         self.path_group = DropGroupBox(parent=self)
@@ -124,6 +129,9 @@ class CreateWidget(QWidget):
         source_label = QLabel("Source", parent=self)
         source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.source_edit = QLineEdit(parent=self)
+        self.source_edit.setToolTip(
+            "Leave empty unless you have a need to fill it."
+        )
 
         comment_label = QLabel("Comment", parent=self)
         comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -142,12 +150,18 @@ class CreateWidget(QWidget):
         announce_label = QLabel("Trackers: ", parent=self)
         announce_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.announce_input = QPlainTextEdit(parent=self)
-        self.announce_input.setToolTip("One URL per line")
+        self.announce_input.setToolTip(
+            "One per line - Examples: \nhttp://example1.net/announce\nhttp://"
+            "example2.org/announce"
+        )
 
         web_seed_label = QLabel("Web-Seeds: ", parent=self)
         web_seed_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.web_seed_input = QPlainTextEdit(parent=self)
-        self.web_seed_input.setToolTip("One URI per line")
+        self.web_seed_input.setToolTip(
+            "One per line - Examples: \nftp://example1.net/path/to/"
+            "content\nhttp://example2.org/path/to/content"
+        )
 
         hlayout2 = QHBoxLayout()
         vlayout2 = QVBoxLayout()
@@ -206,7 +220,7 @@ class CreateWidget(QWidget):
     def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
         self.window().statusBar().showMessage("Completed", 3000)
-        self.thread.deleteLater()
+        self._thread.deleteLater()
 
 
 class TorrentFileCreator(QThread):
@@ -227,8 +241,8 @@ class TorrentFileCreator(QThread):
     """
 
     created = Signal()
-    prog_start_signal = Signal(int, str, int, str)
-    prog_update_signal = Signal(int)
+    prog_start_signal = Signal(list)
+    prog_update_signal = Signal(int, str)
     prog_close_signal = Signal()
 
     def __init__(self, args, creator):
@@ -239,24 +253,26 @@ class TorrentFileCreator(QThread):
         self.creator.hasher.prog_start = self.prog_start
         self.creator.hasher.prog_update = self.prog_update
         self.creator.hasher.prog_close = self.prog_close
+        self.current = None
 
     def prog_start(self, total, path, length=50, unit=None):
         """
         Progress start signal.
         """
-        self.prog_start_signal.emit(total, path, length, unit)
+        self.current = path
+        self.prog_start_signal.emit([total, path, length, unit])
 
     def prog_update(self, val):
         """
         Progress update signal.
         """
-        self.prog_update_signal.emit(val)
+        self.prog_update_signal.emit(val, self.current)
 
     def prog_close(self):
         """
         Progress stopped signal.
         """
-        self.prog_close_signal.emit()
+        pass
 
     def run(self):
         """Create a torrent file and emit it's path."""
@@ -457,7 +473,7 @@ class ProgressTable(QTableWidget):
         self.verticalHeader().setHidden(True)
         self.setHorizontalHeaderLabels(["Path", "Progress"])
         self.setObjectName("CreateProgressTable")
-        self.max_chars = 80
+        self.max_chars = 70
         hheader = self.horizontalHeader()
         hheader.setSectionResizeMode(0, hheader.ResizeMode.ResizeToContents)
         hheader.setSectionResizeMode(1, hheader.ResizeMode.Stretch)
@@ -466,22 +482,39 @@ class ProgressTable(QTableWidget):
     def add_args(self, args):
         self.path = args["path"]
 
-    def prog_start(self, total, path, *_):
+    def prog_start(self, values):
+        total, path, _, units = values
         index = self.rowCount()
         self.insertRow(index)
         item = QTableWidgetItem()
+        item._path = path
         if len(path) > self.max_chars:
             path = "..." + path[-self.max_chars :]
         item.setText(path)
         progbar = QProgressBar()
-        progbar.setRange(0, total - 1)
-        self.current = progbar
+        if total < 1 << 30:
+            progbar._total = total
+            progbar._divisor = 1
+            progbar._max = total
+        else:
+            progbar._total = total
+            progbar._divisor = 2 << 10
+            progbar._max = total // (2<<10)
+        progbar.setRange(0, progbar._max - 1)
         self.setItem(index, 0, item)
         self.setCellWidget(index, 1, progbar)
+        self.scrollToBottom()
 
-    def prog_update(self, value):
-        current = self.current.value()
-        self.current.setValue(current + value)
+    def prog_update(self, value, path):
+        i = self.rowCount() - 1
+        while i >= 0:
+            if self.item(i, 0)._path == path:
+                progbar = self.cellWidget(i, 1)
+                current = progbar.value()
+                increment = value // progbar._divisor
+                progbar.setValue(current + increment)
+                return
+            i -= 1
 
     def prog_close(self):
-        self.current = None
+        pass
