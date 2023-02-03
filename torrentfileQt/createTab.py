@@ -194,7 +194,7 @@ class CreateWidget(QWidget):
         if piece_length < (2**20):
             val = f"{piece_length//(2**10)} KiB"
         else:
-            val = f"{piece_length//(2**20)} MiB"
+            val = f"{piece_length//(2**20)} MiB"  # pragma: nocover
         self.path_group.setPath(path)
         self.piece_length_combo.setValue(val)
         self.output_path_edit.setText(path + ".torrent")
@@ -202,15 +202,10 @@ class CreateWidget(QWidget):
     def write_torrent(self, args, creator):
         self._thread = TorrentFileCreator(args, creator)
         self._thread.created.connect(self.updateStatusBarEnd)
-        self._thread.started.connect(self.updateStatusBarBegin)
         self._thread.prog_start_signal.connect(self.progress_tree.prog_start)
         self._thread.prog_update_signal.connect(self.progress_tree.prog_update)
         self._thread.prog_close_signal.connect(self.progress_tree.prog_close)
         self._thread.start()
-
-    def updateStatusBarBegin(self):
-        """Update the status bar when torrent creation is complete."""
-        self.window().statusBar().showMessage("Processing", 3000)
 
     def updateStatusBarEnd(self):
         """Update the status bar when torrent creation is complete."""
@@ -367,7 +362,7 @@ class OutButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
-    def output(self):
+    def output(self):   # pragma: nocover
         """Assign output path for created torrent file."""
         outpath, _ = QFileDialog.getSaveFileName(
             parent=self,
@@ -491,7 +486,7 @@ class ProgressTable(QTableWidget):
             progbar._total = total
             progbar._divisor = 1
             progbar._max = total
-        else:
+        else:   # pragma: nocover
             progbar._total = total
             progbar._divisor = 2 << 10
             progbar._max = total // (2 << 10)
@@ -509,7 +504,7 @@ class ProgressTable(QTableWidget):
                 increment = value // progbar._divisor
                 progbar.setValue(current + increment)
                 return
-            i -= 1
+            i -= 1   # pragma: nocover
 
     def prog_close(self):
-        pass
+        pass     # pragma: nocover

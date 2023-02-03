@@ -41,6 +41,9 @@ APP = Application.start()
 class TempFileDirs:
     paths = set()
 
+    tempdir = mkdtemp()
+    paths.add(tempdir)
+
     @classmethod
     def cleanup(cls):
         cleaned = set()
@@ -111,6 +114,8 @@ def temp_file(size, suffix=None, dir=None):
         absolute path to file.
     """
     seq = gen_seq().encode("utf8")
+    if not dir:
+        dir = TempFileDirs.tempdir
     fd, path = mkstemp(suffix=suffix, dir=dir)
     with os.fdopen(fd, "bw") as fp:
         while size > 0:
@@ -136,7 +141,7 @@ def tempdir(files: int, subdirs: int, size: int, suffixes=None):
         path to common root for directory.
     """
     files_per_subdir = files // subdirs
-    parent = mkdtemp()
+    parent = mkdtemp(dir=TempFileDirs.tempdir)
     paths = []
     subdir = parent
     if not suffixes:
@@ -144,6 +149,7 @@ def tempdir(files: int, subdirs: int, size: int, suffixes=None):
     suffixes = itertools.cycle(suffixes)
     for _ in range(subdirs):
         path = mkdtemp(dir=subdir)
+        TempFileDirs.paths.add(path)
         paths.append(path)
         subdir = path
     for path in paths:

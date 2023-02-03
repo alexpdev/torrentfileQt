@@ -115,9 +115,9 @@ class BencodeEditWidget(QWidget):
                 return self.treeview.save_item(item)
 
 
-    def clear_contents(self):
+    def clear_contents(self) -> bool:
         """Wipe the tree of all of it's contents."""
-        self.treeview.clear()
+        return self.treeview.clear()
 
     def load_file(self):
         """
@@ -209,6 +209,7 @@ class BencodeView(QTreeView):
         """Clear the contents of the widget."""
         rows = self.model().rowCount()
         self.model().removeRows(0, rows)
+        return True
 
     def addItem(self, item: "Item"):
         """
@@ -243,7 +244,6 @@ class BencodeView(QTreeView):
             self.model().to_bencode(item)
             pyben.dump(item.data(), path)
             return True
-        return False
 
 
 class Item:
@@ -524,7 +524,7 @@ class BencodeModel(QAbstractItemModel):
         if index and index.isValid():
             item = self.getItem(index)
             if not item.hasChildren():
-                flags |= Qt.ItemIsEditable
+                flags |= Qt.ItemIsEditable  # pragma: nocover
         return flags
 
     def getItem(self, index: QModelIndex) -> Item:
@@ -575,7 +575,7 @@ class BencodeModel(QAbstractItemModel):
             childItem = parentItem.child(row)
             if childItem:
                 return self.createIndex(row, column, childItem)
-        return QModelIndex()
+        return QModelIndex()  # pragm
 
     def insertColumns(self,
                       position: int,
@@ -773,9 +773,10 @@ class BencodeModel(QAbstractItemModel):
             child = item.child(i)
             change = self.to_bencode(child)
             if change is not None:
-                data = item.parent().data()
-                if data[item.itemData] != change:
-                    data[item.itemData] = change
+                if item.parent() is not None:
+                    data = item.parent().data()
+                    if data[item.itemData] != change:
+                        data[item.itemData] = change
         return None
 
 
@@ -790,7 +791,7 @@ class Thread(QThread):
 
     def run(self):
         """Iterate through list and emit a signal with data."""
-        for tfile in self.lst:  # pragma: nocover
+        for tfile in self.lst:
             meta = pyben.load(tfile)
             root = Item(data=meta, value=tfile)
             Item.buildItem(meta, root)

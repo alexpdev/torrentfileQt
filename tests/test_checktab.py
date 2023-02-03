@@ -25,114 +25,90 @@ import pytest
 
 from tests import wind, tempdir, torrent_versions, switchTab, waitfor, temp_file
 from torrentfileQt import checkTab
-from torrentfileQt.checkTab import TreeWidget
 
-class Obj:
+
+class MockReturn:
     value = None
 
-def mock_func(_):
-    return Obj.value
+
+def mock_func(arg):
+    return MockReturn.value
 
 checkTab.browse_files = mock_func
 checkTab.browse_folder = mock_func
 checkTab.browse_torrent = mock_func
 
-@pytest.fixture(params=torrent_versions())
-def dir2(request):
-    dirname = tempdir(6, 2, 27, [".rar", ".mp3", ".mkv", ".dat"])
+@pytest.fixture(scope="module")
+def tdir():
+    dirname = tempdir(6, 2, 27, [".r00", ".mp3", ".mkv", ".dat", ".zip"])
+    return dirname
+
+@pytest.fixture(params=torrent_versions(), scope="module")
+def ttorrent(tdir, request):
     maker = request.param
     torrent = maker(
-        path=dirname,
+        path=tdir,
         piece_length=18,
-        outfile=dirname + ".torrent",
+        outfile=tdir + ".torrent",
         announce=["url1", "url2"]
     )
     torrent.write()
-    return dirname, dirname + ".torrent"
+    return tdir, tdir + ".torrent"
+
+def test_check_tab_setPath(tdir, wind):
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    tab.setPath(tdir)
+    assert tab.content_group.getPath() == tdir
+
+def test_checktab_setTorrent(ttorrent, wind):
+    _, torrent = ttorrent
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    tab.setTorrent(torrent)
+    assert tab.file_group.getPath() == torrent
+
+def test_checktab_browse_torrent(ttorrent, wind):
+    _, torrent = ttorrent
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    MockReturn.value = torrent
+    tab.file_button.click()
+    assert tab.file_group.getPath() == torrent
 
 
-# def test_missing_files_check(dir2, wind):
-#     """Test missing files checker proceduire."""
-#     dirname, torrent = dir2
-#     checktab = wind.tabs.checkWidget
-#     switchTab(wind.stack, checktab)
-#     dirpath = Path(dirname)
-#     for item in dirpath.iterdir():
-#         if item.is_file():
-#             os.remove(item)
-#     checktab.file_group.setPath(torrent)
-#     checktab.content_group.setPath(dirname)
-#     checktab.checkButton.click()
-#     func = lambda: checktab.treeWidget.topLevelItemCount() >= 0
-#     assert waitfor(3, func)
+def test_checktab_browse_folder(tdir, wind):
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    MockReturn.value = tdir
+    tab.content_folders.click()
+    assert tab.content_group.getPath() == tdir
 
-# def test_shorter_files_check(wind, dir2):
-#     """Test missing files checker proceduire."""
-#     checktab = wind.tabs.checkWidget
-#     dirname, torrent = dir2
-#     dirpath = Path(dirname)
-#     switchTab(wind.stack, checktab)
+def test_checktab_browse_files(tdir, wind):
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    MockReturn.value = tdir
+    tab.content_files.click()
+    assert tab.content_group.getPath() == tdir
 
-#     def shortenfile(item):
-#         """Shave some data off the end of file."""
-#         temp = bytearray(2**19)
-#         with open(item, "rb") as fd:
-#             fd.readinto(temp)
-#         with open(item, "wb") as fd:
-#             fd.write(temp)
+def test_checktab_thread(ttorrent, wind):
+    tdir, torrent = ttorrent
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    checkTab.RecheckThread.start = checkTab.RecheckThread.run
+    tab.content_group.setPath(tdir)
+    tab.populate_tree(torrent, tdir)
+    assert tab.treeWidget.rootitem.childCount() > 0
+    tab.treeWidget.clear()
 
-#     if os.path.exists(dirpath):
-#         for item in dirpath.iterdir():
-#             if item.is_file():
-#                 shortenfile(item)
-#     checktab.file_group.setPath(torrent)
-#     checktab.content_group.setPath(dirname)
-#     checktab.checkButton.click()
-#     func = lambda: checktab.treeWidget.topLevelItemCount() >= 0
-#     assert waitfor(3, func)
-
-# def test_check_tab(wind, dir2):
-#     """Test checker procedure."""
-#     checktab = wind.tabs.checkWidget
-#     dirname, torrent = dir2
-#     switchTab(wind.stack, checktab)
-#     checktab.file_group.setPath(torrent)
-#     checktab.content_group.setPath(dirname)
-#     checktab.checkButton.click()
-#     func = lambda: checktab.textEdit.toPlainText() != ""
-#     assert waitfor(3, func)
-
-# def test_check_tab_input1(wind, dir2):
-#     """Test checker procedure."""
-#     checktab = wind.tabs.checkWidget
-#     dirname, torrent = dir2
-#     switchTab(wind.stack, checktab)
-#     Obj.value = dirname
-#     checktab.content_folders.click()
-#     func = lambda: checktab.content_group.getPath() != ""
-    # assert waitfor(3, func)
-
-# def test_check_tab_input_2(wind, dir2):
-#     """Test checker procedure."""
-#     checktab = wind.tabs.checkWidget
-#     dirname, torrent = dir2
-#     switchTab(wind.stack, checktab)
-#     Obj.value = dirname
-#     checktab.file_button.click()
-#     assert checktab.file_group.getLabelText() != ""
-
-# def test_check_tab4(wind):
-#     """Test checker procedure again."""
-#     checktab = wind.tabs.checkWidget
-#     switchTab(wind.stack, checktab)
-#     tree_widget = checktab.treeWidget
-#     assert tree_widget.invisibleRootItem() is not None
-
-# def test_clear_logtext(wind):
-#     """Test checker logTextEdit widget function."""
-#     checktab = wind.tabs.checkWidget
-#     switchTab(wind.stack, checktab)
-#     text_edit = checktab.textEdit
-#     text_edit.insertPlainText("sometext")
-#     text_edit.clear_data()
-#     assert text_edit.toPlainText() == ""
+def test_checktab_submit(ttorrent, wind):
+    tdir, torrent = ttorrent
+    tab = wind.tabs.checkWidget
+    switchTab(wind.stack, tab)
+    checkTab.RecheckThread.start = checkTab.RecheckThread.run
+    tab.setPath(tdir)
+    tab.setTorrent(torrent)
+    tab.checkButton.click()
+    assert tab.treeWidget.rootitem.childCount() > 0
+    tab.treeWidget.clear()
+    tab.textEdit.clear_data()
