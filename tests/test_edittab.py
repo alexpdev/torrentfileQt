@@ -23,11 +23,9 @@
 
 # from tests import MockEvent, dir1, dir2, proc_time, ttorrent, wind
 
-
 # def test_fixtures():
 #     """Test fixtures."""
 #     assert dir1 and dir2 and ttorrent and wind
-
 
 # @pytest.mark.parametrize("field", ["announce", "name", "private", "comment"])
 # def test_editor_torrent_loading(field, wind, ttorrent):
@@ -41,7 +39,6 @@
 #     for i in range(editor.table.rowCount()):
 #         fields.append(editor.table.item(i, 0).text())
 #     assert field in fields
-
 
 # def test_editor_torrent_saving(wind, ttorrent):
 #     """Testing editor widget saving functionality."""
@@ -61,7 +58,6 @@
 #     meta = pyben.load(ttorrent)
 #     assert meta["announce"] == "other"
 
-
 # def test_editor_accept_method(wind, ttorrent):
 #     """Test drag enter event on editor widget."""
 #     editor = wind.central.editorWidget
@@ -71,7 +67,6 @@
 #     assert editor.dragEnterEvent(event)
 #     event = MockEvent(None)
 #     assert not editor.dragEnterEvent(event)
-
 
 # def test_editor_move_event(wind, ttorrent):
 #     """Test move event on editor widget."""
@@ -83,7 +78,6 @@
 #     event = MockEvent(None)
 #     assert not editor.dragMoveEvent(event)
 
-
 # def test_editor_drop_event(wind, ttorrent):
 #     """Test drop event on editor widget."""
 #     editor = wind.central.editorWidget
@@ -92,7 +86,6 @@
 #     event = MockEvent(ttorrent)
 #     assert editor.dropEvent(event)
 
-
 # def test_editor_drop_false(wind):
 #     """Test drop event on editor widget is false."""
 #     editor = wind.central.editorWidget
@@ -100,7 +93,6 @@
 #     proc_time()
 #     event = MockEvent(None)
 #     assert not editor.dropEvent(event)
-
 
 # def test_editor_table_fields(wind, ttorrent):
 #     """Test the edit fields of table widget."""

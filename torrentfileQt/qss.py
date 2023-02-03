@@ -346,6 +346,7 @@ QMenu::indicator {
 }
 """
 
+
 class Styles:
     stylesheet = theme
     arrow_path = Path(__file__).parent / "assets" / "arrow.png"
@@ -397,6 +398,7 @@ class Styles:
         "_arrow": str(arrow),
     }
     keys = {"light": light, "dark": dark}
+
     @staticmethod
     def compile(stylesheet, theme):
         template = string.Template(stylesheet)

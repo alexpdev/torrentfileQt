@@ -19,16 +19,17 @@
 """Module for the Check Tab Widget."""
 
 import logging
+import math
 import os
 import re
-import math
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QTextOption
-from PySide6.QtWidgets import (QHBoxLayout, QPlainTextEdit, QProgressBar,
-                               QPushButton, QSplitter, QTreeWidget,
-                               QTreeWidgetItem, QVBoxLayout, QWidget, QLabel)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPlainTextEdit,
+                               QProgressBar, QPushButton, QSplitter,
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
 from torrentfile.recheck import Checker
 
 from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
@@ -199,8 +200,7 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             if not os.path.isfile(metafile):
                 self.window().statusBar().showMessage(
-                    "Error: Torrent File cannot be a directory.", 8000
-                )
+                    "Error: Torrent File cannot be a directory.", 8000)
                 return
             parent.treeWidget.clear()
             parent.textEdit.clear()
@@ -208,8 +208,7 @@ class ReCheckButton(QPushButton):
             self.ready.emit(metafile, content)
         else:
             self.window().statusBar().showMessage(
-                "Error: Torrent File Not Found.", 3000
-            )
+                "Error: Torrent File Not Found.", 3000)
 
 
 class BrowseTorrents(QPushButton):

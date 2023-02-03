@@ -7,7 +7,6 @@ from PySide6.QtWidgets import *
 
 
 class DropGroupBox(QGroupBox):
-
     pathSelected = Signal(str)
 
     def __init__(self, parent: QWidget = None):

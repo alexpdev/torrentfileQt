@@ -24,8 +24,8 @@ from typing import Any
 import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QHBoxLayout, QToolBar, QTreeView, QVBoxLayout,
-                               QWidget, QLabel)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QToolBar, QTreeView,
+                               QVBoxLayout, QWidget)
 
 from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
                                  torrent_filter)
@@ -59,9 +59,8 @@ class BencodeEditWidget(QWidget):
         self.toolbar = QToolBar(parent=self)
         self.setAcceptDrops(True)
         self.file_action = QAction(get_icon("browse_file"), "Select File")
-        self.folder_action = QAction(
-            get_icon("browse_folder"), "Select Folder"
-        )
+        self.folder_action = QAction(get_icon("browse_folder"),
+                                     "Select Folder")
         self.save_action = QAction(get_icon("save-as"), "Save Data")
         self.clear_action = QAction(get_icon("erase"), "Clear Data")
         self.remove_item_action = QAction(get_icon("trash"), "Remove Item")
@@ -70,8 +69,7 @@ class BencodeEditWidget(QWidget):
         self.toolbar.addActions((self.file_action, self.folder_action))
         self.toolbar.addSeparator()
         self.toolbar.addActions(
-            [self.insert_item_action, self.remove_item_action]
-        )
+            [self.insert_item_action, self.remove_item_action])
         self.toolbar.addSeparator()
         self.toolbar.addActions((self.save_action, self.clear_action))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
@@ -114,7 +112,8 @@ class BencodeEditWidget(QWidget):
         for i in range(rows):
             item = self.treeview.item(i, 0)
             if item.edited():
-                self.treeview.save_item(item)
+                return self.treeview.save_item(item)
+
 
     def clear_contents(self):
         """Wipe the tree of all of it's contents."""
@@ -130,7 +129,7 @@ class BencodeEditWidget(QWidget):
             torrent file paths, by default None
         """
         paths = browse_torrent(self)
-        self.load_thread(paths)
+        self.load_thread([paths])
 
     def load_thread(self, paths: list):
         """
@@ -243,6 +242,8 @@ class BencodeView(QTreeView):
             path = item.itemData
             self.model().to_bencode(item)
             pyben.dump(item.data(), path)
+            return True
+        return False
 
 
 class Item:
@@ -250,9 +251,10 @@ class Item:
 
     model = None
 
-    def __init__(
-        self, parent: "Item" = None, value: Any = None, data: Any = None
-    ):
+    def __init__(self,
+                 parent: "Item" = None,
+                 value: Any = None,
+                 data: Any = None):
         """
         Return a Item instance for the bencode tree view editor.
 
@@ -342,9 +344,8 @@ class Item:
         """Return the data for the specified column."""
         return self._data
 
-    def insertChildren(
-        self, position: int, count: int
-    ) -> bool:  # pragma: nocover
+    def insertChildren(self, position: int,
+                       count: int) -> bool:  # pragma: nocover
         """
         Insert child items into list of children.
 
@@ -545,9 +546,10 @@ class BencodeModel(QAbstractItemModel):
             item = index.internalPointer()
         return item
 
-    def index(
-        self, row: int, column: int = 0, parent: QModelIndex = QModelIndex()
-    ):
+    def index(self,
+              row: int,
+              column: int = 0,
+              parent: QModelIndex = QModelIndex()):
         """
         Get the index for the given row and column of the parent index.
 
@@ -575,9 +577,10 @@ class BencodeModel(QAbstractItemModel):
                 return self.createIndex(row, column, childItem)
         return QModelIndex()
 
-    def insertColumns(
-        self, position: int, columns: int = 0, parent=QModelIndex()
-    ):  # pragma: nocover
+    def insertColumns(self,
+                      position: int,
+                      columns: int = 0,
+                      parent=QModelIndex()):  # pragma: nocover
         """Insert a column into tree."""
         self.beginInsertColumns(parent, position, position + columns - 1)
         success = self.rootItem.insertColumns(position, columns)
@@ -630,9 +633,8 @@ class BencodeModel(QAbstractItemModel):
         """
         return self.insertRows(position, 1, parent)  # pragma: nocover
 
-    def insertRows(
-        self, position: int, rows: int, parent=QModelIndex()
-    ) -> bool:  # pragma: nocover
+    def insertRows(self, position: int, rows: int,
+                   parent=QModelIndex()) -> bool:  # pragma: nocover
         """
         Add item row and tree to the model and view.
 
@@ -666,14 +668,14 @@ class BencodeModel(QAbstractItemModel):
             childItem = self.getItem(index)
             parentItem = childItem.parent()
             if parentItem and parentItem != self.rootItem:
-                return self.createIndex(
-                    parentItem.childNumber(), 0, parentItem
-                )
+                return self.createIndex(parentItem.childNumber(), 0,
+                                        parentItem)
         return QModelIndex()  # pragma: nocover
 
-    def removeColumns(
-        self, position: int, columns: int = 0, index=QModelIndex()
-    ):  # pragma: nocover
+    def removeColumns(self,
+                      position: int,
+                      columns: int = 0,
+                      index=QModelIndex()):  # pragma: nocover
         """
         Remove rows from the model and view.
 

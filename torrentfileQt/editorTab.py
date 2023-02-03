@@ -24,9 +24,9 @@ from copy import deepcopy
 import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox, QHBoxLayout,
-                               QLineEdit, QPushButton, QSizePolicy,
+                               QLabel, QLineEdit, QPushButton, QSizePolicy,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
-                               QWidget, QLabel)
+                               QWidget)
 
 from torrentfileQt.utils import browse_torrent, get_icon
 from torrentfileQt.widgets import DropGroupBox
@@ -261,7 +261,7 @@ class Table(QTableWidget):
 
             elif k == "private":
                 widget = QCheckBox(parent=self)
-                widget.setChecked(v == True)
+                widget.setChecked(v)
                 self.setCellWidget(index, 1, widget)
 
             elif k == "creation date":

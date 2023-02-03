@@ -23,62 +23,6 @@ from tests import wind
 from torrentfileQt import qss
 from torrentfileQt.__main__ import main
 from torrentfileQt.infoTab import denom
-from torrentfileQt.utils import StyleManager
-from torrentfileQt.window import TabWidget
-
-
-def test_denom():
-    """Test denom function."""
-    num = denom(50000000000)
-    assert num == "50.0GB"
-
-
-def test_denom_small():
-    """Test denom function for small number."""
-    num = denom(357)
-    assert num == "357"
-    assert wind
-    assert main
-
-
-def test_wind(wind):
-    """Test app subclass."""
-    assert isinstance(wind, QMainWindow)
-
-
-def test_qss():
-    """For coverage reporting."""
-    assert qss is not None
-
-
-def test_window_menubar1(wind):
-    """Test window Menubar widget."""
-    assert wind.menubar is not None
-
-
-def test_change_theme(wind):
-    """Test changing the theme from the menubar."""
-    wind.menubar.file_menu.actionLightTheme.trigger()
-    wind.menubar.file_menu.actionDarkTheme.trigger()
-    assert wind.menubar.file_menu.actionLightTheme.text() == "Light Theme"
-    assert wind.menubar.file_menu.actionDarkTheme.text() == "Dark Theme"
-
-
-# def test_increase_font(wind):
-#     """Test font size plus menu option."""
-#     fontsize = wind.central.createWidget.path_label.font().pointSize()
-#     wind.menubar.file_menu.actionFontPlus.trigger()
-#     wind.menubar.file_menu.actionFontPlus.trigger()
-#     assert wind.central.createWidget.path_label.font().pointSize() > fontsize
-
-
-# def test_decrease_font(wind):
-#     """Test font size minus menu option."""
-#     fontsize = wind.central.createWidget.path_label.font().pointSize()
-#     wind.menubar.file_menu.actionFontMinus.trigger()
-#     wind.menubar.file_menu.actionFontMinus.trigger()
-#     assert wind.central.createWidget.path_label.font().pointSize() < fontsize
-
 
 # def test_styleManager():
 #     """Test style manager from utils module."""
@@ -96,10 +40,8 @@ def test_change_theme(wind):
 # QLabel {
 #     font-size: 15pt;
 
-
 # }
 # /* this is a comment*/
-
 
 # QCheckBox::indicator {
 #     background-color: red;

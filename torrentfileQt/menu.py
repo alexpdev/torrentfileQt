@@ -42,8 +42,8 @@ class TitleBarButton(QPushButton):
         self.setFixedWidth(25)
         self.setProperty(prop, True)
         self.setProperty("titlebutton", True)
-        self.setObjectName(prop+"Button")
-        self.setIcon(QIcon(get_icon(prop+"-dark")))
+        self.setObjectName(prop + "Button")
+        self.setIcon(QIcon(get_icon(prop + "-dark")))
         self.clicked.connect(self.window_action)
 
     def window_action(self):
@@ -136,7 +136,6 @@ class TitleBar(QWidget):
     def setMenuBar(self, menubar):
         self.menuBar = menubar
         self.layout.insertWidget(1, menubar)
-
 
 
 class MenuBar(QMenuBar):
@@ -258,9 +257,8 @@ class OptionsMenu(QMenu):
 
     def writeContents(self):
         text = self.dialog.plainTextEdit.toPlainText()
-        with open(
-            os.path.join(os.path.dirname(__file__), "temp.qss"), "wt"
-        ) as qss:
+        with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
+                  "wt") as qss:
             qss.write(text)
 
     def closeStyleDialog(self):

@@ -193,6 +193,7 @@ class QssParser:
                 ssheet += "}\n"
         return ssheet
 
+
 def get_icon(name: str) -> str:
     """
     Return the path to the icon referenced by name.
@@ -257,9 +258,9 @@ def browse_files(widget: object) -> list:
     list
         list of pathstrings
     """
-    path, _ = QFileDialog.getOpenFileName(
-        parent=widget, dir=str(Path.home()), caption="Select File"
-    )
+    path, _ = QFileDialog.getOpenFileName(parent=widget,
+                                          dir=str(Path.home()),
+                                          caption="Select File")
     if not path:
         path = ""
     return os.path.normpath(path)
@@ -290,7 +291,6 @@ def browse_torrent(widget: object) -> list:
     if not torrents:
         return torrents
     return torrents[0]
-
 
 
 def torrent_filter(paths: tuple) -> list:
