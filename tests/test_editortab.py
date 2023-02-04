@@ -25,10 +25,14 @@ from torrentfileQt import editorTab
 
 
 class MockReturn:
+    """Mock class for testing."""
+
     value = None
 
 
-def mock_func(arg):
+def mock_func(_):
+    """Mock function for testing."""
+    assert wind
     return MockReturn.value
 
 
@@ -37,6 +41,7 @@ editorTab.browse_torrent = mock_func
 
 @pytest.fixture(params=torrent_versions(), scope="module")
 def torent(request):
+    """Test fixture for editor widget."""
     maker = request.param
     tempfile = temp_file(25)
     torrent = maker(
@@ -54,6 +59,7 @@ def torent(request):
 
 
 def test_editor_file_button(wind, torent):
+    """Test function for editor tab functions."""
     tab = wind.tabs.editorWidget
     switchTab(wind.stack, tab)
     MockReturn.value = torent
@@ -62,6 +68,7 @@ def test_editor_file_button(wind, torent):
 
 
 def test_editor_save_button(wind, torent):
+    """Test function for editor tab functions."""
     tab = wind.tabs.editorWidget
     switchTab(wind.stack, tab)
     MockReturn.value = torent
@@ -71,6 +78,7 @@ def test_editor_save_button(wind, torent):
 
 
 def test_editor_table(wind, torent):
+    """Test function for editor tab functions."""
     tab = wind.tabs.editorWidget
     switchTab(wind.stack, tab)
     tab.editTorrent(torent)

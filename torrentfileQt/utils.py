@@ -22,9 +22,10 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon, QMouseEvent
+from PySide6.QtWidgets import (QFileDialog, QGroupBox, QHBoxLayout, QLabel,
+                               QPushButton, QVBoxLayout, QWidget)
 
 
 class QssParser:
@@ -290,11 +291,13 @@ def torrent_filter(paths: tuple) -> list:
 
 
 class DropGroupBox(QGroupBox):
+    """Drag and drop class."""
+
     pathSelected = Signal(str)
 
     def __init__(self, parent: QWidget = None):
         """
-        A groupbox with buttons inside for dragging and dropping.
+        Create groupbox with buttons inside for dragging and dropping.
 
         Parameters
         ----------

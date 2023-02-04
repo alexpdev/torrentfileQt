@@ -18,30 +18,28 @@
 ##############################################################################
 """Module for testing procedures on Bencode editor module."""
 
-import os
-import random
-
-import pyben
-import pytest
-
-from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
-                   waitfor, wind)
+from tests import wind
 from torrentfileQt import __main__, utils
 
 
-class MockReturn:
-    value = None
+def test_fix():
+    """Fix pytest warnings."""
+    assert wind
 
 
 class MockClass:
+    """Mock class for testing."""
+
     value = None
 
     @classmethod
-    def getOpenFileName(cls, *args, **kwargs):
+    def getOpenFileName(cls, **_):
+        """Mock method for testing."""
         return cls.value, None
 
     @classmethod
-    def getExistingDirectory(cls, *args, **kwargs):
+    def getExistingDirectory(cls, **_):
+        """Mock method for testing."""
         return cls.value
 
 
@@ -49,6 +47,7 @@ utils.QFileDialog = MockClass
 
 
 def test_themes(wind):
+    """Test function for tesing utils."""
     wind.menubar.options_menu.actionDarkTheme.trigger()
     wind.menubar.options_menu.actionLightTheme.trigger()
     wind.titleBar.minimizeButton.click()
@@ -58,31 +57,37 @@ def test_themes(wind):
 
 
 def test_utils_browse_file():
+    """Test function for tesing utils."""
     MockClass.value = "somevalue"
     assert utils.browse_files("obj") == MockClass.value
 
 
 def test_utils_browse_folder():
+    """Test function for tesing utils."""
     MockClass.value = "somevalue"
     assert utils.browse_folder("obj") == MockClass.value
 
 
 def test_utils_browse_torrent():
+    """Test function for tesing utils."""
     MockClass.value = "somevalue"
     assert utils.browse_torrent("obj") == MockClass.value
 
 
 def test_utils_browse_no_file():
+    """Test function for tesing utils."""
     MockClass.value = None
     assert utils.browse_files("obj") == "."
 
 
 def test_utils_browse_no_folder():
+    """Test function for tesing utils."""
     MockClass.value = None
     assert not utils.browse_folder("obj")
 
 
 def test_utils_browse_no_torrent():
+    """Test function for tesing utils."""
     MockClass.value = None
     assert not utils.browse_torrent("obj")
 

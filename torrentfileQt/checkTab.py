@@ -18,7 +18,6 @@
 ##############################################################################
 """Module for the Check Tab Widget."""
 
-import logging
 import math
 import os
 import re
@@ -90,13 +89,39 @@ class CheckWidget(QWidget):
         self.checkButton.ready.connect(self.populate_tree)
         self.layout.addWidget(self.checkButton)
 
-    def setPath(self, path):
+    def setPath(self, path: str):
+        """
+        Save path location to widget.
+
+        Parameters
+        ----------
+        path : str
+            string file path
+        """
         self.content_group.setPath(path)
 
-    def setTorrent(self, path):
+    def setTorrent(self, path: str):
+        """
+        Save torrent path to widget.
+
+        Parameters
+        ----------
+        path : str
+            string torrent file path
+        """
         self.file_group.setPath(path)
 
-    def populate_tree(self, metafile, content):
+    def populate_tree(self, metafile: str, content: str):
+        """
+        Populate the tree with the file and folder details.
+
+        Parameters
+        ----------
+        metafile : str
+            path to the torrent file
+        content : str
+            path to the content
+        """
         self.thread = RecheckThread(metafile, content)
         base = self.content_group.getPath()
         self.thread.finished.connect(self.thread.deleteLater)
@@ -118,7 +143,7 @@ class RecheckThread(QThread):
         self.content = content
         self.current = 0
 
-    def get_path_information(self, fileinfo, pathlist):
+    def get_path_information(self, fileinfo):
         """Add tree widgets items to tree widget."""
         for _, val in fileinfo.items():
             if val["path"] == self.root:
@@ -132,14 +157,17 @@ class RecheckThread(QThread):
         """Iterate through hashes and compare to torrentfile hashes."""
         for actual, expected, path, size in checker.iter_hashes():
             if checker.meta_version == 1:
-                self.process_v1_hash(actual, expected, path, size)
+                self.process_v1_hash(actual, expected, size)
             else:
                 if actual == expected:
                     self.progress_update.emit(path, size)
                 else:
                     self.progress_update.emit(path, size)  # pragma: nocover
 
-    def process_v1_hash(self, actual, expected, path, size):
+    def process_v1_hash(self, actual, expected, size):
+        """
+        Process the hashes provided by the checker.
+        """
         while size > 0:
             if self.current >= len(self.pathlist):
                 return  # pragma: nocover
@@ -160,12 +188,15 @@ class RecheckThread(QThread):
                 size = 0
 
     def run(self):
+        """
+        Start thread process of checking torrent file.
+        """
         checker = Checker(self.metafile, self.content)
         self.root = os.path.dirname(checker.root)
         fileinfo = checker.fileinfo
         self.pathlist = checker.paths
         self.fileinfo = {v["path"]: v for v in fileinfo.values()}
-        self.get_path_information(fileinfo, self.pathlist)
+        self.get_path_information(fileinfo)
         self.iter_hashes(checker)
 
 
@@ -362,6 +393,9 @@ class TreeWidget(QTreeWidget):
         self.registry = {}
 
     def set_thread_info(self, thread, base):
+        """
+        Set information needed during compare process.
+        """
         self.thread = thread
         self.base = os.path.dirname(base)
         self.thread.path_ready.connect(self.setup_path_item)
@@ -374,6 +408,9 @@ class TreeWidget(QTreeWidget):
         self.root = None
 
     def new_item(self, text, icon, parent):
+        """
+        Add information on file.
+        """
         item = QTreeWidgetItem()
         item.setText(0, text)
         item.setIcon(0, icon)
@@ -418,6 +455,7 @@ class TreeWidget(QTreeWidget):
         self.setItemWidget(item, 1, progressBar)
 
     def match_suffix_to_icon(self, path):
+        """Match the file suffix extension to icon."""
         if path.suffix in [".avi", ".mp4", ".mkv", ".mov"]:
             fileicon = self.icons["video"]
         elif path.suffix in [".rar", ".zip", ".7z", ".tar", ".gz"]:
@@ -431,6 +469,9 @@ class TreeWidget(QTreeWidget):
         return fileicon
 
     def update_progress(self, path, amount):
+        """
+        Update the progress bar.
+        """
         relpath = os.path.relpath(path, self.base)
         item = self.registry[relpath]
         prog = self.itemWidget(item, 1)

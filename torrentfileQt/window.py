@@ -141,17 +141,19 @@ class TabWidget(QWidget):
         self.layout.setContentsMargins(0, 0, 2, 0)
 
     def addTab(self, widget, title):
+        """Add a tab widget to tab bar."""
         button = QPushButton(title, self)
-        l = len(self.tabs)
-        self.tabs[l] = widget
+        last = len(self.tabs)
+        self.tabs[last] = widget
         self.buttons.append(button)
         self.button_group.addButton(button)
-        self.button_group.setId(button, l)
+        self.button_group.setId(button, last)
         self.layout.addWidget(button)
         self._parent.stack.addWidget(widget)
         button.setProperty("Tab", True)
 
     def switch_tab(self, button):
+        """Switch do different widget in the stack."""
         active_style = self.app.get_tab_style(True)
         inactive_style = self.app.get_tab_style(False)
         button.setStyleSheet(active_style)

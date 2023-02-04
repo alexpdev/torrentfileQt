@@ -112,7 +112,8 @@ class BencodeEditWidget(QWidget):
         for i in range(rows):
             item = self.treeview.item(i, 0)
             if item.edited():
-                return self.treeview.save_item(item)
+                self.treeview.save_item(item)
+        return True
 
     def clear_contents(self) -> bool:
         """Wipe the tree of all of it's contents."""
@@ -242,7 +243,7 @@ class BencodeView(QTreeView):
             path = item.itemData
             self.model().to_bencode(item)
             pyben.dump(item.data(), path)
-            return True
+        return True
 
 
 class Item:
