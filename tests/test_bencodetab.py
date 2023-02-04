@@ -19,137 +19,158 @@
 """Module for testing procedures on Bencode editor module."""
 
 import os
+import random
 
 import pyben
 import pytest
-from PySide6.QtCore import QItemSelectionModel, Qt
-from torrentfile.torrent import TorrentFileHybrid
 
-from tests import dir1, dir2, proc_time, tempfile, ttorrent, wind
-from torrentfileQt.bencodeTab import Item
+from tests import temp_file, tempdir, torrent_versions, wind, waitfor, switchTab, MockEvent
+from torrentfileQt import bencodeTab
 
 
-def test_fix():
-    """Test fixtures."""
-    assert dir1 and dir2 and tempfile and ttorrent and wind
+class MockReturn:
+    value = None
 
 
-@pytest.fixture(params=list(range(17, 20)))
-def treedir(request):
-    """Fixture for temporary torrent files."""
-    paths = []
-    for i in range(8):
-        tfile = tempfile(exp=request.param + 2)
-        args = {
-            "path": tfile,
-            "outfile": str(tfile) + ".torrent",
-            "url_list": [f"url{i}", f"url{i+1}"],
-            "announce": [f"url{i+2}", f"url{i+3}"],
-            "comment": f"This is a comment + {i}",
-            "source": f"SomeSource{i}",
-            "private": 1,
-            "piece_length": request.param - 1,
-        }
-        torrent = TorrentFileHybrid(**args)
-        torrent.write()
-        paths.append(args["outfile"])
-    return os.path.commonpath(paths)
+def mock_func(arg):
+    return MockReturn.value
 
 
-def test_bencode_load_file(ttorrent, wind):
-    """Test the load file function in the becodeEditWidget."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_file([ttorrent])
-    wind.central.setCurrentWidget(widget)
-    proc_time(1)
-    assert widget.treeview.rowCount() > 0
+bencodeTab.browse_folder = mock_func
+bencodeTab.browse_torrent = mock_func
 
 
-def test_bencode_load_folder(ttorrent, wind):
-    """Test the load folder function in the bencodeEditWidget."""
-    widget = wind.central.bencodeEditWidget
-    dirname = os.path.dirname(ttorrent)
-    widget.load_folder(dirname)
-    wind.central.setCurrentWidget(widget)
-    proc_time(1)
-    assert widget.treeview.rowCount() > 0
+@pytest.fixture(params=torrent_versions())
+def torrent_file(request):
+    size = random.randint(24, 28)
+    path = temp_file(size)
+    maker = request.param
+    outfile = path + ".torrent"
+    torrent = maker(
+        path=path,
+        announce=["url1", "url2"],
+        source="source",
+        piece_length=2**random.randint(16, 19),
+        outfile=outfile,
+    )
+    torrent.write()
+    return outfile
 
 
-def test_treedir(treedir, wind):
-    """Test item functions and model."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_folder(treedir)
-    proc_time(1)
-    assert widget.treeview.model().rowCount() > 0
-    total = widget.treeview.rowCount()
-    for i in range(total):
-        item = widget.treeview.item(i, 0)
-        ritem = item
-        while ritem.hasChildren():
-            ritem = ritem.child(0)
-            parent = ritem.parent()
-            isindex = ritem.isIndex()
-            isroot = ritem.isRoot()
-            icon = ritem.icon()
-            text = ritem.text()
-            _ = ritem.edited()
-            _ = ritem.childCount()
-            _ = ritem.columnCount()
-            _ = ritem.data()
-            index = ritem.index()
-            for role in [Qt.DisplayRole, Qt.EditRole, Qt.DecorationRole]:
-                info = widget.treeview.model().data(index, role)
-                if info:
-                    assert info in [text, icon]
-            proc_time()
-            if not ritem.hasChildren():
-                widget.treeview.model().flags(index)
-                assert isindex is False
-                assert isroot is False
-                assert parent.index() == widget.treeview.model().parent(index)
-                proc_time()
-                widget.treeview.model().setData(index, "marshmallow",
-                                                Qt.EditRole)
-                proc_time()
-                ritem.setData("smores")
-                proc_time()
-        widget.save_changes()
-        proc_time()
-        widget.treeview.save_item(item)
-        proc_time()
-        widget.treeview.clear()
-        proc_time()
-        widget.clear_contents()
-        proc_time()
-        assert widget.treeview.rowCount() == 0
+def test_bencode_load_file(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    MockReturn.value = torrent_file
+    widget.load_file()
+    model = widget.treeview.model()
+    assert waitfor(3, lambda: model.rowCount() > 0)
+    assert widget.clear_contents()
 
 
-def test_treeremove(treedir, wind):
-    """Test item functions and model."""
-    widget = wind.central.bencodeEditWidget
-    widget.load_folder(treedir)
-    proc_time(1)
-    assert widget.treeview.model().rowCount() > 0
-    total = widget.treeview.rowCount()
-    for i in range(total):
-        item = widget.treeview.item(i, 0)
-        ritem = item
-        rect = widget.treeview.visualRect(ritem.index())
-        widget.treeview.setSelection(rect,
-                                     QItemSelectionModel.SelectionFlag.Select)
-        widget.insert_view_item()
-        widget.remove_view_item()
+def test_bencode_load_folder(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    MockReturn.value = os.path.dirname(torrent_file)
+    widget.load_folder()
+    model = widget.treeview.model()
+    assert waitfor(3, lambda: model.rowCount() > 0)
+    assert widget.clear_contents()
 
 
-def test_bencode_item(treedir):
-    """Test build items."""
-    items = []
-    for fd in os.listdir(treedir):
-        if fd.endswith(".torrent"):
-            path = os.path.join(treedir, fd)
-            meta = pyben.load(path)
-            root = Item(data=meta, value=path)
-            Item.buildItem(meta, root)
-            assert root.hasChildren()
-            items.append(root)
-    assert len(items) > 0
+def test_bencode_data_item(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    meta = pyben.load(torrent_file)
+    root = bencodeTab.Item(meta, torrent_file)
+    bencodeTab.Item.buildItem(meta, root)
+    widget.treeview.addChildInfo.emit(root)
+    assert waitfor(3, lambda: widget.treeview.rowCount() > 0)
+    assert widget.clear_contents()
+
+
+def test_bencode_drag_enter_event(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(torrent_file)
+    assert widget.dragEnterEvent(event)
+
+
+def test_bencode_drag_enter_no_event(wind):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.dragEnterEvent(event)
+
+
+def test_bencode_drag_move_event(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(torrent_file)
+    assert widget.dragMoveEvent(event)
+
+
+def test_bencode_drag_move_no_event(wind):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.dragMoveEvent(event)
+
+
+def test_bencode_drop_event(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(torrent_file)
+    assert widget.dropEvent(event)
+
+
+def test_bencode_drop_no_event(wind):
+    widget = wind.tabs.bencodeEditWidget
+    widget.treeview.model().index(15)
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.dropEvent(event)
+
+
+def test_bencode_save_changes(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    bencodeTab.Thread.start = bencodeTab.Thread.run
+    widget.load_thread([torrent_file])
+    model = widget.treeview.model()
+    rows = model.rowCount()
+    for i in range(rows):
+        topindex = model.index(i)
+        topitem = model.getItem(topindex)
+        item = topitem
+        while item.hasChildren():
+            item = item.child(0)
+        index = item.index()
+        model.setData(index, "newvalue")
+        break
+    widget.save_changes()
+    assert waitfor(3, lambda: widget.treeview.rowCount() > 0)
+    assert widget.clear_contents()
+
+
+def test_bencode_remove_item(wind, torrent_file):
+    widget = wind.tabs.bencodeEditWidget
+    switchTab(wind.stack, widget=widget)
+    bencodeTab.Thread.start = bencodeTab.Thread.run
+    widget.load_thread([torrent_file])
+    model = widget.treeview.model()
+    tree = widget.treeview
+    rows = model.rowCount()
+    for i in range(rows):
+        topindex = model.index(i)
+        topitem = model.getItem(topindex)
+        for j in range(topitem.childCount()):
+            child_index = model.index(i, parent=topindex)
+            rect = widget.treeview.visualRect(child_index)
+            widget.treeview.setSelection(
+                rect,
+                tree.selectionModel().SelectionFlag.Select)
+            widget.insert_view_item()
+            widget.remove_view_item()
+            break
+    assert waitfor(3, lambda: widget.treeview.rowCount() > 0)
+    assert widget.clear_contents()

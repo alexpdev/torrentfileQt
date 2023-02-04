@@ -24,8 +24,8 @@ from typing import Any
 import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QHBoxLayout, QToolBar, QTreeView, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QToolBar, QTreeView,
+                               QVBoxLayout, QWidget)
 
 from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
                                  torrent_filter)
@@ -46,7 +46,14 @@ class BencodeEditWidget(QWidget):
             parent widget, by default None
         """
         super().__init__(parent=parent)
-        self.layout = QVBoxLayout(self)
+        self.centralWidget = QWidget(self)
+        self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Bencode Editor")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("bencodeMainLabel")
+        self.centralLayout.addWidget(mainLabel)
+        self.centralLayout.addWidget(self.centralWidget)
+        self.layout = QVBoxLayout(self.centralWidget)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("bencodeTab")
         self.toolbar = QToolBar(parent=self)
@@ -105,13 +112,14 @@ class BencodeEditWidget(QWidget):
         for i in range(rows):
             item = self.treeview.item(i, 0)
             if item.edited():
-                self.treeview.save_item(item)
+                return self.treeview.save_item(item)
 
-    def clear_contents(self):
+
+    def clear_contents(self) -> bool:
         """Wipe the tree of all of it's contents."""
-        self.treeview.clear()
+        return self.treeview.clear()
 
-    def load_file(self, paths: list = None):
+    def load_file(self):
         """
         Load the a file or files from the Files_action.
 
@@ -120,8 +128,8 @@ class BencodeEditWidget(QWidget):
         paths : list, optional
             torrent file paths, by default None
         """
-        paths = browse_torrent(self, paths)
-        self.load_thread(paths)
+        paths = browse_torrent(self)
+        self.load_thread([paths])
 
     def load_thread(self, paths: list):
         """
@@ -137,7 +145,7 @@ class BencodeEditWidget(QWidget):
         self.thread.start()
         self.thread.finished.connect(self.thread.deleteLater)
 
-    def load_folder(self, path: str = None):
+    def load_folder(self):
         """
         Load all of the files contained in given folder path.
 
@@ -146,8 +154,7 @@ class BencodeEditWidget(QWidget):
         path : str, optional
             folder path, by default None
         """
-        if not path:
-            path = browse_folder(self, path)  # pragma: nocover
+        path = browse_folder(self)
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 
@@ -202,6 +209,7 @@ class BencodeView(QTreeView):
         """Clear the contents of the widget."""
         rows = self.model().rowCount()
         self.model().removeRows(0, rows)
+        return True
 
     def addItem(self, item: "Item"):
         """
@@ -235,6 +243,7 @@ class BencodeView(QTreeView):
             path = item.itemData
             self.model().to_bencode(item)
             pyben.dump(item.data(), path)
+            return True
 
 
 class Item:
@@ -515,7 +524,7 @@ class BencodeModel(QAbstractItemModel):
         if index and index.isValid():
             item = self.getItem(index)
             if not item.hasChildren():
-                flags |= Qt.ItemIsEditable
+                flags |= Qt.ItemIsEditable  # pragma: nocover
         return flags
 
     def getItem(self, index: QModelIndex) -> Item:
@@ -566,7 +575,7 @@ class BencodeModel(QAbstractItemModel):
             childItem = parentItem.child(row)
             if childItem:
                 return self.createIndex(row, column, childItem)
-        return QModelIndex()
+        return QModelIndex()  # pragm
 
     def insertColumns(self,
                       position: int,
@@ -764,9 +773,10 @@ class BencodeModel(QAbstractItemModel):
             child = item.child(i)
             change = self.to_bencode(child)
             if change is not None:
-                data = item.parent().data()
-                if data[item.itemData] != change:
-                    data[item.itemData] = change
+                if item.parent() is not None:
+                    data = item.parent().data()
+                    if data[item.itemData] != change:
+                        data[item.itemData] = change
         return None
 
 
@@ -781,7 +791,7 @@ class Thread(QThread):
 
     def run(self):
         """Iterate through list and emit a signal with data."""
-        for tfile in self.lst:  # pragma: nocover
+        for tfile in self.lst:
             meta = pyben.load(tfile)
             root = Item(data=meta, value=tfile)
             Item.buildItem(meta, root)

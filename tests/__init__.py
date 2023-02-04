@@ -19,21 +19,43 @@
 """Unit tests and fixtures for torrentfileQt Application."""
 
 import atexit
+import itertools
 import os
+import random
 import shutil
 import string
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from tempfile import mkdtemp, mkstemp
 
 import pytest
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 
 from torrentfileQt import Application
 
-APP = Application(sys.argv)
-# APP.window.show()
+APP = Application.start()
+
+
+class TempFileDirs:
+    paths = set()
+
+    tempdir = mkdtemp()
+    paths.add(tempdir)
+
+    @classmethod
+    def cleanup(cls):
+        cleaned = set()
+        for i in cls.paths:
+            if not os.path.exists(i):
+                continue
+            if os.path.isfile(i):
+                os.remove(i)
+            else:
+                shutil.rmtree(i)
+            cleaned.add(i)
+        cls.paths -= cleaned
 
 
 def exception_hook(exctype, value, traceback):  # pragma:  no cover
@@ -42,7 +64,39 @@ def exception_hook(exctype, value, traceback):  # pragma:  no cover
     sys._excepthook(exctype, value, traceback)
 
 
-def tempfile(path=None, exp=18):
+def switchTab(stack, widget=None, index=None):
+    if not widget:
+        stack.setCurrentIndex(index)
+    else:
+        stack.setCurrentWidget(widget)
+    APP.processEvents()
+
+
+def waitfor(timeout: int, func, *args, **kwargs):
+    then = time.time()
+    while time.time() - then < timeout:
+        if func(*args, **kwargs):
+            return True
+        APP.processEvents()
+    return False
+
+
+def gen_seq():
+    printable = string.printable * 12
+    whitespace = string.whitespace * 6
+    characters = list(printable + whitespace)
+    random.shuffle(characters)
+    return "".join(characters)
+
+
+def torrent_versions():
+    """
+    Return torrent file creators.
+    """
+    return (TorrentFile, TorrentFileHybrid, TorrentFileV2)
+
+
+def temp_file(size, suffix=None, dir=None):
     """Create temporary file.
 
     Creates a temporary file for unittesting purposes.py
@@ -59,57 +113,19 @@ def tempfile(path=None, exp=18):
     str
         absolute path to file.
     """
-    seq = (string.printable + string.whitespace).encode("utf-8")
-    root = Path(__file__).parent / "TESTDIR"
-    if not os.path.exists(root):
-        os.mkdir(root)
-    if not path:
-        path = root / (str(datetime.timestamp(datetime.now())) + ".file")
-    parts = Path(path).parts
-    partial = root
-    for i, part in enumerate(parts):
-        partial = partial / part
-        if i == len(parts) - 1:
-            with open(partial, "wb") as binfile:
-                size = 2**exp
-                while size > 0:
-                    if len(seq) < size:
-                        binfile.write(seq)
-                        size -= len(seq)
-                        seq += seq
-                    else:
-                        binfile.write(seq[:size])
-                        size -= size
-        else:
-            if not os.path.exists(partial):
-                os.mkdir(partial)
-    return partial
+    seq = gen_seq().encode("utf8")
+    if not dir:
+        dir = TempFileDirs.tempdir
+    fd, path = mkstemp(suffix=suffix, dir=dir)
+    with os.fdopen(fd, "bw") as fp:
+        while size > 0:
+            fp.write(seq)
+            size -= len(seq)
+    TempFileDirs.paths.add(path)
+    return path
 
 
-def rmpath(*args):
-    """Remove file or directory path.
-
-    Parameters
-    ----------
-    args : list[str]
-        Filesystem locations for removing.
-    """
-    for arg in args:
-        if not os.path.exists(arg):
-            continue
-        if os.path.isdir(arg):
-            try:
-                shutil.rmtree(arg)
-            except PermissionError:  # pragma: nocover
-                pass
-        elif os.path.isfile(arg):
-            try:
-                os.remove(arg)
-            except PermissionError:  # pragma: nocover
-                pass
-
-
-def tempdir(ext="1", files=None):
+def tempdir(files: int, subdirs: int, size: int, suffixes=None):
     """Create temporary directory.
 
     Parameters
@@ -124,77 +140,30 @@ def tempdir(ext="1", files=None):
     str
         path to common root for directory.
     """
-    if not files:
-        files = [
-            f"dir{ext}/file1.png",
-            f"dir{ext}/file2.mp4",
-            f"dir{ext}/file3.mp3",
-            f"dir{ext}/file4.zip",
-            f"dir{ext}/file5.r01",
-        ]
+    files_per_subdir = files // subdirs
+    parent = mkdtemp(dir=TempFileDirs.tempdir)
     paths = []
-    for path in files:
-        temps = tempfile(path=path, exp=18)
-        paths.append(temps)
-    return os.path.commonpath(paths)
+    subdir = parent
+    if not suffixes:
+        suffixes = [""]
+    suffixes = itertools.cycle(suffixes)
+    for _ in range(subdirs):
+        path = mkdtemp(dir=subdir)
+        TempFileDirs.paths.add(path)
+        paths.append(path)
+        subdir = path
+    for path in paths:
+        for _ in range(files_per_subdir):
+            temp_file(size, dir=path, suffix=next(suffixes))
+    TempFileDirs.paths.add(parent)
+    return parent
 
 
 @atexit.register
 def teardown():  # pragma: nocover
     """Remove all temporary directories and files."""
     APP.quit()
-    root = Path(__file__).parent / "TESTDIR"
-    if os.path.exists(root):
-        rmpath(root)
-
-
-@pytest.fixture(scope="package")
-def dir1():
-    """Create a specific temporary structured directory.
-
-    Yields
-    ------
-    str
-        path to root of temporary directory
-    """
-    root = tempdir()
-    yield root
-    rmpath(root)
-
-
-@pytest.fixture
-def dir2():
-    """Create a specific temporary structured directory2.
-
-    Yields
-    ------
-    str
-        path to root of temporary directory
-    """
-    root = tempdir(ext="2")
-    yield root
-    rmpath(root)
-
-
-@pytest.fixture
-def dir3():
-    """Create a specific temporary structured directory3.
-
-    Yields
-    ------
-    str
-        path to root of temporary directory
-    """
-    files = [
-        "dir3/subdir/file1.jpg",
-        "dir3/file2.zip",
-        "dir3/subdir/subsubdir/file3.mp3",
-        "dir3/file4.txt",
-        "dir3/subdir/file5.epub",
-    ]
-    root = tempdir(files=files)
-    yield root
-    rmpath(root)
+    TempFileDirs.cleanup()
 
 
 @pytest.fixture(scope="package")
@@ -207,40 +176,9 @@ def wind():
     `tuple`
         information to pass to test function.
     """
-    return APP.window
-
-
-@pytest.fixture(params=[TorrentFile, TorrentFileHybrid, TorrentFileV2])
-def ttorrent(request, dir2):
-    """
-    Generate a metafile for testing.
-
-    Parameters
-    ----------
-    request : MetaFile
-        an instance of torrentfile creator.
-    dir2 : `str`
-        path to temporary directory
-
-    Yields
-    ------
-    `str`
-        path to new .torrent file.
-    """
-    args = {
-        "path": dir2,
-        "outfile": str(dir2) + "t.torrent",
-        "url_list": ["url1", "url2"],
-        "announce": ["url4", "url5"],
-        "comment": "This is a comment",
-        "source": "SomeSource",
-        "private": 1,
-    }
-
-    torrent = request.param(**args)
-    outfile, _ = torrent.write()
-    yield outfile
-    rmpath(outfile)
+    window = APP.window
+    window.show()
+    return window
 
 
 class MockEvent:
@@ -294,12 +232,3 @@ class MockEvent:
         return mdata
 
     mimeData = mime_data
-
-
-def proc_time(amount=0.01):
-    """Process time span with updating GUI."""
-    then = time.time()
-    APP.processEvents()
-    while time.time() - then < amount:
-        APP.processEvents()
-    return True

@@ -21,13 +21,13 @@
 import os
 import webbrowser
 
-from PySide6.QtGui import QAction, QPixmap, QIcon
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMenu, QMenuBar, QApplication, QPushButton, QWidget, QLabel, QSizePolicy, QHBoxLayout, QToolButton
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
+                               QMenu, QMenuBar, QPlainTextEdit, QPushButton,
+                               QSizePolicy, QToolButton, QVBoxLayout, QWidget)
 
 from torrentfileQt.utils import get_icon
-
-
 
 icon = os.path.join(os.path.dirname(__file__), "home.png")
 
@@ -38,11 +38,12 @@ class TitleBarButton(QPushButton):
     def __init__(self, prop, parent=None):
         """Construct the standard window control buttons."""
         super().__init__(parent=parent)
-        self.setFixedHeight(20)
-        self.setFixedWidth(20)
+        self.setFixedHeight(25)
+        self.setFixedWidth(25)
         self.setProperty(prop, True)
         self.setProperty("titlebutton", True)
-        self.setIcon(QIcon(get_icon(prop)))
+        self.setObjectName(prop + "Button")
+        self.setIcon(QIcon(get_icon(prop + "-dark")))
         self.clicked.connect(self.window_action)
 
     def window_action(self):
@@ -72,13 +73,13 @@ class TitleBar(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("titlebar")
         pix = QIcon(icon)
-
         self.icon = QToolButton(parent=self)
         self.icon.setObjectName("titlebaricon")
         self.icon.setIcon(pix)
         self.label.setText("TitleBar")
         self.label.setObjectName("titlebartitle")
-        self.setMaximumHeight(40)
+        self.setMaximumHeight(35)
+        self.setMinimumHeight(30)
         self.closeButton = TitleBarButton("close", parent=self)
         self.minimizeButton = TitleBarButton("min", parent=self)
         self.maximizeButton = TitleBarButton("max", parent=self)
@@ -87,7 +88,7 @@ class TitleBar(QWidget):
         self.closeButton.setSizePolicy(sizePolicy)
         self.layout = QHBoxLayout(self)
         self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.icon)
         self.layout.addStretch(1)
         self.layout.addWidget(self.label)
@@ -125,7 +126,7 @@ class TitleBar(QWidget):
         difx, dify = (pos - self._cpos).toTuple()
         geom = self.window().geometry()
         x, y, w, h = geom.x(), geom.y(), geom.width(), geom.height()
-        new_coords = x+difx, y+dify, w, h
+        new_coords = x + difx, y + dify, w, h
         self.window().setGeometry(*new_coords)
 
     def mouseReleaseEvent(self, event):
@@ -151,13 +152,11 @@ class MenuBar(QMenuBar):
         """
         super().__init__(parent=parent)
         self.window = parent
-        self.file_menu = FileMenu("File", self)
-        self.help_menu = HelpMenu("Help", self)
-        self.addMenu(self.file_menu)
-        self.addMenu(self.help_menu)
+        self.options_menu = OptionsMenu("Options", self)
+        self.addMenu(self.options_menu)
 
 
-class FileMenu(QMenu):
+class OptionsMenu(QMenu):
     """Menu for the file dropdown in menubar."""
 
     def __init__(self, title, parent):
@@ -177,77 +176,28 @@ class FileMenu(QMenu):
         self.actionExit = QAction(self.window)
         self.actionLightTheme = QAction(self.window)
         self.actionDarkTheme = QAction(self.window)
-        self.actionFontPlus = QAction(self.window)
-        self.actionFontMinus = QAction(self.window)
+        self.styleAction = QAction(self.window)
         self.addAction(self.actionExit)
-        self.addAction(self.actionFontPlus)
-        self.addAction(self.actionFontMinus)
         self.addAction(self.actionLightTheme)
         self.addAction(self.actionDarkTheme)
-        self.actionFontPlus.setText("Font Size +")
-        self.actionFontMinus.setText("Font Size -")
         self.actionDarkTheme.setText("Dark Theme")
         self.actionLightTheme.setText("Light Theme")
         self.actionExit.setText("Exit")
-        self.actionFontPlus.triggered.connect(self.increaseFont)
-        self.actionFontMinus.triggered.connect(self.decreaseFont)
+        self.styleAction.setText("Edit StyleSheet")
+        self.styleAction.triggered.connect(self.open_style_dialog)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionLightTheme.triggered.connect(self.light_theme)
         self.actionDarkTheme.triggered.connect(self.dark_theme)
-        self.actionFontPlus.setObjectName("actionIncreaseFont")
-        self.actionFontMinus.setObjectName("actionDecreaseFont")
         self.actionExit.setObjectName("actionExit")
         self.actionLightTheme.setObjectName("actionLightTheme")
         self.actionDarkTheme.setObjectName("actiondDarkTheme")
-
-    def exit_app(self):
-        """Close application."""
-        self.parent().window.app.quit()  # pragma: nocover
-
-    def light_theme(self):
-        """Change the GUI theme for the application."""
-        app = self.parent().window.app
-        app.qstyles.set_theme_from_title("light_theme")
-
-    def dark_theme(self):
-        """Change the GUI application to dark theme."""
-        app = self.parent().window.app
-        app.qstyles.set_theme_from_title("dark_theme")
-
-    def increaseFont(self):
-        """Increase Font Size for all widgets with text."""
-        app = self.parent().window.app
-        app.qstyles.increase_font_size()
-
-    def decreaseFont(self):
-        """Decrease font size for all widgets with text."""
-        app = self.parent().window.app
-        app.qstyles.decrease_font_size()
-
-
-class HelpMenu(QMenu):
-    """Menu for the Help menu dropdown in menubar."""
-
-    def __init__(self, title, parent):
-        """
-        Construct for top level widgets.
-
-        Parameters
-        ----------
-        title : str
-            The menu bar categorie string.
-        parent : QWidget
-            This widgets parent widget.
-        """
-        super().__init__(title, parent)
-        self.widget = parent
-        self.window = parent.window
         self.actionAbout = QAction(self.window)
         self.actionDocs = QAction(self.window)
         self.actionRepo = QAction(self.window)
         self.addAction(self.actionAbout)
         self.addAction(self.actionDocs)
         self.addAction(self.actionRepo)
+        self.addAction(self.styleAction)
         self.actionRepo.setText("Github Repository")
         self.actionAbout.setText("About")
         self.actionDocs.setText("Documentation")
@@ -256,6 +206,18 @@ class HelpMenu(QMenu):
         self.actionRepo.triggered.connect(self.repository)
         self.actionDocs.setObjectName("actionDocs")
         self.actionAbout.setObjectName("actionAbout")
+
+    def exit_app(self):
+        """Close application."""
+        self.parent().window.app.quit()  # pragma: nocover
+
+    def light_theme(self):
+        """Change the GUI theme for the application."""
+        QApplication.instance().set_theme("light")
+
+    def dark_theme(self):
+        """Change the GUI application to dark theme."""
+        QApplication.instance().set_theme("dark")
 
     def about_qt(self):
         """Open the about qt menu."""
@@ -270,3 +232,40 @@ class HelpMenu(QMenu):
     def repository():  # pragma: no cover
         """Open webbrowser to GitHub Repo."""
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
+
+    def open_style_dialog(self):
+        app = QApplication.instance()
+        styler = app.styler
+        self.dialog = QDialog()
+        self.dialog.resize(500, 700)
+        vlayout = QVBoxLayout(self.dialog)
+        hlayout = QHBoxLayout()
+        self.dialog.plainTextEdit = QPlainTextEdit()
+        self.dialog.plainTextEdit.setPlainText(styler.current)
+        writeButton = QPushButton("Write")
+        savebutton = QPushButton("Save")
+        cancelbutton = QPushButton("Cancel")
+        hlayout.addWidget(savebutton)
+        hlayout.addWidget(cancelbutton)
+        hlayout.addWidget(writeButton)
+        vlayout.addWidget(self.dialog.plainTextEdit)
+        vlayout.addLayout(hlayout)
+        savebutton.clicked.connect(self.saveStyle)
+        cancelbutton.clicked.connect(self.closeStyleDialog)
+        writeButton.clicked.connect(self.writeContents)
+        self.dialog.show()
+
+    def writeContents(self):
+        text = self.dialog.plainTextEdit.toPlainText()
+        with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
+                  "wt") as qss:
+            qss.write(text)
+
+    def closeStyleDialog(self):
+        self.dialog.close()
+        self.dialog.deleteLater()
+
+    def saveStyle(self):
+        app = QApplication.instance()
+        text = self.dialog.plainTextEdit.toPlainText()
+        app.styler.setTheme(text)

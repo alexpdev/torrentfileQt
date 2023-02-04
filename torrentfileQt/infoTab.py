@@ -28,7 +28,8 @@ import pyben
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QGridLayout, QLabel, QLineEdit, QPushButton,
-                               QTreeWidget, QTreeWidgetItem, QWidget)
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
 
 from torrentfileQt.utils import browse_torrent, get_icon
 
@@ -122,10 +123,16 @@ class InfoWidget(QWidget):
         """Construct and organize Torrent info tab."""
         super().__init__(parent=parent)
         self.window = parent.window
-        self.layout = QGridLayout()
         self.setObjectName("infoTab")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setLayout(self.layout)
+        self.centralWidget = QWidget(self)
+        self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Torrent File Info")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("infoMainLabel")
+        self.centralLayout.addWidget(mainLabel)
+        self.centralLayout.addWidget(self.centralWidget)
+        self.layout = QGridLayout(self.centralWidget)
 
         # Labels
         self.pathLabel = QLabel("Path: ", parent=self)
@@ -333,7 +340,7 @@ class SelectButton(QPushButton):
 
     def selectTorrent(self, paths=None):
         """Collect torrent information and send to the screen for display."""
-        paths = browse_torrent(self, paths)
+        paths = browse_torrent(self)
         kws = format_data(paths[0])
         self.parent().fill(**kws)
 

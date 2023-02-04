@@ -19,114 +19,11 @@
 """Module for style manager."""
 
 import os
-import string
 from copy import deepcopy
 from pathlib import Path
 
-from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QFileDialog
-
-
-class StyleManager(QObject):
-    """Manage QStyleSheets for the app."""
-
-    applyTheme = Signal(str)
-
-    def __init__(self, themes, sheet, default):
-        """Initialize styleManager class."""
-        super().__init__()
-        self.sheet = sheet
-        self.themes = themes
-        self.default = default
-        self.parser = QssParser()
-        self.applyTheme.connect(self.set_app_theme)
-
-    @staticmethod
-    def set_app_theme(theme):
-        """Set the current stylesheet."""
-        app = QApplication.instance()
-        app.set_new_theme(theme)
-
-    def setTheme(self, theme: str = None):
-        """
-        Set the current QStyleSheet theme.
-
-        Parameters
-        ----------
-        theme : str
-            the qss formating string to apply as the theme.
-        """
-        if not theme:
-            template = string.Template(self.sheet)
-            theme = template.substitute(self.themes[self.default])
-        self.applyTheme.emit(theme)
-
-    def set_theme_from_title(self, title: str):
-        """
-        Set the theme from it's key in the theme dict.
-
-        Parameters
-        ----------
-        title : str
-            The key corresponding the the theme in the dict.
-        """
-        theme = self.themes[title]
-        self.setTheme(theme)
-
-    @staticmethod
-    def _create_ssheet(sheets: list) -> str:
-        """
-        Update the sheet with data from table.
-
-        Parameters
-        ----------
-        sheets : list
-            list of all of the styles for a theme
-
-        Returns
-        -------
-        dict
-            the changed sheet
-        """
-        ssheet = ""
-        for row in sheets:
-            for k, v in row.items():
-                if not k or not v:
-                    continue  # pragma: nocover
-                ssheet += k + " {\n"
-                for key, val in v.items():
-                    ssheet += "    " + key + ": " + val + ";\n"
-                ssheet += "}\n"
-        return ssheet
-
-    def increase_font_size(self):
-        """Increase the widgets font size."""
-        self._adjust_font(1)
-
-    def decrease_font_size(self):
-        """Decrease the widgets font size."""
-        self._adjust_font(-1)
-
-    def _adjust_font(self, amount: int):
-        """
-        Adjust font size for all widgets.
-
-        Parameters
-        ----------
-        amount: int
-            the amount to adjust the font by.
-        """
-        widgets = self.parser.parse(self.current)
-        for row in widgets:
-            for _, value in row.items():
-                if "font-size" in value:
-                    val = value["font-size"]
-                    number = int("".join([i for i in val if i.isdigit()]))
-                    if 24 > number + amount > 0:
-                        value["font-size"] = f"{number + amount}pt"
-        theme = self._create_ssheet(widgets)
-        self.applyTheme.emit(theme)
+from PySide6.QtWidgets import QFileDialog
 
 
 class QssParser:
@@ -270,6 +167,32 @@ class QssParser:
         for row in self.collection:
             self.result.update(row)
 
+    @staticmethod
+    def _create_ssheet(sheets: list) -> str:
+        """
+        Update the sheet with data from table.
+
+        Parameters
+        ----------
+        sheets : list
+            list of all of the styles for a theme
+
+        Returns
+        -------
+        dict
+            the changed sheet
+        """
+        ssheet = ""
+        for row in sheets:
+            for k, v in row.items():
+                if not k or not v:
+                    continue  # pragma: nocover
+                ssheet += k + " {\n"
+                for key, val in v.items():
+                    ssheet += "    " + key + ": " + val + ";\n"
+                ssheet += "}\n"
+        return ssheet
+
 
 def get_icon(name: str) -> str:
     """
@@ -292,8 +215,7 @@ def get_icon(name: str) -> str:
     return QIcon(icon)
 
 
-
-def browse_folder(widget: object, folder: str = None) -> str:
+def browse_folder(widget: object) -> str:
     """
     Browse for folder performed when user presses button.
 
@@ -301,20 +223,17 @@ def browse_folder(widget: object, folder: str = None) -> str:
     ----------
     widget : QWidget
         The widget making the call.
-    folder : str
-        Optional testing path
 
     Returns
     -------
     str
         folder path
     """
-    if not folder:
-        folder = QFileDialog.getExistingDirectory(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select Contents Folder...",
-        )
+    folder = QFileDialog.getExistingDirectory(
+        parent=widget,
+        dir=str(Path.home()),
+        caption="Select Folder",
+    )
     if folder:
         folder = os.path.normpath(folder)
     return folder
@@ -325,7 +244,7 @@ def clean_list(lst: list) -> list:
     return [item for item in lst if item]  # pragma: nocover
 
 
-def browse_files(widget: object, paths: list = None) -> list:
+def browse_files(widget: object) -> list:
     """
     Browse for files action performed when user presses button.
 
@@ -333,26 +252,21 @@ def browse_files(widget: object, paths: list = None) -> list:
     ----------
     widget : QWidget
         The widget making the call.
-    paths : list
-        list of path strings
 
     Returns
     -------
     list
         list of pathstrings
     """
-    if not paths:
-        paths = QFileDialog.getOpenFileName(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select Contents File...",
-        )
-    if paths and paths[0]:
-        paths = [os.path.normpath(i) for i in paths if i]
-    return paths
+    path, _ = QFileDialog.getOpenFileName(parent=widget,
+                                          dir=str(Path.home()),
+                                          caption="Select File")
+    if not path:
+        path = ""
+    return os.path.normpath(path)
 
 
-def browse_torrent(widget: object, torrents: list = None) -> list:
+def browse_torrent(widget: object) -> list:
     """
     Browse for torrent file performed when user presses button.
 
@@ -368,15 +282,15 @@ def browse_torrent(widget: object, torrents: list = None) -> list:
     list
         list of path strings
     """
+    torrents = QFileDialog.getOpenFileName(
+        parent=widget,
+        dir=str(Path.home()),
+        caption="Select *.torrent File...",
+        filter=("torrent (*.torrent);;Any (*.*)"),
+    )
     if not torrents:
-        torrents = QFileDialog.getOpenFileName(  # pragma: nocover
-            parent=widget,
-            dir=str(Path.home()),
-            caption="Select *.torrent File...",
-        )
-    if torrents and torrents[0]:
-        torrents = [os.path.normpath(i) for i in torrents if i]
-    return torrents
+        return torrents
+    return torrents[0]
 
 
 def torrent_filter(paths: tuple) -> list:

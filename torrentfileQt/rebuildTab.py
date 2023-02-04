@@ -20,8 +20,7 @@
 
 import os
 
-from PySide6.QtCore import QThread, Signal, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QTextBrowser, QVBoxLayout, QWidget)
 from torrentfile.rebuild import Assembler
@@ -36,8 +35,15 @@ class RebuildWidget(QWidget):
     def __init__(self, parent=None):
         """Rebuild a torrent file contents."""
         super().__init__(parent=parent)
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.centralWidget = QWidget(self)
+        self.centralLayout = QVBoxLayout(self)
+        mainLabel = QLabel("Rebuild Torrents")
+        mainLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mainLabel.setObjectName("rebuildMainLabel")
+        self.centralLayout.addWidget(mainLabel)
+        self.centralLayout.addWidget(self.centralWidget)
+        self.layout = QVBoxLayout(self.centralWidget)
+
         self.setObjectName("rebuildTab")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.torrent_label = QLabel("Torrent File(s)/Folder(s)", self)

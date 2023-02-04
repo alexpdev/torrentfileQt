@@ -59,6 +59,9 @@ clean-build: ## remove build artifacts
 test: install clean ## run tests quickly with the default Python
 	tox
 
+unittest: ## only run unit tests
+	tox -e py
+
 push: test ## push changes to remote
 	git add .
 	git commit -m "$m"
