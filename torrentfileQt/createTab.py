@@ -35,8 +35,8 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QGridLayout,
 from torrentfile.torrent import TorrentFile, TorrentFileHybrid, TorrentFileV2
 from torrentfile.utils import path_piece_length
 
-from torrentfileQt.utils import browse_files, browse_folder, get_icon
-from torrentfileQt.widgets import DropGroupBox
+from torrentfileQt.utils import (DropGroupBox, browse_files, browse_folder,
+                                 get_icon)
 
 
 class CreateWidget(QWidget):
@@ -362,7 +362,7 @@ class OutButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clicked.connect(self.output)
 
-    def output(self):   # pragma: nocover
+    def output(self):  # pragma: nocover
         """Assign output path for created torrent file."""
         outpath, _ = QFileDialog.getSaveFileName(
             parent=self,
@@ -486,7 +486,7 @@ class ProgressTable(QTableWidget):
             progbar._total = total
             progbar._divisor = 1
             progbar._max = total
-        else:   # pragma: nocover
+        else:  # pragma: nocover
             progbar._total = total
             progbar._divisor = 2 << 10
             progbar._max = total // (2 << 10)
@@ -504,7 +504,7 @@ class ProgressTable(QTableWidget):
                 increment = value // progbar._divisor
                 progbar.setValue(current + increment)
                 return
-            i -= 1   # pragma: nocover
+            i -= 1  # pragma: nocover
 
     def prog_close(self):
-        pass     # pragma: nocover
+        pass  # pragma: nocover

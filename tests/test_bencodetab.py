@@ -24,7 +24,8 @@ import random
 import pyben
 import pytest
 
-from tests import temp_file, tempdir, torrent_versions, wind, waitfor, switchTab, MockEvent
+from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
+                   waitfor, wind)
 from torrentfileQt import bencodeTab
 
 

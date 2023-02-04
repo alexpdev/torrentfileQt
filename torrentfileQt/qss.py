@@ -41,10 +41,11 @@ QTreeView,
 QTreeWidget,
 QPlainTextEdit,
 QComboBox {
-    border: 1px solid $_3;
+    border: 1px inset $_3;
     background-color: $_4;
     margin-left: 8px;
     margin-right: 8px;
+    border-radius: 8px;
 }
 QLineEdit {
     padding: 6px;
@@ -106,11 +107,14 @@ QHeaderView {
     gridline-color: transparent;
     color: $_1;
     background-color: $_14;
+    border-radius: 8px;
 }
 QHeaderView::section {
     color: $_1;
     background-color: $_14;
     font-weight: bold;
+    border
+    border-radius: 8px;
 }
 QStatusBar {
     background-color: $_4;
@@ -142,6 +146,100 @@ QMenu::separator {
 }
 QMenu::indicator {
     background-color: $_7;
+}
+QScrollBar:horizontal {
+    border: 1px solid $_7;
+    background-color: $_5;
+    height: 18px;
+    margin: 0px 18px 0 18px;
+}
+QScrollBar::handle:horizontal {
+    background-color: $_7;
+    border: 1px solid $_17;
+    border-radius: 6px;
+    min-height: 20px;
+}
+QScrollBar::add-line:horizontal {
+    border: 1px solid $_17;
+    background-color: $_14;
+    width: 18px;
+    height: 16px;
+    border-radius: 5px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:horizontal {
+    border: 1px solid $_17;
+    background-color: $_14;
+    width: 18px;
+    height: 16px;
+    border-radius: 5px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+QScrollBar::right-arrow:horizontal {
+    width: 8px;
+    height: 8px;
+}
+QScrollBar::left-arrow:horizontal {
+    width: 8px;
+    height: 8px;
+}
+QScrollBar::add-page:horizontal {
+    background: none;
+}
+QScrollBar::sub-page:horizontal {
+    background: none;
+}
+QScrollBar:vertical {
+    background-color: $_5;
+    width: 18px;
+    margin: 18px 0 18px 0;
+    border: 1px solid $_7;
+}
+QScrollBar::handle:vertical {
+    background-color: $_7;
+    border: 1px solid $_17;
+    border-radius: 6px;
+    min-height: 20px;
+}
+QScrollBar::add-line:vertical {
+    border: 1px solid $_17;
+    background-color: $_14;
+    height: 18px;
+    width: 16px;
+    border-radius: 5px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    border: 1px solid $_17;
+    background-color: $_14;
+    height: 18px;
+    width: 16px;
+    border-radius: 5px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:vertical {
+    width: 8px;
+    height: 8px;
+}
+QScrollBar::down-arrow:vertical {
+    width: 8px;
+    height: 8px;
+}
+QScrollBar::add-page:vertical {
+    background: none;
+}
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+QStatusBar {
+    background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 $_13,stop:1 $_2);
+    color: $_1;
+    border-color: $_6;
+    font-weight: bold;
 }
 *[DropGroupBox="true"] {
     border: 1px dashed $_14;
@@ -344,6 +442,14 @@ QMenu::indicator {
 #closeButton:hover {
     icon: url(torrentfileQt/assets/close-light.png);
 }
+QSplitter::handle {
+    background: $_8;
+    width: 1px;
+    margin-left: 222px;
+    margin-right: 222px;
+    margin-bottom: 2px;
+    border-radius: 8px;
+}
 """
 
 
@@ -356,7 +462,7 @@ class Styles:
         "_2": "#19232D",
         "_3": "#f61",
         "_4": "#333a3f",
-        "_5": "#402503",
+        "_5": "#112244",
         "_6": "#661d12",
         "_7": "#311",
         "_8": "#555",

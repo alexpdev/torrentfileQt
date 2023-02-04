@@ -32,9 +32,8 @@ from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPlainTextEdit,
                                QWidget)
 from torrentfile.recheck import Checker
 
-from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
-                                 get_icon)
-from torrentfileQt.widgets import DropGroupBox
+from torrentfileQt.utils import (DropGroupBox, browse_files, browse_folder,
+                                 browse_torrent, get_icon)
 
 
 class CheckWidget(QWidget):
@@ -123,7 +122,7 @@ class RecheckThread(QThread):
         """Add tree widgets items to tree widget."""
         for _, val in fileinfo.items():
             if val["path"] == self.root:
-                relpath = os.path.dirname(self.root)   # pragma: nocover
+                relpath = os.path.dirname(self.root)  # pragma: nocover
             else:
                 relpath = os.path.relpath(val["path"], self.root)
             length = val["length"]
@@ -143,7 +142,7 @@ class RecheckThread(QThread):
     def process_v1_hash(self, actual, expected, path, size):
         while size > 0:
             if self.current >= len(self.pathlist):
-                return   # pragma: nocover
+                return  # pragma: nocover
             current = self.pathlist[self.current]
             current_length = self.fileinfo.get(current)["length"]
             if current_length == 0:
@@ -199,7 +198,7 @@ class ReCheckButton(QPushButton):
         content = parent.content_group.getPath()
         if os.path.exists(metafile):
             if not os.path.isfile(metafile):
-                self.window().statusBar().showMessage(     # pragma: nocover
+                self.window().statusBar().showMessage(  # pragma: nocover
                     "Error: Torrent File cannot be a directory.", 8000)
             else:
                 parent.treeWidget.clear()
@@ -207,7 +206,7 @@ class ReCheckButton(QPushButton):
                 Checker.register_callback(parent.textEdit.callback)
                 self.ready.emit(metafile, content)
         else:
-            self.window().statusBar().showMessage(    # pragma: nocover
+            self.window().statusBar().showMessage(  # pragma: nocover
                 "Error: Torrent File Not Found.", 3000)
 
 
@@ -387,7 +386,7 @@ class TreeWidget(QTreeWidget):
         parts = list(Path(path).parts)
         root = self.rootitem
         if not parts:
-            return   # pragma: nocover
+            return  # pragma: nocover
         part = parts.pop(0)
         subpath = part
         while subpath in self.registry:
@@ -409,7 +408,7 @@ class TreeWidget(QTreeWidget):
             progressBar._total = size
             progressBar._divisor = 1
             progressBar._max = size
-        else:         # pragma: nocover
+        else:  # pragma: nocover
             progressBar._total = size
             progressBar._divisor = 1 << 10
             progressBar._max = progressBar._total // progressBar._divisor

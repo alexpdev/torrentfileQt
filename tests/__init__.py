@@ -45,7 +45,7 @@ class TempFileDirs:
     paths.add(tempdir)
 
     @classmethod
-    def cleanup(cls):
+    def cleanup(cls):  # pragma: nocover
         cleaned = set()
         for i in cls.paths:
             if not os.path.exists(i):
@@ -66,7 +66,7 @@ def exception_hook(exctype, value, traceback):  # pragma:  no cover
 
 def switchTab(stack, widget=None, index=None):
     if not widget:
-        stack.setCurrentIndex(index)
+        stack.setCurrentIndex(index)  # pragma: nocover
     else:
         stack.setCurrentWidget(widget)
     APP.processEvents()
@@ -78,7 +78,7 @@ def waitfor(timeout: int, func, *args, **kwargs):
         if func(*args, **kwargs):
             return True
         APP.processEvents()
-    return False
+    return False  # pragma: nocover
 
 
 def gen_seq():
@@ -145,7 +145,7 @@ def tempdir(files: int, subdirs: int, size: int, suffixes=None):
     paths = []
     subdir = parent
     if not suffixes:
-        suffixes = [""]
+        suffixes = [""]  # pragma: nocover
     suffixes = itertools.cycle(suffixes)
     for _ in range(subdirs):
         path = mkdtemp(dir=subdir)

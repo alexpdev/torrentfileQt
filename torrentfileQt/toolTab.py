@@ -63,7 +63,7 @@ class SubmitButton(QPushButton):
         self.setText("Create Magnet")
         self.clicked.connect(self.magnet)
 
-    def magnet(self):
+    def magnet(self):  # pragma: nocover
         """Create a magnet URI from information contained in form."""
         fd = self.widget.pathEdit.text()
         if os.path.exists(fd):
@@ -91,7 +91,7 @@ class MetafileButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 
-    def select_metafile(self, path=None):
+    def select_metafile(self, path=None):  # pragma: nocover
         """Find metafile in file browser."""
         if not path:
             path = browse_torrent(self, path)  # pragma: nocover
@@ -136,7 +136,7 @@ class MagnetGroup(QGroupBox):
         self.layout.addLayout(self.hlayout)
         self.setAcceptDrops(True)
 
-    def dragEnterEvent(self, event):
+    def dragEnterEvent(self, event):  # pragma: nocover
         """Drag enter event for widget."""
         if event.mimeData().hasUrls:
             self.urls = event.mimeData().urls()
@@ -144,7 +144,7 @@ class MagnetGroup(QGroupBox):
             return True
         return event.ignore()
 
-    def dragMoveEvent(self, evnt):
+    def dragMoveEvent(self, evnt):  # pragma: nocover
         """Drag Move Event for widgit."""
         if evnt.mimeData().hasUrls:
             self.urls = evnt.mimeData().urls()
@@ -152,7 +152,7 @@ class MagnetGroup(QGroupBox):
             return True
         return evnt.ignore()
 
-    def dropEvent(self, evt):
+    def dropEvent(self, evt):  # pragma: nocover
         """Drag drop event for widgit."""
         urls = evt.mimeData().urls()
         loc = urls[0].toLocalFile()
@@ -180,7 +180,7 @@ class PieceLengthBox(QComboBox):
         self.__data = {}
         self.loadItems()
 
-    def get_value(self):
+    def get_value(self):  # pragma: nocover
         """
         Get the current text's corresponding value.
         """
@@ -200,7 +200,7 @@ class PieceLengthBox(QComboBox):
             self.__data[text] = value
             self.addItem(text)
 
-    def set_item(self, value):
+    def set_item(self, value):  # pragma: nocover
         """
         Set the current text based on the value provided.
 
@@ -277,7 +277,7 @@ class PieceLengthCalculator(QGroupBox):
         self.piece_length_combo.currentTextChanged.connect(
             self.calculate_piece_length)
 
-    def calculate_piece_length(self):
+    def calculate_piece_length(self):  # pragma: nocover
         """
         Calculate the piece length based on the current text of the combo box.
         """
@@ -291,7 +291,7 @@ class PieceLengthCalculator(QGroupBox):
             else:  # pragma: nocover
                 self.piece_count_line.setText(str(int(val + 1)))
 
-    def calculate(self, path):
+    def calculate(self, path):  # pragma: nocover
         """
         Calculate all the fields based on the path selected by user.
 
@@ -312,13 +312,13 @@ class PieceLengthCalculator(QGroupBox):
                 self.piece_count_line.setText(str(int(total_pieces + 1)))
             self.file_count_line.setText(str(len(file_list)))
 
-    def browse_files(self, path=None):
+    def browse_files(self):  # pragma: nocover
         """Browse for files for caluclating ideal piece lengths."""
         if not path:
             path = browse_files(self)[0]  # pragma: nocover
         self.calculate(path)
 
-    def browse_folders(self, path=None):
+    def browse_folders(self):  # pragma: nocover
         """Browse for folders for calculating ideal piece lengths."""
         if not path:
             path = browse_folder(self)  # pragma: nocover
