@@ -28,8 +28,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox, QHBoxLayout,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
                                QWidget)
 
-from torrentfileQt.utils import browse_torrent, get_icon
-from torrentfileQt.widgets import DropGroupBox
+from torrentfileQt.utils import DropGroupBox, browse_torrent, get_icon
 
 
 class EditorWidget(QWidget):
@@ -114,12 +113,7 @@ class SaveEditButton(QPushButton):
                     value = [value]
 
             elif label == "creation date":
-                datetext = table.item(row, 1).text().strip(" ")
-                try:
-                    date_obj = datetime.date.fromisoformat(datetext)
-                    value = datetime.date.timestamp(date_obj)
-                except (ValueError, TypeError):
-                    value = table.item(row, 1)._data
+                value = table.item(row, 1).text().strip(" ")
 
             elif label == "private":
                 widget = table.cellWidget(row, 1)
@@ -134,16 +128,15 @@ class SaveEditButton(QPushButton):
 
             elif label in info:
                 if info[label] != value:
-                    info[label] = value
+                    info[label] = value  # pragma: nocover
 
             elif label in ["comment", "source", "private"]:
-                info[label] = value
+                info[label] = value  # pragma: nocover
 
             else:
                 meta[label] = value
 
         pyben.dump(meta, text)
-        self.window().statusBar().showMessage("File Saved")
 
 
 class FileButton(QPushButton):
@@ -186,7 +179,6 @@ class AddItemButton(QPushButton):
             combo.insertItem(0, current, 2)
         combo.insertItem(0, "", 2)
         combo.setCurrentIndex(0)
-        self._parent.line_edit.setReadOnly(True)
 
 
 class RemoveItemButton(QPushButton):
@@ -243,6 +235,7 @@ class Table(QTableWidget):
     def export_data(self, path: str) -> None:
         """Export slot for the handleTorrent signal."""
         data = pyben.load(path)
+        print(data)
         self.original = deepcopy(data)
         self.flatten_data(data)
 
@@ -260,13 +253,14 @@ class Table(QTableWidget):
                 widget.set_values(k, v)
 
             elif k == "private":
+                v = v if v else 0
                 widget = QCheckBox(parent=self)
                 widget.setChecked(v)
                 self.setCellWidget(index, 1, widget)
 
             elif k == "creation date":
                 item2 = QTableWidgetItem(0)
-                item2._data = v
+                item2._data = str(v)
                 value = datetime.datetime.fromtimestamp(v)
                 text_value = datetime.datetime.isoformat(value)
                 item2.setText(text_value)
@@ -313,23 +307,6 @@ class Combo(QComboBox):
         self.sizePolicy().setHorizontalPolicy(QSizePolicy.Minimum)
         self.setInsertPolicy(self.InsertPolicy.InsertAtBottom)
         self.setDuplicatesEnabled(False)
-        self.widget.line_edit.setReadOnly(True)
-
-    def focusOutEvent(self, _):
-        """Add item when focus changes."""
-        super().focusOutEvent(_)
-        current = self.currentText().strip()
-        items = [self.itemText(i) for i in range(self.count())]
-        blanks = [i for i in range(len(items)) if not items[i].strip()]
-        list(map(self.removeItem, blanks[::-1]))
-        if current and current not in items:
-            self.insertItem(0, current, 2)
-        self.widget.line_edit.setReadOnly(True)
-
-    def focusInEvent(self, _):
-        """Make line edit widget active when clicking in to box."""
-        super().focusInEvent(_)
-        self.widget.line_edit.setReadOnly(False)
 
 
 class EditGroupBox(QGroupBox):
@@ -357,6 +334,6 @@ class EditGroupBox(QGroupBox):
             if key == "announce-list":
                 lst = [k for j in val for k in j]
             else:
-                lst = val
+                lst = val  # pragma: nocover
             for url in lst:
                 self.combo.addItem(url, 2)

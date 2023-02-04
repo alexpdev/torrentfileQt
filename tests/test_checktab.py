@@ -23,7 +23,8 @@ from pathlib import Path
 
 import pytest
 
-from tests import wind, tempdir, torrent_versions, switchTab, waitfor, temp_file
+from tests import (switchTab, temp_file, tempdir, torrent_versions, waitfor,
+                   wind)
 from torrentfileQt import checkTab
 
 
@@ -34,14 +35,17 @@ class MockReturn:
 def mock_func(arg):
     return MockReturn.value
 
+
 checkTab.browse_files = mock_func
 checkTab.browse_folder = mock_func
 checkTab.browse_torrent = mock_func
+
 
 @pytest.fixture(scope="module")
 def tdir():
     dirname = tempdir(6, 2, 27, [".r00", ".mp3", ".mkv", ".dat", ".zip"])
     return dirname
+
 
 @pytest.fixture(params=torrent_versions(), scope="module")
 def ttorrent(tdir, request):
@@ -50,10 +54,11 @@ def ttorrent(tdir, request):
         path=tdir,
         piece_length=18,
         outfile=tdir + ".torrent",
-        announce=["url1", "url2"]
+        announce=["url1", "url2"],
     )
     torrent.write()
     return tdir, tdir + ".torrent"
+
 
 def test_check_tab_setPath(tdir, wind):
     tab = wind.tabs.checkWidget
@@ -61,12 +66,14 @@ def test_check_tab_setPath(tdir, wind):
     tab.setPath(tdir)
     assert tab.content_group.getPath() == tdir
 
+
 def test_checktab_setTorrent(ttorrent, wind):
     _, torrent = ttorrent
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
     tab.setTorrent(torrent)
     assert tab.file_group.getPath() == torrent
+
 
 def test_checktab_browse_torrent(ttorrent, wind):
     _, torrent = ttorrent
@@ -84,12 +91,14 @@ def test_checktab_browse_folder(tdir, wind):
     tab.content_folders.click()
     assert tab.content_group.getPath() == tdir
 
+
 def test_checktab_browse_files(tdir, wind):
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
     MockReturn.value = tdir
     tab.content_files.click()
     assert tab.content_group.getPath() == tdir
+
 
 def test_checktab_thread(ttorrent, wind):
     tdir, torrent = ttorrent
@@ -100,6 +109,7 @@ def test_checktab_thread(ttorrent, wind):
     tab.populate_tree(torrent, tdir)
     assert tab.treeWidget.rootitem.childCount() > 0
     tab.treeWidget.clear()
+
 
 def test_checktab_submit(ttorrent, wind):
     tdir, torrent = ttorrent

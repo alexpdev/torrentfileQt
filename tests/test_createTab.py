@@ -23,7 +23,8 @@ from pathlib import Path
 
 import pytest
 
-from tests import wind, tempdir, torrent_versions, switchTab, waitfor, temp_file
+from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
+                   waitfor, wind)
 from torrentfileQt import createTab
 
 
@@ -34,9 +35,11 @@ class MockReturn:
 def mock_func(arg):
     return MockReturn.value
 
+
 createTab.browse_files = mock_func
 createTab.browse_folder = mock_func
 createTab.browse_torrent = mock_func
+
 
 @pytest.fixture(scope="module")
 def tdir():
@@ -82,6 +85,7 @@ def test_create_write_param_thread(wind, tdir, version):
     tab.submit_button.click()
     assert os.path.exists(outval)
 
+
 def test_create_browse_dir(wind, tdir):
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
@@ -97,3 +101,44 @@ def test_create_browse_file(wind, tdir):
     tab.path_file_button.click()
     assert tab.path_group.getPath() == tdir
 
+
+def test_create_drag_enter_event(wind, tdir):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(tdir)
+    assert widget.path_group.dragEnterEvent(event)
+
+
+def test_create_drag_enter_no_event(wind):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.path_group.dragEnterEvent(event)
+
+
+def test_create_drag_move_event(wind, tdir):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(tdir)
+    assert widget.path_group.dragMoveEvent(event)
+
+
+def test_create_drag_move_no_event(wind):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.path_group.dragMoveEvent(event)
+
+
+def test_create_drop_event(wind, tdir):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(tdir)
+    assert widget.path_group.dropEvent(event)
+
+
+def test_create_drop_no_event(wind):
+    widget = wind.tabs.createWidget
+    switchTab(wind.stack, widget=widget)
+    event = MockEvent(None)
+    assert not widget.path_group.dropEvent(event)

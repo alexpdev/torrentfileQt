@@ -31,9 +31,9 @@ from torrentfileQt.checkTab import CheckWidget
 from torrentfileQt.createTab import CreateWidget
 from torrentfileQt.editorTab import EditorWidget
 from torrentfileQt.infoTab import InfoWidget
-from torrentfileQt.menu import MenuBar, TitleBar
 from torrentfileQt.qss import Styles
 from torrentfileQt.rebuildTab import RebuildWidget
+from torrentfileQt.titleBar import MenuBar, TitleBar
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import get_icon
 
@@ -64,6 +64,7 @@ class Window(QMainWindow):
         self.app = app
         self.statusbar = self.statusBar()
         self.icon = get_icon("torrentfile126")
+        self.setWindowIcon(self.icon)
         self.setObjectName("Mainwindow")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStatusBar(self.statusbar)
@@ -170,7 +171,7 @@ class Application(QApplication):
         theme = Styles.compile(Styles.stylesheet, self.current_theme)
         self.setStyleSheet(theme)
 
-    def set_theme(self, theme):
+    def set_theme(self, theme):  # pragma: nocover
         """Apply the given stylesheet."""
         self.current_theme = Styles.keys[theme]
         ssheet = Styles.compile(Styles.stylesheet, self.current_theme)

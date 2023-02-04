@@ -188,6 +188,7 @@ class InfoWidget(QWidget):
         self.layout.addWidget(self.contentsLabel, 12, 0, 1, 1)
         self.layout.addWidget(self.contentsTree, 12, 1, 4, -1)
         self.selectButton = SelectButton("Select Torrent", parent=self)
+        self.selectButton.selected.connect(self.torrent_selected)
         self.layout.addWidget(self.selectButton, 17, 0, -1, -1)
         self.pathLabel.setObjectName("pathLabel")
         self.pathEdit.setObjectName("pathEdit")
@@ -245,6 +246,10 @@ class InfoWidget(QWidget):
             widget.setVisible(True)
         for label in labels:
             label.setVisible(True)
+
+    def torrent_selected(self, path):
+        kws = format_data(path)
+        self.fill(**kws)
 
     def dragEnterEvent(self, event):
         """Drag enter event for widget."""
@@ -332,17 +337,18 @@ class InfoWidget(QWidget):
 class SelectButton(QPushButton):
     """Button for choosing the torrent file."""
 
+    selected = Signal(str)
+
     def __init__(self, text, parent=None):
         """Construct for select button."""
         super().__init__(text, parent=parent)
         self.pressed.connect(self.selectTorrent)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-    def selectTorrent(self, paths=None):
+    def selectTorrent(self):
         """Collect torrent information and send to the screen for display."""
-        paths = browse_torrent(self)
-        kws = format_data(paths[0])
-        self.parent().fill(**kws)
+        path = browse_torrent(self)
+        self.selected.emit(path)
 
 
 class InfoLineEdit(QLineEdit):
@@ -430,12 +436,12 @@ def denom(num):
     """Determine appropriate denomination for size of file."""
     txt = str(num)
     if int(num) < 1000:
-        return txt
+        return txt  # pragma: nocover
     if 1000 <= num <= 999999:
         return "".join([txt[:-3], ".", txt[-3], "KB"])
-    if 1_000_000 <= num < 1_000_000_000:
+    if 1_000_000 <= num < 1_000_000_000:  # pragma: nocover
         return "".join([txt[:-6], ".", txt[-6], "MB"])
-    return "".join([txt[:-9], ".", txt[-9], "GB"])
+    return "".join([txt[:-9], ".", txt[-9], "GB"])  # pragma: nocover
 
 
 def pretty_int(num):

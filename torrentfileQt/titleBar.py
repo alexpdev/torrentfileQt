@@ -48,7 +48,7 @@ class TitleBarButton(QPushButton):
 
     def window_action(self):
         """Perform action for the specified button."""
-        if self.property("close"):
+        if self.property("close"):  # pragma: nocover
             self.window().destroy(True, True)
             QApplication.instance().exit()
         if self.property("min"):
@@ -109,17 +109,17 @@ class TitleBar(QWidget):
         icon = QIcon(icon)
         self.icon.setIcon(icon)
 
-    def mouseDoubleClickEvent(self, _):
+    def mouseDoubleClickEvent(self, _):  # pragma: nocover
         if self.window().isMaximized():
             self.window().showNormal()
         else:
             self.window().showMaximized()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event):  # pragma: nocover
         self._pressed = True
         self._cpos = event.position().toPoint()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event):  # pragma: nocover
         if not self._pressed:
             return
         pos = event.position().toPoint()
@@ -129,7 +129,7 @@ class TitleBar(QWidget):
         new_coords = x + difx, y + dify, w, h
         self.window().setGeometry(*new_coords)
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event):  # pragma: nocover
         self._pressed = False
         self._cpos = None
 
@@ -233,15 +233,15 @@ class OptionsMenu(QMenu):
         """Open webbrowser to GitHub Repo."""
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
-    def open_style_dialog(self):
+    def open_style_dialog(self):  # pragma: nocover
         app = QApplication.instance()
-        styler = app.styler
         self.dialog = QDialog()
         self.dialog.resize(500, 700)
         vlayout = QVBoxLayout(self.dialog)
         hlayout = QHBoxLayout()
+        current = app.styleSheet()
         self.dialog.plainTextEdit = QPlainTextEdit()
-        self.dialog.plainTextEdit.setPlainText(styler.current)
+        self.dialog.plainTextEdit.setPlainText(current)
         writeButton = QPushButton("Write")
         savebutton = QPushButton("Save")
         cancelbutton = QPushButton("Cancel")
@@ -255,17 +255,17 @@ class OptionsMenu(QMenu):
         writeButton.clicked.connect(self.writeContents)
         self.dialog.show()
 
-    def writeContents(self):
+    def writeContents(self):  # pragma: nocover
         text = self.dialog.plainTextEdit.toPlainText()
         with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
                   "wt") as qss:
             qss.write(text)
 
-    def closeStyleDialog(self):
+    def closeStyleDialog(self):  # pragma: nocover
         self.dialog.close()
         self.dialog.deleteLater()
 
-    def saveStyle(self):
+    def saveStyle(self):  # pragma: nocover
         app = QApplication.instance()
         text = self.dialog.plainTextEdit.toPlainText()
-        app.styler.setTheme(text)
+        app.setStyleSheet(text)

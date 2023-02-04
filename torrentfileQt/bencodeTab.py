@@ -114,7 +114,6 @@ class BencodeEditWidget(QWidget):
             if item.edited():
                 return self.treeview.save_item(item)
 
-
     def clear_contents(self) -> bool:
         """Wipe the tree of all of it's contents."""
         return self.treeview.clear()
