@@ -265,7 +265,7 @@ class TorrentFileCreator(QThread):
         """
         Progress stopped signal.
         """
-        pass
+        return None
 
     def run(self):
         """Create a torrent file and emit it's path."""

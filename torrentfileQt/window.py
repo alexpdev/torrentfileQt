@@ -18,7 +18,6 @@
 ##############################################################################
 """Graphical Extension for Users who prefer a GUI over CLI."""
 
-import string
 import sys
 
 from PySide6.QtCore import Qt
@@ -159,9 +158,9 @@ class TabWidget(QWidget):
         button.setStyleSheet(active_style)
         b_id = self.button_group.id(button)
         self._parent.stack.setCurrentWidget(self.tabs[b_id])
-        for button in self.buttons:
-            if self.button_group.id(button) != b_id:
-                button.setStyleSheet(inactive_style)
+        for tab_button in self.buttons:
+            if self.button_group.id(tab_button) != b_id:
+                tab_button.setStyleSheet(inactive_style)
 
 
 class Application(QApplication):

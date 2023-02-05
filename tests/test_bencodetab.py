@@ -19,7 +19,6 @@
 """Module for testing procedures on Bencode editor module."""
 
 import os
-import random
 
 import pyben
 import pytest
@@ -30,6 +29,8 @@ from torrentfileQt import bencodeTab
 
 
 class MockReturn:
+    """Mock class for testing."""
+
     value = None
 
 
@@ -182,7 +183,7 @@ def test_bencode_remove_item(wind, torrent_file):
     for i in range(rows):
         topindex = model.index(i)
         topitem = model.getItem(topindex)
-        for j in range(topitem.childCount()):
+        for _ in range(topitem.childCount()):
             child_index = model.index(i, parent=topindex)
             rect = widget.treeview.visualRect(child_index)
             widget.treeview.setSelection(

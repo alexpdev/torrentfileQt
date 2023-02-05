@@ -23,7 +23,7 @@ from typing import Any
 
 import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, QMouseEvent
 from PySide6.QtWidgets import (QHBoxLayout, QLabel, QToolBar, QTreeView,
                                QVBoxLayout, QWidget)
 
@@ -32,9 +32,7 @@ from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
 
 
 class BencodeEditWidget(QWidget):
-    """
-    Tab widget for the bencode editor.
-    """
+    """Tab widget for the bencode editor."""
 
     def __init__(self, parent: QWidget = None):
         """
@@ -158,26 +156,26 @@ class BencodeEditWidget(QWidget):
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 
-    def dragEnterEvent(self, event):
-        """Drag enter event for widget."""
-        if event.mimeData().hasUrls:
-            event.accept()
+    def dragEnterEvent(self, drag_event: QMouseEvent) -> bool:
+        """Drag enter event for bencodeWidget."""
+        if drag_event.mimeData().hasUrls:
+            drag_event.accept()
             return True
-        return event.ignore()
+        return drag_event.ignore()
 
-    def dragMoveEvent(self, event):
-        """Drag Move Event for widgit."""
-        if event.mimeData().hasUrls:
-            event.accept()
+    def dragMoveEvent(self, drag_event: QMouseEvent) -> bool:
+        """Drag Move Event for bencodeWidgit."""
+        if drag_event.mimeData().hasUrls:
+            drag_event.accept()
             return True
-        return event.ignore()
+        return drag_event.ignore()
 
-    def dropEvent(self, event) -> bool:
-        """Drag drop event for widgit."""
-        urls = event.mimeData().urls()
-        path = urls[0].toLocalFile()
-        if os.path.exists(path):
-            self.load_thread([path])
+    def dropEvent(self, drop_event: QMouseEvent) -> bool:
+        """Drag drop event for bencodeWidgit."""
+        path_urls = drop_event.mimeData().urls()
+        fspath = path_urls[0].toLocalFile()
+        if os.path.exists(fspath):
+            self.load_thread([fspath])
             return True
         return False
 

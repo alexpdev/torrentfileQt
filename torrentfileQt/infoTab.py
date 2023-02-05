@@ -269,8 +269,8 @@ class InfoWidget(QWidget):
 
     def dropEvent(self, event):
         """Accept drop event for info widgit."""
-        urls = event.mimeData().urls()
-        path = urls[0].toLocalFile()
+        path_urls = event.mimeData().urls()
+        path = path_urls[0].toLocalFile()
         if os.path.exists(path):
             kws = format_data(path)
             self.fill(**kws)

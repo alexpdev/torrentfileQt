@@ -18,13 +18,11 @@
 ##############################################################################
 """Module for testing procedures on Bencode editor module."""
 
-import random
-
 import pyben
 import pytest
 
 from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
-                   waitfor, wind)
+                   wind)
 from torrentfileQt import infoTab
 
 
@@ -36,6 +34,7 @@ class MockReturn:
 
 def mock_func(_):
     """Mock function for tests."""
+    assert wind
     return MockReturn.value
 
 
@@ -46,13 +45,13 @@ infoTab.browse_torrent = mock_func
 def torrent_file(request):
     """Test fixture for tesing info widget."""
     size = 29
-    path = temp_file(size)
+    file_path = temp_file(size)
     maker = request.param
-    outfile = path + ".torrent"
+    outfile = file_path + ".torrent"
     torrent = maker(
-        path=path,
-        announce=["url1", "url2"],
-        source="source",
+        path=file_path,
+        announce=["urla", "urlb"],
+        source="some source string",
         piece_length=19,
         outfile=outfile,
     )
