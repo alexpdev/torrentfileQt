@@ -20,15 +20,8 @@
 
 import string
 from pathlib import Path
-from urllib.request import pathname2url as path2url
 
 theme = """
-QMainWindow {
-    background-color: $_2;
-}
-QWidget#centralTabWidget {
-    background-color: $_2;
-}
 QWidget,
 QMainWindow {
     background-color: $_2;
@@ -47,8 +40,17 @@ QComboBox {
     margin-right: 8px;
     border-radius: 8px;
 }
+QComboBox,
 QLineEdit {
     padding: 6px;
+}
+QGroupBox QComboBox::drop-down {
+    border-bottom-right-radius: 9px;
+    border-top-right-radius: 9px;
+    background-color: $_16;
+}
+QGroupBox QComboBox::down-arrow {
+    image: url($_arrow);
 }
 QPushButton {
     background-color: $_16;
@@ -75,8 +77,6 @@ QGroupBox {
 QGroupBox::title {
     font-weight: bold;
     font-size: 11pt;
-    padding-left: 4px;
-    padding-right: 4px;
 }
 QWidget#tabbar {
     background-color: $_10;
@@ -113,11 +113,9 @@ QHeaderView::section {
     color: $_1;
     background-color: $_14;
     font-weight: bold;
-    border
     border-radius: 8px;
 }
 QStatusBar {
-    background-color: $_4;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
@@ -255,9 +253,10 @@ QStatusBar {
 }
 *[DropGroupBox="true"]::title {
     subcontrol-origin: margin;
-    subcontrol-position: top center;
+    subcontrol-position: top left;
     font-weight: bold;
     font-size: 11pt;
+    margin-left: 18px;
 }
 *[DropGroupBox="true"] QPushButton {
     background-color: transparent;
@@ -348,7 +347,8 @@ QStatusBar {
 #CreatePieceLength::title,
 #CreateVersionBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top;
+    subcontrol-position: top-left;
+    margin-left: 18px;
 }
 #CreateProgressTable {
     selection-background-color: $_18;
@@ -375,6 +375,12 @@ QStatusBar {
 #checkTree QProgressBar::chunk{
     background-color: $_19;
     border-radius: 10px;
+}
+#checkTree {
+    margin-bottom: 8px;
+}
+#checkTextEdit {
+    margin-top: 8px;
 }
 #EditDropGroup {
     margin-left: 20px;
@@ -408,6 +414,9 @@ QStatusBar {
     padding: 0px;
     margin: 0px;
 }
+#EditGroupBox QComboBox {
+    margin-left: 0px;
+}
 #EditTable {
     margin: 8px;
     padding: 2px;
@@ -418,6 +427,9 @@ QStatusBar {
 #EditTable QCheckBox {
     margin-left: 12px;
     padding: 4px;
+}
+#EditTable QGroupBox {
+    background-color: $_4;
 }
 #EditSaveButton {
     margin: 15px;
@@ -458,8 +470,8 @@ class Styles:
     """Style sheet class."""
 
     stylesheet = theme
-    arrow_path = Path(__file__).parent / "assets" / "arrow.png"
-    arrow = path2url(str(arrow_path))
+    arrow_path = Path(__file__).parent / "assets" / "arrow-down.png"
+    arrow = str(arrow_path).replace("\\", "/")
     dark = {
         "_1": "#FFFFFF",
         "_2": "#19232D",

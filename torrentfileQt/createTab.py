@@ -76,7 +76,7 @@ class CreateWidget(QWidget):
 
         self.path_group = DropGroupBox(parent=self)
         self.path_group.setObjectName("CreatePathGroup")
-        self.path_group.setTitle("Content Path")
+        self.path_group.setTitle("Content")
         self.path_group.setLabelText("drag & drop file/folder here or ...")
         self.path_dir_button = BrowseDirButton(parent=self)
         self.path_dir_button.folderSelected.connect(self.setPath)

@@ -93,7 +93,7 @@ class SaveEditButton(QPushButton):
     def save(self):
         """Save method for writing edit results to .torrent file."""
         table: QTableWidget = self._parent.table
-        text = self._parent.filegroup.getLabelText()
+        text = self._parent.filegroup.getPath()
         meta = table.original
         info = meta["info"]
 
@@ -235,7 +235,6 @@ class Table(QTableWidget):
     def export_data(self, path: str) -> None:
         """Export slot for the handleTorrent signal."""
         data = pyben.load(path)
-        print(data)
         self.original = deepcopy(data)
         self.flatten_data(data)
 

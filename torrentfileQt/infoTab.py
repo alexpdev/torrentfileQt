@@ -419,9 +419,12 @@ def format_data(path):
     keywords["length"] = size
 
     if "creation date" in meta:
-        date = datetime.fromtimestamp(meta["creation date"])
-        text = date.strftime("%B %d, %Y %H:%M")
-        keywords["creation_date"] = text
+        try:
+            date = datetime.fromtimestamp(meta["creation date"])
+            text = date.strftime("%B %d, %Y %H:%M")
+            keywords["creation_date"] = text
+        except:
+            keywords["creation_"]
     else:
         keywords["creation_date"] = ""
 
