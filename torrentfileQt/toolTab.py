@@ -91,10 +91,9 @@ class MetafileButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.pressed.connect(self.select_metafile)
 
-    def select_metafile(self, path=None):  # pragma: nocover
+    def select_metafile(self):  # pragma: nocover
         """Find metafile in file browser."""
-        if not path:
-            path = browse_torrent(self, path)  # pragma: nocover
+        path = browse_torrent(self)
         self.widget.pathEdit.setText(path if path else "")
 
 
@@ -314,12 +313,10 @@ class PieceLengthCalculator(QGroupBox):
 
     def browse_files(self):  # pragma: nocover
         """Browse for files for caluclating ideal piece lengths."""
-        if not path:
-            path = browse_files(self)[0]  # pragma: nocover
+        path = browse_files(self)[0]
         self.calculate(path)
 
     def browse_folders(self):  # pragma: nocover
         """Browse for folders for calculating ideal piece lengths."""
-        if not path:
-            path = browse_folder(self)  # pragma: nocover
+        path = browse_folder(self)
         self.calculate(path)

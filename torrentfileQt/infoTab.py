@@ -26,7 +26,6 @@ from pathlib import Path
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QGridLayout, QLabel, QLineEdit, QPushButton,
                                QTreeWidget, QTreeWidgetItem, QVBoxLayout,
                                QWidget)
@@ -248,6 +247,7 @@ class InfoWidget(QWidget):
             label.setVisible(True)
 
     def torrent_selected(self, path):
+        """Trigger button click for saving path information."""
         kws = format_data(path)
         self.fill(**kws)
 
@@ -269,8 +269,8 @@ class InfoWidget(QWidget):
 
     def dropEvent(self, event):
         """Accept drop event for info widgit."""
-        urls = event.mimeData().urls()
-        path = urls[0].toLocalFile()
+        path_urls = event.mimeData().urls()
+        path = path_urls[0].toLocalFile()
         if os.path.exists(path):
             kws = format_data(path)
             self.fill(**kws)

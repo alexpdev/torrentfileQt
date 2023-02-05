@@ -236,7 +236,8 @@ QScrollBar::sub-page:vertical {
     background: none;
 }
 QStatusBar {
-    background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 $_13,stop:1 $_2);
+    background-color: qlineargradient(
+        spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 $_13,stop:1 $_2);
     color: $_1;
     border-color: $_6;
     font-weight: bold;
@@ -454,6 +455,8 @@ QSplitter::handle {
 
 
 class Styles:
+    """Style sheet class."""
+
     stylesheet = theme
     arrow_path = Path(__file__).parent / "assets" / "arrow.png"
     arrow = path2url(str(arrow_path))
@@ -507,10 +510,13 @@ class Styles:
 
     @staticmethod
     def compile(stylesheet, theme):
+        """Compile style sheet."""
         template = string.Template(stylesheet)
         return template.substitute(theme)
 
+    @staticmethod
     def tab_stylesheet(active):
+        """Generate style sheet for Tab Widgets."""
         var = 8 if active else 9
         tab = f"""
             QPushButton[Tab="true"] {{

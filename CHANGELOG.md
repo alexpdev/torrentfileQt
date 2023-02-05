@@ -1,5 +1,13 @@
 # TorrentFileQt
 
+## Version 0.4.0
+
+-   complete refactor, review and overhaul of ui
+-   complete reconfiguration of test suite
+-   updated CI/CD workflow
+
+* * *
+
 ## Version 0.3.8
 
 -   Minor bug fixes for windows 11

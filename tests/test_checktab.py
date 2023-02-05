@@ -18,21 +18,21 @@
 ##############################################################################
 """Module for testing procedures on Check Tab."""
 
-import os
-from pathlib import Path
-
 import pytest
 
-from tests import (switchTab, temp_file, tempdir, torrent_versions, waitfor,
-                   wind)
+from tests import switchTab, tempdir, torrent_versions, wind
 from torrentfileQt import checkTab
 
 
 class MockReturn:
+    """Mock class for testing."""
+
     value = None
 
 
-def mock_func(arg):
+def mock_func(_):
+    """Mock function for testing."""
+    assert wind
     return MockReturn.value
 
 
@@ -43,12 +43,14 @@ checkTab.browse_torrent = mock_func
 
 @pytest.fixture(scope="module")
 def tdir():
+    """Test fixture for unit test suite."""
     dirname = tempdir(6, 2, 27, [".r00", ".mp3", ".mkv", ".dat", ".zip"])
     return dirname
 
 
 @pytest.fixture(params=torrent_versions(), scope="module")
 def ttorrent(tdir, request):
+    """Test fixture for unit test suite."""
     maker = request.param
     torrent = maker(
         path=tdir,
@@ -61,6 +63,7 @@ def ttorrent(tdir, request):
 
 
 def test_check_tab_setPath(tdir, wind):
+    """Test function for check tab."""
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
     tab.setPath(tdir)
@@ -68,6 +71,7 @@ def test_check_tab_setPath(tdir, wind):
 
 
 def test_checktab_setTorrent(ttorrent, wind):
+    """Test function for check tab."""
     _, torrent = ttorrent
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
@@ -76,6 +80,7 @@ def test_checktab_setTorrent(ttorrent, wind):
 
 
 def test_checktab_browse_torrent(ttorrent, wind):
+    """Test function for check tab."""
     _, torrent = ttorrent
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
@@ -85,6 +90,7 @@ def test_checktab_browse_torrent(ttorrent, wind):
 
 
 def test_checktab_browse_folder(tdir, wind):
+    """Test function for check tab."""
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
     MockReturn.value = tdir
@@ -93,6 +99,7 @@ def test_checktab_browse_folder(tdir, wind):
 
 
 def test_checktab_browse_files(tdir, wind):
+    """Test function for check tab."""
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
     MockReturn.value = tdir
@@ -101,6 +108,7 @@ def test_checktab_browse_files(tdir, wind):
 
 
 def test_checktab_thread(ttorrent, wind):
+    """Test function for check tab."""
     tdir, torrent = ttorrent
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)
@@ -112,6 +120,7 @@ def test_checktab_thread(ttorrent, wind):
 
 
 def test_checktab_submit(ttorrent, wind):
+    """Test function for check tab."""
     tdir, torrent = ttorrent
     tab = wind.tabs.checkWidget
     switchTab(wind.stack, tab)

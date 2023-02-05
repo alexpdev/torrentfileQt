@@ -95,14 +95,14 @@ class RebuildWidget(QWidget):
 
     def torrent_file_click(self, paths=None):  # pragma: nocover
         """Browse for for files paths for torrents."""
-        paths = torrent_filter(browse_torrent(self, paths))
+        paths = torrent_filter(browse_torrent(self))
         current = self.torrent_edit.toPlainText().split("\n")
         output = "\n".join(clean_list(current + paths))
         self.torrent_edit.setPlainText(output)
 
     def torrent_folder_click(self, path=None):  # pragma: nocover
         """Browse for for folder paths for torrents."""
-        path = browse_folder(self, path)
+        path = browse_folder(self)
         paths = [os.path.join(path, x) for x in os.listdir(path)]
         current = self.torrent_edit.toPlainText().split("\n")
         output = "\n".join(clean_list(torrent_filter(paths) + current))
@@ -110,14 +110,14 @@ class RebuildWidget(QWidget):
 
     def content_folder_click(self, path=None):  # pragma: nocover
         """Browse for for folder paths for torrent contents."""
-        path = browse_folder(self, path)
+        path = browse_folder(self)
         current = self.content_edit.toPlainText().split("\n")
         output = "\n".join(clean_list(current + [path]))
         self.content_edit.setPlainText(output)
 
     def dest_folder_click(self, path=None):  # pragma: nocover
         """Browse for for destination destination folder path."""
-        path = browse_folder(self, path)
+        path = browse_folder(self)
         self.dest_line_edit.setText(path)
 
     def log_message(self, text: str):  # pragma: nocover

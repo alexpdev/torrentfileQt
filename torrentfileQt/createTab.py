@@ -200,11 +200,13 @@ class CreateWidget(QWidget):
         self.output_path_edit.setText(path + ".torrent")
 
     def write_torrent(self, args, creator):
+        """
+        Start the torrent creator.
+        """
         self._thread = TorrentFileCreator(args, creator)
         self._thread.created.connect(self.updateStatusBarEnd)
         self._thread.prog_start_signal.connect(self.progress_tree.prog_start)
         self._thread.prog_update_signal.connect(self.progress_tree.prog_update)
-        self._thread.prog_close_signal.connect(self.progress_tree.prog_close)
         self._thread.start()
 
     def updateStatusBarEnd(self):
@@ -245,12 +247,12 @@ class TorrentFileCreator(QThread):
         self.creator.hasher.prog_close = self.prog_close
         self.current = None
 
-    def prog_start(self, total, path, length=50, unit=None):
+    def prog_start(self, total, path, **_):
         """
         Progress start signal.
         """
         self.current = path
-        self.prog_start_signal.emit([total, path, length, unit])
+        self.prog_start_signal.emit([total, path])
 
     def prog_update(self, val):
         """
@@ -262,7 +264,7 @@ class TorrentFileCreator(QThread):
         """
         Progress stopped signal.
         """
-        pass
+        self.prog_close_signal.emit()
 
     def run(self):
         """Create a torrent file and emit it's path."""
@@ -456,8 +458,14 @@ class ComboBox(QComboBox):
 
 
 class ProgressTable(QTableWidget):
+    """
+    Table widget that keep track of torrent creation process.
+    """
 
     def __init__(self, parent=None):
+        """
+        Construc the table widget.
+        """
         super().__init__(parent=parent)
         self.setColumnCount(2)
         self.verticalHeader().setHidden(True)
@@ -470,10 +478,16 @@ class ProgressTable(QTableWidget):
         hheader.setSectionsClickable(False)
 
     def add_args(self, args):
+        """
+        Add arguments needed for tracking creation process.
+        """
         self.path = args["path"]
 
     def prog_start(self, values):
-        total, path, _, units = values
+        """
+        Create the path and progress bar.
+        """
+        total, path = values
         index = self.rowCount()
         self.insertRow(index)
         item = QTableWidgetItem()
@@ -496,6 +510,7 @@ class ProgressTable(QTableWidget):
         self.scrollToBottom()
 
     def prog_update(self, value, path):
+        """Update the progress bar."""
         i = self.rowCount() - 1
         while i >= 0:
             if self.item(i, 0)._path == path:
@@ -505,6 +520,3 @@ class ProgressTable(QTableWidget):
                 progbar.setValue(current + increment)
                 return
             i -= 1  # pragma: nocover
-
-    def prog_close(self):
-        pass  # pragma: nocover

@@ -19,21 +19,23 @@
 """Module for testing procedures on Bencode editor module."""
 
 import os
-import random
 
 import pyben
 import pytest
 
-from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
-                   waitfor, wind)
+from tests import (MockEvent, switchTab, temp_file, torrent_versions, waitfor,
+                   wind)
 from torrentfileQt import bencodeTab
 
 
 class MockReturn:
+    """Mock class for testing."""
+
     value = None
 
 
-def mock_func(arg):
+def mock_func(_):
+    """Mock function for testing."""
     return MockReturn.value
 
 
@@ -41,9 +43,15 @@ bencodeTab.browse_folder = mock_func
 bencodeTab.browse_torrent = mock_func
 
 
+def test_fix():
+    """Fix pytest warnings."""
+    assert wind
+
+
 @pytest.fixture(params=torrent_versions())
-def torrent_file(request):
-    size = random.randint(24, 28)
+def torrent_file(request: object) -> str:
+    """Function fixture for test suite."""
+    size = 28
     path = temp_file(size)
     maker = request.param
     outfile = path + ".torrent"
@@ -51,7 +59,7 @@ def torrent_file(request):
         path=path,
         announce=["url1", "url2"],
         source="source",
-        piece_length=2**random.randint(16, 19),
+        piece_length=2**19,
         outfile=outfile,
     )
     torrent.write()
@@ -59,6 +67,7 @@ def torrent_file(request):
 
 
 def test_bencode_load_file(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     MockReturn.value = torrent_file
@@ -69,6 +78,7 @@ def test_bencode_load_file(wind, torrent_file):
 
 
 def test_bencode_load_folder(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     MockReturn.value = os.path.dirname(torrent_file)
@@ -79,6 +89,7 @@ def test_bencode_load_folder(wind, torrent_file):
 
 
 def test_bencode_data_item(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     meta = pyben.load(torrent_file)
@@ -90,6 +101,7 @@ def test_bencode_data_item(wind, torrent_file):
 
 
 def test_bencode_drag_enter_event(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(torrent_file)
@@ -97,6 +109,7 @@ def test_bencode_drag_enter_event(wind, torrent_file):
 
 
 def test_bencode_drag_enter_no_event(wind):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(None)
@@ -104,6 +117,7 @@ def test_bencode_drag_enter_no_event(wind):
 
 
 def test_bencode_drag_move_event(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(torrent_file)
@@ -111,6 +125,7 @@ def test_bencode_drag_move_event(wind, torrent_file):
 
 
 def test_bencode_drag_move_no_event(wind):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(None)
@@ -118,6 +133,7 @@ def test_bencode_drag_move_no_event(wind):
 
 
 def test_bencode_drop_event(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(torrent_file)
@@ -125,6 +141,7 @@ def test_bencode_drop_event(wind, torrent_file):
 
 
 def test_bencode_drop_no_event(wind):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     widget.treeview.model().index(15)
     switchTab(wind.stack, widget=widget)
@@ -133,6 +150,7 @@ def test_bencode_drop_no_event(wind):
 
 
 def test_bencode_save_changes(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     bencodeTab.Thread.start = bencodeTab.Thread.run
@@ -154,6 +172,7 @@ def test_bencode_save_changes(wind, torrent_file):
 
 
 def test_bencode_remove_item(wind, torrent_file):
+    """Test bencode tab widget functions."""
     widget = wind.tabs.bencodeEditWidget
     switchTab(wind.stack, widget=widget)
     bencodeTab.Thread.start = bencodeTab.Thread.run
@@ -164,7 +183,7 @@ def test_bencode_remove_item(wind, torrent_file):
     for i in range(rows):
         topindex = model.index(i)
         topitem = model.getItem(topindex)
-        for j in range(topitem.childCount()):
+        for _ in range(topitem.childCount()):
             child_index = model.index(i, parent=topindex)
             rect = widget.treeview.visualRect(child_index)
             widget.treeview.setSelection(

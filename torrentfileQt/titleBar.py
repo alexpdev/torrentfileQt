@@ -101,25 +101,28 @@ class TitleBar(QWidget):
         self._cpos = None
 
     def setWindowTitle(self, title: str) -> None:
-        """Sets the title bar label."""
+        """Set the title bar label."""
         self.label.setText(title)
 
     def setWindowIcon(self, icon: str) -> None:
-        """Sets the window icon."""
+        """Set the window icon."""
         icon = QIcon(icon)
         self.icon.setIcon(icon)
 
     def mouseDoubleClickEvent(self, _):  # pragma: nocover
+        """Trigger event to maximize window."""
         if self.window().isMaximized():
             self.window().showNormal()
         else:
             self.window().showMaximized()
 
     def mousePressEvent(self, event):  # pragma: nocover
+        """Trigger event to move window."""
         self._pressed = True
         self._cpos = event.position().toPoint()
 
     def mouseMoveEvent(self, event):  # pragma: nocover
+        """Start moving window."""
         if not self._pressed:
             return
         pos = event.position().toPoint()
@@ -129,11 +132,13 @@ class TitleBar(QWidget):
         new_coords = x + difx, y + dify, w, h
         self.window().setGeometry(*new_coords)
 
-    def mouseReleaseEvent(self, event):  # pragma: nocover
+    def mouseReleaseEvent(self, _):  # pragma: nocover
+        """End the window move event."""
         self._pressed = False
         self._cpos = None
 
     def setMenuBar(self, menubar):
+        """Set the menu bar in the title bar."""
         self.menuBar = menubar
         self.layout.insertWidget(1, menubar)
 
@@ -234,6 +239,7 @@ class OptionsMenu(QMenu):
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
     def open_style_dialog(self):  # pragma: nocover
+        """Edit style sheet."""
         app = QApplication.instance()
         self.dialog = QDialog()
         self.dialog.resize(500, 700)
@@ -256,16 +262,19 @@ class OptionsMenu(QMenu):
         self.dialog.show()
 
     def writeContents(self):  # pragma: nocover
+        """Write a copy of the edited style sheet."""
         text = self.dialog.plainTextEdit.toPlainText()
         with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
                   "wt") as qss:
             qss.write(text)
 
     def closeStyleDialog(self):  # pragma: nocover
+        """Close the style sheet dialog."""
         self.dialog.close()
         self.dialog.deleteLater()
 
     def saveStyle(self):  # pragma: nocover
+        """Apply style sheet to active window."""
         app = QApplication.instance()
         text = self.dialog.plainTextEdit.toPlainText()
         app.setStyleSheet(text)

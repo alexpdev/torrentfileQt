@@ -19,20 +19,22 @@
 """Module for testing procedures on Check Tab."""
 
 import os
-from pathlib import Path
 
 import pytest
 
-from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
-                   waitfor, wind)
+from tests import MockEvent, switchTab, tempdir, wind
 from torrentfileQt import createTab
 
 
 class MockReturn:
+    """Mock class for testing."""
+
     value = None
 
 
-def mock_func(arg):
+def mock_func(_):
+    """Mock function for testing."""
+    assert wind
     return MockReturn.value
 
 
@@ -43,11 +45,13 @@ createTab.browse_torrent = mock_func
 
 @pytest.fixture(scope="module")
 def tdir():
+    """Test fixture for create widget."""
     dirname = tempdir(6, 2, 27, [".r00", ".mp3", ".mkv", ".dat", ".zip"])
     return dirname
 
 
 def test_create_setPath(wind, tdir):
+    """Test functions for the create widget."""
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
     tab.setPath(tdir)
@@ -55,6 +59,7 @@ def test_create_setPath(wind, tdir):
 
 
 def test_create_write_thread(wind, tdir):
+    """Test functions for the create widget."""
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
     tab.setPath(tdir)
@@ -66,6 +71,7 @@ def test_create_write_thread(wind, tdir):
 
 @pytest.mark.parametrize("version", [1, 2, 3])
 def test_create_write_param_thread(wind, tdir, version):
+    """Test functions for the create widget."""
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
     tab.setPath(tdir)
@@ -87,6 +93,7 @@ def test_create_write_param_thread(wind, tdir, version):
 
 
 def test_create_browse_dir(wind, tdir):
+    """Test functions for the create widget."""
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
     MockReturn.value = tdir
@@ -95,6 +102,7 @@ def test_create_browse_dir(wind, tdir):
 
 
 def test_create_browse_file(wind, tdir):
+    """Test functions for the create widget."""
     tab = wind.tabs.createWidget
     switchTab(wind.stack, tab)
     MockReturn.value = tdir
@@ -103,6 +111,7 @@ def test_create_browse_file(wind, tdir):
 
 
 def test_create_drag_enter_event(wind, tdir):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(tdir)
@@ -110,6 +119,7 @@ def test_create_drag_enter_event(wind, tdir):
 
 
 def test_create_drag_enter_no_event(wind):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(None)
@@ -117,6 +127,7 @@ def test_create_drag_enter_no_event(wind):
 
 
 def test_create_drag_move_event(wind, tdir):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(tdir)
@@ -124,6 +135,7 @@ def test_create_drag_move_event(wind, tdir):
 
 
 def test_create_drag_move_no_event(wind):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(None)
@@ -131,6 +143,7 @@ def test_create_drag_move_no_event(wind):
 
 
 def test_create_drop_event(wind, tdir):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(tdir)
@@ -138,6 +151,7 @@ def test_create_drop_event(wind, tdir):
 
 
 def test_create_drop_no_event(wind):
+    """Test functions for the create widget."""
     widget = wind.tabs.createWidget
     switchTab(wind.stack, widget=widget)
     event = MockEvent(None)

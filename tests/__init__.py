@@ -26,8 +26,6 @@ import shutil
 import string
 import sys
 import time
-from datetime import datetime
-from pathlib import Path
 from tempfile import mkdtemp, mkstemp
 
 import pytest
@@ -39,6 +37,8 @@ APP = Application.start()
 
 
 class TempFileDirs:
+    """Class for temporary files."""
+
     paths = set()
 
     tempdir = mkdtemp()
@@ -46,6 +46,7 @@ class TempFileDirs:
 
     @classmethod
     def cleanup(cls):  # pragma: nocover
+        """Clean up temporary files."""
         cleaned = set()
         for i in cls.paths:
             if not os.path.exists(i):
@@ -65,6 +66,7 @@ def exception_hook(exctype, value, traceback):  # pragma:  no cover
 
 
 def switchTab(stack, widget=None, index=None):
+    """Switch to new tab."""
     if not widget:
         stack.setCurrentIndex(index)  # pragma: nocover
     else:
@@ -73,15 +75,17 @@ def switchTab(stack, widget=None, index=None):
 
 
 def waitfor(timeout: int, func, *args, **kwargs):
+    """Wait for result to appear."""
     then = time.time()
     while time.time() - then < timeout:
         if func(*args, **kwargs):
             return True
-        APP.processEvents()
+        APP.processEvents()  # pragma: nocover
     return False  # pragma: nocover
 
 
 def gen_seq():
+    """Get random sequence."""
     printable = string.printable * 12
     whitespace = string.whitespace * 6
     characters = list(printable + whitespace)
@@ -103,10 +107,12 @@ def temp_file(size, suffix=None, dir=None):
 
     Parameters
     ----------
-    path : str, optional
-        relative path to temporary files, by default None
-    exp : int, optional
-        Exponent used to determine size of file., by default 18
+    size : int
+        size of files
+    suffix : str, optional
+        the suffix for the path
+    dir : str, optional
+        location of the temp file
 
     Returns
     -------
@@ -130,10 +136,14 @@ def tempdir(files: int, subdirs: int, size: int, suffixes=None):
 
     Parameters
     ----------
-    ext : str, optional
-        extension to file names, by default "1"
-    files : `list`
-        alternate list of files.
+    files : int
+        number of files
+    subdirs : int
+        number of subdirectories
+    size : int
+        size of each file
+    suffixes : list
+        suffixes to be used for each file.
 
     Returns
     -------
