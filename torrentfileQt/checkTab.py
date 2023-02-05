@@ -331,6 +331,7 @@ class LogTextEdit(QPlainTextEdit):
         super().__init__(parent=parent)
         self._parent = parent
         self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
+        self.setObjectName("checkTextEdit")
         self.setBackgroundVisible(True)
         font = self.font()
         font.setFamily("Consolas")

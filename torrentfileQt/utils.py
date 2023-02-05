@@ -323,10 +323,6 @@ class DropGroupBox(QGroupBox):
         """Set the label text."""
         self._label.setText(text)
 
-    def getLabelText(self) -> str:
-        """Get the label text."""
-        return self._label.text()
-
     def setPath(self, path: str):
         """Set the path."""
         self._path = path
