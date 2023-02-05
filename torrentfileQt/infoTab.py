@@ -21,7 +21,6 @@
 import math
 import os
 import re
-from datetime import datetime
 from pathlib import Path
 
 import pyben
@@ -419,12 +418,7 @@ def format_data(path):
     keywords["length"] = size
 
     if "creation date" in meta:
-        try:
-            date = datetime.fromtimestamp(meta["creation date"])
-            text = date.strftime("%B %d, %Y %H:%M")
-            keywords["creation_date"] = text
-        except BaseException:  # pragma: nocover
-            keywords["creation_date"] = str(meta["creation date"])
+        keywords["creation_date"] = str(meta["creation date"])
     else:
         keywords["creation_date"] = ""
 

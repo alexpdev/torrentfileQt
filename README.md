@@ -8,7 +8,7 @@
 [![codecov](https://codecov.io/gh/alexpdev/torrentfileQt/branch/main/graph/badge.svg?token=S5Q9CRD6C2)](https://codecov.io/gh/alexpdev/torrentfileQt)
 ![PyPI - License](https://img.shields.io/pypi/l/torrentfileQt?color=orange&style=plastic)
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
-![CI Workflow](https://img.shields.io/github/workflow/status/alexpdev/torrentfileQt/testing)
+[![CI](https://github.com/alexpdev/torrentfileQt/actions/workflows/CI.yml/badge.svg)](https://github.com/alexpdev/torrentfileQt/actions/workflows/CI.yml)
 ![last commit](https://img.shields.io/github/last-commit/alexpdev/torrentfileQt?color=blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Coverage)
 
