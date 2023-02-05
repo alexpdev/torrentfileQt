@@ -423,7 +423,7 @@ def format_data(path):
             date = datetime.fromtimestamp(meta["creation date"])
             text = date.strftime("%B %d, %Y %H:%M")
             keywords["creation_date"] = text
-        except:
+        except BaseException:  # pragma: nocover
             keywords["creation_date"] = str(meta["creation date"])
     else:
         keywords["creation_date"] = ""

@@ -8,7 +8,7 @@
 [![codecov](https://codecov.io/gh/alexpdev/torrentfileQt/branch/main/graph/badge.svg?token=S5Q9CRD6C2)](https://codecov.io/gh/alexpdev/torrentfileQt)
 ![PyPI - License](https://img.shields.io/pypi/l/torrentfileQt?color=orange&style=plastic)
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/torrentfileQt?style=plastic)
-![CI Workflow](https://img.shields.io/github/workflow/status/alexpdev/torrentfileQt/CI)
+![CI Workflow](https://img.shields.io/github/workflow/status/alexpdev/torrentfileQt/testing)
 ![last commit](https://img.shields.io/github/last-commit/alexpdev/torrentfileQt?color=blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/065ca999772a434ba1aadae05f8b6bc7)](https://www.codacy.com/gh/alexpdev/torrentfileQt/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexpdev/torrentfileQt&utm_campaign=Badge_Coverage)
 
@@ -63,6 +63,11 @@ torrentfileQt
 ## Issues
 
 To report a bug or ask for a new feature please [open an issue](https://github.com/alexpdev/torrentfileQt/issues) on github.
+
+| Known Issues |
+| ------------- |
+| The bencode editor is more of a bencode viewer at the moment. You can remove, add and edit fields in the window, but there are still some bugs to work out in the saving process |
+
 
 ## License
 
