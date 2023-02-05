@@ -424,7 +424,7 @@ def format_data(path):
             text = date.strftime("%B %d, %Y %H:%M")
             keywords["creation_date"] = text
         except:
-            keywords["creation_"]
+            keywords["creation_date"] = str(meta["creation date"])
     else:
         keywords["creation_date"] = ""
 
