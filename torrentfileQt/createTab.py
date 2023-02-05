@@ -207,7 +207,6 @@ class CreateWidget(QWidget):
         self._thread.created.connect(self.updateStatusBarEnd)
         self._thread.prog_start_signal.connect(self.progress_tree.prog_start)
         self._thread.prog_update_signal.connect(self.progress_tree.prog_update)
-        self._thread.prog_close_signal.connect(self.progress_tree.prog_close)
         self._thread.start()
 
     def updateStatusBarEnd(self):
@@ -265,7 +264,7 @@ class TorrentFileCreator(QThread):
         """
         Progress stopped signal.
         """
-        return None
+        self.prog_close_signal.emit()
 
     def run(self):
         """Create a torrent file and emit it's path."""
@@ -521,7 +520,3 @@ class ProgressTable(QTableWidget):
                 progbar.setValue(current + increment)
                 return
             i -= 1  # pragma: nocover
-
-    def prog_close(self):
-        """Close the progress for latest item."""
-        return None  # pragma: nocover
