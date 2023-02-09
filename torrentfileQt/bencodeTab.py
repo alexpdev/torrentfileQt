@@ -419,9 +419,8 @@ class BencodeModel(QAbstractItemModel):
                 if not data:
                     return data
                 return str(data)
-            if role == Qt.DecorationRole:
-                if column == 0:
-                    return item.icon()
+            if role == Qt.DecorationRole and column == 0:
+                return item.icon()
         return None
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
