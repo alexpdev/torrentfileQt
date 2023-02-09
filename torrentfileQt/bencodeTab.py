@@ -399,10 +399,10 @@ class BencodeModel(QAbstractItemModel):
         Any
             item for role and section in header
         """
-        if section < len(self.header_data):
-            if orientation == Qt.Horizontal:
-                if role == Qt.ItemDataRole.DisplayRole:
-                    return self.header_data[section]
+        if (section < len(self.header_data)
+            and orientation == Qt.Horizontal
+            and role == Qt.ItemDataRole.DisplayRole):
+            return self.header_data[section]
         return super().headerData(section, orientation, role)
 
     def columnCount(self, _=QModelIndex()):
@@ -413,7 +413,7 @@ class BencodeModel(QAbstractItemModel):
         """Return data from a bencode item according index and role."""
         if index.isValid():
             column = index.column()
-            item = index.internalPointer()
+            item = self.itemFromIndex(index)
             if role in [Qt.DisplayRole, Qt.EditRole]:
                 data = item.data(column)
                 if not data:

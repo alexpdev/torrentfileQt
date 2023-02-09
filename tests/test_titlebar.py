@@ -31,7 +31,8 @@ class MockMouseEvent:
         assert wind
         return self
 
-    def toPoint(self):
+    @staticmethod
+    def toPoint():
         """Mock method that returns QPoint."""
         return QPoint(1, 1)
 
