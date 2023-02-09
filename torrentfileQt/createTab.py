@@ -99,8 +99,10 @@ class CreateWidget(QWidget):
         self.piece_length_combo = ComboBox.piece_length(parent=self)
         self.private = QCheckBox("Private", parent=self)
 
-        versionBox.setToolTip("These controls may be ignored if you do not"
-                              " have a specific need to adjust them.")
+        versionBox.setToolTip(
+            "These controls may be ignored if you do not"
+            " have a specific need to adjust them."
+        )
 
         layout0 = QGridLayout(versionBox)
         layout0.addWidget(self.v1button, 0, 0)
@@ -128,7 +130,8 @@ class CreateWidget(QWidget):
         source_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.source_edit = QLineEdit(parent=self)
         self.source_edit.setToolTip(
-            "Leave empty unless you have a need to fill it.")
+            "Leave empty unless you have a need to fill it."
+        )
 
         comment_label = QLabel("Comment", parent=self)
         comment_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -149,14 +152,16 @@ class CreateWidget(QWidget):
         self.announce_input = QPlainTextEdit(parent=self)
         self.announce_input.setToolTip(
             "One per line - Examples: \nhttp://example1.net/announce\nhttp://"
-            "example2.org/announce")
+            "example2.org/announce"
+        )
 
         web_seed_label = QLabel("Web-Seeds: ", parent=self)
         web_seed_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.web_seed_input = QPlainTextEdit(parent=self)
         self.web_seed_input.setToolTip(
             "One per line - Examples: \nftp://example1.net/path/to/"
-            "content\nhttp://example2.org/path/to/content")
+            "content\nhttp://example2.org/path/to/content"
+        )
 
         hlayout2 = QHBoxLayout()
         vlayout2 = QVBoxLayout()
@@ -493,7 +498,7 @@ class ProgressTable(QTableWidget):
         item = QTableWidgetItem()
         item._path = path
         if len(path) > self.max_chars:
-            path = "..." + path[-self.max_chars:]
+            path = "..." + path[-self.max_chars :]
         item.setText(path)
         progbar = QProgressBar()
         if total < 1 << 30:

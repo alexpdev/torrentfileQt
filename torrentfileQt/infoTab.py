@@ -54,7 +54,8 @@ class TreeWidget(QTreeWidget):
         header.setSectionResizeMode(0, header.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, header.ResizeMode.ResizeToContents)
         self.root.setChildIndicatorPolicy(
-            self.root.ChildIndicatorPolicy.ShowIndicator)
+            self.root.ChildIndicatorPolicy.ShowIndicator
+        )
         self.setIndentation(8)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setHeaderHidden(True)
@@ -322,13 +323,13 @@ class InfoWidget(QWidget):
         for path, size in kws["contents"].items():
             self.contentsTree.itemReady.emit(path, str(size))
         for widg in [
-                self.pathEdit,
-                self.nameEdit,
-                self.trackerEdit,
-                self.privateEdit,
-                self.pieceLengthEdit,
-                self.sizeEdit,
-                self.totalPiecesEdit,
+            self.pathEdit,
+            self.nameEdit,
+            self.trackerEdit,
+            self.privateEdit,
+            self.pieceLengthEdit,
+            self.sizeEdit,
+            self.totalPiecesEdit,
         ]:
             widg.setCursorPosition(0)
 
@@ -400,8 +401,9 @@ def format_data(path):
     if "files" in info:
         contents = {}
         for entry in info["files"]:
-            contents[os.path.join(info["name"],
-                                  *entry["path"])] = entry["length"]
+            contents[os.path.join(info["name"], *entry["path"])] = entry[
+                "length"
+            ]
             size += entry["length"]
         keywords["contents"] = contents
 

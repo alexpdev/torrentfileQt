@@ -234,9 +234,9 @@ def browse_files(widget: object) -> list:
     list
         list of pathstrings
     """
-    path, _ = QFileDialog.getOpenFileName(parent=widget,
-                                          dir=str(Path.home()),
-                                          caption="Select File")
+    path, _ = QFileDialog.getOpenFileName(
+        parent=widget, dir=str(Path.home()), caption="Select File"
+    )
     if not path:
         path = ""
     return os.path.normpath(path)

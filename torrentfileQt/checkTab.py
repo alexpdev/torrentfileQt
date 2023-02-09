@@ -230,7 +230,8 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             if not os.path.isfile(metafile):
                 self.window().statusBar().showMessage(  # pragma: nocover
-                    "Error: Torrent File cannot be a directory.", 8000)
+                    "Error: Torrent File cannot be a directory.", 8000
+                )
             else:
                 parent.treeWidget.clear()
                 parent.textEdit.clear()
@@ -238,7 +239,8 @@ class ReCheckButton(QPushButton):
                 self.ready.emit(metafile, content)
         else:
             self.window().statusBar().showMessage(  # pragma: nocover
-                "Error: Torrent File Not Found.", 3000)
+                "Error: Torrent File Not Found.", 3000
+            )
 
 
 class BrowseTorrents(QPushButton):

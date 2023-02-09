@@ -61,8 +61,9 @@ class BencodeEditWidget(QWidget):
         self.toolbar = QToolBar(parent=self)
         self.setAcceptDrops(True)
         self.file_action = QAction(get_icon("browse_file"), "Select File")
-        self.folder_action = QAction(get_icon("browse_folder"),
-                                     "Select Folder")
+        self.folder_action = QAction(
+            get_icon("browse_folder"), "Select Folder"
+        )
         self.save_action = QAction(get_icon("save-as"), "Save Data")
         self.clear_action = QAction(get_icon("erase"), "Clear Data")
         self.remove_item_action = QAction(get_icon("trash"), "Remove Item")
@@ -71,7 +72,8 @@ class BencodeEditWidget(QWidget):
         self.toolbar.addActions((self.file_action, self.folder_action))
         self.toolbar.addSeparator()
         self.toolbar.addActions(
-            [self.insert_item_action, self.remove_item_action])
+            [self.insert_item_action, self.remove_item_action]
+        )
         self.toolbar.addSeparator()
         self.toolbar.addActions((self.save_action, self.clear_action))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
@@ -380,8 +382,9 @@ class BencodeModel(QAbstractItemModel):
         self.header_data = ["Field", "Value"]
         Item.set_model(self)
 
-    def headerData(self, section: int, orientation: Qt.Orientation,
-                   role: Qt.ItemDataRole):
+    def headerData(
+        self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole
+    ):
         """
         Return header data.
 
@@ -399,9 +402,11 @@ class BencodeModel(QAbstractItemModel):
         Any
             item for role and section in header
         """
-        if (section < len(self.header_data)
+        if (
+            section < len(self.header_data)
             and orientation == Qt.Horizontal
-            and role == Qt.ItemDataRole.DisplayRole):
+            and role == Qt.ItemDataRole.DisplayRole
+        ):
             return self.header_data[section]
         return super().headerData(section, orientation, role)
 
@@ -431,8 +436,9 @@ class BencodeModel(QAbstractItemModel):
         flags |= Qt.ItemIsEditable
         return flags
 
-    def index(self, row: int, column: int,
-              parent: QModelIndex = QModelIndex()):
+    def index(
+        self, row: int, column: int, parent: QModelIndex = QModelIndex()
+    ):
         """
         Get the index for the given row and column of the parent index.
 
