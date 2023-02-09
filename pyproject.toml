@@ -42,10 +42,10 @@ include-package-data = true
 skips = ["B101"]
 
 [tool.black]
-line-length = 79
+line-length = 83
 
 [tool.autopep8]
-max_line_length = 80
+max_line_length = 83
 ignore = "E266"
 in-place = true
 recursive = true
