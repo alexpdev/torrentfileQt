@@ -109,19 +109,19 @@ class TitleBar(QWidget):
         icon = QIcon(icon)
         self.icon.setIcon(icon)
 
-    def mouseDoubleClickEvent(self, _):  # pragma: nocover
+    def mouseDoubleClickEvent(self, _):
         """Trigger event to maximize window."""
         if self.window().isMaximized():
             self.window().showNormal()
         else:
             self.window().showMaximized()
 
-    def mousePressEvent(self, event):  # pragma: nocover
+    def mousePressEvent(self, event):
         """Trigger event to move window."""
         self._pressed = True
         self._cpos = event.position().toPoint()
 
-    def mouseMoveEvent(self, event):  # pragma: nocover
+    def mouseMoveEvent(self, event):
         """Start moving window."""
         if not self._pressed:
             return
@@ -132,7 +132,7 @@ class TitleBar(QWidget):
         new_coords = x + difx, y + dify, w, h
         self.window().setGeometry(*new_coords)
 
-    def mouseReleaseEvent(self, _):  # pragma: nocover
+    def mouseReleaseEvent(self, _):
         """End the window move event."""
         self._pressed = False
         self._cpos = None
@@ -238,7 +238,7 @@ class OptionsMenu(QMenu):
         """Open webbrowser to GitHub Repo."""
         webbrowser.open_new_tab("https://github.com/alexpdev/torrentfileQt")
 
-    def open_style_dialog(self):  # pragma: nocover
+    def open_style_dialog(self):
         """Edit style sheet."""
         app = QApplication.instance()
         self.dialog = QDialog()
@@ -268,12 +268,12 @@ class OptionsMenu(QMenu):
                   "wt") as qss:
             qss.write(text)
 
-    def closeStyleDialog(self):  # pragma: nocover
+    def closeStyleDialog(self):
         """Close the style sheet dialog."""
         self.dialog.close()
         self.dialog.deleteLater()
 
-    def saveStyle(self):  # pragma: nocover
+    def saveStyle(self):
         """Apply style sheet to active window."""
         app = QApplication.instance()
         text = self.dialog.plainTextEdit.toPlainText()

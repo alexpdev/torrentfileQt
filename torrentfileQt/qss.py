@@ -273,9 +273,6 @@ QStatusBar {
     show-decoration-selected: 1;
 }
 *[InfoTree="true"]::item {
-    border: 1px solid $_1;
-    border-top-color: transparent;
-    border-bottom-color: transparent;
     margin-top: 1px;
     margin-bottom: 1px;
 }
@@ -286,9 +283,6 @@ QStatusBar {
 }
 *[InfoTree="true"]::item:selected {
     border: 1px solid $_14;
-}
-*[InfoTree="true"]::branch {
-        background: palette(transparent);
 }
 *[InfoTree="true"]::branch:has-siblings:!adjoins-item {
     border-image: url(torrentfileQt/assets/vline.png) 0;
