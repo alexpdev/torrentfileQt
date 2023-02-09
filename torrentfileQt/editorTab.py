@@ -61,7 +61,7 @@ class EditorWidget(QWidget):
         self.filegroup.setTitle("Torrent Path")
         self.fileButton = FileButton(parent=self)
         self.filegroup.addButton(self.fileButton)
-        self.filegroup.setLabelText("Drop Torrent File Here")
+        self.filegroup.setLabelText("drag & drop torrent file here or ...")
         self.layout.addWidget(self.filegroup)
         self.fileButton.fileSelected.connect(self.editTorrent)
         self.filegroup.pathSelected.connect(self.editTorrent)

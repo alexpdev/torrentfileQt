@@ -54,9 +54,8 @@ clean-build: ## remove build artifacts
 	rm -fv corbertura.xml
 	rm -frv .pytest_cache
 	rm -rfv *.egg-info
-	rm -rfv tests/TESTINGDIR
 
-test: install clean ## run tests quickly with the default Python
+test: clean ## run tests quickly with the default Python
 	tox
 
 unittest: ## only run unit tests
