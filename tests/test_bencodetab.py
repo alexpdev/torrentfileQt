@@ -148,9 +148,8 @@ def test_bencode_thread(wind, torrent_file):
     topitem = model.itemFromIndex(topindex)
     child_index = model.index(0, 0, parent=topindex)
     rect = widget.treeview.visualRect(child_index)
-    widget.treeview.setSelection(
-        rect, tree.selectionModel().SelectionFlag.Select
-    )
+    widget.treeview.setSelection(rect,
+                                 tree.selectionModel().SelectionFlag.Select)
     widget.insert_view_item()
     model.insertRow(0, child_index)
     model.removeRows(0, 4, child_index)

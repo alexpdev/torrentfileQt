@@ -457,6 +457,15 @@ QSplitter::handle {
     margin-bottom: 2px;
     border-radius: 8px;
 }
+#toolTab * {
+    margin: 2px;
+}
+#toolTab QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top-left;
+    padding-left: 15px;
+    padding-right: 15px;
+}
 """
 
 

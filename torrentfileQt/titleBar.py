@@ -76,8 +76,6 @@ class TitleBar(QWidget):
         self.icon = QToolButton(parent=self)
         self.icon.setObjectName("titlebaricon")
         self.icon.setIcon(pix)
-        self.label.setText("TitleBar")
-        self.label.setObjectName("titlebartitle")
         self.setMaximumHeight(35)
         self.setMinimumHeight(30)
         self.closeButton = TitleBarButton("close", parent=self)
@@ -264,9 +262,8 @@ class OptionsMenu(QMenu):
     def writeContents(self):  # pragma: nocover
         """Write a copy of the edited style sheet."""
         text = self.dialog.plainTextEdit.toPlainText()
-        with open(
-            os.path.join(os.path.dirname(__file__), "temp.qss"), "wt"
-        ) as qss:
+        with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
+                  "wt") as qss:
             qss.write(text)
 
     def closeStyleDialog(self):

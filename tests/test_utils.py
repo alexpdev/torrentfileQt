@@ -95,7 +95,8 @@ def test_utils_browse_no_torrent():
 def test_qss_parser():
     """Test style manager from utils module."""
     themes = {
-        "test": """
+        "test":
+        """
 QWidget {
     background-color: #000;
     color: #0AF;
