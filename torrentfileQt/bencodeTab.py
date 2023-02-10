@@ -123,7 +123,15 @@ class BencodeEditWidget(QWidget):
             torrent = self.treeview.item(row, 0)
             path = torrent.data(0)
             meta = self.get_children(torrent)
-            pyben.dump(path, meta)
+            try:
+                pyben.dump(meta, path)
+                self.window().statusBar().showMessage(
+                    "Success: changes have been saved."
+                )
+            except [pyben.EncodeError, TypeError]:  # pragma: nocover
+                self.window().statusBar().showMessage(
+                    "Failed: Improper bencode formatting", 8000
+                )
 
     def get_children(self, item):
         """Get torrent metdata."""

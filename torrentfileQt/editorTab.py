@@ -145,7 +145,6 @@ class SaveEditButton(QPushButton):
 
             else:  # pragma: nocover
                 meta[label] = value
-
         pyben.dump(meta, text)
 
 
@@ -269,9 +268,12 @@ class Table(QTableWidget):
 
             elif k == "creation date":
                 item2 = QTableWidgetItem(0)
-                item2._data = str(v)
-                value = datetime.datetime.fromtimestamp(v)
-                text_value = datetime.datetime.isoformat(value)
+                if isinstance(v, int):
+                    item2._data = str(v)
+                    value = datetime.datetime.fromtimestamp(v)
+                    text_value = datetime.datetime.isoformat(value)
+                else:
+                    text_value = v
                 item2.setText(text_value)
                 self.setItem(index, 1, item2)
 

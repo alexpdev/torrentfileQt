@@ -106,7 +106,6 @@ QPushButton[titlebutton="true"]{
     border-width: 0px;
 }
 QHeaderView {
-    gridline-color: transparent;
     color: $_1;
     background-color: $_14;
     border-radius: 8px;
@@ -116,6 +115,7 @@ QHeaderView::section {
     background-color: $_14;
     font-weight: bold;
     border-radius: 8px;
+    padding-left: 3px;
 }
 QStatusBar {
     border-bottom-left-radius: 4px;
@@ -282,9 +282,13 @@ QStatusBar {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 $_8, stop: 1 $_9);
     border: 1px solid $_3;
+    border-left-color: transparent;
+    border-right-color: transparent;
 }
 *[InfoTree="true"]::item:selected {
     border: 1px solid $_14;
+    border-left-color: transparent;
+    border-right-color: transparent;
 }
 *[InfoTree="true"]::branch:has-siblings:!adjoins-item {
     border-image: url($_icons/vline.png) 0;
