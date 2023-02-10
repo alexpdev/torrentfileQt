@@ -21,13 +21,25 @@
 import os
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel,
-                               QLineEdit, QPushButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile import magnet
 from torrentfile.utils import path_stat
 
-from torrentfileQt.utils import (browse_files, browse_folder, browse_torrent,
-                                 get_icon)
+from torrentfileQt.utils import (
+    browse_files,
+    browse_folder,
+    browse_torrent,
+    get_icon,
+)
 
 
 class ToolWidget(QWidget):
@@ -224,7 +236,8 @@ class PieceLengthCalculator(QGroupBox):
         self.fileButton.clicked.connect(self.browse_files)
         self.folderButton.clicked.connect(self.browse_folders)
         self.piece_length_combo.currentTextChanged.connect(
-            self.calculate_piece_length)
+            self.calculate_piece_length
+        )
 
     def calculate_piece_length(self):
         """

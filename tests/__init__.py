@@ -59,12 +59,6 @@ class TempFileDirs:
         cls.paths -= cleaned
 
 
-def exception_hook(exctype, value, traceback):  # pragma:  no cover
-    """Except hook capturing."""
-    print(exctype, value, traceback)
-    sys._excepthook(exctype, value, traceback)
-
-
 def switchTab(stack, widget=None, index=None):
     """Switch to new tab."""
     if not widget:
@@ -187,7 +181,6 @@ def wind():
         information to pass to test function.
     """
     window = APP.window
-    window.show()
     return window
 
 

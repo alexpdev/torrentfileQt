@@ -25,18 +25,33 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QTextOption
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPlainTextEdit,
-                               QProgressBar, QPushButton, QSplitter,
-                               QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QPlainTextEdit,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.recheck import Checker
 
-from torrentfileQt.utils import (DropGroupBox, browse_files, browse_folder,
-                                 browse_torrent, get_icon)
+from torrentfileQt.utils import (
+    DropGroupBox,
+    browse_files,
+    browse_folder,
+    browse_torrent,
+    get_icon,
+)
 
 
 class CheckWidget(QWidget):
     """Check tab widget for QMainWindow."""
+
+    logMsg = Signal(str)
 
     def __init__(self, parent=None):
         """Construct for check tab."""
@@ -80,6 +95,7 @@ class CheckWidget(QWidget):
         self.treeWidget = TreeWidget(parent=self)
         self.textEdit = LogTextEdit(parent=self)
         self.splitter = QSplitter(parent=self)
+        self.treeWidget.logMsg.connect(self.logMsg.emit)
         self.splitter.setOrientation(Qt.Orientation.Vertical)
         self.splitter.addWidget(self.treeWidget)
         self.splitter.addWidget(self.textEdit)
@@ -122,19 +138,16 @@ class CheckWidget(QWidget):
         content : str
             path to the content
         """
-        self.thread = RecheckThread(metafile, content)
         base = self.content_group.getPath()
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.treeWidget.set_thread_info(self.thread, base)
-        self.thread.start()
+        self.treeWidget.recheck_torrent(metafile, content, base)
 
 
 class RecheckThread(QThread):
     """Piece Hasher class for iterating through captured torrent pieces."""
 
     path_ready = Signal(str, int)
-    finished = Signal()
     progress_update = Signal(str, int)
+    logMsg = Signal(str)
 
     def __init__(self, metafile, content):
         """Construct for PieceHasher class."""
@@ -188,9 +201,8 @@ class RecheckThread(QThread):
                 size = 0
 
     def run(self):
-        """
-        Start thread process of checking torrent file.
-        """
+        """Start thread process of checking torrent file."""
+        Checker.register_callback(self.logMsg.emit)
         checker = Checker(self.metafile, self.content)
         self.root = os.path.dirname(checker.root)
         fileinfo = checker.fileinfo
@@ -230,15 +242,16 @@ class ReCheckButton(QPushButton):
         if os.path.exists(metafile):
             if not os.path.isfile(metafile):
                 self.window().statusBar().showMessage(  # pragma: nocover
-                    "Error: Torrent File cannot be a directory.", 8000)
+                    "Error: Torrent File cannot be a directory.", 8000
+                )
             else:
                 parent.treeWidget.clear()
                 parent.textEdit.clear()
-                Checker.register_callback(parent.textEdit.callback)
                 self.ready.emit(metafile, content)
         else:
             self.window().statusBar().showMessage(  # pragma: nocover
-                "Error: Torrent File Not Found.", 3000)
+                "Error: Torrent File Not Found.", 3000
+            )
 
 
 class BrowseTorrents(QPushButton):
@@ -329,7 +342,6 @@ class LogTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         """Construct for LogTextEdit."""
         super().__init__(parent=parent)
-        self._parent = parent
         self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         self.setObjectName("checkTextEdit")
         self.setBackgroundVisible(True)
@@ -337,6 +349,7 @@ class LogTextEdit(QPlainTextEdit):
         font.setFamily("Consolas")
         font.setBold(True)
         self.setFont(font)
+        parent.logMsg.connect(self.callback)
 
     def clear_data(self):
         """Remove any text."""
@@ -368,6 +381,8 @@ class TreeWidget(QTreeWidget):
         this widgets parent.
     """
 
+    logMsg = Signal(str)
+
     def __init__(self, parent=None):
         """Construct for Tree Widget."""
         super().__init__(parent=parent)
@@ -393,14 +408,17 @@ class TreeWidget(QTreeWidget):
         }
         self.registry = {}
 
-    def set_thread_info(self, thread, base):
+    def recheck_torrent(self, metafile: str, content: str, base: str):
         """
         Set information needed during compare process.
         """
-        self.thread = thread
         self.base = os.path.dirname(base)
+        self.thread = RecheckThread(metafile, content)
+        self.thread.logMsg.connect(self.logMsg.emit)
         self.thread.path_ready.connect(self.setup_path_item)
         self.thread.progress_update.connect(self.update_progress)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
 
     def clear(self):
         """Remove any objects from Tree Widget."""

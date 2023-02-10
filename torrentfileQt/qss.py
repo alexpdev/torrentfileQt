@@ -18,8 +18,10 @@
 ##############################################################################
 """Module for stylesheets."""
 
+import os
 import string
-from pathlib import Path
+
+from torrentfileQt.utils import is_compiled
 
 theme = """
 QWidget,
@@ -50,7 +52,7 @@ QGroupBox QComboBox::drop-down {
     background-color: $_16;
 }
 QGroupBox QComboBox::down-arrow {
-    image: url($_arrow);
+    image: url($_icons/arrow-down.png);
 }
 QPushButton {
     background-color: $_16;
@@ -285,24 +287,24 @@ QStatusBar {
     border: 1px solid $_14;
 }
 *[InfoTree="true"]::branch:has-siblings:!adjoins-item {
-    border-image: url(torrentfileQt/assets/vline.png) 0;
+    border-image: url($_icons/vline.png) 0;
 }
 *[InfoTree="true"]::branch:has-siblings:adjoins-item {
-    border-image: url(torrentfileQt/assets/branch-more.png) 0;
+    border-image: url($_icons/branch-more.png) 0;
 }
 *[InfoTree="true"]::branch:!has-children:!has-siblings:adjoins-item {
-    border-image: url(torrentfileQt/assets/branch-end.png) 0;
+    border-image: url($_icons/branch-end.png) 0;
 }
 
 *[InfoTree="true"]::branch:has-children:!has-siblings:closed,
 *[InfoTree="true"]::branch:closed:has-children:has-siblings {
         border-image: none;
-        image: url(torrentfileQt/assets/branch-closed.png);
+        image: url($_icons/branch-closed.png);
 }
 *[InfoTree="true"]::branch:open:has-children:!has-siblings,
 *[InfoTree="true"]::branch:open:has-children:has-siblings  {
         border-image: none;
-        image: url(torrentfileQt/assets/branch-open.png);
+        image: url($_icons/branch-open.png);
 }
 *[InfoTree="true"] QLineEdit {
     border-width: 0px;
@@ -441,13 +443,13 @@ QStatusBar {
     color: $_1;
 }
 #minButton:hover {
-    icon: url(torrentfileQt/assets/min-light.png);
+    icon: url($_icons/min-light.png);
 }
 #maxButton:hover {
-    icon: url(torrentfileQt/assets/max-light.png);
+    icon: url($_icons/max-light.png);
 }
 #closeButton:hover {
-    icon: url(torrentfileQt/assets/close-light.png);
+    icon: url($_icons/close-light.png);
 }
 QSplitter::handle {
     background: $_8;
@@ -473,8 +475,6 @@ class Styles:
     """Style sheet class."""
 
     stylesheet = theme
-    arrow_path = Path(__file__).parent / "assets" / "arrow-down.png"
-    arrow = str(arrow_path).replace("\\", "/")
     dark = {
         "_1": "#FFFFFF",
         "_2": "#19232D",
@@ -496,7 +496,7 @@ class Styles:
         "_18": "#599F95",
         "_19": "#073",
         "_20": "#147",
-        "_arrow": str(arrow),
+        "_icons": "torrentfileQt/assets/",
     }
     light = {
         "_1": "#000000",
@@ -519,8 +519,15 @@ class Styles:
         "_18": "#A6606A",
         "_19": "#F8C",
         "_20": "#EB8",
-        "_arrow": str(arrow),
+        "_icons": "torrentfileQt/assets",
     }
+
+    if is_compiled():  # pragma: nocover
+        parent = os.path.dirname(os.path.dirname(__file__))
+        assets = os.path.join(parent, "assets").replace("\\", "/")
+        light["_icons"] = assets
+        dark["_icons"] = assets
+
     keys = {"light": light, "dark": dark}
 
     @staticmethod

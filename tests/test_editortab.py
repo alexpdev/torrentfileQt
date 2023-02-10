@@ -18,6 +18,7 @@
 ##############################################################################
 """Module for testing procedures on Bencode editor module."""
 
+import os
 import pytest
 
 from tests import switchTab, temp_file, torrent_versions, wind
@@ -82,16 +83,19 @@ def test_editor_table(wind, torent):
     tab = wind.tabs.editorWidget
     switchTab(wind.stack, tab)
     tab.editTorrent(torent)
-    table = tab.table
+    lst, lst2 = [], []
     for i in range(tab.table.rowCount()):
-        label = table.item(i, 0)
-        if label.text() in ["announce list", "url list", "httpseeds"]:
-            box = table.cellWidget(i, 1)
-            box.line_edit.setText("url3")
-            box.add_button.click()
-            for i in range(box.combo.count()):
-                box.combo.setCurrentIndex(i)
-                box.remove_button.click()
-                break
-            break
+        item = tab.table.item(i, 0)
+        if item.text() in ["announce-list", "httpseeds", "url-list"]:
+            lst.append(i)
+        elif item.text() in ["comment", "source"]:
+            lst2.append(i)
+    widget = tab.table.cellWidget(lst[0], 1)
+    widget.line_edit.setText("example text")
+    widget.add_button.click()
+    widget.combo.setCurrentIndex(1)
+    widget.remove_button.click()
+    cell = tab.table.item(lst2[0], 1)
+    cell.setText("Example")
     tab.save_button.click()
+    assert os.path.exists(torent)

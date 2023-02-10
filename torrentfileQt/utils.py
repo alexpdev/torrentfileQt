@@ -24,8 +24,15 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QMouseEvent
-from PySide6.QtWidgets import (QFileDialog, QGroupBox, QHBoxLayout, QLabel,
-                               QPushButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class QssParser:
@@ -185,9 +192,12 @@ def get_icon(name: str) -> str:
         path to appropriate icon image
     """
     parent = os.path.dirname(__file__)
+    if is_compiled():
+        parent = os.path.dirname(parent)  # pragma: nocover
     assets = os.path.join(parent, "assets")
     path = os.path.join(assets, name)
     icon = path if path.endswith(".png") else path + ".png"
+
     return QIcon(icon)
 
 
@@ -234,12 +244,18 @@ def browse_files(widget: object) -> list:
     list
         list of pathstrings
     """
-    path, _ = QFileDialog.getOpenFileName(parent=widget,
-                                          dir=str(Path.home()),
-                                          caption="Select File")
+    path, _ = QFileDialog.getOpenFileName(
+        parent=widget, dir=str(Path.home()), caption="Select File"
+    )
     if not path:
         path = ""
     return os.path.normpath(path)
+
+
+def is_compiled():
+    """Test if app is running from compiled executable file."""
+    parts = Path(__file__).parts
+    return any(i for i in parts if "_MEI" in i)
 
 
 def browse_torrent(widget: object) -> list:

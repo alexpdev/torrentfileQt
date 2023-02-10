@@ -21,12 +21,25 @@
 import os
 
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-                               QPushButton, QTextBrowser, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QTextBrowser,
+    QVBoxLayout,
+    QWidget,
+)
 from torrentfile.rebuild import Assembler
 
-from torrentfileQt.utils import (browse_folder, browse_torrent, clean_list,
-                                 get_icon, torrent_filter)
+from torrentfileQt.utils import (
+    browse_folder,
+    browse_torrent,
+    clean_list,
+    get_icon,
+    torrent_filter,
+)
 
 
 class RebuildWidget(QWidget):

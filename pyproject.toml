@@ -42,10 +42,10 @@ include-package-data = true
 skips = ["B101"]
 
 [tool.black]
-line-length = 83
+line-length = 80
 
 [tool.autopep8]
-max_line_length = 83
+max_line_length = 80
 ignore = "E266"
 in-place = true
 recursive = true
@@ -80,22 +80,22 @@ disable= [
 ]
 
 [tool.pylint.format]
-max-line-length=80
-max-module-lines=1000
-single-line-if-stmt='yes'
+max-line-length = 80
+max-module-lines = 1000
+single-line-if-stmt ='yes'
 
 [tool.pylint.basic]
-good-names=[
+good-names = [
     'l','r','g','b','w','i','j','k','v','n','x',
     'y','l','z','ex','ok','fd','d','Run','_'
 ]
 
 [tool.pylint.design]
-max-args=15
-max-attributes=35
-max-branches=28
-max-locals=20
-max-parents=7
-max-public-methods=30
-max-returns=6
-max-statements=120
+max-args = 15
+max-attributes = 35
+max-branches = 28
+max-locals = 20
+max-parents = 7
+max-public-methods = 30
+max-returns = 6
+max-statements = 120

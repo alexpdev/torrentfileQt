@@ -21,9 +21,16 @@
 import sys
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QHBoxLayout,
-                               QMainWindow, QPushButton, QStackedWidget,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QApplication,
+    QButtonGroup,
+    QHBoxLayout,
+    QMainWindow,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from torrentfileQt.bencodeTab import BencodeEditWidget
 from torrentfileQt.checkTab import CheckWidget

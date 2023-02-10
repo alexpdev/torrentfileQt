@@ -23,10 +23,20 @@ from copy import deepcopy
 
 import pyben
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox, QHBoxLayout,
-                               QLabel, QLineEdit, QPushButton, QSizePolicy,
-                               QTableWidget, QTableWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QSizePolicy,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from torrentfileQt.utils import DropGroupBox, browse_torrent, get_icon
 
@@ -130,10 +140,10 @@ class SaveEditButton(QPushButton):
                 if info[label] != value:
                     info[label] = value  # pragma: nocover
 
-            elif label in ["comment", "source", "private"]:
-                info[label] = value  # pragma: nocover
+            elif label in ["comment", "source", "private"]:  # pragma: nocover
+                info[label] = value
 
-            else:
+            else:  # pragma: nocover
                 meta[label] = value
 
         pyben.dump(meta, text)
