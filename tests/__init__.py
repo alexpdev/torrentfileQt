@@ -24,7 +24,6 @@ import os
 import random
 import shutil
 import string
-import sys
 import time
 from tempfile import mkdtemp, mkstemp
 
