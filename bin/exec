@@ -1,3 +1,0 @@
-import torrentfileQt
-
-torrentfileQt.execute()

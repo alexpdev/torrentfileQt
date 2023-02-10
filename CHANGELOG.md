@@ -1,5 +1,13 @@
 # TorrentFileQt
 
+## Version 0.4.1
+
+-   Bug fixes from the 0.4.0 update
+-   Additional tests and coverage gaps
+-   Fixed issues with saving in editor and bencode tab
+
+* * *
+
 ## Version 0.4.0
 
 -   complete refactor, review and overhaul of ui

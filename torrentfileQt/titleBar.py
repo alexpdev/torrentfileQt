@@ -23,9 +23,20 @@ import webbrowser
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
-                               QMenu, QMenuBar, QPlainTextEdit, QPushButton,
-                               QSizePolicy, QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QMenuBar,
+    QPlainTextEdit,
+    QPushButton,
+    QSizePolicy,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from torrentfileQt.utils import get_icon
 
@@ -262,8 +273,9 @@ class OptionsMenu(QMenu):
     def writeContents(self):  # pragma: nocover
         """Write a copy of the edited style sheet."""
         text = self.dialog.plainTextEdit.toPlainText()
-        with open(os.path.join(os.path.dirname(__file__), "temp.qss"),
-                  "wt") as qss:
+        with open(
+            os.path.join(os.path.dirname(__file__), "temp.qss"), "wt"
+        ) as qss:
             qss.write(text)
 
     def closeStyleDialog(self):

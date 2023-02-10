@@ -1,40 +1,4 @@
-.PHONY: clean help full
-.DEFAULT_GOAL := help
-
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
-
-from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-
-define PRINT_HELP_PYSCRIPT
-import re, sys
-
-for line in sys.stdin:
-	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
-	if match:
-		target, help = match.groups()
-		print("%-20s %s" % (target, help))
-endef
-export PRINT_HELP_PYSCRIPT
-
-define CHANGE_NAME
-import os
-from zipfile import ZipFile
-from torrentfileQt.version import __version__
-zfile = ZipFile(f"./bin/torrentfileQt-v{__version__}-WIN.zip", mode="w")
-zfile.write("./bin/dist/torrentfileQt.exe", "torrentfileQt.exe")
-zfile.close()
-endef
-export CHANGE_NAME
-
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
-
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+.PHONY: clean 
 
 clean: clean-build ## remove all build, test, coverage and Python artifacts
 
@@ -73,11 +37,10 @@ release: clean test ## release to pypi
 	py -m build .
 	twine upload dist/*
 
-build: install clean test ## build executable file
+build: clean test ## build executable file
 	py -m build .
 	pip install -e .
-	cd bin && pyinstaller exec.spec
-	python -c "$$CHANGE_NAME"
+	pyinstaller app.spec
 
 install: ## Fresh install from PyPi
 	python -m pip install --upgrade --force-reinstall --no-cache torrentfileQt

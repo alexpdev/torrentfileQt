@@ -35,7 +35,7 @@ TorrentFileQt is a GUI Frontend for [TorrentFile CLI](https://github.com/alexpde
 
 ## Usage Overview
 
-![edittorrent.png](https://raw.githubusercontent.com/alexpdev/torrentfileQt/main/assets/TorrentFileQt.gif)
+![torrentfileQt](./assets/TorrentfileQt.gif)
 
 * * *
 
@@ -63,11 +63,6 @@ torrentfileQt
 ## Issues
 
 To report a bug or ask for a new feature please [open an issue](https://github.com/alexpdev/torrentfileQt/issues) on github.
-
-| Known Issues |
-| ------------- |
-| The bencode editor is more of a bencode viewer at the moment. You can remove, add and edit fields in the window, but there are still some bugs to work out in the saving process |
-
 
 ## License
 

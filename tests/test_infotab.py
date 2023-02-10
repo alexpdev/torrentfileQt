@@ -21,8 +21,14 @@
 import pyben
 import pytest
 
-from tests import (MockEvent, switchTab, temp_file, tempdir, torrent_versions,
-                   wind)
+from tests import (
+    MockEvent,
+    switchTab,
+    temp_file,
+    tempdir,
+    torrent_versions,
+    wind,
+)
 from torrentfileQt import infoTab
 
 

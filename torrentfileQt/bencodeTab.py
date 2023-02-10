@@ -24,11 +24,21 @@ from typing import Any
 import pyben
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QThread, Signal
 from PySide6.QtGui import QAction, QIcon, QMouseEvent
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QToolBar, QTreeView,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QToolBar,
+    QTreeView,
+    QVBoxLayout,
+    QWidget,
+)
 
-from torrentfileQt.utils import (browse_folder, browse_torrent, get_icon,
-                                 torrent_filter)
+from torrentfileQt.utils import (
+    browse_folder,
+    browse_torrent,
+    get_icon,
+    torrent_filter,
+)
 
 
 class BencodeEditWidget(QWidget):
@@ -61,8 +71,7 @@ class BencodeEditWidget(QWidget):
         self.toolbar = QToolBar(parent=self)
         self.setAcceptDrops(True)
         self.file_action = QAction(get_icon("browse_file"), "Select File")
-        self.folder_action = QAction(get_icon("browse_folder"),
-                                     "Select Folder")
+        self.folder_action = QAction(get_icon("browse_folder"), "Select Folder")
         self.save_action = QAction(get_icon("save-as"), "Save Data")
         self.clear_action = QAction(get_icon("erase"), "Clear Data")
         self.remove_item_action = QAction(get_icon("trash"), "Remove Item")
@@ -71,7 +80,8 @@ class BencodeEditWidget(QWidget):
         self.toolbar.addActions((self.file_action, self.folder_action))
         self.toolbar.addSeparator()
         self.toolbar.addActions(
-            [self.insert_item_action, self.remove_item_action])
+            [self.insert_item_action, self.remove_item_action]
+        )
         self.toolbar.addSeparator()
         self.toolbar.addActions((self.save_action, self.clear_action))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
@@ -113,7 +123,15 @@ class BencodeEditWidget(QWidget):
             torrent = self.treeview.item(row, 0)
             path = torrent.data(0)
             meta = self.get_children(torrent)
-            pyben.dump(path, meta)
+            try:
+                pyben.dump(meta, path)
+                self.window().statusBar().showMessage(
+                    "Success: changes have been saved."
+                )
+            except [pyben.EncodeError, TypeError]:  # pragma: nocover
+                self.window().statusBar().showMessage(
+                    "Failed: Improper bencode formatting", 8000
+                )
 
     def get_children(self, item):
         """Get torrent metdata."""
@@ -380,8 +398,9 @@ class BencodeModel(QAbstractItemModel):
         self.header_data = ["Field", "Value"]
         Item.set_model(self)
 
-    def headerData(self, section: int, orientation: Qt.Orientation,
-                   role: Qt.ItemDataRole):
+    def headerData(
+        self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole
+    ):
         """
         Return header data.
 
@@ -430,8 +449,7 @@ class BencodeModel(QAbstractItemModel):
         flags |= Qt.ItemIsEditable
         return flags
 
-    def index(self, row: int, column: int,
-              parent: QModelIndex = QModelIndex()):
+    def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()):
         """
         Get the index for the given row and column of the parent index.
 

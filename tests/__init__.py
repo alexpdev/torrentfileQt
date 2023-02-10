@@ -24,7 +24,6 @@ import os
 import random
 import shutil
 import string
-import sys
 import time
 from tempfile import mkdtemp, mkstemp
 
@@ -57,12 +56,6 @@ class TempFileDirs:
                 shutil.rmtree(i)
             cleaned.add(i)
         cls.paths -= cleaned
-
-
-def exception_hook(exctype, value, traceback):  # pragma:  no cover
-    """Except hook capturing."""
-    print(exctype, value, traceback)
-    sys._excepthook(exctype, value, traceback)
 
 
 def switchTab(stack, widget=None, index=None):
@@ -187,7 +180,6 @@ def wind():
         information to pass to test function.
     """
     window = APP.window
-    window.show()
     return window
 
 
