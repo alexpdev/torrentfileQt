@@ -45,7 +45,7 @@ skips = ["B101"]
 line-length = 80
 
 [tool.autopep8]
-max_line_length = 80
+max_line_length = 83
 ignore = "E266"
 in-place = true
 recursive = true
