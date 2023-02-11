@@ -1,0 +1,15 @@
+site_name: torrentfileQt
+repo_url: https://github.com/alexpdev/torrentfileQt
+repo_name: torrentfileQt
+site_author: alexpdev
+docs_dir: templates
+site_dir: docs
+
+extra_css:
+  - css/styles.css
+
+
+nav:
+  - Home: 'index.md'
+  - License: 'LICENSE'
+  - Changelog: 'CHANGELOG.md'
