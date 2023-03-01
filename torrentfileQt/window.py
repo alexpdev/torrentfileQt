@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
     QStackedWidget,
     QVBoxLayout,
     QWidget,
-    QSizeGrip
+    QSizeGrip,
 )
 
 from torrentfileQt.bencodeTab import BencodeEditWidget
@@ -116,8 +116,6 @@ class Side(QWidget):
         self.mousePos = None
 
 
-
-
 class Window(QMainWindow):
     """
     Window MainWindow of GUI extension interface.
@@ -184,7 +182,7 @@ class Window(QMainWindow):
         self.statusbar.setObjectName("statusbar")
         self.central_layout.setObjectName("centralLayout")
 
-    _size = 2
+    _size = 3
 
     @property
     def gripSize(self):
@@ -193,35 +191,46 @@ class Window(QMainWindow):
 
     def setGripSize(self, size):
         """Set all of the windows side grips."""
-        if size == self._edgeSize:
+        if size == self.gripSize:
             return
-        self._edgeSize = max(2, size)
+        self._size = max(2, size)
         self.updateGrips()
 
     def updateGrips(self):
         """Update the geometry of the window."""
         self.setContentsMargins(*[self.gripSize] * 4)
         outRect = self.rect()
-        inRect = outRect.adjusted(self.gripSize, self.gripSize,
-            -self.gripSize, -self.gripSize)
-        self.corners[0].setGeometry(
-            QRect(outRect.topLeft(), inRect.topLeft()))
+        inRect = outRect.adjusted(
+            self.gripSize, self.gripSize, -self.gripSize, -self.gripSize
+        )
+        self.corners[0].setGeometry(QRect(outRect.topLeft(), inRect.topLeft()))
         self.corners[1].setGeometry(
-            QRect(outRect.topRight(), inRect.topRight()).normalized())
+            QRect(outRect.topRight(), inRect.topRight()).normalized()
+        )
         self.corners[2].setGeometry(
-            QRect(inRect.bottomRight(), outRect.bottomRight()))
+            QRect(inRect.bottomRight(), outRect.bottomRight())
+        )
         self.corners[3].setGeometry(
-            QRect(outRect.bottomLeft(), inRect.bottomLeft()).normalized())
+            QRect(outRect.bottomLeft(), inRect.bottomLeft()).normalized()
+        )
         self.sides[0].setGeometry(
-            0, inRect.top(), self.gripSize, inRect.height())
+            0, inRect.top(), self.gripSize, inRect.height()
+        )
         self.sides[1].setGeometry(
-            inRect.left(), 0, inRect.width(), self.gripSize)
+            inRect.left(), 0, inRect.width(), self.gripSize
+        )
         self.sides[2].setGeometry(
             inRect.left() + inRect.width(),
-            inRect.top(), self.gripSize, inRect.height())
+            inRect.top(),
+            self.gripSize,
+            inRect.height(),
+        )
         self.sides[3].setGeometry(
-            self.gripSize, inRect.top() + inRect.height(),
-            inRect.width(), self.gripSize)
+            self.gripSize,
+            inRect.top() + inRect.height(),
+            inRect.width(),
+            self.gripSize,
+        )
 
     def resizeEvent(self, event):
         """Trigger event to resize window."""

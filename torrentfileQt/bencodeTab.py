@@ -134,7 +134,19 @@ class BencodeEditWidget(QWidget):
                 )
 
     def get_children(self, item):
-        """Get torrent metdata."""
+        """
+        Get child items.
+
+        Parameters
+        ----------
+        item : Item
+            bencode item
+
+        Returns
+        -------
+        dict
+            bencode metadata
+        """
         if item.dataType() == dict:
             meta = {}
             for child in item.children():
@@ -161,11 +173,6 @@ class BencodeEditWidget(QWidget):
     def load_file(self):
         """
         Load the a file or files from the Files_action.
-
-        Parameters
-        ----------
-        paths : list, optional
-            torrent file paths, by default None
         """
         paths = browse_torrent(self)
         self.load_thread([paths])
@@ -188,32 +195,60 @@ class BencodeEditWidget(QWidget):
     def load_folder(self):
         """
         Load all of the files contained in given folder path.
-
-        Parameters
-        ----------
-        path : str, optional
-            folder path, by default None
         """
         path = browse_folder(self)
         paths = [os.path.join(path, i) for i in os.listdir(path)]
         self.load_thread(paths)
 
     def dragEnterEvent(self, drag_event: QMouseEvent) -> bool:
-        """Drag enter event for bencodeWidget."""
+        """Drag enter event for bencodeWidget.
+
+        Parameters
+        ----------
+        drag_event : QMouseEvent
+            mouse event
+
+        Returns
+        -------
+        bool
+            success
+        """
         if drag_event.mimeData().hasUrls:
             drag_event.accept()
             return True
         return drag_event.ignore()
 
     def dragMoveEvent(self, drag_event: QMouseEvent) -> bool:
-        """Drag Move Event for bencodeWidgit."""
+        """Drag Move Event for bencodeWidgit.
+
+        Parameters
+        ----------
+        drag_event : QMouseEvent
+            mouse event
+
+        Returns
+        -------
+        bool
+            success
+        """
         if drag_event.mimeData().hasUrls:
             drag_event.accept()
             return True
         return drag_event.ignore()
 
     def dropEvent(self, drop_event: QMouseEvent) -> bool:
-        """Drag drop event for bencodeWidgit."""
+        """Drag drop event for bencodeWidgit.
+
+        Parameters
+        ----------
+        drop_event : QMouseEvent
+            mouse event
+
+        Returns
+        -------
+        bool
+            success
+        """
         path_urls = drop_event.mimeData().urls()
         fspath = path_urls[0].toLocalFile()
         if os.path.exists(fspath):
@@ -256,7 +291,13 @@ class BencodeView(QTreeView):
         self.model().removeItem(item)
 
     def setIcons(self, parent):
-        """Set icons for tree items."""
+        """Set icons for tree items.
+
+        Parameters
+        ----------
+        parent : QWidget
+            parent widget
+        """
         self.bencode_model.torrent_icon = parent.torrent_icon
         self.bencode_model.data_icon = parent.data_icon
         self.bencode_model.brackets_icon = parent.brackets_icon
