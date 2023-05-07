@@ -263,6 +263,7 @@ QStatusBar {
 *[DropGroupBox="true"] QPushButton {
     background-color: transparent;
     border-width: 0px 0px 2px 0px;
+    margin: 0px 2px 0px 2px;
     color: $_1;
 }
 *[DropGroupBox="true"] QPushButton:hover {

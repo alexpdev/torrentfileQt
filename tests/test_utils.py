@@ -18,6 +18,8 @@
 ##############################################################################
 """Module for testing procedures on Bencode editor module."""
 
+import pytest
+
 from tests import wind
 from torrentfileQt import __main__, utils
 
@@ -25,6 +27,31 @@ from torrentfileQt import __main__, utils
 def test_fix():
     """Fix pytest warnings."""
     assert wind
+
+
+class MockPoint:
+    """Mock class for QPoint.
+
+    Parameters
+    ----------
+    x : int
+        x value
+    y : int
+        y value
+    """
+
+    def __init__(self, x: int, y: int):
+        """Construct the MockPoint object."""
+        self._x = x
+        self._y = y
+
+    def x(self):
+        """Return the points x value."""
+        return self._x
+
+    def y(self):
+        """Return the points y value."""
+        return self._y
 
 
 class MockClass:
@@ -54,6 +81,26 @@ def test_themes(wind):
     wind.titleBar.minimizeButton.click()
     wind.titleBar.maximizeButton.click()
     wind.titleBar.maximizeButton.click()
+
+
+def test_grip(wind, delta=None, side=None):
+    """Test each of the size grips."""
+    if not delta or not side:
+        return
+    before_geometry = wind.geometry()
+    side.resizeFunc(delta)
+    after_geometry = wind.geometry()
+    assert before_geometry != after_geometry
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [MockPoint(x, y) for x, y in [(8, 10), (-12, -10), (13, 21), (-53, 25)]],
+)
+def test_size_grips(wind, delta):
+    """Test the size grips."""
+    for side in wind.sides:
+        test_grip(wind, delta, side)
 
 
 def test_utils_browse_file():
