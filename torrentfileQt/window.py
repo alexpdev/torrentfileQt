@@ -20,7 +20,7 @@
 
 import sys
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import (
     QApplication,
     QButtonGroup,
@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
     QStackedWidget,
     QVBoxLayout,
     QWidget,
+    QSizeGrip,
 )
 
 from torrentfileQt.bencodeTab import BencodeEditWidget
@@ -42,6 +43,77 @@ from torrentfileQt.rebuildTab import RebuildWidget
 from torrentfileQt.titleBar import MenuBar, TitleBar
 from torrentfileQt.toolTab import ToolWidget
 from torrentfileQt.utils import get_icon
+
+
+class Side(QWidget):
+    """
+    Class for the sides of the window controlling the shape and size.
+    """
+
+    left = Qt.LeftEdge
+    right = Qt.RightEdge
+    top = Qt.TopEdge
+    bottom = Qt.BottomEdge
+
+    def __init__(self, parent, edge):
+        """Construct the edge widgets."""
+        super().__init__(parent)
+        if edge == self.left:
+            self.setCursor(Qt.SizeHorCursor)
+            self.resizeFunc = self.resizeLeft
+        elif edge == self.top:
+            self.setCursor(Qt.SizeVerCursor)
+            self.resizeFunc = self.resizeTop
+        elif edge == self.right:
+            self.setCursor(Qt.SizeHorCursor)
+            self.resizeFunc = self.resizeRight
+        else:
+            self.setCursor(Qt.SizeVerCursor)
+            self.resizeFunc = self.resizeBottom
+        self.mousePos = None
+
+    def resizeLeft(self, delta):
+        """Resize the widget from the left."""
+        window = self.window()
+        width = max(window.minimumWidth(), window.width() - delta.x())
+        geo = window.geometry()
+        geo.setLeft(geo.right() - width)
+        window.setGeometry(geo)
+
+    def resizeTop(self, delta):
+        """Resize the widget from the top."""
+        window = self.window()
+        height = max(window.minimumHeight(), window.height() - delta.y())
+        geo = window.geometry()
+        geo.setTop(geo.bottom() - height)
+        window.setGeometry(geo)
+
+    def resizeRight(self, delta):
+        """Resize the widget from the right."""
+        window = self.window()
+        width = max(window.minimumWidth(), window.width() + delta.x())
+        window.resize(width, window.height())
+
+    def resizeBottom(self, delta):
+        """Resize the widget from the bottom."""
+        window = self.window()
+        height = max(window.minimumHeight(), window.height() + delta.y())
+        window.resize(window.width(), height)
+
+    def mousePressEvent(self, event):
+        """Perform action when mouse is button is pressed."""
+        if event.button() == Qt.LeftButton:
+            self.mousePos = event.pos()
+
+    def mouseMoveEvent(self, event):
+        """Perform action when mouse is moved."""
+        if self.mousePos is not None:
+            delta = event.pos() - self.mousePos
+            self.resizeFunc(delta)
+
+    def mouseReleaseEvent(self, _):
+        """Perform action when mouse button is released."""
+        self.mousePos = None
 
 
 class Window(QMainWindow):
@@ -67,6 +139,13 @@ class Window(QMainWindow):
         """
         super().__init__(parent=parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.sides = [
+            Side(self, Side.left),
+            Side(self, Side.top),
+            Side(self, Side.right),
+            Side(self, Side.bottom),
+        ]
+        self.corners = [QSizeGrip(self) for _ in range(4)]
         self.app = app
         self.statusbar = self.statusBar()
         self.icon = get_icon("torrentfile48")
@@ -102,6 +181,61 @@ class Window(QMainWindow):
         self.central.setObjectName("centralTabWidget")
         self.statusbar.setObjectName("statusbar")
         self.central_layout.setObjectName("centralLayout")
+
+    _size = 3
+
+    @property
+    def gripSize(self):
+        """Return the size of the size grip."""
+        return self._size
+
+    def setGripSize(self, size):
+        """Set all of the windows side grips."""
+        if size == self.gripSize:
+            return
+        self._size = max(2, size)
+        self.updateGrips()
+
+    def updateGrips(self):
+        """Update the geometry of the window."""
+        self.setContentsMargins(*[self.gripSize] * 4)
+        outRect = self.rect()
+        inRect = outRect.adjusted(
+            self.gripSize, self.gripSize, -self.gripSize, -self.gripSize
+        )
+        self.corners[0].setGeometry(QRect(outRect.topLeft(), inRect.topLeft()))
+        self.corners[1].setGeometry(
+            QRect(outRect.topRight(), inRect.topRight()).normalized()
+        )
+        self.corners[2].setGeometry(
+            QRect(inRect.bottomRight(), outRect.bottomRight())
+        )
+        self.corners[3].setGeometry(
+            QRect(outRect.bottomLeft(), inRect.bottomLeft()).normalized()
+        )
+        self.sides[0].setGeometry(
+            0, inRect.top(), self.gripSize, inRect.height()
+        )
+        self.sides[1].setGeometry(
+            inRect.left(), 0, inRect.width(), self.gripSize
+        )
+        self.sides[2].setGeometry(
+            inRect.left() + inRect.width(),
+            inRect.top(),
+            self.gripSize,
+            inRect.height(),
+        )
+        self.sides[3].setGeometry(
+            self.gripSize,
+            inRect.top() + inRect.height(),
+            inRect.width(),
+            self.gripSize,
+        )
+
+    def resizeEvent(self, event):
+        """Trigger event to resize window."""
+        super().resizeEvent(event)
+        self.updateGrips()
 
 
 class TabWidget(QWidget):

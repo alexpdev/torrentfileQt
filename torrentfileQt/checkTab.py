@@ -82,7 +82,7 @@ class CheckWidget(QWidget):
 
         self.content_group = DropGroupBox(parent=self)
         self.content_group.setLabelText("drag & drop search folder here or...")
-        self.content_group.setTitle("Content Search Folder")
+        self.content_group.setTitle("Content Folder")
         self.content_folders = BrowseFolders(parent=self)
         self.content_folders.folderSelected.connect(self.setPath)
         self.content_files = BrowseFiles(parent=self)
